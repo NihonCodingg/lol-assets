@@ -68,8 +68,9 @@ Contraste calculado pela fórmula da WCAG 2.1, contra os dois fundos em que cada
 > | borda, divisória, caixa não marcada, placa | `#52525b` / `#3f3f46` | inalterado — não é texto |
 >
 > `texto-fraco` e `texto-tenue` continuam **no tema**, porque são fiéis ao design e o teste de
-> paridade os verifica. O que muda é onde podem ser usados: `--cor-texto-tenue` é reservado a
-> borda e decoração, e há teste garantindo que nenhum componente o aplique a `color`.
+> paridade os verifica. O que muda é onde podem ser usados: os dois ficam reservados a borda e
+> decoração, e `tokens.test.ts` falha se algum componente os aplicar a `color`. *(Até o T-45
+> este parágrafo prometia esse teste sem que ele existisse; agora existe.)*
 >
 > O custo é real e está aceito: a hierarquia de cinza fica um degrau mais rasa que a do
 > desenho. O ganho é que a menor letra do produto continua legível.
@@ -118,7 +119,9 @@ Pesos usados: **400**, **500**, **600**. Nenhum outro aparece no arquivo.
 | `texto-12` | 12px | botão, título de seção |
 | `texto-13` | 13px | corpo, campo de busca, item de lista |
 | `texto-14` | 14px | base do documento, campo da paleta, estado vazio |
+| `texto-16` | 16px | campo de busca principal, título de seção grande (T-45) |
 | `texto-19` | 19px | título do painel |
+| `texto-22` | 22px | título sobre a arte, no painel do campeão (T-45) |
 
 ### Entrelinha e espacejamento
 
@@ -157,6 +160,7 @@ Pesos usados: **400**, **500**, **600**. Nenhum outro aparece no arquivo.
 | `paleta-campo` | 44px | campo da paleta |
 | `cabecalho` | 48px | cabeçalho e topo da barra lateral |
 | `bandeja` | 52px | bandeja do lote |
+| `controle-xl` | 44px | campo de busca principal; alvo de toque no celular (T-45) |
 
 ## Espaçamento
 
@@ -191,6 +195,17 @@ Uma animação só no arquivo inteiro:
 
 `1.2s ease-in-out infinite`, com atraso escalonado por coluna (`0.06s` por índice), usada
 **só** no esqueleto de carregamento.
+
+**Acréscimo de 14/09/2026 (T-45).** Transição de estado — imagem que entra, *hover* de
+cartão, painel que abre — dura **150 ms** (`duration-150`) ou **200 ms** (`duration-200`),
+sempre com a mesma curva:
+
+| Token | Valor | Onde |
+|---|---|---|
+| `curva-saida` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | toda transição de estado |
+
+Movimento diz estado, nunca enfeita. Quem pede menos movimento ao sistema
+(`prefers-reduced-motion`) recebe transição e pulso instantâneos.
 
 ## Foco
 

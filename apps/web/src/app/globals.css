@@ -56,7 +56,9 @@
   --text-12: 12px;
   --text-13: 13px;
   --text-14: 14px;
+  --text-16: 16px;
   --text-19: 19px;
+  --text-22: 22px;
 
   --tracking-titulo: -0.02em;
   --tracking-marca: -0.01em;
@@ -86,6 +88,8 @@
   --spacing-paleta-campo: 44px;
   --spacing-cabecalho: 48px;
   --spacing-bandeja: 52px;
+  /* T-45: o campo de busca principal e o alvo de toque no celular. */
+  --spacing-controle-xl: 44px;
 
   /* --- largura ---------------------------------------------------------- */
   --spacing-barra-lateral: 208px;
@@ -94,8 +98,12 @@
   --spacing-alvo-cartao-denso: 152px;
   --spacing-alvo-cartao-confortavel: 210px;
 
-  /* --- movimento: uma animação no design inteiro ------------------------ */
+  /* --- movimento --------------------------------------------------------
+   * Uma animação (o pulso do esqueleto) e transições de 150–200 ms com uma
+   * curva só. Movimento aqui diz estado, nunca enfeita (T-45).
+   */
   --animate-pulsar: pulsar 1.2s ease-in-out infinite;
+  --ease-saida: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes pulsar {
@@ -141,6 +149,19 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-acento);
   outline-offset: 1px;
+}
+
+/* Quem pede menos movimento ao sistema recebe menos movimento: transição e
+   pulso viram instantâneos, e o estado continua dito pela cor e pelo texto. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 ::-webkit-scrollbar {
