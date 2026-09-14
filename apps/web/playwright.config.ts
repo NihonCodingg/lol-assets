@@ -10,6 +10,11 @@
  *
  * `next dev` e não `next build && next start` porque o que se testa aqui é
  * comportamento, não bundle — e o `dev` sobe em segundos.
+ *
+ * Todo spec importa `test` e `expect` de `e2e/base.ts`, e não do
+ * `@playwright/test`: é lá que o relógio da página para no dia da fixture. Sem
+ * ele, o aviso de índice velho acende sozinho 72 horas depois de a fixture ser
+ * gerada, e o e2e passa a falhar pelo calendário.
  */
 import { defineConfig, devices } from "@playwright/test";
 

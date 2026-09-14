@@ -1,5 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+
+import { expect, test } from "./base";
 
 /**
  * Acessibilidade (T-28, RNF-11): teclado, `alt` e o que o axe pega sozinho.
