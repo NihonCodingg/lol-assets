@@ -2381,6 +2381,10 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 **Critérios de aceite**
 1. A faixa do topo ocupa menos de 200 px em 390×844.
 2. Os e2e de 375 px passam.
+3. Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando linhas em
+   375×720. Em 14/09 ela ficava sem nenhuma: o aviso tomava a última altura que sobrava para a
+   lista virtual. Achado quando a fixture do e2e passou de 72 horas (#54); vira um e2e com
+   índice velho.
 
 ### ⏳ T-50 — Acabamento
 
