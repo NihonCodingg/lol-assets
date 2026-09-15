@@ -106,9 +106,11 @@ espera o ok.
 
 - **O ok do dono nos previews do T-45 e do T-46.** Só depois de cada um, o merge.
 - **T-47 a T-50**, um PR e um ok de cada vez.
-- **O aviso de índice velho acende à toa no site no ar.** O indexador roda a cada ~5 horas e dá
-  certo, mas só comita quando o patch muda; a data do índice para no último patch, e depois de
-  72 horas o aviso diz que a indexação "pode ter parado". Virou tarefa separada, que o dono
-  iniciou em outra sessão.
-- Do T-33, ainda: o registro no Developer Portal da Riot e a confirmação de que a Vercel publica
-  sozinha o commit do bot na próxima atualização do índice.
+- ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
+  ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono
+  iniciou em outra sessão: o aviso passou a medir a última verificação. Os ramos do T-45 e do
+  T-46 receberam o `main` com ele; o único conflito foi a tabela de ADRs, onde a 0017 e a 0018
+  entraram no mesmo lugar. Depois do merge: **397 de 397** na unidade e **37 de 37** no e2e.
+- **Confirmado em 15/09:** a Vercel publica sozinha o commit do bot. O `chore(indice): patch
+  16.18.1` (`63dacdb`, de `github-actions[bot]`) virou deploy de produção sem ninguém mexer.
+- Do T-33, ainda: o registro no Developer Portal da Riot.
