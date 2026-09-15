@@ -20,6 +20,11 @@
       "type": "string",
       "format": "date-time"
     },
+    "checkedAt": {
+      "description": "Última vez que a indexação automática conferiu que este índice ainda é o do patch atual (ADR 0018). Uma execução sem patch novo carimba o campo no máximo uma vez por dia. Ausente significa o mesmo que generatedAt — é o caso de todo manifesto recém-gerado e dos anteriores ao 1.3.0.",
+      "type": "string",
+      "format": "date-time"
+    },
     "assetsBaseUrl": {
       "description": "Prefixo público do bucket. O front monta URL como `${assetsBaseUrl}/${storageKey}`.",
       "type": "string",

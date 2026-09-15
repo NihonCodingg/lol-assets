@@ -62,6 +62,7 @@ from lol_assets_indexer.scheduling import (
     current_generation,
     decide,
     published,
+    stamp_checked,
     write_github_output,
 )
 from lol_assets_indexer.status import build_status, render_summary
@@ -134,12 +135,26 @@ def check(
         Path,
         typer.Option("--output", help="Pasta do índice publicado."),
     ] = DEFAULT_OUTPUT,
+    stamp: Annotated[
+        bool,
+        typer.Option(
+            "--stamp",
+            help=(
+                "Sem patch novo, grava no manifesto a hora desta verificação — "
+                "no máximo uma vez a cada 24 h (ADR 0018)."
+            ),
+        ),
+    ] = False,
 ) -> None:
     """Diz se há patch novo, sem baixar nada.
 
     É o primeiro passo do workflow do T-13: na maioria das execuções não há nada
     a fazer, e "nada a fazer" tem que custar segundos, não os ~15 minutos de
     baixar 2,39 GB.
+
+    Com `--stamp`, que é como o workflow chama, "nada a fazer" também carimba
+    `checkedAt` no manifesto quando o último carimbo passou de 24 h: é o que o
+    aviso de índice velho do site lê (T-51). Sem a opção, nada é escrito.
     """
     logging_setup.configure()
     settings = IndexerSettings()
@@ -156,7 +171,12 @@ def check(
     # A assinatura desta execucao usa as categorias que os construtores emitem,
     # sem indexar nada: e so a tabela BUILDERS mais o que so o cdragon traz.
     decisao = decide(latest, published(output), generation=current_generation(CATEGORIAS))
-    write_github_output(decisao)
+    # Carimbar é afirmar que o publicado é o do patch atual: só quando não há o que
+    # indexar. Com patch novo, quem reescreve o manifesto é a indexação.
+    carimbo: str | None = None
+    if stamp and not decisao.needs_index:
+        carimbo = stamp_checked(output, datetime.now(UTC))
+    write_github_output(decisao, stamped=carimbo is not None)
     logger.info(
         "decisão de indexação",
         extra={
@@ -166,6 +186,8 @@ def check(
         },
     )
     typer.echo(f"{'indexar' if decisao.needs_index else 'nada a fazer'}: {decisao.reason}")
+    if carimbo is not None:
+        typer.echo(f"verificação carimbada no manifesto: {carimbo}")
 
 
 async def _latest(settings: IndexerSettings) -> str:

@@ -216,7 +216,7 @@ sequenceDiagram
     participant R as repositório
 
     A->>D: GET /api/versions.json
-    A->>A: versão nova? senão encerra
+    A->>A: versão nova? senão carimba checkedAt (1×/dia, ADR 0018) e encerra
     A->>D: GET dragontail-{v}.tgz (2,39 GB, 1 requisição — para MEDIR, não para copiar)
     A->>A: extrai só data/{pt_BR,en_US} e os img/ do escopo
     A->>C: GET v1/champions/{key}.json (concorrência ≤ 4)
@@ -290,8 +290,10 @@ foi corrigido no T-25 junto com o teste que o calcula.)
 ## 6. Contrato do índice
 
 Fonte de verdade: [`packages/schema/schemas/`](../packages/schema/schemas/).
-Versão do contrato: **1.2.0**. Mudança exige ADR e nova versão — o `1.1.0` acrescentou o
-`index-status`, e o `1.2.0` acrescentou a **assinatura de geração** do manifesto (T-38).
+Versão do contrato: **1.3.0**. Mudança exige ADR e nova versão — o `1.1.0` acrescentou o
+`index-status`, o `1.2.0` acrescentou a **assinatura de geração** do manifesto (T-38), e o
+`1.3.0`, o **carimbo de verificação** `checkedAt`
+([ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md), T-51).
 
 | Arquivo | Papel |
 |---|---|
@@ -470,8 +472,11 @@ jeito de o site apodrecer.
 2. **Resumo do job no GitHub Actions** com a mesma tabela, legível sem baixar nada.
 3. **Falha abre issue automaticamente** com o log — inclusive quando um teste de contrato
    de fonte quebra. É o alerta que a §0.3 pede.
-4. **O site mostra a idade do índice.** Se `manifest.generatedAt` tem mais de 72 h, aparece
-   um aviso discreto. É o detector de "parou de atualizar" que não custa nada.
+4. **O site mostra quando a indexação parou de conferir o índice.** Se a última verificação —
+   `manifest.checkedAt`, ou o `generatedAt` num manifesto sem carimbo — tem mais de 72 h,
+   aparece um aviso discreto. É o detector de "parou de atualizar" que não custa nada. Medir
+   só o `generatedAt` acendia o aviso a cada patch que demorava três dias
+   ([ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)).
 5. **Logs estruturados** (JSON por linha) no indexador, com `gameVersion` e `source` em
    todo evento.
 
@@ -528,4 +533,5 @@ jeito de o site apodrecer.
 | [0013](adr/0013-uma-versao-por-vez-no-indice.md) uma versão por vez | RNF-05, §8; remove RF-19 e RF-20 |
 | [0015](adr/0015-orcamento-do-indice-depois-da-segunda-fonte.md) orçamento depois da segunda fonte | RNF-05, D4 — emenda o 0007 e o 0013 |
 | [0016](adr/0016-publicacao-na-vercel.md) publicação na Vercel | §9 — emenda a tabela de cache; RNF-10 |
+| [0018](adr/0018-aviso-mede-a-ultima-verificacao.md) aviso mede a última verificação | §5.3, §6, §11, RNF-06 — emenda o item 4 da §11 |
 | [0009](adr/0009-apelidos-de-busca-mantidos-a-mao.md) apelidos | RF-03, §6, §10 |

@@ -178,6 +178,26 @@ def test_ida_e_volta_preserva_o_documento(nome: str) -> None:
     assert devolta == original
 
 
+# --- o carimbo de verificação (T-51, ADR 0018) --------------------------------------
+
+
+def test_manifesto_aceita_o_carimbo_de_verificacao() -> None:
+    manifesto = carregar("manifest.json")
+    manifesto["checkedAt"] = "2026-09-14T12:00:00Z"
+
+    validate_manifest(manifesto)
+    assert IndexManifest.model_validate(manifesto).checked_at == "2026-09-14T12:00:00Z"
+
+
+def test_o_carimbo_e_opcional() -> None:
+    """Os índices anteriores ao 1.3.0 não têm o campo, e continuam valendo."""
+    manifesto = carregar("manifest.json")
+    assert "checkedAt" not in manifesto
+
+    validate_manifest(manifesto)
+    assert IndexManifest.model_validate(manifesto).checked_at is None
+
+
 # --- paridade entre schema e modelo -------------------------------------------------
 
 PARES = [
