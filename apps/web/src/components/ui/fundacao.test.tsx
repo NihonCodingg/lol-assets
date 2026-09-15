@@ -125,6 +125,20 @@ describe("Imagem", () => {
     );
     expect(container.firstElementChild!.className).toContain("h-18");
   });
+
+  it("decorativa (alt vazio) cai calada: o leitor de tela não ganha imagem sem nome (T-46)", () => {
+    const { container } = render(<Imagem src={SRC} alt="" />);
+    fireEvent.error(container.querySelector("img")!);
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(container.querySelector("[aria-hidden='true'] svg")).not.toBeNull();
+  });
+
+  it("erro compacto mostra só o ícone, para miniatura onde a frase não cabe (T-46)", () => {
+    render(<Imagem src={SRC} alt="Jax" erroCompacto />);
+    fireEvent.error(screen.getByRole("img", { name: "Jax" }));
+    expect(screen.queryByText("a fonte não respondeu")).toBeNull();
+    expect(screen.getByRole("img", { name: "Jax" }).tagName).toBe("DIV");
+  });
 });
 
 // --- esqueleto --------------------------------------------------------------------------

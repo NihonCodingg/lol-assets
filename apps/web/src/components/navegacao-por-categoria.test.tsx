@@ -480,21 +480,54 @@ describe("filtro por função (RF-08)", () => {
 // --- a barra lateral, que é onde as categorias moram desde o T-41 ---------------------
 
 describe("barra lateral", () => {
+  type Fatia = { category: string; assets?: number };
+
   /** A página registra as categorias assim que o manifesto chega. */
-  function Registra({ shards }: { shards: readonly { category: string }[] }) {
+  function Registra({ shards, campeoes }: { shards: readonly Fatia[]; campeoes?: number }) {
     const { registrar } = useNavegacao();
-    useEffect(() => registrar(categoriasDisponiveis(shards)), [registrar, shards]);
+    useEffect(
+      () => registrar(categoriasDisponiveis(shards), campeoes),
+      [registrar, shards, campeoes],
+    );
     return null;
   }
 
-  function barra(shards: readonly { category: string }[] = SHARDS) {
+  function barra(shards: readonly Fatia[] = SHARDS, campeoes?: number) {
     return render(
       <ProvedorDeNavegacao>
-        <Registra shards={shards} />
+        <Registra shards={shards} campeoes={campeoes} />
         <Rodape />
       </ProvedorDeNavegacao>,
     );
   }
+
+  it("cada categoria mostra quantos assets tem, sem mudar o nome do botão (T-46)", () => {
+    barra(
+      [
+        { category: "item", assets: 868 },
+        { category: "profile_icon", assets: 5042 },
+      ],
+      173,
+    );
+    const nav = screen.getByRole("navigation", { name: "Categorias" });
+    // O número é só para o olho: o botão continua se chamando "Itens".
+    expect(within(nav).getByRole("button", { name: "Itens" })).toBeTruthy();
+    expect(within(nav).getByText("868")).toBeTruthy();
+    expect(within(nav).getByText("5.042")).toBeTruthy();
+    expect(within(nav).getByText("173")).toBeTruthy();
+    expect(within(nav).getByRole("button", { name: "Campeões" }).textContent).toBe("Campeões");
+  });
+
+  it("a contagem vem do manifesto, fatia por fatia", () => {
+    const tem = categoriasDisponiveis([{ category: "item", assets: 868 }, { category: "emote" }]);
+    expect(tem.map((c) => c.total)).toEqual([868, undefined]);
+  });
+
+  it("'Início' saiu: levava ao mesmo lugar que Campeões (T-46)", () => {
+    barra();
+    expect(screen.queryByRole("link", { name: "Início" })).toBeNull();
+    expect(screen.getByRole("link", { name: /Sobre/ })).toBeTruthy();
+  });
 
   it("lista as categorias que o manifesto declara", () => {
     barra();

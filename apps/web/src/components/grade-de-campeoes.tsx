@@ -12,31 +12,83 @@
  * função é atributo de campeão, e campeão é a home ([ADR 0010]). As etiquetas
  * vêm do catálogo — os 173 campeões do patch 16.18.1 têm todas.
  *
- * ## O cartão, como o design o desenha
+ * ## O cartão
  *
- * Placa quadrada com a arte, nome embaixo e contagem de skins em mono. A placa
- * tem fundo próprio porque a miniatura demora: sem ele, 173 buracos pretos
- * piscam até a rede responder.
+ * Placa quadrada com a arte, nome embaixo e contagem de skins em mono. A arte é
+ * o *tile* 380×380 da skin base (T-46): o `square` de 128 px esticado até 152 ou
+ * 210 px ficava borrado. O `square` continua de reserva, para catálogo sem skin.
+ *
+ * ## Densidade (T-40)
+ *
+ * As duas larguras-alvo do design: densa (152 px) e confortável (210 px). A
+ * escolha fica no `localStorage`, que é preferência de quem usa; quando ele não
+ * existe ou lança — modo privado —, a grade abre densa e nada quebra.
  */
 
+import { Grid2x2, Grid3x3 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import type { CatalogChampion } from "@lol-assets/schema";
+import type { CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
+import { BotaoIcone } from "@/components/ui/botao-icone";
+import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
 import { filtrarCampeoes, funcoesDe } from "@/lib/categorias";
 import { cn } from "@/lib/utils";
 
+export type Densidade = "densa" | "confortavel";
+
+export const CHAVE_DA_DENSIDADE = "biblioteca:densidade";
+
+export function lerDensidade(): Densidade {
+  try {
+    return window.localStorage.getItem(CHAVE_DA_DENSIDADE) === "confortavel"
+      ? "confortavel"
+      : "densa";
+  } catch {
+    return "densa";
+  }
+}
+
+function gravarDensidade(densidade: Densidade): void {
+  try {
+    window.localStorage.setItem(CHAVE_DA_DENSIDADE, densidade);
+  } catch {
+    // Modo privado: a escolha vale até recarregar, e a grade continua de pé.
+  }
+}
+
+/** Largura-alvo, não número de colunas: quem decide quantas cabem é a janela. */
+const COLUNAS: Record<Densidade, string> = {
+  densa:
+    "grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-denso),1fr))] gap-x-2.5 gap-y-4",
+  confortavel:
+    "grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-confortavel),1fr))] gap-x-3.5 gap-y-5",
+};
+
 export interface GradeDeCampeoesProps {
   readonly champions: readonly CatalogChampion[];
+  /** As skins do catálogo: a arte do cartão é a da skin base. Sem elas, o `square`. */
+  readonly skins?: readonly CatalogSkin[];
   readonly assetsBaseUrl?: string;
   readonly onAbrir: (champion: CatalogChampion) => void;
 }
 
-export function GradeDeCampeoes({ champions, assetsBaseUrl, onAbrir }: GradeDeCampeoesProps) {
+export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: GradeDeCampeoesProps) {
   const funcoes = useMemo(() => funcoesDe(champions), [champions]);
   const [marcadas, setMarcadas] = useState<ReadonlySet<string>>(new Set());
   const visiveis = useMemo(() => filtrarCampeoes(champions, marcadas), [champions, marcadas]);
+  // A grade só monta no cliente, depois que o catálogo chega: ler o
+  // `localStorage` no primeiro render não arrisca divergir do HTML do servidor.
+  const [densidade, setDensidade] = useState<Densidade>(lerDensidade);
+
+  const arteDe = useMemo(() => {
+    const porId = new Map((skins ?? []).map((skin) => [skin.skinId, skin]));
+    return (champion: CatalogChampion): string | undefined => {
+      const base = porId.get(champion.baseSkinId);
+      return (base && thumbnailSrc(base, assetsBaseUrl)) ?? thumbnailSrc(champion, assetsBaseUrl);
+    };
+  }, [skins, assetsBaseUrl]);
 
   function alternar(tag: string) {
     setMarcadas((antes) => {
@@ -46,52 +98,87 @@ export function GradeDeCampeoes({ champions, assetsBaseUrl, onAbrir }: GradeDeCa
     });
   }
 
+  function escolherDensidade(proxima: Densidade) {
+    setDensidade(proxima);
+    gravarDensidade(proxima);
+  }
+
   return (
     <>
-      {funcoes.length > 0 && (
-        <fieldset className="flex flex-none flex-wrap items-center gap-1.5 border-b border-borda px-3.5 py-2">
-          <legend className="float-left font-mono text-10 uppercase tracking-rotulo text-texto-suave">
-            Função
-          </legend>
-          {funcoes.map((funcao) => (
-            <label
-              key={funcao.tag}
-              className={cn(
-                "cursor-pointer rounded-padrao border px-2 py-0.75 text-11",
-                marcadas.has(funcao.tag)
-                  ? "border-acento bg-acento-suave text-texto"
-                  : "border-borda-forte text-texto-suave hover:bg-campo hover:text-texto",
-              )}
-            >
-              <input
-                type="checkbox"
-                className="sr-only"
-                checked={marcadas.has(funcao.tag)}
-                onChange={() => alternar(funcao.tag)}
-              />
-              {funcao.rotulo} ({funcao.total})
-            </label>
-          ))}
-          {marcadas.size > 0 && (
-            <button
-              type="button"
-              onClick={() => setMarcadas(new Set())}
-              className="cursor-pointer rounded-padrao px-2 py-0.75 text-11 text-texto-suave hover:bg-campo hover:text-texto"
-            >
-              Todas as funções
-            </button>
-          )}
-        </fieldset>
-      )}
+      {/* Uma barra só: filtro à esquerda, contagem e densidade à direita. A
+          partir de `md` ela fica presa no topo enquanto a grade rola — filtrar
+          no meio da rolagem não obriga a voltar lá em cima. No telefone, não:
+          com os filtros quebrando em três linhas, presa ela tomaria um terço da
+          altura que sobra para a grade. */}
+      <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10">
+        <h2 className="sr-only">Campeões</h2>
+        {funcoes.length > 0 && (
+          <fieldset className="flex flex-wrap items-center gap-1.5">
+            <legend className="float-left mr-1.5 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
+              Função
+            </legend>
+            {funcoes.map((funcao) => {
+              const marcada = marcadas.has(funcao.tag);
+              return (
+                <label
+                  key={funcao.tag}
+                  className={cn(
+                    "inline-flex h-controle-md cursor-pointer items-center rounded-padrao border px-2.5 text-12",
+                    "transition-colors duration-150 ease-saida",
+                    "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
+                    marcada
+                      ? "border-acento bg-acento-suave text-texto"
+                      : "border-borda-forte text-texto-suave hover:bg-campo hover:text-texto",
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={marcada}
+                    onChange={() => alternar(funcao.tag)}
+                  />
+                  {funcao.rotulo} <span className="ml-1 font-mono text-10">({funcao.total})</span>
+                </label>
+              );
+            })}
+            {marcadas.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setMarcadas(new Set())}
+                className="h-controle-md cursor-pointer rounded-padrao px-2 text-12 text-texto-suave transition-colors duration-150 ease-saida hover:bg-campo hover:text-texto"
+              >
+                Todas as funções
+              </button>
+            )}
+          </fieldset>
+        )}
 
-      <div className="flex h-barra flex-none items-center gap-2.5 border-b border-borda bg-fundo-barra px-3.5">
-        <span className="text-12 font-medium text-texto-forte">Campeões</span>
-        <span className="font-mono text-11 text-texto-suave">
-          {visiveis.length} de {champions.length} campeões
-        </span>
-        <div className="ml-auto hidden items-center gap-2 font-mono text-10 text-texto-suave sm:flex">
-          <span>/ buscar</span>
-          <span>↵ abrir</span>
+        <div className="ml-auto flex items-center gap-2.5">
+          <span className="font-mono text-11 tabular-nums text-texto-suave">
+            {visiveis.length} de {champions.length} campeões
+          </span>
+          <div
+            role="group"
+            aria-label="Densidade da grade"
+            className="flex items-center gap-0.5 rounded-padrao border border-borda-forte p-0.5"
+          >
+            <BotaoIcone
+              rotulo="Grade densa"
+              dica="Mais cartões por linha"
+              aria-pressed={densidade === "densa"}
+              icone={<Grid3x3 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+              onClick={() => escolherDensidade("densa")}
+              className="h-controle-sm w-controle-sm aria-pressed:bg-selecionado aria-pressed:text-texto"
+            />
+            <BotaoIcone
+              rotulo="Grade confortável"
+              dica="Cartões maiores"
+              aria-pressed={densidade === "confortavel"}
+              icone={<Grid2x2 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+              onClick={() => escolherDensidade("confortavel")}
+              className="h-controle-sm w-controle-sm aria-pressed:bg-selecionado aria-pressed:text-texto"
+            />
+          </div>
         </div>
       </div>
 
@@ -100,53 +187,81 @@ export function GradeDeCampeoes({ champions, assetsBaseUrl, onAbrir }: GradeDeCa
           Nenhum campeão com essa função.
         </p>
       ) : (
-        <GradeCrua champions={visiveis} assetsBaseUrl={assetsBaseUrl} onAbrir={onAbrir} />
+        <ul
+          aria-label="Campeões"
+          data-densidade={densidade}
+          className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
+        >
+          {visiveis.map((champion) => (
+            <Cartao
+              key={champion.championKey}
+              champion={champion}
+              arte={arteDe(champion)}
+              onAbrir={onAbrir}
+            />
+          ))}
+        </ul>
       )}
     </>
   );
 }
 
-function GradeCrua({ champions, assetsBaseUrl, onAbrir }: GradeDeCampeoesProps) {
+function Cartao({
+  champion,
+  arte,
+  onAbrir,
+}: {
+  champion: CatalogChampion;
+  arte: string | undefined;
+  onAbrir: (champion: CatalogChampion) => void;
+}) {
   return (
-    <ul
-      aria-label="Campeões"
-      className="grid grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-denso),1fr))] gap-1.5 px-3.5 py-2"
-    >
-      {champions.map((champion) => {
-        const miniatura = thumbnailSrc(champion, assetsBaseUrl);
-        return (
-          <li key={champion.championKey}>
-            <button
-              type="button"
-              onClick={() => onAbrir(champion)}
-              className="group w-full cursor-pointer rounded-padrao text-left"
-            >
-              {/* 1:1 e não o 16:9 do design: o mock usava splash, e a miniatura
-                  real do campeão é o `square` de 128×128 do ddragon. Cortá-la em
-                  16:9 tiraria 44% da altura — o rosto. A proporção segue o dado. */}
-              <div className="relative aspect-square overflow-hidden rounded-padrao bg-campo">
-                {miniatura && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={miniatura}
-                    alt={champion.names.pt_BR}
-                    loading="lazy"
-                    decoding="async"
-                    className="size-full object-cover transition-opacity group-hover:opacity-80"
-                  />
-                )}
-              </div>
-              <div className="truncate pt-1.25 text-11 leading-cartao text-texto-medio">
-                {champion.names.pt_BR}
-              </div>
-              {/* RF-04: o cartão conta skins, nunca chromas. */}
-              <div className="truncate font-mono text-10 text-texto-suave">
-                {champion.skinCount} {champion.skinCount === 1 ? "skin" : "skins"}
-              </div>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+    <li>
+      <button
+        type="button"
+        onClick={() => onAbrir(champion)}
+        className="group block w-full cursor-pointer rounded-medio text-left"
+      >
+        {/* Hover discreto, sem acento: o violeta é de seleção e de ação, e
+            aqui ainda não há nenhuma das duas. */}
+        {arte ? (
+          <Imagem
+            src={arte}
+            alt={champion.names.pt_BR}
+            classeDaCaixa="aspect-square rounded-medio border border-borda transition-colors duration-200 ease-saida group-hover:border-borda-fraca"
+            className="object-cover transition-[opacity,transform] duration-200 ease-saida group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div aria-hidden="true" className="aspect-square rounded-medio border border-borda bg-campo" />
+        )}
+        <div className="truncate pt-2 text-12 leading-cartao font-medium text-texto-forte transition-colors duration-150 ease-saida group-hover:text-texto">
+          {champion.names.pt_BR}
+        </div>
+        {/* RF-04: o cartão conta skins, nunca chromas. */}
+        <div className="truncate font-mono text-10 text-texto-suave">
+          {champion.skinCount} {champion.skinCount === 1 ? "skin" : "skins"}
+        </div>
+      </button>
+    </li>
+  );
+}
+
+/**
+ * A home enquanto o catálogo não chega: a forma da grade, sem texto.
+ *
+ * O pulso atrasa 60 ms por coluna, como o design desenha — um brilho que
+ * atravessa a linha em vez de 24 caixas piscando juntas.
+ */
+export function EsqueletoDaGrade({ cartoes = 24 }: { cartoes?: number }) {
+  return (
+    <div aria-hidden="true" className={cn("grid px-3.5 pt-3", COLUNAS.densa)}>
+      {Array.from({ length: cartoes }, (_, i) => (
+        <div key={i} className="animate-pulsar" style={{ animationDelay: `${(i % 8) * 0.06}s` }}>
+          <div className="aspect-square rounded-medio bg-campo" />
+          <div className="mt-2 h-3 w-3/4 rounded-min bg-campo" />
+          <div className="mt-1.5 h-2.5 w-1/3 rounded-min bg-campo" />
+        </div>
+      ))}
+    </div>
   );
 }

@@ -78,6 +78,13 @@ describe("avisos legais da Riot", () => {
     render(<Rodape />);
     expect(screen.getByRole("link", { name: /Sobre/ }).getAttribute("href")).toBe("/sobre");
   });
+
+  it("e a marca leva de volta para a home — com 'Início' fora, é o caminho (T-46)", () => {
+    render(<Rodape />);
+    expect(
+      screen.getByRole("link", { name: siteConfig.displayName }).getAttribute("href"),
+    ).toBe("/");
+  });
 });
 
 // --- RF-22: as fontes ---------------------------------------------------------------------

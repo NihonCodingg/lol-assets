@@ -61,13 +61,54 @@ O vocabulário que as telas novas vão falar, já aplicado no cartão de arte.
 | Build de produção | limpo |
 | Prints | antes (site no ar) e depois (build local), 1440×900 |
 
+## T-46 — a home
+
+A primeira impressão: a busca na frente e a arte nítida. Empilhado sobre o T-45, que ainda
+espera o ok.
+
+- **Busca:** campo de 44 px com ícone e `/`, e os resultados flutuando sobre a grade, cada um com
+  a arte e o que ele é — "Campeão · 18 skins", "Skin · Jax". Escolher fecha a lista e limpa o
+  campo; `Escape` fecha e o segundo apaga; clicar fora fecha. O rodapé da lista conta os
+  resultados e mostra as teclas.
+- **Grade:** o *tile* 380×380 da skin base no lugar do `square` de 128 px esticado. Uma barra só,
+  com as funções, a contagem e a densidade, presa no topo a partir de `md`. Esqueleto com a forma
+  da home no carregamento.
+- **Densidade — fecha o T-40:** densa ou confortável, guardada no `localStorage`; sem ele, densa.
+- **Barra lateral:** ícone e contagem em cada categoria; "Início" saiu, e a marca virou o link
+  para a home; os avisos da Riot passaram da fonte mono para a da interface, inteiros e literais.
+
+### Achados
+
+- **A contagem não pode entrar no botão.** Dentro dele, "Itens 868" viraria o nome acessível —
+  e quem usa leitor de tela, como os testes, procura "Itens". Ela fica ao lado, só para o olho.
+- **O cmdk declara o campo sempre como `aria-expanded`.** A lista flutuante fica montada e só
+  escondida quando fechada, para o `aria-controls` não apontar para o nada.
+- **O anel de foco dobrava no campo de busca.** Borda violeta mais anel de 2 px, e o campo abre
+  focado: era a primeira coisa que se via. `data-anel="fino"` cola um anel de 1 px na borda.
+- **Tirar "Início" tirou o caminho de volta da página Sobre.** A marca virou o link. E os botões
+  de categoria, que aparecem na Sobre depois de passar pela home, marcam a categoria sem sair de
+  lá — existe desde o T-41, e foi para o T-50.
+- **O vitest não conta colunas.** O jsdom não faz layout: as colunas da densidade são contadas
+  no e2e `densidade.spec.ts`, que também recarrega a página.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **390 de 390** — 16 novos, nenhum existente alterado |
+| `tsc` e `eslint` | limpos |
+| e2e | **37 de 37**, com o novo `densidade.spec.ts` |
+| Build de produção | limpo; a home com 165 kB no primeiro carregamento (era 163) |
+| Detector do skill de design | nenhum achado |
+| Prints | antes (site no ar) e depois (build local), 1440×900 e 390×844 |
+
 ## O que resta
 
-- **O ok do dono no preview do T-45.** Só depois dele o merge.
-- **T-46 a T-50**, um PR e um ok de cada vez.
+- **O ok do dono nos previews do T-45 e do T-46.** Só depois de cada um, o merge.
+- **T-47 a T-50**, um PR e um ok de cada vez.
 - **O aviso de índice velho acende à toa no site no ar.** O indexador roda a cada ~5 horas e dá
   certo, mas só comita quando o patch muda; a data do índice para no último patch, e depois de
-  72 horas o aviso diz que a indexação "pode ter parado". Sugerido como tarefa separada: o
-  frescor deveria medir a última checagem, não a última mudança.
+  72 horas o aviso diz que a indexação "pode ter parado". Virou tarefa separada, que o dono
+  iniciou em outra sessão.
 - Do T-33, ainda: o registro no Developer Portal da Riot e a confirmação de que a Vercel publica
   sozinha o commit do bot na próxima atualização do índice.

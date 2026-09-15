@@ -13,6 +13,11 @@
  *   mostrar quadrado quebrado". A caixa continua com o nome da imagem para o
  *   leitor de tela (`role="img"`), e para o olho diz o que houve.
  *
+ * Imagem **decorativa** (`alt` vazio, como a miniatura de um resultado de busca
+ * que já tem o nome escrito ao lado) cai calada: o erro não vira uma imagem sem
+ * nome para o leitor de tela. E miniatura pequena demais para uma frase pede
+ * `erroCompacto`, que mostra só o ícone (T-46).
+ *
  * As fontes são de terceiros ([ADR 0012]): quando o ddragon ou o cdragon
  * falham, é aqui que a falha aparece, e ela aparece honesta.
  */
@@ -30,6 +35,8 @@ export interface ImagemProps
   readonly alt: string;
   /** Tamanho e proporção moram na caixa, para o layout não pular. */
   readonly classeDaCaixa?: string;
+  /** No erro, só o ícone: para miniatura onde "a fonte não respondeu" não cabe. */
+  readonly erroCompacto?: boolean;
 }
 
 export function Imagem({
@@ -37,6 +44,7 @@ export function Imagem({
   alt,
   className,
   classeDaCaixa,
+  erroCompacto = false,
   loading = "lazy",
   decoding = "async",
   ...resto
@@ -65,12 +73,11 @@ export function Imagem({
       )}
       {estado === "erro" ? (
         <div
-          role="img"
-          aria-label={alt}
+          {...(alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true })}
           className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-1.5 text-center text-texto-suave"
         >
           <ImageOff aria-hidden="true" className="size-4 flex-none" />
-          <span className="text-10 leading-cartao">a fonte não respondeu</span>
+          {!erroCompacto && <span className="text-10 leading-cartao">a fonte não respondeu</span>}
         </div>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- a URL é de terceiro e não há proxy (ADR 0012)

@@ -30,14 +30,17 @@ import type { Categoria } from "@/lib/categorias";
 export interface Navegacao {
   /** As categorias que o manifesto declara. Vazio até a página carregar. */
   readonly categorias: readonly Categoria[];
+  /** Quantos campeões o catálogo tem — a contagem de "Campeões" na barra (T-46). */
+  readonly campeoes: number | null;
   /** `null` = a grade de campeões, que é a home ([ADR 0010], RF-04). */
   readonly aberta: AssetCategory | null;
   readonly abrir: (categoria: AssetCategory | null) => void;
-  readonly registrar: (categorias: readonly Categoria[]) => void;
+  readonly registrar: (categorias: readonly Categoria[], campeoes?: number) => void;
 }
 
 const VAZIO: Navegacao = {
   categorias: [],
+  campeoes: null,
   aberta: null,
   abrir: () => {},
   registrar: () => {},
@@ -51,23 +54,28 @@ export function useNavegacao(): Navegacao {
 
 export function ProvedorDeNavegacao({ children }: { children: React.ReactNode }) {
   const [categorias, setCategorias] = useState<readonly Categoria[]>([]);
+  const [campeoes, setCampeoes] = useState<number | null>(null);
   const [aberta, setAberta] = useState<AssetCategory | null>(null);
 
   // `useCallback` porque `registrar` entra num efeito da página: sem
   // identidade estável, o efeito rodaria a cada render e o `setState` dele
-  // manteria o ciclo vivo para sempre.
-  const registrar = useCallback((proximas: readonly Categoria[]) => {
+  // manteria o ciclo vivo para sempre. Pelo mesmo motivo, lista igual devolve
+  // a lista de antes, e o React não redesenha nada.
+  const registrar = useCallback((proximas: readonly Categoria[], totalDeCampeoes?: number) => {
     setCategorias((antes) =>
       antes.length === proximas.length &&
-      antes.every((c, i) => c.category === proximas[i].category)
+      antes.every(
+        (c, i) => c.category === proximas[i].category && c.total === proximas[i].total,
+      )
         ? antes
         : proximas,
     );
+    setCampeoes(totalDeCampeoes ?? null);
   }, []);
 
   const valor = useMemo<Navegacao>(
-    () => ({ categorias, aberta, abrir: setAberta, registrar }),
-    [categorias, aberta, registrar],
+    () => ({ categorias, campeoes, aberta, abrir: setAberta, registrar }),
+    [categorias, campeoes, aberta, registrar],
   );
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;

@@ -151,6 +151,14 @@ body {
   outline-offset: 1px;
 }
 
+/* Anel fino, para campo de borda própria que fica violeta no foco: o anel cola
+   na borda e os dois somam 2 px, em vez de uma moldura dupla (T-46). Continua
+   sendo `outline` — o teste de foco visível do T-28 vale para ele também. */
+[data-anel="fino"]:focus-visible {
+  outline-width: 1px;
+  outline-offset: 0;
+}
+
 /* Quem pede menos movimento ao sistema recebe menos movimento: transição e
    pulso viram instantâneos, e o estado continua dito pela cor e pelo texto. */
 @media (prefers-reduced-motion: reduce) {
