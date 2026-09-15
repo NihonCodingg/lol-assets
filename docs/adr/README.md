@@ -21,4 +21,5 @@ com contexto, decisão e consequências. A Spec referencia; não repete.
 | [0014](0014-onde-vive-o-indice-gerado.md) | Índice gerado vive no `main`; crescimento medido | ✅ aceito |
 | [0015](0015-orcamento-do-indice-depois-da-segunda-fonte.md) | Teto do índice vai a **24 MiB**; emotes, wards e chromas cabem | ✅ aceito — emenda 0007 e 0013 |
 | [0016](0016-publicacao-na-vercel.md) | **Publicação na Vercel**: pnpm fixado, manifesto sempre revalida, `noindex` por padrão | ✅ aceito — emenda a §9 da Spec |
+| [0017](0017-icones-lucide.md) | **Ícones: `lucide-react`**, sempre decorativos; o nome é do controle | ✅ aceito — emenda 0011 |
 | [0018](0018-aviso-mede-a-ultima-verificacao.md) | **O aviso de índice velho mede a última verificação**: `checkedAt` no manifesto, carimbado no máximo 1×/dia | ✅ aceito — contrato 1.3.0; emenda a §11 da Spec |

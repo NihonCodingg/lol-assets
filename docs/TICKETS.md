@@ -2256,6 +2256,155 @@ limite de 500 linhas.
 1. Num telefone de 390×844, a faixa do topo ocupa menos de 200 px.
 2. Os dois avisos continuam em toda página, inteiros — o e2e de tela estreita segue passando.
 
+> **Decidido em 14/09/2026:** no celular, os avisos vão para o fim da página. Executado no **T-49**.
+
+---
+
+## Onda 7 — o front incrível
+
+Aberta em **14/09/2026**, quando o dono pediu o front "incrível, lindo, intuitivo e fácil de
+usar". As decisões dele valem para a onda inteira:
+
+- **Direção:** evoluir a identidade atual — escuro zinco, um violeta, Inter Tight e JetBrains
+  Mono. Refinamento ambicioso, não troca de mundo.
+- **Frentes:** primeira impressão, achar o que quer, ver e baixar, celular.
+- **Público principal:** o editor com pressa, no PC. A ferramenta some dentro da tarefa, e a arte
+  é o conteúdo.
+- **Entrega:** cada ticket num PR com preview da Vercel, e **só vai ao ar depois do ok do dono**,
+  no mesmo link.
+
+Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; estado se diz com
+ícone e texto, não com cor nova.
+
+### ✅ T-45 — Fundação: ícones, primitivos e imagem que não quebra
+
+| | |
+|---|---|
+| **Objetivo** | O vocabulário que as telas novas vão falar, antes de qualquer tela mudar |
+| **Dependências** | T-30, T-34 |
+| **Estimativa** | ~250 linhas |
+| **Effort** | médio |
+| **Cobre** | RNF-07, RNF-11, [ADR 0017](adr/0017-icones-lucide.md) |
+
+**Entra**
+- `lucide-react` ([ADR 0017](adr/0017-icones-lucide.md)) e Radix Tooltip (ADR 0011).
+- Primitivos em `components/ui/`: `Dica`, `BotaoIcone`, `ParDeDownload`, `Esqueleto`, `Imagem`.
+- `Imagem` com o estado de erro do **RNF-07**, que não existia: fonte fora mostrava quadrado
+  quebrado.
+- Tokens `texto-16`, `texto-22`, `controle-xl`, `curva-saida` e `prefers-reduced-motion`.
+- A guarda que o `TOKENS.md` prometia e não existia: nenhum componente aplica `texto-fraco` ou
+  `texto-tenue` a `color`.
+- Primeira adoção: o cartão de arte usa `Imagem`, `ParDeDownload` e um "Copiar URL" com ícone e
+  confirmação no próprio botão.
+
+**NÃO entra**
+- Redesenho de tela — é dos T-46 a T-50.
+
+> **Mudança sobre o plano.** O plano previa um aviso flutuante para "Link copiado". Ele ficaria
+> fora do painel do campeão, que é um diálogo, e o Radix esconde do leitor de tela tudo o que está
+> fora do diálogo aberto — o aviso nunca seria anunciado. A confirmação foi para o botão (ícone e
+> dica) e para uma região `aria-live` dentro do cartão, que é anunciada.
+
+**Critérios de aceite**
+1. ✅ Botão só com ícone tem nome acessível obrigatório, pelo tipo.
+2. ✅ Os dois downloads aparecem lado a lado, original primeiro; PNG desabilitado como "já é
+   PNG" (RF-12).
+3. ✅ Imagem que falha diz "a fonte não respondeu", e o nome continua para o leitor de tela.
+4. ✅ Tokens novos no `TOKENS.md` e no tema, com o teste de paridade verde.
+
+### ⏳ T-46 — Home: busca protagonista e grade nítida
+
+| | |
+|---|---|
+| **Objetivo** | A primeira impressão: a busca na frente e a arte nítida |
+| **Dependências** | T-45 |
+| **Cobre** | RF-01, RF-04, RF-05, RF-07, RNF-01, RNF-03; fecha o **T-40** |
+
+**Entra**
+- Busca: campo de 44 px com ícone e dica `/`, resultados flutuando sobre a grade, cada linha com
+  o *tile* da skin e o rótulo secundário. `shouldFilter={false}` e o RNF-01 continuam.
+- Grade: o cartão usa o *tile* 380×380 da skin base (`catalog.skins`, `isBase`), com o `square`
+  de reserva; *hover* e foco; esqueleto no carregamento.
+- Densidade densa/confortável guardada em `localStorage` (fecha o T-40).
+- Barra lateral: ícone e contagem por categoria; sai "Início"; os avisos ficam mais leves, sem
+  deixar de ser literais e inteiros.
+
+**Critérios de aceite**
+1. O cartão não amplia imagem menor que ele.
+2. A busca continua abaixo de 50 ms, e a home continua sem buscar fatia nenhuma.
+
+### ⏳ T-47 — Painel do campeão: vitrine da skin
+
+| | |
+|---|---|
+| **Objetivo** | Ver a arte grande e escolher a skin pela imagem |
+| **Dependências** | T-45 |
+| **Cobre** | RF-06, RF-09 a RF-12, RF-14, RF-15, RF-18, RF-25; ADR 0001, ADR 0008 |
+
+**Entra**
+- Topo com a splash da skin escolhida em 16:9; nome da skin em destaque, campeão como secundário.
+- Seletor visual de skins: *tiles* num `radiogroup` "Selecionar skin", com setas.
+- Artes agrupadas por tipo, prévia na proporção real, ampliação ao clicar, feedback de download.
+- Um fechar só; `Escape` na ordem ampliação → chromas → painel.
+
+**Critérios de aceite**
+1. J1 e J2 continuam em ≤ 3 cliques.
+2. Os testes do seletor de skin mudam de `<select>` para rádio, com a justificativa no PR.
+
+### ⏳ T-48 — Categorias em galeria
+
+| | |
+|---|---|
+| **Objetivo** | Imagem mostrada como imagem, e filtro que se entende |
+| **Dependências** | T-45 |
+| **Cobre** | RF-08, RF-09, RF-17; ADR 0011 |
+
+**Entra**
+- A lista vira galeria de *tiles* virtualizada por linha, com altura fixa por breakpoint.
+- Filtros compactos: grupos pequenos em linha, "Classe" em "Mais filtros".
+- Rótulos de `classe:*` em pt-BR. **Revê a decisão de `lib/categorias.ts`** de mostrar o valor
+  cru: `abilityhaste` e `nonbootsmovement` não são rótulo para gente, e o dono pediu "intuitivo".
+- O asset `_fpo` (marcação, não arte) sai da tela.
+
+**Critérios de aceite**
+1. As categorias de 5.042 e 2.338 itens rolam sem travar.
+2. "Selecionar os N filtrados" continua selecionando só o que o filtro mostra.
+
+### ⏳ T-49 — Celular (fecha o T-44)
+
+| | |
+|---|---|
+| **Objetivo** | O site inteiro usável num telefone |
+| **Dependências** | T-46, T-47, T-48 |
+| **Cobre** | RF-21, RNF-11; fecha o **T-44** |
+
+**Entra**
+- Topo compacto; categorias numa linha rolável.
+- Os dois avisos no fim da página, em toda página; no computador continuam no pé da barra lateral.
+- Painel do campeão em tela cheia, com alvos de toque de 44 px.
+
+**Critérios de aceite**
+1. A faixa do topo ocupa menos de 200 px em 390×844.
+2. Os e2e de 375 px passam.
+3. Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando linhas em
+   375×720. Em 14/09 ela ficava sem nenhuma: o aviso tomava a última altura que sobrava para a
+   lista virtual. Achado quando a fixture do e2e passou de 72 horas (#54); vira um e2e com
+   índice velho.
+
+### ⏳ T-50 — Acabamento
+
+| | |
+|---|---|
+| **Objetivo** | Os estados que faltam e a última revisão |
+| **Dependências** | T-46 a T-49 |
+| **Cobre** | RNF-13 e a microcopy do produto |
+
+**Entra**
+- Vazios que ensinam; erros que dizem o que fazer; aviso de índice velho no vocabulário novo.
+- RNF-13: sha256 divergente vira aviso, sem bloquear o download.
+- Microcopy em pt-BR revisada e a página Sobre.
+- Uma rodada de inspeção (1440×900 e 390×844), um lote de correções, no máximo mais uma rodada.
+
 ---
 
 ### ✅ T-36 — Teto de versões guardadas no índice
@@ -2385,3 +2534,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
+| 7 | ✅ T-45 → T-46 → T-47 → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

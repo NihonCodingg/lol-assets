@@ -26,11 +26,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { Check, Link2 } from "lucide-react";
 
 import type { Asset } from "@lol-assets/schema";
 
 import { LIMITE_DE_VIRTUALIZACAO, orderAssets, rotuloDoTipo } from "@/lib/asset-panel";
 import { Botao } from "@/components/ui/botao";
+import { BotaoIcone } from "@/components/ui/botao-icone";
+import { Imagem } from "@/components/ui/imagem";
+import { ParDeDownload } from "@/components/ui/par-de-download";
 import { cn } from "@/lib/utils";
 import {
   assetSummary,
@@ -298,6 +302,30 @@ function CartaoDeAsset({
 
   const ocupado = estado === "baixando";
 
+  /**
+   * A confirmação de "Copiar URL" mora no próprio botão, não num aviso
+   * flutuante (T-45). O painel do campeão é um diálogo, e o Radix esconde do
+   * leitor de tela tudo o que está fora dele: um aviso lá fora nunca seria
+   * anunciado. Aqui, o ícone vira ✓, a dica abre sozinha dizendo "Link
+   * copiado", e uma região `role="status"` dentro do cartão anuncia.
+   */
+  const [copia, setCopia] = useState<"parado" | "copiado" | "falhou">("parado");
+  useEffect(() => {
+    if (copia === "parado") return;
+    const volta = window.setTimeout(() => setCopia("parado"), 2000);
+    return () => window.clearTimeout(volta);
+  }, [copia]);
+  const copiarUrl = useCallback(() => {
+    // `Promise.resolve().then`: fora de contexto seguro o `navigator.clipboard`
+    // nem existe, e o erro sairia síncrono, antes de qualquer `.then`.
+    Promise.resolve()
+      .then(() => copiar(url))
+      .then(
+        () => setCopia("copiado"),
+        () => setCopia("falhou"),
+      );
+  }, [copiar, url]);
+
   return (
     <article
       aria-label={asset.fileName}
@@ -339,14 +367,12 @@ function CartaoDeAsset({
           Altura cravada e `object-contain`: a linha da lista virtual tem altura
           fixa, e prévia livre a estoura — foi o que fez a categoria `emote`
           desenhar imagem por cima do texto da linha seguinte. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Imagem
         src={url}
         alt={`Prévia de ${asset.names.pt_BR}`}
-        loading="lazy"
-        decoding="async"
         data-previa={asset.type}
-        className="h-18 w-24 flex-none rounded-padrao bg-campo object-contain"
+        classeDaCaixa="h-18 w-24 flex-none rounded-padrao"
+        className="object-contain"
       />
 
       {/* **Nome primeiro, tipo depois.** No painel de um campeão as linhas são
@@ -364,24 +390,30 @@ function CartaoDeAsset({
       </div>
 
       <div className="flex w-full flex-none flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end">
-        <Botao
-          variante="primario"
-          tamanho="md"
-          disabled={ocupado}
-          onClick={() => void acionar(false)}
-        >
-          Baixar original
-        </Botao>
-        <Botao
-          tamanho="md"
-          disabled={ocupado || !canConvertToPng(asset)}
-          onClick={() => void acionar(true)}
-        >
-          {canConvertToPng(asset) ? "Baixar PNG" : "já é PNG"}
-        </Botao>
-        <Botao variante="fantasma" tamanho="md" onClick={() => void copiar(url)}>
-          Copiar URL
-        </Botao>
+        <ParDeDownload
+          podeConverter={canConvertToPng(asset)}
+          ocupado={ocupado}
+          onOriginal={() => void acionar(false)}
+          onPng={() => void acionar(true)}
+        />
+        <BotaoIcone
+          rotulo="Copiar URL"
+          dica={
+            copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar" : undefined
+          }
+          dicaAberta={copia !== "parado"}
+          icone={
+            copia === "copiado" ? (
+              <Check aria-hidden="true" className="size-4" />
+            ) : (
+              <Link2 aria-hidden="true" className="size-4" />
+            )
+          }
+          onClick={copiarUrl}
+        />
+        <span role="status" className="sr-only">
+          {copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar o link" : ""}
+        </span>
       </div>
 
       {estado === "erro" && (

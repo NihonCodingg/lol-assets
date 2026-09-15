@@ -125,6 +125,38 @@ describe("copiar URL", () => {
     // Com storageKey e base pública, a URL é a do bucket; sem, é a da fonte.
     expect(copiado).toBe(square.storageKey ? `${BASE}/${square.storageKey}` : square.sourceUrl);
   });
+
+  it("confirma no próprio cartão, e o leitor de tela ouve (T-45)", async () => {
+    // Um aviso flutuante ficaria fora do diálogo do painel, e o Radix o
+    // esconderia do leitor de tela. A confirmação mora no cartão.
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    abrir([square]);
+    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+
+    await waitFor(() =>
+      expect(within(cartoes()[0]).getByRole("status").textContent).toBe("Link copiado"),
+    );
+    // E o olho vê: a dica abre sozinha, mesmo o Radix fechando dica no clique.
+    expect(screen.getByRole("tooltip").textContent).toBe("Link copiado");
+    // O nome do botão não muda: quem procura "Copiar URL" continua achando.
+    expect(screen.getByRole("button", { name: "Copiar URL" })).toBeTruthy();
+  });
+
+  it("sem área de transferência, diz que não deu — e nada quebra", async () => {
+    // Fora de HTTPS o `navigator.clipboard` nem existe, e o erro sai síncrono.
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    const copiar = vi.fn(() => {
+      throw new Error("sem clipboard");
+    });
+    abrir([square], { copiar });
+    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+
+    await waitFor(() =>
+      expect(within(cartoes()[0]).getByRole("status").textContent).toBe(
+        "Não deu para copiar o link",
+      ),
+    );
+  });
 });
 
 // --- o erro fica no cartão (critério 4) ----------------------------------------------------

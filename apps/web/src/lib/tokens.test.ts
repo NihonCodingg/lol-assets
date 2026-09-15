@@ -1,5 +1,5 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -194,5 +194,30 @@ describe("contraste", () => {
     // valores no design, ele falha e obriga a revisar a decisão de 10/09.
     expect(contraste(TEMA.get("texto-fraco")!, TEMA.get("fundo")!)).toBeLessThan(4.5);
     expect(contraste(TEMA.get("texto-tenue")!, TEMA.get("fundo")!)).toBeLessThan(4.5);
+  });
+});
+
+// --- a guarda que o TOKENS.md prometia ------------------------------------------------
+
+describe("os dois cinzas reprovados não viram texto", () => {
+  /**
+   * O TOKENS.md dizia que havia teste para isto, e não havia (achado no T-45).
+   * `text-texto-fraco` e `text-texto-tenue` são as classes que aplicariam os
+   * dois cinzas a `color` — `placeholder:` incluído. Borda e fundo com eles
+   * continuam permitidos.
+   */
+  function arquivos(pasta: string): string[] {
+    return readdirSync(pasta).flatMap((nome) => {
+      const caminho = join(pasta, nome);
+      if (statSync(caminho).isDirectory()) return arquivos(caminho);
+      return /\.tsx?$/.test(nome) && !/\.test\.tsx?$/.test(nome) ? [caminho] : [];
+    });
+  }
+
+  it("nenhum componente usa text-texto-fraco nem text-texto-tenue", () => {
+    const culpados = arquivos(resolve(process.cwd(), "src")).filter((arquivo) =>
+      /\btext-texto-(?:fraco|tenue)\b/.test(readFileSync(arquivo, "utf-8")),
+    );
+    expect(culpados).toEqual([]);
   });
 });
