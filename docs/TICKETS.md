@@ -22,6 +22,9 @@
 - **Estimativa** é linha de lógica, não linha de diff.
 - Todo ticket herda a Definição de Pronto da §0.4 do KICKOFF: CI verde, sem `TODO` órfão,
   doc atualizada se o comportamento observável mudou, relatório em `docs/sessoes/`.
+- **Desde 15/09/2026 o projeto está em operação.** O que resta está em
+  [INVENTARIO.md](INVENTARIO.md), em três listas — essencial, manutenção e desejável. Antes de
+  abrir ticket novo, ver lá em que lista ele cai.
 
 ## Nota sobre os tickets de interface
 
