@@ -2495,13 +2495,22 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 3. ✅ O carimbo muda uma linha do `manifest.json` — conferido também contra o manifesto
    publicado de verdade, não só contra um feito para o teste.
 4. ✅ O intervalo do carimbo cabe três vezes no limite do aviso, e um teste lê os dois lados.
-5. O site publicado para de avisar sem que a indexação tenha parado — conferido depois do
-   merge.
+5. 🟡 O site publicado para de avisar sem que a indexação tenha parado. **Metade conferida em
+   15/09/2026:** a reindexação do contrato 1.3.0 chegou ao ar e o aviso sumiu. Falta o
+   primeiro carimbo diário chegar ao site.
 
 **Testes que provam**
 - `test_carimbo.py`: a regra, o formato, a linha única, a saída do Actions e o limite do front.
 - `test_cli.py`: o `check` de ponta a ponta, sem baixar nada.
 - `frescor.test.ts`: o aviso mede a verificação, e o texto continua falando da geração.
+
+> **Mergeado em 15/09/2026** (#56, `b411b09`). A execução disparada à mão
+> ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093))
+> reindexou o 16.18.1 com o motivo "contrato do índice mudou de 1.2.0 para 1.3.0" e publicou
+> `63dacdb`; a Vercel levou esse commit do bot a produção às 01:05 UTC, sem deploy hook — o
+> que responde a dúvida do item 4 do [ADR 0016](adr/0016-publicacao-na-vercel.md). No ar:
+> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26. O primeiro carimbo
+> sai na primeira execução depois de 16/09/2026 00:43 UTC.
 
 ---
 
@@ -2530,7 +2539,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RNF-04 | T-13, T-42 |
 | RNF-05 | T-02, T-10, T-11, ✅ T-36, ✅ T-37 |
 | RNF-13 | T-15 (aviso de divergência), T-09 (medição do sha256) |
-| RNF-06 | T-12, T-13, T-31 |
+| RNF-06 | T-12, T-13, T-31, T-51 |
 | RNF-07 | T-08 |
 | RNF-08, RNF-09 | T-03 |
 | RNF-10 | T-27, T-33, T-42 |

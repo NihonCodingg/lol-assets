@@ -69,26 +69,41 @@ conferência foi feita pelo DOM.
   checkout da outra sessão, que está na `feat/T-45-fundacao-visual`.
 - **ADR 0018 e T-51**: o 0017 e os T-45 a T-50 já estão reservados na branch da Onda 7.
 
+## Depois do merge — 15/09/2026
+
+O merge do #56 foi barrado primeiro pela checagem de permissão desta sessão ("merge sem
+revisão"); com o ok explícito do dono, entrou às 00:42 UTC (`b411b09`), e a `Indexação` foi
+disparada à mão ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093)):
+
+| | |
+|---|---|
+| Decisão do `check` | `indexar: contrato do índice mudou de 1.2.0 para 1.3.0` — como previsto |
+| Indexação | 00:42:56 → 01:04:12 UTC, 27.313 assets, 9 documentos órfãos varridos |
+| Commit | `63dacdb` `chore(indice): patch 16.18.1`, do `github-actions[bot]` |
+| Vercel | produção do `63dacdb` às **01:05 UTC**, sem deploy hook — responde o item 4 do [ADR 0016](../adr/0016-publicacao-na-vercel.md): a integração do Git publica o commit do bot |
+| Site no ar | manifesto `1.3.0`, `generatedAt` 2026-09-15T00:42:56Z, **sem aviso**, 173 campeões |
+| `conferir-publicacao.mjs` contra a URL publicada | **26 de 26** |
+
+As duas execuções agendadas seguintes (08:42 e 14:20 UTC de 15/09) terminaram sem carimbar, e é
+o certo: o índice tinha menos de 24 h. Os PRs da T-45 e da T-46 entraram depois deste, e o
+conflito em `docs/adr/README.md` foi resolvido com as duas linhas.
+
+**Uma correção:** a descrição do #56 dizia que a linha RNF-06 do mapa de cobertura tinha
+ganhado o T-51. A edição foi planejada e não aplicada; entrou no PR de fechamento.
+
 ## O que ficou pendente
 
-- **O merge do PR #56.** A CI está verde; o merge foi barrado pela checagem de permissão desta
-  sessão ("merge sem revisão") e ficou com o dono.
-- **Depois do merge:** a próxima execução — agendada para ~08:00 UTC, ou disparada à mão —
-  reindexa o 16.18.1 e publica. Será o primeiro commit do bot depois da publicação na Vercel,
-  o que responde o item 4 do [ADR 0016](../adr/0016-publicacao-na-vercel.md). Conferir no ar:
-  `manifest.json` com `schemaVersion` 1.3.0 e o aviso sumido.
-- **~24 h depois:** o primeiro `chore(indice): 16.18.1 conferido`, com `checkedAt` no
-  manifesto do site. Fecha o critério 5 do T-51.
-- **Um conflito de uma linha** em `docs/adr/README.md` para quem mergear por último entre este
-  PR e o da T-45: manter as duas linhas, a do 0017 antes da do 0018.
+- **O primeiro carimbo diário**, na primeira execução depois de 16/09/2026 00:43 UTC — na
+  prática ~08:00 UTC, pelo atraso do Actions. Uma conferência agendada roda às 09:30 UTC e
+  relata. Quando o carimbo chegar ao site, o critério 5 do T-51 fecha.
 
 ## Próximo passo sugerido
 
-Mergear o #56 e disparar a `Indexação` à mão, sem entradas, para não esperar o agendamento;
-~35 min depois, rodar o `conferir-publicacao.mjs` contra o site no ar.
+Depois do primeiro carimbo, marcar o T-51 ✅ e o critério 5 no PR de fechamento
+(`docs/T-51-fechamento`) e mergeá-lo.
 
 ## Só o dono pode fazer
 
-- Mergear o PR #56, ou autorizar a sessão a mergear.
+- Mergear o PR de fechamento quando o carimbo tiver chegado.
 - Se quiser, decidir a troca de texto do aviso — hoje ele diz quando o índice foi gerado, não
   quando foi conferido.
