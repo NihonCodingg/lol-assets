@@ -244,6 +244,8 @@ class IndexManifest(_Base):
 
     schema_version: Version
     generated_at: str
+    #: Última verificação da indexação automática (ADR 0018). Ausente = `generated_at`.
+    checked_at: str | None = None
     assets_base_url: str | None = None
     current_version: Version
     #: Ausente nos índices gerados antes do T-38 — e ausente significa reindexar.

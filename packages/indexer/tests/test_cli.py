@@ -712,6 +712,101 @@ def test_check_falha_alto_se_a_fonte_estiver_fora(destino: Path) -> None:
     assert runner.invoke(app, ["check", "--output", str(destino)]).exit_code != 0
 
 
+# --- o carimbo de verificação (T-51, ADR 0018) ----------------------------------------
+
+
+def _gerado_em(destino: Path, quando: str) -> None:
+    """Envelhece o índice sem reindexar: só o `generatedAt` muda."""
+    manifesto = destino / "manifest.json"
+    documento = json.loads(manifesto.read_text(encoding="utf-8"))
+    documento["generatedAt"] = quando
+    manifesto.write_text(json.dumps(documento), encoding="utf-8")
+
+
+def _check(destino: Path, saida: Path, *extra: str) -> Any:
+    with pytest.MonkeyPatch.context() as ambiente:
+        ambiente.setenv("GITHUB_OUTPUT", str(saida))
+        return runner.invoke(app, ["check", "--output", str(destino), *extra])
+
+
+@respx.mock
+def test_check_com_stamp_carimba_quando_nao_ha_patch_novo(
+    tarball_local: Path, destino: Path, tmp_path: Path
+) -> None:
+    """O 14/09/2026: quatro dias sem patch, e a verificação de agora fica registrada."""
+    indexar(tarball_local, destino)
+    _assinatura_completa(destino)
+    _gerado_em(destino, "2026-09-10T08:09:41Z")
+    respx.get(f"{DDRAGON}/api/versions.json").mock(return_value=httpx.Response(200, json=[VERSAO]))
+    saida = tmp_path / "github_output"
+
+    resultado = _check(destino, saida, "--stamp")
+
+    assert resultado.exit_code == 0
+    assert "nada a fazer" in resultado.output
+    manifesto = ler(destino, "manifest.json")
+    validate_manifest(manifesto)
+    assert manifesto["checkedAt"] > manifesto["generatedAt"]
+    assert "stamped=true" in saida.read_text(encoding="utf-8").splitlines()
+
+
+@respx.mock
+def test_check_sem_stamp_nao_escreve_no_indice(
+    tarball_local: Path, destino: Path, tmp_path: Path
+) -> None:
+    """À mão, o `check` continua só perguntando."""
+    indexar(tarball_local, destino)
+    _assinatura_completa(destino)
+    _gerado_em(destino, "2026-09-10T08:09:41Z")
+    antes = (destino / "manifest.json").read_bytes()
+    respx.get(f"{DDRAGON}/api/versions.json").mock(return_value=httpx.Response(200, json=[VERSAO]))
+    saida = tmp_path / "github_output"
+
+    resultado = _check(destino, saida)
+
+    assert resultado.exit_code == 0
+    assert (destino / "manifest.json").read_bytes() == antes
+    assert "stamped=false" in saida.read_text(encoding="utf-8").splitlines()
+
+
+@respx.mock
+def test_check_com_patch_novo_nao_carimba(
+    tarball_local: Path, destino: Path, tmp_path: Path
+) -> None:
+    """Carimbar é dizer que o índice é o do patch atual — com patch novo, não é."""
+    indexar(tarball_local, destino)
+    _assinatura_completa(destino)
+    _gerado_em(destino, "2026-09-10T08:09:41Z")
+    antes = (destino / "manifest.json").read_bytes()
+    respx.get(f"{DDRAGON}/api/versions.json").mock(
+        return_value=httpx.Response(200, json=["16.18.1", VERSAO])
+    )
+    saida = tmp_path / "github_output"
+
+    resultado = _check(destino, saida, "--stamp")
+
+    assert resultado.exit_code == 0
+    assert "indexar" in resultado.output
+    assert (destino / "manifest.json").read_bytes() == antes
+    assert "stamped=false" in saida.read_text(encoding="utf-8").splitlines()
+
+
+@respx.mock
+def test_check_nao_carimba_indice_recem_gerado(
+    tarball_local: Path, destino: Path, tmp_path: Path
+) -> None:
+    """Uma indexação de agora já é a verificação de agora; carimbar seria commit à toa."""
+    indexar(tarball_local, destino)
+    _assinatura_completa(destino)
+    antes = (destino / "manifest.json").read_bytes()
+    respx.get(f"{DDRAGON}/api/versions.json").mock(return_value=httpx.Response(200, json=[VERSAO]))
+
+    resultado = _check(destino, tmp_path / "github_output", "--stamp")
+
+    assert resultado.exit_code == 0
+    assert (destino / "manifest.json").read_bytes() == antes
+
+
 # --- a segunda fonte, ligada na CLI (T-16 / T-17) -------------------------------------
 
 CDRAGON = "https://raw.communitydragon.org"

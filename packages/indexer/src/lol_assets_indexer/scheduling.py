@@ -1,4 +1,4 @@
-"""A decisão de indexar ou não, e como ela chega ao Actions (T-13, T-38).
+"""A decisão de indexar ou não, e como ela chega ao Actions (T-13, T-38, T-51).
 
 O workflow roda a cada 6 horas; a Riot publica um patch a cada duas semanas. Na
 esmagadora maioria das execuções não há nada a fazer, e "nada a fazer" precisa
@@ -11,7 +11,12 @@ até a Riot lançar patch. O índice ficaria velho **de código** parecendo novo
 versão, e o único jeito de descobrir seria alguém reparar que o filtro não
 filtra.
 
-Este módulo é a parte testável dessa decisão. O YAML só pergunta e obedece.
+**"Nada a fazer" também deixa rastro** (T-51, [ADR 0018]). Sem ele, o site não
+distingue "a Riot não lançou patch" de "a indexação parou": nos dois casos o
+índice não muda. O carimbo de verificação grava no manifesto quando a indexação
+automática conferiu o índice pela última vez — no máximo uma vez por dia.
+
+Este módulo é a parte testável dessas decisões. O YAML só pergunta e obedece.
 """
 
 from __future__ import annotations
@@ -21,10 +26,13 @@ import logging
 import os
 from collections.abc import Iterable
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from lol_assets_schema import SCHEMA_VERSION
 from lol_assets_schema.models import Generation, IndexManifest
+
+from lol_assets_indexer.publish.storage import MANIFEST_KEY, prepare_manifest
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +47,18 @@ logger = logging.getLogger(__name__)
 #: 2. T-21 — etiquetas de filtro nas categorias não-campeão.
 #: 3. T-22 — emotes e ward skins pelo cdragon, e a fusão das duas fontes.
 GERACAO_DO_INDEXADOR = 3
+
+#: De quanto em quanto tempo, no máximo, uma execução sem patch novo carimba o
+#: manifesto (ADR 0018).
+#:
+#: O site acende o aviso de índice velho com 72 h sem verificação
+#: (`LIMITE_DE_IDADE_HORAS`, em `apps/web/src/lib/frescor.ts`). Medido em setembro
+#: de 2026, o Actions atrasa o agendamento e chega a deixar ~10 h entre duas
+#: execuções; com o carimbo a cada 24 h, o publicado não passa de ~34 h numa semana
+#: normal, e o aviso só acende depois de mais ~38 h seguidas sem nenhuma execução
+#: bem-sucedida. Carimbar a cada execução daria o mesmo aviso com quatro vezes mais
+#: commits no `main` — e cada commit no `main` é um deploy de produção.
+INTERVALO_DO_CARIMBO = timedelta(hours=24)
 
 
 @dataclass(frozen=True, slots=True)
@@ -167,10 +187,58 @@ def decide(
     return Decision(False, latest, versao, f"já indexado em {latest}")
 
 
-def write_github_output(decision: Decision, path: str | None = None) -> None:
-    """Escreve no `$GITHUB_OUTPUT`. Fora do Actions, não faz nada."""
+def last_checked(manifest: IndexManifest) -> datetime:
+    """Quando a indexação automática confirmou este índice pela última vez.
+
+    O carimbo, quando há; senão a geração — gerar também é conferir, e é o que
+    vale nos manifestos anteriores ao contrato 1.3.0. O mais recente dos dois, para
+    um carimbo esquecido nunca envelhecer um índice recém-gerado. É a mesma regra
+    do `horasSemVerificar` do front.
+    """
+    gerado = _instante(manifest.generated_at)
+    if manifest.checked_at is None:
+        return gerado
+    return max(gerado, _instante(manifest.checked_at))
+
+
+def stamp_checked(
+    output: Path, now: datetime, *, every: timedelta = INTERVALO_DO_CARIMBO
+) -> str | None:
+    """Carimba `checkedAt` no manifesto publicado, se o último carimbo venceu.
+
+    Devolve o carimbo gravado, ou `None` quando ainda não era hora. Só faz sentido
+    depois de `decide` dizer "nada a fazer": carimbar é afirmar que o índice
+    publicado é o do patch atual.
+
+    Reserializa pelo mesmo `prepare_manifest` do publicador — validado contra o
+    contrato antes de escrever —, então o arquivo muda numa linha só.
+    """
+    caminho = output / MANIFEST_KEY
+    manifesto = IndexManifest.model_validate(json.loads(caminho.read_text(encoding="utf-8")))
+    if now - last_checked(manifesto) < every:
+        return None
+    carimbo = now.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    caminho.write_bytes(prepare_manifest(manifesto.model_copy(update={"checked_at": carimbo})))
+    logger.info("verificação carimbada", extra={"checkedAt": carimbo})
+    return carimbo
+
+
+def _instante(texto: str) -> datetime:
+    """`2026-09-10T08:09:41Z` como `datetime` com fuso. Sem fuso, vale UTC."""
+    quando = datetime.fromisoformat(texto.replace("Z", "+00:00"))
+    return quando if quando.tzinfo else quando.replace(tzinfo=UTC)
+
+
+def write_github_output(
+    decision: Decision, path: str | None = None, *, stamped: bool = False
+) -> None:
+    """Escreve no `$GITHUB_OUTPUT`. Fora do Actions, não faz nada.
+
+    `stamped` diz ao passo de commit se o manifesto ganhou carimbo (ADR 0018).
+    """
     destino = path or os.environ.get("GITHUB_OUTPUT")
     if not destino:
         return
     with Path(destino).open("a", encoding="utf-8") as arquivo:
         arquivo.write(decision.as_github_output())
+        arquivo.write(f"stamped={'true' if stamped else 'false'}\n")
