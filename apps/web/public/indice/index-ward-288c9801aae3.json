@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "gameVersion": "16.18.1",
   "category": "ward",
-  "generatedAt": "2026-09-10T08:09:41Z",
+  "generatedAt": "2026-09-15T00:42:56Z",
   "assets": [
     {
       "id": "ward_icon:0",
@@ -73,8 +73,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 5027,
-      "sha256": "a70787e9bbf56aef8ae02a545bc9be27efb6796c76a535d095eb0c8f975e600b"
+      "bytes": 8441,
+      "sha256": "89fc697fce9e16d10fd41e2a1121f813ddca69f2e74f2a8240032f0c45183c98"
     },
     {
       "id": "ward_icon:2",
@@ -109,8 +109,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3979,
-      "sha256": "75a35c05af05bec0c07c4c0b42c6f6c569a62ddf1143cecce68df848cb046cd7"
+      "bytes": 6702,
+      "sha256": "e2c3b807d7be88a964bd740029394446132a46469e73746f433b50a4942c544b"
     },
     {
       "id": "ward_icon:3",
@@ -127,8 +127,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 154199,
-      "sha256": "b79828aeeefebcc413e74300d70bb49395064b7b867aca85926444ac7f772e4c"
+      "bytes": 124187,
+      "sha256": "dcde3e5c03b89dd465e18d709ff88bc963de3c92d61725447771d79286e44e0c"
     },
     {
       "id": "ward_icon:3-shadow",
@@ -145,8 +145,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 5604,
-      "sha256": "ff3c6394f4d7c7998212630848fac83335e1a511654ea733824de47fca03b2c7"
+      "bytes": 9715,
+      "sha256": "bf1a72678d388812acf368725853ba144fa767c10c243b701833436d8a08ed99"
     },
     {
       "id": "ward_icon:4",
@@ -217,8 +217,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 8305,
-      "sha256": "6f46c6bfc2de30a31f0faf7ca403cd82d6425831df3a165b40b87614ce0040aa"
+      "bytes": 12923,
+      "sha256": "f239d1a41977e2a6e9c3565518f1d025fb9486e6d07b364fd67399dfe6bda8a0"
     },
     {
       "id": "ward_icon:6",
@@ -397,8 +397,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4282,
-      "sha256": "fd57f192d55db31a9f5a758aa7b498281ec9f85730c725987dc7cb13c17df831"
+      "bytes": 7508,
+      "sha256": "d833ced7c474a685e242df25180ffaa0a61846c1e5d480ecc8ea36b858b05094"
     },
     {
       "id": "ward_icon:11",
@@ -451,8 +451,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 94403,
-      "sha256": "9c03578a718fd620021a5184a31832ceb6ccbd5a3c619c754e54760aff577d05"
+      "bytes": 80499,
+      "sha256": "7ef54ca252ef063ed802386482869dd5387d6030d15f18bb9c4cd00043f56f24"
     },
     {
       "id": "ward_icon:12-shadow",
@@ -505,8 +505,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4664,
-      "sha256": "4a452aeb4fc273694fc2d9fe8b807c70cc1dff9d8087b07a0fada933e9010d3a"
+      "bytes": 7859,
+      "sha256": "de3796f5d54c0b7e9eb649c8128a1906093a74401a2a8a07a405c43fe615dd84"
     },
     {
       "id": "ward_icon:14",
@@ -523,8 +523,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 140964,
-      "sha256": "3bfb8f8458e53689ab0c7e1019e7185cf140905b00c42ffe334aea7b0ea4bccb"
+      "bytes": 117305,
+      "sha256": "c3ecab532a0e4df7bb9410a4c3961f93c16d25fc38feb085a1c17c8fe5b6bc4d"
     },
     {
       "id": "ward_icon:14-shadow",
@@ -541,8 +541,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4648,
-      "sha256": "9731d2249254ada8e40f7cbe83e31ea0a7f2a5d461888ecbed8a362ad56f07f7"
+      "bytes": 7730,
+      "sha256": "e89c1f105e46b069508c091a5e934b0505dfdc91e6d7654d53c6ca6bd7a49e10"
     },
     {
       "id": "ward_icon:15",
@@ -577,8 +577,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 8170,
-      "sha256": "b2c1ce69f98eb06f17406d3e6afdabc7c83aa231c66b6b035222c28d5da8719f"
+      "bytes": 13221,
+      "sha256": "c63342c3fe0765205fee8cf89e5b990883fd4cb66bf6e853308cbe3babb08d12"
     },
     {
       "id": "ward_icon:16",
@@ -613,8 +613,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 2654,
-      "sha256": "b44ae0aca45a37a9b3a9a2300afea66d8f76c8b20cc709ed4337474cd8a2734d"
+      "bytes": 4587,
+      "sha256": "48c8a433e6e23f33323b9d54dfeb02a4f8a11c019dae991f56fe08512e48a162"
     },
     {
       "id": "ward_icon:17",
@@ -685,8 +685,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4812,
-      "sha256": "08de6aad504ea8e3483ced9dcb489c8dde85cfe1f9b2ddce6a8283a4aff58453"
+      "bytes": 8006,
+      "sha256": "b55c4164157323644cf3f60ee4351af9847c3f66704045feb4f62f8e5d392749"
     },
     {
       "id": "ward_icon:19",
@@ -703,8 +703,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 192991,
-      "sha256": "7766d94e517d9ae6ae51c8c365f430c4d4b51648d2ccfef2b8a86dd55a578b30"
+      "bytes": 166911,
+      "sha256": "6a01f3b09be208ad45ecf6129a2def863e01ff8ea76bbfd701d5b0c29f308e4e"
     },
     {
       "id": "ward_icon:19-shadow",
@@ -793,8 +793,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 5189,
-      "sha256": "4e8ecd3f7c924eee4b7c845cd949fbea1247fa33dd20d0667fa26e6cafde8efe"
+      "bytes": 9043,
+      "sha256": "e784fd11f4bba20f3357afeaebe9f56ed2d66e80370bfcb2949e675240b36fe6"
     },
     {
       "id": "ward_icon:22",
@@ -811,8 +811,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 195266,
-      "sha256": "24b7967ebcf8f477d5c43466e774e47dd0002fca8fbce5d8810d56492e34c4f8"
+      "bytes": 160818,
+      "sha256": "69781f4d59151e1b53dba31b876eb1902262ec3091fed6840b52271ddf94671c"
     },
     {
       "id": "ward_icon:22-shadow",
@@ -883,8 +883,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 146453,
-      "sha256": "52b5f215559a6a071fedc4c70c580b69e1bd3f770dd4bb27a6636996d5ca6b90"
+      "bytes": 108285,
+      "sha256": "c47c6d1b381fed55d1798c60e1f1a3930a7f04cbd96985509dac808b705ce5e7"
     },
     {
       "id": "ward_icon:24-shadow",
@@ -919,8 +919,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 141475,
-      "sha256": "93d36f5a9435b4ff9b52e50a5f6b84fb88c00bd1ae56a47f61998d04628535fb"
+      "bytes": 124460,
+      "sha256": "b3de4124a88b8df5fec4448f3d81b7d1ddc8053c75fecf1f8dec70c6d1ba5bd0"
     },
     {
       "id": "ward_icon:25-shadow",
@@ -973,8 +973,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3082,
-      "sha256": "29cba713a07788816278d8e6fbc08dd415d8b5f1537a8633fe37b5a32c82996f"
+      "bytes": 5328,
+      "sha256": "639a3fd8197716181be63c4e5991a2b8d513092856bbc59e69d400e5c90fa9b3"
     },
     {
       "id": "ward_icon:27",
@@ -991,8 +991,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 86103,
-      "sha256": "ba7647b812e9c9bcbade1c3685cf47075e8bd33225d8221370a6bbdc472d06fe"
+      "bytes": 67726,
+      "sha256": "13726701d299322326b552f9c5e867b18bcb829f5e10e62a21dea6797f5554bb"
     },
     {
       "id": "ward_icon:27-shadow",
@@ -1009,8 +1009,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 2784,
-      "sha256": "344207b5b0f24cd20e03d863fbbea19c04980e3bed31d646d7c3b3e2b14fcd97"
+      "bytes": 5014,
+      "sha256": "4dfd80f03a83b5ee721b254b06082cd6901b7450a1a1a6fb1f3965e21a85ac6a"
     },
     {
       "id": "ward_icon:28",
@@ -1063,8 +1063,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 128509,
-      "sha256": "5ed4d75bebddd1549a5bde810f4f31085d13a7c15c1c28e76de38390c908b6d9"
+      "bytes": 112128,
+      "sha256": "8f40469021eb0bcac79eef7a9f70187805a09abec3c66573299705897ece9e5b"
     },
     {
       "id": "ward_icon:29-shadow",
@@ -1135,8 +1135,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 134235,
-      "sha256": "6acf2d3d435a03c17efbc27cc2ccf36b1e04c56379ee1d454bda5a378ee91520"
+      "bytes": 116386,
+      "sha256": "8f1f02d7a766742be0d1e78e062117a42c873319036abed4a8eabffa481c74e5"
     },
     {
       "id": "ward_icon:31-shadow",
@@ -1207,8 +1207,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 140935,
-      "sha256": "ab8e3910023db55c2af07ff29986683c066ba90613669abc50ce75a78cad030e"
+      "bytes": 125984,
+      "sha256": "9f6baeff919690b3c4d0f21bd78cd2a3c56b2fa461de798a558ec46206a8b1ef"
     },
     {
       "id": "ward_icon:33-shadow",
@@ -1225,8 +1225,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4161,
-      "sha256": "7cbde624bd7fdd84148ceef473127ab1ea455a18d43663beee29bf10a3cae5bb"
+      "bytes": 6920,
+      "sha256": "52e278a454e6d1db62355f8d387bf7fa9880aed47ae222342a2a6bb91f77f23d"
     },
     {
       "id": "ward_icon:34",
@@ -1243,8 +1243,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 153735,
-      "sha256": "ffa12a794ab0dfad4aac91a9928ae53c8eee7b21e3ee2791ca842c7b07ea91ce"
+      "bytes": 137885,
+      "sha256": "fe43a9b1195eb9a95a2acfc94230a6c712b494c9ad5405d559bc5881ed258e3c"
     },
     {
       "id": "ward_icon:34-shadow",
@@ -1297,8 +1297,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3351,
-      "sha256": "fa42c2635e3ad93034497f3e65797da78a62c64e947a92e22778011f33795c87"
+      "bytes": 5711,
+      "sha256": "5b7f49b95fbdd05625cfe4eb9e251c1a08d2db22392dfecaba7c4108e997e4a9"
     },
     {
       "id": "ward_icon:36",
@@ -1333,8 +1333,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4145,
-      "sha256": "b5b78776919276d99bae5b847dae867cc091c83af32dd8312c2ccd61f37a50c0"
+      "bytes": 7023,
+      "sha256": "48f17d71f9158b3217ad0372a338a09fbfb8863d95ad46fafdcb1dbbd647c8d5"
     },
     {
       "id": "ward_icon:37",
@@ -1387,8 +1387,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 151825,
-      "sha256": "15ae76012c90f49423a0dd2282add92e8f497ed4f3c05cec2346cebcea0eae0b"
+      "bytes": 132815,
+      "sha256": "fbfe3ab52e346d49df84ea10648d9420b778d908b72bc72533f12142d37a8299"
     },
     {
       "id": "ward_icon:38-shadow",
@@ -1477,8 +1477,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3754,
-      "sha256": "e16f49434ee412106271a307315a7b7d4f4bf1c601b77ab0025211eea0bcfacb"
+      "bytes": 6314,
+      "sha256": "360fc54727e66c62265ed07f9e1815eead6a14f6e2027cd60688dde9153b7fa5"
     },
     {
       "id": "ward_icon:41",
@@ -1549,8 +1549,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 5302,
-      "sha256": "e6bacf5f7e7d2df646983e74e80d53e972539896b300910162b7752d8c578240"
+      "bytes": 8666,
+      "sha256": "27de3b06f09db2027203e5025962643ad8d02a99079e4c0d7334dcd7103057a1"
     },
     {
       "id": "ward_icon:43",
@@ -1567,8 +1567,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 178788,
-      "sha256": "fdb081423b45b33cc532f9d6621523ba89a8c781fe9e882ca1f15ee5dc89068e"
+      "bytes": 156696,
+      "sha256": "33c39c139eadeaa341eb0e2875659f1dc8a13411e8e2fdde92a27d93d1346693"
     },
     {
       "id": "ward_icon:43-shadow",
@@ -1621,8 +1621,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3115,
-      "sha256": "b9ce7e9ff063973d18b123a141455e8c9034ff7bdfdf9bf405c66b51823bbbe0"
+      "bytes": 8310,
+      "sha256": "14659e35cdfc5534ebe53d5087132d15f18d8a60d26d7975061a938313f7d80c"
     },
     {
       "id": "ward_icon:45",
@@ -1639,8 +1639,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 105532,
-      "sha256": "9e686fa49b4b3d08ef653155401d1f7e3c0e96291bf65c9fb97fff89c6330432"
+      "bytes": 99705,
+      "sha256": "ed1d7d948654157a6baf41dcf874b8136634409ce564119d60db2d7ba50216b3"
     },
     {
       "id": "ward_icon:45-shadow",
@@ -1657,8 +1657,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3287,
-      "sha256": "55f8cdaadb70a4253fe7ffc07ab6caf65dd12444e46b9fb8ff6b5b9f20f1ea6c"
+      "bytes": 8522,
+      "sha256": "301be2d364eb52bc3bedf0d1428742174e1c20fcb36c82e4451a0a8e8a5945b6"
     },
     {
       "id": "ward_icon:46",
@@ -1693,8 +1693,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4466,
-      "sha256": "0070d13dbac504590ec7406ec3498289ff878cded5a0952bc377461bcda1238b"
+      "bytes": 11111,
+      "sha256": "1bee049a6780e4d4f708d0e99e1d1ed162c533dbb887e18e4a8285f07958ef5e"
     },
     {
       "id": "ward_icon:47",
@@ -1711,8 +1711,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 204148,
-      "sha256": "e79125f8241f772692f0a0a78b9a8b79738f171be6168e50d0c7d008f2f0abfc"
+      "bytes": 149210,
+      "sha256": "30bfb3647c03721daa4ba6850df2f993d2bb8326befaeb20f62b2a987c93172f"
     },
     {
       "id": "ward_icon:47-shadow",
@@ -1747,8 +1747,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 218453,
-      "sha256": "e298a25953b41d75b92883b5c303d2609ca4263213691d09314476a98dfb498f"
+      "bytes": 160525,
+      "sha256": "cff5f5879a60afb1791c5ab7b018c8a07bdc670c3cfcd68123b20ac228090ca3"
     },
     {
       "id": "ward_icon:48-shadow",
@@ -1855,8 +1855,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 138023,
-      "sha256": "bae0e2d69d9e2f0e33b6aff80e2f2238a39247cc03f2f67e6847d316ae048d5c"
+      "bytes": 98641,
+      "sha256": "de66d272a69738a1ac005a027ca9ef72c00db7d62de983e2886ceb8e15f97a01"
     },
     {
       "id": "ward_icon:51-shadow",
@@ -1909,8 +1909,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 17106,
-      "sha256": "db45ac7c343bf2a540dc5260e4a279810216eaef5d03661a40d842e96a703110"
+      "bytes": 8511,
+      "sha256": "6bfd42dca7bae5fda21b20269e59a78dc8b49916068a4e711cb32ac5cb313988"
     },
     {
       "id": "ward_icon:53",
@@ -1945,8 +1945,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 15257,
-      "sha256": "fd855078d7281b0384cbd94413f1af8f961edb0540d2fe2c308362445760a358"
+      "bytes": 12618,
+      "sha256": "bfe287b237eb5187ed5009153d4e60e8b8b2ce0da4ac31a45bef25b9a55be3c7"
     },
     {
       "id": "ward_icon:54",
@@ -1981,8 +1981,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 9413,
-      "sha256": "3b8ef7142f654baf2b3b04227624be5f5a6c60da2bf9c5f66d01f6240439b1e6"
+      "bytes": 4692,
+      "sha256": "bd8a5ec44ea85d8e57a9b045e82fe56cd91898cf40ff2d3c396e611dec90aff2"
     },
     {
       "id": "ward_icon:55",
@@ -1999,8 +1999,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 121116,
-      "sha256": "50865eff86591bf3a0a5a7622138acf7aa390b9e96700b23e868341efce49593"
+      "bytes": 106479,
+      "sha256": "e544182a214a063db721ae9c95fe390513bf7169627d19f21b6e3c9a59ba5bf4"
     },
     {
       "id": "ward_icon:55-shadow",
@@ -2071,8 +2071,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 150805,
-      "sha256": "58063d600a7f504e85b3c014edfcd9ccdfb9241e3f3a0abab1cd11e745d47ce4"
+      "bytes": 132615,
+      "sha256": "e3aaf7e4da783242a7e25b21bd6e3e2099edecfa1344d195d12bcfcd1e2f06f8"
     },
     {
       "id": "ward_icon:57-shadow",
@@ -2089,8 +2089,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 12391,
-      "sha256": "a4a1638c92e13f156a88dd365b4c3ad24fe3fca16a3e04dac4fbce808bac954e"
+      "bytes": 8058,
+      "sha256": "36f1514f9efb2793fb9209ae7ef5339ff3dde32647796c733493be090f9faea0"
     },
     {
       "id": "ward_icon:58",
@@ -2125,8 +2125,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 3398,
-      "sha256": "44de1ab9c258dca9d587cd3c56ead8022e6d0f20e90b9247762a8e4f735fd0fa"
+      "bytes": 6377,
+      "sha256": "797fd4365eecfa558aa4edd0bf3ea61be75281f415b2e75c5e942f7c4736e900"
     },
     {
       "id": "ward_icon:59",
@@ -2143,8 +2143,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 138420,
-      "sha256": "c2ebca80be6ec9e319701b7639b0a865af79a56511e11de955b180b7cc17eda9"
+      "bytes": 126328,
+      "sha256": "bad2040b4ff7a4a567d9edb08847aec9632705a8331e1c3e3dbd4c64d84d8cc0"
     },
     {
       "id": "ward_icon:59-shadow",
@@ -2233,8 +2233,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 19349,
-      "sha256": "f9f32f10c43ef1f45f9080310d15382907d388f89900a3f8b12d96d20b256ddc"
+      "bytes": 21706,
+      "sha256": "22f1971bf0310d346109f697e9008c368ff2d4ad9dca78d4ac4ef854271fd3ee"
     },
     {
       "id": "ward_icon:62",
@@ -2251,8 +2251,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 144430,
-      "sha256": "d4f4c6d83907a947d4602e1afb5f1f65a5465906256c2dd4c92133f8fbcad5d0"
+      "bytes": 123818,
+      "sha256": "462ba5f9a29f1a7a68dcadbccc478f38208194ae32f90d99c36f3546c53e321d"
     },
     {
       "id": "ward_icon:62-shadow",
@@ -2287,8 +2287,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 88096,
-      "sha256": "a97532b8528aa617916362fc688911ddfb74a3186f70c8ecf7655afff5d54db5"
+      "bytes": 81060,
+      "sha256": "f7f73aa3163dea213176de6183d5315876aa585875e1753a6389f096dbaaef71"
     },
     {
       "id": "ward_icon:63-shadow",
@@ -2341,8 +2341,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 1012768,
-      "sha256": "416325775eb0a8516582668cfbb19e3fe3df354a869e82a1c6dfcc4f786cbfa5"
+      "bytes": 14703,
+      "sha256": "639800a0dc2d88ae6f00c40c73d72ba3d2228ca350bdfdc362e687f74d51bb15"
     },
     {
       "id": "ward_icon:65",
@@ -2359,8 +2359,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 108542,
-      "sha256": "4e440e43a8bf7114329dcfdb7ef3b77a367d3d447e21d218799c322f46e8ca3f"
+      "bytes": 92437,
+      "sha256": "301100c4af9ae79e209fff1189dbedc28ac1021b105f6cbb65d1dcaead388099"
     },
     {
       "id": "ward_icon:65-shadow",
@@ -2395,8 +2395,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 86009,
-      "sha256": "4a5a39fee0e2460a477dff4e877c0358eedbd2f7b9fb6d5cf43f8c59749f28be"
+      "bytes": 72034,
+      "sha256": "5c8732329c35d2a6410dd645d8643dd5a48d8bc4d9531816519fc131f8861899"
     },
     {
       "id": "ward_icon:66-shadow",
@@ -2449,8 +2449,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 17698,
-      "sha256": "2503a26d5dcbef133b91a8c13b07ed85bd4044622a0f002058a205485ef07196"
+      "bytes": 10389,
+      "sha256": "bec53891d14f56e653926f982bec40b301e699e2884393b72da8af417aa0c2d1"
     },
     {
       "id": "ward_icon:68",
@@ -2467,8 +2467,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 167815,
-      "sha256": "deecab21dd3bbf7e59d343294c1a1d65afb485398a90f571d77a9c1bc495845a"
+      "bytes": 143383,
+      "sha256": "402deae91453f6462326f2fa720c1fbe4320040391291b17f7251f78a11253bc"
     },
     {
       "id": "ward_icon:68-shadow",
@@ -2503,8 +2503,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 145764,
-      "sha256": "8d510ae6c336aded040474b5a57c2e8950e5953bf29ad820aa4efdecfd0abe4e"
+      "bytes": 133227,
+      "sha256": "55ab26e8c1c5221379c1ac3e4443f660a31b49eb6c70160ec1ff76037184c65d"
     },
     {
       "id": "ward_icon:69-shadow",
@@ -2539,8 +2539,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 119237,
-      "sha256": "c03458e7d5dc5a9077cf26539e53db6ad373fa8370708c03108c591c5b0c4c24"
+      "bytes": 89331,
+      "sha256": "47978cac354b580726be01f54101387c2df27d5069d9a2ad3de6f164da74a20c"
     },
     {
       "id": "ward_icon:70-shadow",
@@ -2557,8 +2557,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4886,
-      "sha256": "4b0a949474067a1f1d1662670a2ba8f6bc551714d58c996b4f87b8740b5c4439"
+      "bytes": 12969,
+      "sha256": "05765c9bdfc0a384f2af9846d4f0b06dc53f90e5f977b1d284bba3678a17c91c"
     },
     {
       "id": "ward_icon:71",
@@ -2593,8 +2593,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 1012768,
-      "sha256": "4164b5c27d95f1d0661308a5e6f817ef9774c0c6d6b3cc611466545f8a7232e5"
+      "bytes": 14259,
+      "sha256": "525a7d7c08281f1216ac5356e791bfc39877aa77da2e0981f2b1066dd93930c0"
     },
     {
       "id": "ward_icon:72",
@@ -2629,8 +2629,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 62190,
-      "sha256": "d6560252fc210913be22898de9ecc3ff11021b1cc99574e351dc16c2b722321c"
+      "bytes": 35585,
+      "sha256": "1190be2f1c03da2dc470af71240cca1eb7414b836b4914f83bc6141a2b34fdc6"
     },
     {
       "id": "ward_icon:73",
@@ -2647,8 +2647,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 1012768,
-      "sha256": "93d564b8b20e97335de93e9e73ce31b3438b2d83cf8f3fcc599d4fa323a00c17"
+      "bytes": 95949,
+      "sha256": "87fa495dbde48071d878cb76d2935decfaf0006db04610da6485df1ec3321a8d"
     },
     {
       "id": "ward_icon:73-shadow",
@@ -2683,8 +2683,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 105312,
-      "sha256": "6cc37eb1abcc92ace3cf9076c736bafef03d4666cb6ab409cb1eeed49e27f360"
+      "bytes": 86703,
+      "sha256": "a555b1b8bec5631852f5386af99bd127c414e4b6ea7a127802cdd68dd7cd3ccc"
     },
     {
       "id": "ward_icon:74-shadow",
@@ -2701,8 +2701,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 8304,
-      "sha256": "fe518f0e2b4c901abafb24734a4a50943f6c42b46fded72b8ed9b2c304925162"
+      "bytes": 4317,
+      "sha256": "7abaedd89abfe28814bb0d5ac41950e2b0598ddf14bcd23dcc2b75072ba94332"
     },
     {
       "id": "ward_icon:75",
@@ -2809,8 +2809,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 29032,
-      "sha256": "c476b76079ca0b25e16a5b9c09e888f476e27690772e39fb847e11c8e72a0bcf"
+      "bytes": 18512,
+      "sha256": "722522f0f6f6d233ee7a46688557809c01b11292d11bac69db7b0eaa062e8135"
     },
     {
       "id": "ward_icon:78",
@@ -2827,8 +2827,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 153945,
-      "sha256": "0e325e527bba660a72f1077c11724172f5f669212b9ba46d880b6fa17f666aa8"
+      "bytes": 133953,
+      "sha256": "b1216e6aea6291b78742fac2547fa2c8e4e056943a30d3cd93fe9c8b42958d52"
     },
     {
       "id": "ward_icon:78-shadow",
@@ -2917,8 +2917,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 1012768,
-      "sha256": "b8216f12ab05bcbeff43b83f443874ad4a67bd77a88063f170aac86726c0668a"
+      "bytes": 6035,
+      "sha256": "d99f376c8813920b1a73c9abee78806ac06cbe10b2ccb8f9d479f1dfebf1ddc9"
     },
     {
       "id": "ward_icon:81",
@@ -2935,8 +2935,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 88378,
-      "sha256": "305c42145f8860f5d0365cc5d421f7408e8bb2f084516801971cd10d774c4b03"
+      "bytes": 73133,
+      "sha256": "8a24917a18cf621cc8af2a94a50bc704b78223a8e6264e7e5b608972e02cc47d"
     },
     {
       "id": "ward_icon:81-shadow",
@@ -2953,8 +2953,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 12237,
-      "sha256": "7a2e69165533d646225adb46b370d5d6bc434621ae4abcdcfb92f2e1ba199e81"
+      "bytes": 8114,
+      "sha256": "37864484bc2a0db5383dde53a4c59008e1494c23ea9e0b304508fc7c207937d0"
     },
     {
       "id": "ward_icon:82",
@@ -3025,8 +3025,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 28635,
-      "sha256": "e52f9f609589ff1b0e0765722c0ba918cfdd5dd4782712bfe85e4277f688081a"
+      "bytes": 14983,
+      "sha256": "a21e18c1e6e6d27ed574a3603d89f5e817d6f977a982e00f7710006e920d89f6"
     },
     {
       "id": "ward_icon:84",
@@ -3061,8 +3061,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 1012768,
-      "sha256": "3b6b3439999fe6644a5c6bf85c9dc8155a04fb8f6cf893604efc43bf84f3c23c"
+      "bytes": 7231,
+      "sha256": "330080738a27309b1956d1adf24e259b9c8db0b437be97f93296e6c66ad7d0c5"
     },
     {
       "id": "ward_icon:85",
@@ -3079,8 +3079,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 172723,
-      "sha256": "2e5390d79b00c374172044456c4650d3d65b1740fb8fb511ed0212be0ff46a6e"
+      "bytes": 155466,
+      "sha256": "c053c4e85dbeebfee9e29e02a09795be51db4c30edc3cb6c7fd03f57078ad13b"
     },
     {
       "id": "ward_icon:85-shadow",
@@ -3097,8 +3097,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 29150,
-      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
+      "bytes": 17964,
+      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
     },
     {
       "id": "ward_icon:86",
@@ -3115,8 +3115,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 118281,
-      "sha256": "12c92c66eb28d5cdf02f580d64eeb75801dc5052f33343790714fe2e46374c2f"
+      "bytes": 106616,
+      "sha256": "da157064a53e9284a91b8947e1e933d70010e9ddcb79adf6f0ac80e48fa7b6f8"
     },
     {
       "id": "ward_icon:86-shadow",
@@ -3187,8 +3187,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 118217,
-      "sha256": "85895c6c97ca5801646fe31ac47540050d83fbf72b30fbab06bf71ada12f3293"
+      "bytes": 106849,
+      "sha256": "7c59ee043e3a4c38d773292538c81646fe9bc0cd15a01466f8de2379605c43e8"
     },
     {
       "id": "ward_icon:88-shadow",
@@ -3259,8 +3259,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 73359,
-      "sha256": "6b8b98e81aa5e160a12792bda44b2faa631e94f22b195d76bb45758831441982"
+      "bytes": 66600,
+      "sha256": "24d4bc963f345b81c116252355436089679f39ac7a15afc243295129d6cadd74"
     },
     {
       "id": "ward_icon:90-shadow",
@@ -3295,8 +3295,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 99312,
-      "sha256": "6824bd90dd3347497537c5129733e2fd9921997aae10fa7a2db61b989bc0b0b1"
+      "bytes": 85724,
+      "sha256": "b3173858e23a3f0e3ae3c89eb782c44378822b23142f220495044bec4273ffd4"
     },
     {
       "id": "ward_icon:91-shadow",
@@ -3385,8 +3385,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 29139,
-      "sha256": "5a8cdb92aed2be72f273cc51f402cd362b08c7939bbcf94442c53e43d4d1701c"
+      "bytes": 18025,
+      "sha256": "dbb84d369790b5e0fe4039d462478ea3b7ef995f5109e9df069754c1580a9858"
     },
     {
       "id": "ward_icon:94",
@@ -3421,8 +3421,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 29139,
-      "sha256": "5a8cdb92aed2be72f273cc51f402cd362b08c7939bbcf94442c53e43d4d1701c"
+      "bytes": 18025,
+      "sha256": "dbb84d369790b5e0fe4039d462478ea3b7ef995f5109e9df069754c1580a9858"
     },
     {
       "id": "ward_icon:95",
@@ -3601,8 +3601,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 18025,
-      "sha256": "dbb84d369790b5e0fe4039d462478ea3b7ef995f5109e9df069754c1580a9858"
+      "bytes": 29139,
+      "sha256": "5a8cdb92aed2be72f273cc51f402cd362b08c7939bbcf94442c53e43d4d1701c"
     },
     {
       "id": "ward_icon:100",
@@ -3673,8 +3673,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 17964,
-      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
+      "bytes": 29150,
+      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
     },
     {
       "id": "ward_icon:102",
@@ -3691,8 +3691,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 1012768,
-      "sha256": "f37affbd179a57dbb6266899268a14dc21d55c37e75d93e79160a6dd18da4081"
+      "bytes": 183178,
+      "sha256": "fde4bb809af9aac548991a4143f9d58d400fc0d13ef7cc0a7588e7f60205ab1f"
     },
     {
       "id": "ward_icon:102-shadow",
@@ -3709,8 +3709,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 29150,
-      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
+      "bytes": 17964,
+      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
     },
     {
       "id": "ward_icon:103",
@@ -3763,8 +3763,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 112436,
-      "sha256": "ba7fbacf34c7386f58ee85b976ed45133306d350cec47e0dbffaab8972a2b04d"
+      "bytes": 99574,
+      "sha256": "877d0ed83b7b5c32f22310742e6d88477affd53174643ddebf3ddb4ab828d83e"
     },
     {
       "id": "ward_icon:104-shadow",
@@ -3781,8 +3781,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 17964,
-      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
+      "bytes": 29150,
+      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
     },
     {
       "id": "ward_icon:105",
@@ -3817,8 +3817,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 29150,
-      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
+      "bytes": 17964,
+      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
     },
     {
       "id": "ward_icon:106",
@@ -3853,8 +3853,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 17964,
-      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
+      "bytes": 29150,
+      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
     },
     {
       "id": "ward_icon:107",
@@ -3943,8 +3943,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 88422,
-      "sha256": "08f4210fe04eee759070bd690dba8dc447a1f4769c551426262c133b05ca4def"
+      "bytes": 74733,
+      "sha256": "d29ca7cf5557ba100d234b7eac924111841e063dd1d296ee0b7307836dbc0654"
     },
     {
       "id": "ward_icon:109-shadow",
@@ -3961,8 +3961,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:110",
@@ -3997,8 +3997,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 17964,
-      "sha256": "8c1a097cc48f741c88553483d5703783f789a7f144a1fec4f7750f20726f7d14"
+      "bytes": 29150,
+      "sha256": "d4416b94881c77c57aeac56242f64fd5f81aacd9cf649daf03bc980ae83ef3d6"
     },
     {
       "id": "ward_icon:111",
@@ -4033,8 +4033,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:112",
@@ -4051,8 +4051,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 124933,
-      "sha256": "c3e280e0f2dfcf81086c80f6f1b0605de2e29b0c2b790fa50dc7e13c5642cd75"
+      "bytes": 111407,
+      "sha256": "badedd80f21b6ff886400262246e6ce91e3980412ee414a52a9afc9ce3247fa9"
     },
     {
       "id": "ward_icon:112-shadow",
@@ -4069,8 +4069,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:113",
@@ -4159,8 +4159,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 110993,
-      "sha256": "5c61ada9bdda99f40af8d9fd6cef129a931dfc622b69f8c9a8c779df4ba96faa"
+      "bytes": 101772,
+      "sha256": "3beb36a02db21c8bc26156920968d77b6ee8116dca0f750ed87c24dd1b3dd21e"
     },
     {
       "id": "ward_icon:115-shadow",
@@ -4177,8 +4177,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:116",
@@ -4267,8 +4267,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 100346,
-      "sha256": "d5431ca2baa8f886848d2f9317249f668ade430e9211610f89874024013d08cb"
+      "bytes": 92436,
+      "sha256": "f166b1c1875cbeebb5d793dd99429bbe3d73d886438aa128c69f58ccee4dc2d2"
     },
     {
       "id": "ward_icon:118-shadow",
@@ -4339,8 +4339,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 123251,
-      "sha256": "6975a0c794aabf6f94384bac584a638a4d9c98aa58d2aeff4746859414fb5dc4"
+      "bytes": 110867,
+      "sha256": "e337ea6e6728174888be981bf6d0f9943914aefc2a30fb97a6d69695c969523a"
     },
     {
       "id": "ward_icon:120-shadow",
@@ -4357,8 +4357,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:121",
@@ -4447,8 +4447,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 123211,
-      "sha256": "9ce9366d44c3475ac1a33e5b852c12bf3e47e66190ba4005bf3c0d26c6719c05"
+      "bytes": 108862,
+      "sha256": "7cab44bcf3a6d27ebeb5daddce0e92280877823e6deeea2e7bb1e7c1b72175cd"
     },
     {
       "id": "ward_icon:123-shadow",
@@ -4465,8 +4465,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:124",
@@ -4501,8 +4501,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:125",
@@ -4573,8 +4573,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:127",
@@ -4627,8 +4627,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 130197,
-      "sha256": "6744b19ee9cdbf5b69dec9c55f3af176238865fad2c2ce829677c0192a2220bf"
+      "bytes": 118455,
+      "sha256": "58b1db91909775d8bae6874069f6beeed69872424c126edd0f7fde51fca74577"
     },
     {
       "id": "ward_icon:128-shadow",
@@ -4663,8 +4663,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 134561,
-      "sha256": "da81c88719f001c8ff03f1f3c8b2b028dda5e82e7b84d2f3e142f2ce679a51ef"
+      "bytes": 124422,
+      "sha256": "f4cea4c36ba7f112c2150c6a2701e62b72802d7e445eece03972bad44807eb7b"
     },
     {
       "id": "ward_icon:129-shadow",
@@ -4753,8 +4753,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:132",
@@ -4771,8 +4771,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 155565,
-      "sha256": "4b4a1c17cb27e34360b1c7305fad5ce81e6dad86d07812996ef64a316626cbe4"
+      "bytes": 135994,
+      "sha256": "a89646025ee178c48dcc41077f53804895db43d2d354f6f33354d6da5bc168d8"
     },
     {
       "id": "ward_icon:132-shadow",
@@ -4789,8 +4789,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:133",
@@ -4807,8 +4807,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 149926,
-      "sha256": "2234580b631d2899eeb68395e9686f1eb34cb220240565ba7f8a491d314f8973"
+      "bytes": 132666,
+      "sha256": "748a4816b862b864e1d4181b5db7323c71e96dbbeef18131c312ba0f3f00e9d4"
     },
     {
       "id": "ward_icon:133-shadow",
@@ -4879,8 +4879,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 65009,
-      "sha256": "dca2deb0ede0e487c191830b5c691f424582198d794016835fd8dc9deace73e9"
+      "bytes": 58427,
+      "sha256": "337f2bbb15c1feeb0930d464c03e65918a492394674ced72a83b2aeb27c5de40"
     },
     {
       "id": "ward_icon:135-shadow",
@@ -4897,8 +4897,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:136",
@@ -4915,8 +4915,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 122253,
-      "sha256": "5356ef82bac099b64a99f27690cba219102e90e5160fa37d83b9bc08862c80b9"
+      "bytes": 99870,
+      "sha256": "00cd03699cc7a503aab67782061e83eb9db2148033d1c17b7393aca9800aacd1"
     },
     {
       "id": "ward_icon:136-shadow",
@@ -4933,8 +4933,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:137",
@@ -4969,8 +4969,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:138",
@@ -5005,8 +5005,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:139",
@@ -5023,8 +5023,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 92327,
-      "sha256": "59c01f2a3a8e3e7ca86e704a9e414eec1e4cc5a627a41962ae37da0640d57bff"
+      "bytes": 75011,
+      "sha256": "674c380ba56627ec42d2d9955a14cb360eac381de83742dac10b450a246b6ae0"
     },
     {
       "id": "ward_icon:139-shadow",
@@ -5077,8 +5077,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:141",
@@ -5095,8 +5095,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 109678,
-      "sha256": "eb4e98e7205f4a5d2d8f0569d30605419ddd584bba77de3dd9542725cb395953"
+      "bytes": 89810,
+      "sha256": "a6de10c5f52536ba6ef53ccf2855a89257fdcfe266f445e1638e4ec8dff02ae6"
     },
     {
       "id": "ward_icon:141-shadow",
@@ -5131,8 +5131,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56511,
-      "sha256": "715c553341ccf31658256759d84e06a37e2f06b8a13a6327595a6100a8b5290f"
+      "bytes": 46452,
+      "sha256": "189dce0758a052a2080aaa11e8017d47cb6df078857cd48b5371182be4406475"
     },
     {
       "id": "ward_icon:142-shadow",
@@ -5167,8 +5167,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 55006,
-      "sha256": "1b99bc2b9ad90e81558a827281c96f143f5b7e0c3938c8b57c829f6528c8af4c"
+      "bytes": 44657,
+      "sha256": "2d4834e7da3b9b29d0df4bfd2d6c3d65e8a8f0e1bcdcc30ad4566100b66f51be"
     },
     {
       "id": "ward_icon:143-shadow",
@@ -5239,8 +5239,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 54529,
-      "sha256": "bf711ca9cd2209fc0ce192a63852ccbffdd231267588699f24987c06ea040179"
+      "bytes": 43600,
+      "sha256": "5407731bc69fc524d493fc9d882d38adbe39a4ba5cbc280eb679c1b59a9508b2"
     },
     {
       "id": "ward_icon:145-shadow",
@@ -5275,8 +5275,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 53320,
-      "sha256": "7a422206e932ca87f0658a102a9e0e50f70acbda92df6584b093087767f2e19d"
+      "bytes": 43363,
+      "sha256": "672aabb96d85c3c54bd47a92d86573a1437b69b89d6d7ce1370c5339bb972a6e"
     },
     {
       "id": "ward_icon:146-shadow",
@@ -5293,8 +5293,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:147",
@@ -5329,8 +5329,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:148",
@@ -5347,8 +5347,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 55312,
-      "sha256": "5db38f03bef8f15209b47f8c55f2e17edba38b2744ea9c5bcfb149d9714d78c7"
+      "bytes": 44542,
+      "sha256": "54260fff800a5a6154d5d309e834303b1a1dd7e5f2fb83d760259d88ae83d796"
     },
     {
       "id": "ward_icon:148-shadow",
@@ -5401,8 +5401,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:150",
@@ -5419,8 +5419,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 51617,
-      "sha256": "d355b7f14d1070ad41c854e6f6258f1daa50ea67594b7250b10e40bd835d75aa"
+      "bytes": 41501,
+      "sha256": "83e67ae63764c571bc342d83453da597fe9eee9e389ef57f9977f0cf857b6e8d"
     },
     {
       "id": "ward_icon:150-shadow",
@@ -5455,8 +5455,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 52906,
-      "sha256": "22eed31a194837927b36618b788b9333c746d77e5cabff3c9da6c4af0c23cd8b"
+      "bytes": 42635,
+      "sha256": "6aa7629441c23a932b7d82d0f8fb4cfaf88aecd7b4c9a13f852df4029a104f69"
     },
     {
       "id": "ward_icon:151-shadow",
@@ -5473,8 +5473,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:152",
@@ -5491,8 +5491,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 52810,
-      "sha256": "a1e48585cbd8f6e77a04c05a8896309692ebc088f045572661301a8e2bfa16ec"
+      "bytes": 42315,
+      "sha256": "49297b2260aaf689667677c0ed9ddd3e64005820e8480ac7c7dd79311e044166"
     },
     {
       "id": "ward_icon:152-shadow",
@@ -5527,8 +5527,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 51413,
-      "sha256": "9c10fd6cfb4123814e02242a9773453389d307da663aa674ebdc184da64afc86"
+      "bytes": 41533,
+      "sha256": "8771c43d1eadcbdc6fc926d1b5f862361b0832abf5483f40500f28bea46f9718"
     },
     {
       "id": "ward_icon:153-shadow",
@@ -5545,8 +5545,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:154",
@@ -5599,8 +5599,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 60649,
-      "sha256": "4b064fa8b026740e4061a6650c240cc634e52a0dbe947e3e162a3ec05fc9904f"
+      "bytes": 49832,
+      "sha256": "f978b4e057ece45a472a1444bf113a43929179e87baaa8b2018d3df807ebe253"
     },
     {
       "id": "ward_icon:155-shadow",
@@ -5635,8 +5635,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 53313,
-      "sha256": "411978484cf716dec265b69ce166fa05a2729fb06225808f42c61dac72eec91a"
+      "bytes": 43328,
+      "sha256": "1e5d87a4d4165bafc9d92ae1ba84cb4920fc29418f9abfc6b2d36a679482cff9"
     },
     {
       "id": "ward_icon:156-shadow",
@@ -5653,8 +5653,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:157",
@@ -5671,8 +5671,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56948,
-      "sha256": "96acaf66824f9e11869ddf188d502a5bb1c8f07f83e7cd29d0e856ff4a54aeed"
+      "bytes": 46597,
+      "sha256": "a1e1e85770e33fc18fc65bbf57b2fdbf162a496d3d60c26695521ae1515ed31e"
     },
     {
       "id": "ward_icon:157-shadow",
@@ -5689,8 +5689,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:158",
@@ -5707,8 +5707,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 54843,
-      "sha256": "12706748113f53c4763f0dcf8d89d4de018d41b851530f913fe41a78c5192e7c"
+      "bytes": 44554,
+      "sha256": "f321561c8ab3e0b6d663d56624b759d08f35a509afec9c14e70449115dfd904e"
     },
     {
       "id": "ward_icon:158-shadow",
@@ -5743,8 +5743,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 53353,
-      "sha256": "ae116964cc6b1cef2389e93cf47d3365c8bd8ae714140ac7fbd05d7d112feea6"
+      "bytes": 43201,
+      "sha256": "6001d783bcd1773483e59dbc10a67aff2587940d784c2e02bf2c6c77f271d7d3"
     },
     {
       "id": "ward_icon:159-shadow",
@@ -5815,8 +5815,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 57797,
-      "sha256": "366e2be79dcadc7f03f42e75e2fdfcf4d03c01ae1989a0398d9e232a954c0bd2"
+      "bytes": 47379,
+      "sha256": "f042eeede70b4d8c5a6cae18dce095654811bae3f668d54748c972b6de2431ec"
     },
     {
       "id": "ward_icon:161-shadow",
@@ -5851,8 +5851,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 53288,
-      "sha256": "acccbf3a8c2f602d305e51ef306c2be36785ade52dbde3a9ce2a74301c521935"
+      "bytes": 42687,
+      "sha256": "7b88ac61b8ff9619c2f2d6f0fb0efcccb7bb71f5072e34226152f983b4cf98ae"
     },
     {
       "id": "ward_icon:162-shadow",
@@ -5869,8 +5869,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:163",
@@ -5923,8 +5923,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56124,
-      "sha256": "2ddf54a265b1cc3a85cceb3e771490f4db72f50830309c9832caae95a486091f"
+      "bytes": 45688,
+      "sha256": "16578a5cfff3b5b182f1cdc9cd1685f1815afcdcfde6d88950db95c3d2726498"
     },
     {
       "id": "ward_icon:164-shadow",
@@ -5941,8 +5941,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:165",
@@ -5959,8 +5959,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56565,
-      "sha256": "f0640a8932377e6f4e65eba869b484cd949801b94a8cd2e847f81bd80bff2a88"
+      "bytes": 46017,
+      "sha256": "8ccc439bc7c01c96bc21c4bd25fe26f3cbd3c9f7c5e4a72b97724b1d3b9d054e"
     },
     {
       "id": "ward_icon:165-shadow",
@@ -5995,8 +5995,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 58806,
-      "sha256": "71a956c1abae9d1e2c33157332afae690d3649250389be90cd47bf6830f8a7ba"
+      "bytes": 47658,
+      "sha256": "130de1bf145685fcc40e76db7c62495a2196ea035f55a87e752d05058c767c00"
     },
     {
       "id": "ward_icon:166-shadow",
@@ -6031,8 +6031,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 58227,
-      "sha256": "dee979eaf866018a0f944467ca50c29237160860d2c90e1bb0413f664b5d6e90"
+      "bytes": 47363,
+      "sha256": "ba389d4320aac3fc8133fd26a2c1036fa52c90f87aa9dfaeb5ad499846b6dbf5"
     },
     {
       "id": "ward_icon:167-shadow",
@@ -6067,8 +6067,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 59496,
-      "sha256": "ed30ef577f0a320c3f2a81f333deac0525287e36fc2fecb755bb6cd318b894e7"
+      "bytes": 48262,
+      "sha256": "4c8686d6b854354721ce79005042b7de088da42d18afc14112e90326e4150bb0"
     },
     {
       "id": "ward_icon:168-shadow",
@@ -6085,8 +6085,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:169",
@@ -6139,8 +6139,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 61283,
-      "sha256": "3a82096857e30f19658141bc5b09cdd68b5ba6f23b43929dfcc0baf90267de5f"
+      "bytes": 49857,
+      "sha256": "3b243ad9e55049333e63f8bd666889a21d0ee68bc383a78479adb5a355f88b89"
     },
     {
       "id": "ward_icon:170-shadow",
@@ -6175,8 +6175,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56709,
-      "sha256": "6c162789bde89acb8dc457bd2f3e1e3b1577158d8d4c49a960ed161eb02a5e33"
+      "bytes": 46370,
+      "sha256": "aa3695cedc8132fa740e748f86f61860db1be6215128bb3348835add1e1987dc"
     },
     {
       "id": "ward_icon:171-shadow",
@@ -6211,8 +6211,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 51901,
-      "sha256": "f047eeef21f50265ea84a827c3b9e448ceb4d2c5659a10cd496d6c561b6365e0"
+      "bytes": 41851,
+      "sha256": "88198cb5910661ac705fbabd6b6cd8565f647fa0bde89f22fe31750f235aab7b"
     },
     {
       "id": "ward_icon:172-shadow",
@@ -6229,8 +6229,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:173",
@@ -6247,8 +6247,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 55075,
-      "sha256": "1811d66d65fb3b24568f06a9b46987243a1760ea1a47904911f010da07b4727b"
+      "bytes": 44863,
+      "sha256": "56b6bbaaeb174b27a4cbe8019a9e990d46629d2ed4ad9ac20fabfd309cebcf1f"
     },
     {
       "id": "ward_icon:173-shadow",
@@ -6265,8 +6265,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:174",
@@ -6283,8 +6283,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 58010,
-      "sha256": "1f21054c3a87aa902f32898eb3514ff2cbb59bdeff2d2e2774c0aa6be71317c0"
+      "bytes": 47599,
+      "sha256": "f7bd983a3c93e992c4a13c4963ed854998060dd3d373bdd6be8bde6816bbd8d6"
     },
     {
       "id": "ward_icon:174-shadow",
@@ -6319,8 +6319,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 51484,
-      "sha256": "1f048443dc99d1a6804108b254cad3b70ce36df2169c610252b2d14abf1c5203"
+      "bytes": 41575,
+      "sha256": "c0d42701ac55c27c969dbb3eaed87b313262ceae291bc5eb426dc591b0907393"
     },
     {
       "id": "ward_icon:175-shadow",
@@ -6355,8 +6355,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 55567,
-      "sha256": "44982044a121a94cc19ea99819e9b15279ecfb6938e49746d8259e5ff33008b9"
+      "bytes": 45445,
+      "sha256": "1fc315345f322a2ba6b219baa815e332c483b30cc56c980de4fd92327c167a5c"
     },
     {
       "id": "ward_icon:176-shadow",
@@ -6427,8 +6427,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 53948,
-      "sha256": "ca8b5a4b710bce471c8c091324a08cb69b19d4c8b49797587f936617ade2c087"
+      "bytes": 43047,
+      "sha256": "ef1e93e71e3e648b38a77f0489b8c3ca7a4882cc5b85eed3f43d749163faf2a4"
     },
     {
       "id": "ward_icon:178-shadow",
@@ -6445,8 +6445,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:179",
@@ -6463,8 +6463,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 58721,
-      "sha256": "163425b9682e56895022a0dcd36450897256c5d6c95ad4ef18ebf008b1513523"
+      "bytes": 48357,
+      "sha256": "45c4103e55f97846981d358c65b3145e15c57821c94b6893551b09d10a7cedc7"
     },
     {
       "id": "ward_icon:179-shadow",
@@ -6481,8 +6481,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:180",
@@ -6499,8 +6499,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 57447,
-      "sha256": "a888838f7ab3ff0ffc0b76c5aba204bffdcc0671387b95ec2777edf4f0834592"
+      "bytes": 46629,
+      "sha256": "bc37eb31cf2010172590f1a341cceba23d90035d11232e3977781d17eabb02be"
     },
     {
       "id": "ward_icon:180-shadow",
@@ -6517,8 +6517,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:181",
@@ -6535,8 +6535,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 53873,
-      "sha256": "0c56108a3aca5932c391c8c7bbc92215401c555ec1becc028835c957d5637928"
+      "bytes": 44088,
+      "sha256": "b6dfc64ee31ff002483a5e48a575f9ac60082e31700aaef553dd535e5d3b1d66"
     },
     {
       "id": "ward_icon:181-shadow",
@@ -6553,8 +6553,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:182",
@@ -6571,8 +6571,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56573,
-      "sha256": "550ef8e940d22a4e1aca79567566a290545f261ea9c619afb1d46cdf78fcf3fb"
+      "bytes": 46368,
+      "sha256": "0c49f613c98ad0f44057e7a7664a52a1bf8f348a42a5947f2d4046a1473edf63"
     },
     {
       "id": "ward_icon:182-shadow",
@@ -6589,8 +6589,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:183",
@@ -6607,8 +6607,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 56031,
-      "sha256": "a817ec628fbc44b2971e7113455929d1f217723c5a75de27ff92bcab21595c3e"
+      "bytes": 45329,
+      "sha256": "44df04204a7665b590ddca6e0f89172444ec47db7ac6409d8a6e751d6886cfb0"
     },
     {
       "id": "ward_icon:183-shadow",
@@ -6643,8 +6643,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 55671,
-      "sha256": "489a5c5df38ccbab34caeedea13ee3158d891cfb7924c0d9aea988f434b53b25"
+      "bytes": 45454,
+      "sha256": "0f0715a2fab428056d2fdbb1386e51200e487272991f58863f59139868f330e2"
     },
     {
       "id": "ward_icon:184-shadow",
@@ -6679,8 +6679,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 58014,
-      "sha256": "6513cb86c547d7b60707d9a8d069dc44820a2b6bc1dd747b2e28b4ffed2c80e3"
+      "bytes": 46757,
+      "sha256": "3b5fd4e1ae781d5ce8aa777b436665c6bdc2955309474c2fda31609325be05e4"
     },
     {
       "id": "ward_icon:185-shadow",
@@ -6697,8 +6697,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:186",
@@ -6715,8 +6715,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 59053,
-      "sha256": "85a49cad1847b4caa559a82ab3ccff6b2af246a7f3f9e4378e9c4ba44be168db"
+      "bytes": 47823,
+      "sha256": "b7495ec9230b107990ba4ffa3a7f68764a6a650ffd9722a0bd45fcf0ee46b16e"
     },
     {
       "id": "ward_icon:186-shadow",
@@ -6733,8 +6733,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:187",
@@ -6751,8 +6751,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 59120,
-      "sha256": "6f911ff1a1ba71063bddf8ed2007e796a00b4678473431a7b7d5751da885cd70"
+      "bytes": 47864,
+      "sha256": "d3e76f6390cd97d2ed75c442b27240e789fbabed759ca0646f8fbc60c039718d"
     },
     {
       "id": "ward_icon:187-shadow",
@@ -6805,8 +6805,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:189",
@@ -6823,8 +6823,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 82636,
-      "sha256": "99b7d080885e7e3233a9f60116eae86ce8679d9b3b00cbc9b3e3d3a20cd64b9e"
+      "bytes": 69403,
+      "sha256": "69690b2e4eea1dff9b7bf0b5ed236216739f557b8aed2d2737bcc05cd0e999ab"
     },
     {
       "id": "ward_icon:189-shadow",
@@ -6859,8 +6859,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 156071,
-      "sha256": "1bd7dd58069ff8facbe26190aa25dfa0a54ce8ecc38be57c3577b3a2e74593a2"
+      "bytes": 132863,
+      "sha256": "b2918ef4692146b436e7ac28b06ff667d3bcc645b880dd78ad060303b6f58152"
     },
     {
       "id": "ward_icon:190-shadow",
@@ -6877,8 +6877,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:191",
@@ -6931,8 +6931,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 88773,
-      "sha256": "45d6e8dc200748465707830287ef35beca3a65952d8762cfe021e224825e6400"
+      "bytes": 73337,
+      "sha256": "0718d2e6ff2fbd500d264707e038cf8c548e7f2d1d8a61682810270257585116"
     },
     {
       "id": "ward_icon:192-shadow",
@@ -6949,8 +6949,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:193",
@@ -6985,8 +6985,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:194",
@@ -7039,8 +7039,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 89936,
-      "sha256": "8364bef9242e20151d5f0bfcbac29b4fbc7a477f149b1c1b52e9a15de3165770"
+      "bytes": 74864,
+      "sha256": "9961dc779e4ce482d6ace2b88b3605b283489333b29f36ac1d030911ea2783e0"
     },
     {
       "id": "ward_icon:195-shadow",
@@ -7057,8 +7057,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:196",
@@ -7093,8 +7093,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:197",
@@ -7129,8 +7129,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:198",
@@ -7147,8 +7147,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 110020,
-      "sha256": "38dfbec999770dfb7c9f46c3c75205953b6229ad3f404eb534ea06c9131fcb39"
+      "bytes": 99877,
+      "sha256": "5b5c52119f1fe2b00e73c049b37bdba47f8259f2ae27e59258f759959439fd7b"
     },
     {
       "id": "ward_icon:198-shadow",
@@ -7165,8 +7165,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:199",
@@ -7219,8 +7219,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 74766,
-      "sha256": "f0f8abe1b8c3bfff4a10f5b33e04ac915cf064c8dcc5c3d1bdcbd431ce507c95"
+      "bytes": 61320,
+      "sha256": "15c68ac63a3f1b7fa9840da957bf9931ff7e00f01b36e7f6130c557eca14f156"
     },
     {
       "id": "ward_icon:200-shadow",
@@ -7237,8 +7237,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:201",
@@ -7291,8 +7291,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 64196,
-      "sha256": "c955606b9cc6cd4741ab2a67e8651c9ae28b777c1cbdb40b6d4fa57a2542291a"
+      "bytes": 52942,
+      "sha256": "50b5c5ab06cadd41609ee3430fa10335ef2275a75e564b4cc9d0cb3d1dfd0373"
     },
     {
       "id": "ward_icon:202-shadow",
@@ -7309,8 +7309,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:203",
@@ -7345,8 +7345,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:204",
@@ -7381,8 +7381,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:205",
@@ -7399,8 +7399,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 65792,
-      "sha256": "f5ed302084a2820e447b6ce72bfab52bd81d877f8653be95fd86da3274f5dc59"
+      "bytes": 57607,
+      "sha256": "a1949b5969c863dd54053757d9c5cd01722f065055fa5470a0fde31c5862079d"
     },
     {
       "id": "ward_icon:205-shadow",
@@ -7417,8 +7417,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:206",
@@ -7435,8 +7435,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 125883,
-      "sha256": "1c659957cac4a41644402d1f9ea2f58954c97ff5f9251c7819a374c7bd72a43e"
+      "bytes": 100694,
+      "sha256": "f92ecee7d43a9e4f6b12b049f800434c6aeebeab0844c7f37368e3b371e8a83e"
     },
     {
       "id": "ward_icon:206-shadow",
@@ -7453,8 +7453,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:207",
@@ -7471,8 +7471,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 120418,
-      "sha256": "343d4bdc872b74868b86080ae2b489d1fc5f5a231b57f90e8eb6c063b7f3c39f"
+      "bytes": 100574,
+      "sha256": "a10027943f301db0bd115533ccc516941f09f12888902591a27248aa216ba5a6"
     },
     {
       "id": "ward_icon:207-shadow",
@@ -7507,8 +7507,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 55092,
-      "sha256": "0f5cd1ecfafe4b650ddea0a73bd2559630724ec7159f273ba4a4058f4b84a901"
+      "bytes": 46377,
+      "sha256": "ecf20bb98a0e3e8e7d98fe06c8190574d8d4d182fbd9a64f6c9411d69be79e52"
     },
     {
       "id": "ward_icon:208-shadow",
@@ -7525,8 +7525,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:209",
@@ -7561,8 +7561,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:210",
@@ -7579,8 +7579,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 85147,
-      "sha256": "ce39a48812467a2555219992fd56036d0d272157ccd3321be12860f139d80267"
+      "bytes": 78206,
+      "sha256": "43617d8c6f964b95ad8a8085782c5056b3007a0299ecc1ab334f378a69b5bc49"
     },
     {
       "id": "ward_icon:210-shadow",
@@ -7669,8 +7669,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:213",
@@ -7723,8 +7723,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 96934,
-      "sha256": "054a543c96a49ec0f6b667ea7c312c60f2e49d24fb5a47c7e98bf4135412974d"
+      "bytes": 80488,
+      "sha256": "f8b1305471541d6f78507cafc8f9eb18d899465c5ee4e0e644c764fef0b05203"
     },
     {
       "id": "ward_icon:214-shadow",
@@ -7813,8 +7813,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:217",
@@ -7831,8 +7831,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 110741,
-      "sha256": "dbe14d3aee6e7fd5de1287f4825f477d8ab3de3cc8f9a99550367cceb836dfbf"
+      "bytes": 92054,
+      "sha256": "e4c59b35035fefa582a04708e82ce669dba16e8929acc890ad6ea0336544c6db"
     },
     {
       "id": "ward_icon:217-shadow",
@@ -7849,8 +7849,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:218",
@@ -7957,8 +7957,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:221",
@@ -7975,8 +7975,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 134418,
-      "sha256": "ac642c6d58e4f2087daac66abd66168309d09acf5c689f30adfce6b0f0766c4e"
+      "bytes": 114582,
+      "sha256": "45a657e9205167543b8c9bd823005775f9ed9897eb036b82928330ff3d7fbc1e"
     },
     {
       "id": "ward_icon:221-shadow",
@@ -7993,8 +7993,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:222",
@@ -8011,8 +8011,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 117002,
-      "sha256": "312a5fdafa1c0d15c06489e8e7b16eb2d00cdc578e6022ee39fa2a8b01f27257"
+      "bytes": 98934,
+      "sha256": "ed2e164d2dd24820307e4e05391f5be5a059b2136308fb1dcf843dba82f08652"
     },
     {
       "id": "ward_icon:222-shadow",
@@ -8029,8 +8029,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:223",
@@ -8065,8 +8065,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:224",
@@ -8101,8 +8101,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:225",
@@ -8137,8 +8137,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:226",
@@ -8191,8 +8191,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 90351,
-      "sha256": "6c19956041f8a7fd5e5590a97a6881ee5633100c0f02590230dfebb2b5722628"
+      "bytes": 77057,
+      "sha256": "24decc305df80295d61e7d5e87cdd2a15c58bd2c5608026d35a166d60f5180b5"
     },
     {
       "id": "ward_icon:227-shadow",
@@ -8227,8 +8227,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 78851,
-      "sha256": "aaf18bc02533397b3604928e4a9105622854d5a30bea4dbd241c938053d8645e"
+      "bytes": 66504,
+      "sha256": "84682bcc8a8dfe5c0719eaa4be4ca8b0c18a222ef9b94fe4b6ca88fcf768fb8c"
     },
     {
       "id": "ward_icon:228-shadow",
@@ -8317,8 +8317,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:231",
@@ -8353,8 +8353,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:232",
@@ -8371,8 +8371,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 69331,
-      "sha256": "a6198709f701c4c1fa04d06dc95c703109c02f425b3a96c4ff7660536b4d7a5a"
+      "bytes": 57965,
+      "sha256": "429a1c9795c9a8073e0ba12af3277566c3e4c230f9a92b2751030f7c3434047a"
     },
     {
       "id": "ward_icon:232-shadow",
@@ -8389,8 +8389,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:233",
@@ -8407,8 +8407,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 112971,
-      "sha256": "5cf586f02d42a4ee3a3956453d88b75f5a5fbdc1402c077f7129f6792e6a1acf"
+      "bytes": 94881,
+      "sha256": "d88a64ba04e11bcb8605956aced9e9378099d2aea152e561e67a5d5ff5738616"
     },
     {
       "id": "ward_icon:233-shadow",
@@ -8479,8 +8479,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 81892,
-      "sha256": "93f8a662895648a24220e9f4928788f99adc4ede187b116eadde1403cfa1ec5f"
+      "bytes": 67092,
+      "sha256": "e6fb7475bc56529f8feefdd5ce3fc38591296015d45d26f492ece8fa3d35e8f6"
     },
     {
       "id": "ward_icon:235-shadow",
@@ -8533,8 +8533,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:238",
@@ -8569,8 +8569,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:239",
@@ -8641,8 +8641,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:241",
@@ -8659,8 +8659,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 158416,
-      "sha256": "a3604e041fc48b51206c15c78277610475d719b8c89cd6a45b38cf57cfa460e2"
+      "bytes": 142439,
+      "sha256": "9e036324f26a6a3d738189daa34bd0faa4ef18ed401d5075014a3b062bb35b06"
     },
     {
       "id": "ward_icon:241-shadow",
@@ -8713,8 +8713,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:244",
@@ -8749,8 +8749,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:245",
@@ -8767,8 +8767,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 38766,
-      "sha256": "3c5abfe3b2373432901f32cad9c7ab04226d9ef75f83bb3bc716fa0ad751717f"
+      "bytes": 39236,
+      "sha256": "9caad43459a58eb362aeab8b6feeb13f2d260a9980bcbddc1d66be3200e29ff9"
     },
     {
       "id": "ward_icon:245-shadow",
@@ -8785,8 +8785,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:246",
@@ -8965,8 +8965,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:251",
@@ -8983,8 +8983,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 41414,
-      "sha256": "53e64e527e4b98bf3a50e0b8487e0e8b4d59a33cf7cfb061033efba1259f6994"
+      "bytes": 34901,
+      "sha256": "2c1e1db310f48eca351ced258853fe62ef89c88df1c18f8eceba446dc4827b5d"
     },
     {
       "id": "ward_icon:251-shadow",
@@ -9019,8 +9019,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 98492,
-      "sha256": "a1856efb8d6827f26be7093ab9a8353a275b92d21fad0a5f9b149f3814fa15e5"
+      "bytes": 83058,
+      "sha256": "1fd62a9cc9f524008bab72b34b74f1c14d44db1d7b271a09fc00ad37c6c6f393"
     },
     {
       "id": "ward_icon:252-shadow",
@@ -9091,8 +9091,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 112862,
-      "sha256": "2df9fc64f122f2fc30da6b872957bc0231f925fadf5e75bb36f90e9ab819f95f"
+      "bytes": 103626,
+      "sha256": "28097834d3c705d63e8c7c380936a90e86f92346df803f457d228a81e0eb6733"
     },
     {
       "id": "ward_icon:254-shadow",
@@ -9127,8 +9127,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 58062,
-      "sha256": "64ad436530446d2f81023c570cacf300a92d8718902882dd40e2e53b65bb921a"
+      "bytes": 47396,
+      "sha256": "94c0b649713d962d9f84254cbc3b07aef191bf285e54a95f6e740e3961bd3c9d"
     },
     {
       "id": "ward_icon:255-shadow",
@@ -9181,8 +9181,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 4666,
-      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
+      "bytes": 7797,
+      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
     },
     {
       "id": "ward_icon:257",
@@ -9199,8 +9199,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 68170,
-      "sha256": "50127567bd1b45c1620661e6baa879c7b21092c7fccda53441ccf871ba3930b2"
+      "bytes": 56494,
+      "sha256": "fcfcf1a13e30863a27eb990e7336b2e4f6830ec4addc222822732792db79b339"
     },
     {
       "id": "ward_icon:257-shadow",
@@ -9217,8 +9217,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:258",
@@ -9325,8 +9325,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:261",
@@ -9415,8 +9415,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 83021,
-      "sha256": "d4ea2244f90b9b1507db6b93eebf0dd0009ffeb36f673830aedc93cff3ee73a2"
+      "bytes": 69568,
+      "sha256": "c28f1308aa06397d39dced20a18a9d9476d2a3c08515dd5237143ff5350a587f"
     },
     {
       "id": "ward_icon:263-shadow",
@@ -9433,8 +9433,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:264",
@@ -9469,8 +9469,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:265",
@@ -9487,8 +9487,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 89046,
-      "sha256": "a997997347a9cacdaf502a3753dd59193019c38597c3981ba4bee4a1d3c20acb"
+      "bytes": 81649,
+      "sha256": "a19c73214e5b0025fbf600fa134779c3ed05233b64c06409067aaf0ed8c61594"
     },
     {
       "id": "ward_icon:265-shadow",
@@ -9505,8 +9505,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 7797,
-      "sha256": "62d51607d1987da763f255a0bb5bae1f751d52a36a62759e373b347d98e7407b"
+      "bytes": 4666,
+      "sha256": "207d6ff0db28bf0023390b1d1d4652499010e53ac60eaccb90d378b6b7978739"
     },
     {
       "id": "ward_icon:266",
@@ -9523,8 +9523,8 @@
       "height": 550,
       "format": "png",
       "hasAlpha": true,
-      "bytes": 105114,
-      "sha256": "7571abf5afd708fa7e686d32369a53035b1c1e9fefc9928a5db08403ffffce09"
+      "bytes": 88270,
+      "sha256": "f47f2e77a68a9ee0cb2c4f63e9cf6765cfd8642143b98a4e5e5301aa10613247"
     },
     {
       "id": "ward_icon:266-shadow",

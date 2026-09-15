@@ -161,6 +161,10 @@ Para conferir se já há índice sem gerar nada:
 uv run lol-assets-indexer check
 ```
 
+O workflow roda o mesmo comando com `--stamp`, que, sem patch novo, carimba no manifesto a
+hora da verificação ([ADR 0018](docs/adr/0018-aviso-mede-a-ultima-verificacao.md)). À mão, sem
+a opção, nada é escrito.
+
 ### A API opcional
 
 O site funciona inteiro sem ela ([ADR 0006](docs/adr/0006-api-como-componente-opcional.md)).

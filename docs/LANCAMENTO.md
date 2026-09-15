@@ -243,7 +243,7 @@ acesso automatizado à wiki sem consentimento**, imposto por código
 | Sem monetização | [ADR 0005](adr/0005-arquitetura-estatica-custo-zero.md). Não há anúncio, afiliado nem paywall no código |
 | Tier gratuito respeitado | O índice são ~19 MB de JSON estático; não há função serverless no caminho do usuário |
 | `status.json` saudável | `curl https://<endereço>/indice/status.json` — `ok: true` e `gameVersion` no patch corrente |
-| Índice fresco | O aviso do T-31 aparece sozinho se passar de 72 h |
+| Índice fresco | O aviso do T-31 aparece sozinho se a indexação passar 72 h sem conferir o índice ([ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
 | Nenhum marcador solto | Automático: teste que varre `[A DECIDIR]` e `[A CONFIRMAR]` — a lista de pendentes chegou a zero |
 
 ## O que o teste não consegue conferir

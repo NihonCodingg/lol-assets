@@ -1746,6 +1746,11 @@ limite de 500 linhas.
 > cada 6 h, então são **doze execuções seguidas sem sucesso** — isso não é lentidão da Riot
 > nem fila do Actions, é coisa quebrada. Apertar mais transformaria fim de semana devagar em
 > alarme falso, e alarme falso é como se aprende a ignorar alarme.
+>
+> **Emendado em 14/09/2026 pelo T-51** ([ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)):
+> medindo o `generatedAt`, três dias sem patch acendiam o aviso com o workflow saudável. O
+> aviso passou a medir a última **verificação** — o `checkedAt` que a indexação carimba no
+> manifesto uma vez por dia —, e as 72 h continuam as mesmas.
 
 ---
 
@@ -2451,6 +2456,52 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 > anos.
 >
 > Nenhum código foi necessário: o T-13 já fazia o certo.
+
+---
+
+### T-51 — O aviso de índice velho mede a última verificação
+
+| | |
+|---|---|
+| **Objetivo** | Que o aviso do T-31 só acenda quando a indexação parou de verdade |
+| **Dependências** | T-13, T-31, T-38 |
+| **Estimativa** | ~80 linhas |
+| **Effort** | médio |
+| **Cobre** | §11 da Spec, RNF-06 |
+
+> Aberto em **14/09/2026**, pelo próprio site no ar: "Este índice foi gerado há 4 dias… A
+> indexação automática pode ter parado". Não tinha parado: desde o último patch foram 17
+> execuções agendadas, todas com sucesso, todas `nada a fazer: já indexado em 16.18.1`. O
+> aviso media o `generatedAt`, que só anda quando o índice muda — então três dias sem patch
+> bastavam para acendê-lo para todo visitante. A decisão está no
+> [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md).
+
+**Entra**
+- `checkedAt` opcional no manifesto — contrato **1.3.0**.
+- `check --stamp`: sem patch novo, carimba se o último carimbo tem 24 h ou mais. O workflow
+  commita o carimbo no mesmo passo do índice, com a mensagem `chore(indice): {patch} conferido`.
+- O site passa a medir `max(generatedAt, checkedAt)` contra as mesmas 72 h.
+
+**NÃO entra**
+- Mudar o texto do aviso. Ele continua dizendo quando o índice foi gerado; trocar o texto é
+  decisão do dono, e o redesenho do front (T-45 a T-50) está nessas telas.
+- Canal sem commit — API do GitHub, `raw.githubusercontent.com`, deploy hook. Ver o ADR.
+- Regenerar o fixture do e2e: ele fica no 1.2.0, sem carimbo, e exercita a compatibilidade.
+
+**Critérios de aceite**
+1. ✅ Índice gerado há 4 dias e conferido há 5 h → sem aviso. Sem verificação há 73 h → aviso.
+   Manifesto sem carimbo → mede o `generatedAt`, como antes.
+2. ✅ O carimbo só sai sem patch novo, só com `--stamp` e só se o anterior tem 24 h ou mais.
+3. ✅ O carimbo muda uma linha do `manifest.json` — conferido também contra o manifesto
+   publicado de verdade, não só contra um feito para o teste.
+4. ✅ O intervalo do carimbo cabe três vezes no limite do aviso, e um teste lê os dois lados.
+5. O site publicado para de avisar sem que a indexação tenha parado — conferido depois do
+   merge.
+
+**Testes que provam**
+- `test_carimbo.py`: a regra, o formato, a linha única, a saída do Actions e o limite do front.
+- `test_cli.py`: o `check` de ponta a ponta, sem baixar nada.
+- `frescor.test.ts`: o aviso mede a verificação, e o texto continua falando da geração.
 
 ---
 
