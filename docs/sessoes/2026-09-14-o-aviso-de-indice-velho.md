@@ -102,8 +102,13 @@ ganhado o T-51. A edição foi planejada e não aplicada; entrou no PR de fecham
 Depois do primeiro carimbo, marcar o T-51 ✅ e o critério 5 no PR de fechamento
 (`docs/T-51-fechamento`) e mergeá-lo.
 
+## Decisões do dono em 15/09/2026
+
+- **O aviso continua dizendo quando o índice foi gerado.** Quem visita quer saber se a arte é
+  do patch atual; a data da conferência é detalhe de operação e confundiria.
+- **Nenhuma regra de permissão para `gh pr merge`.** O dono é o único revisor humano, e o merge
+  é o último ponto em que ele olha o que entra. As sessões entregam o comando pronto.
+
 ## Só o dono pode fazer
 
 - Mergear o PR de fechamento quando o carimbo tiver chegado.
-- Se quiser, decidir a troca de texto do aviso — hoje ele diz quando o índice foi gerado, não
-  quando foi conferido.

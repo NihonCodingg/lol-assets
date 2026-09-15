@@ -2475,6 +2475,14 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 > aviso media o `generatedAt`, que só anda quando o índice muda — então três dias sem patch
 > bastavam para acendê-lo para todo visitante. A decisão está no
 > [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md).
+>
+> **Mergeado em 15/09/2026** (#56, `b411b09`). A execução disparada à mão
+> ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093))
+> reindexou o 16.18.1 com o motivo "contrato do índice mudou de 1.2.0 para 1.3.0" e publicou
+> `63dacdb`; a Vercel levou esse commit do bot a produção às 01:05 UTC, sem deploy hook — o
+> que responde a dúvida do item 4 do [ADR 0016](adr/0016-publicacao-na-vercel.md). No ar:
+> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26. O primeiro carimbo
+> sai na primeira execução depois de 16/09/2026 00:43 UTC.
 
 **Entra**
 - `checkedAt` opcional no manifesto — contrato **1.3.0**.
@@ -2483,8 +2491,9 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - O site passa a medir `max(generatedAt, checkedAt)` contra as mesmas 72 h.
 
 **NÃO entra**
-- Mudar o texto do aviso. Ele continua dizendo quando o índice foi gerado; trocar o texto é
-  decisão do dono, e o redesenho do front (T-45 a T-50) está nessas telas.
+- Mudar o texto do aviso. **Decidido pelo dono em 15/09/2026:** ele continua dizendo quando o
+  índice foi gerado — quem visita quer saber se a arte é do patch atual, e a data da
+  conferência é detalhe de operação, que confundiria.
 - Canal sem commit — API do GitHub, `raw.githubusercontent.com`, deploy hook. Ver o ADR.
 - Regenerar o fixture do e2e: ele fica no 1.2.0, sem carimbo, e exercita a compatibilidade.
 
@@ -2503,14 +2512,6 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - `test_carimbo.py`: a regra, o formato, a linha única, a saída do Actions e o limite do front.
 - `test_cli.py`: o `check` de ponta a ponta, sem baixar nada.
 - `frescor.test.ts`: o aviso mede a verificação, e o texto continua falando da geração.
-
-> **Mergeado em 15/09/2026** (#56, `b411b09`). A execução disparada à mão
-> ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093))
-> reindexou o 16.18.1 com o motivo "contrato do índice mudou de 1.2.0 para 1.3.0" e publicou
-> `63dacdb`; a Vercel levou esse commit do bot a produção às 01:05 UTC, sem deploy hook — o
-> que responde a dúvida do item 4 do [ADR 0016](adr/0016-publicacao-na-vercel.md). No ar:
-> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26. O primeiro carimbo
-> sai na primeira execução depois de 16/09/2026 00:43 UTC.
 
 ---
 
