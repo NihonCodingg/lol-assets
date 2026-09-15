@@ -230,11 +230,12 @@
           "type": "boolean"
         },
         "bytes": {
+          "description": "Tamanho do arquivo que o indexador recebeu da fonte. No cdragon, o que chega ao navegador pode ser menor: o Cloudflare Polish recomprime a imagem (ADR 0019).",
           "type": "integer",
           "minimum": 1
         },
         "sha256": {
-          "description": "Hash dos bytes de origem. Serve para deduplicar e para detectar mudança entre patches.",
+          "description": "Hash dos bytes que o indexador recebeu da fonte. Só confere o download — e só detecta mudança entre patches — nas fontes de bytes estáveis: hoje, só o ddragon (isByteStable, ADR 0019). No cdragon, a mesma URL entrega bytes diferentes conforme o cache da borda.",
           "type": "string",
           "pattern": "^[0-9a-f]{64}$"
         }

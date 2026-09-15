@@ -42,6 +42,22 @@ export type AssetType =
 
 export type AssetSource = "ddragon" | "cdragon" | "riot_static" | "wiki";
 
+/**
+ * As fontes que entregam, para a mesma URL, os bytes que o indexador mediu — as
+ * únicas em que o `sha256` do índice confere o download (ADR 0019).
+ *
+ * O cdragon fica de fora por medição: ele passa pelo Cloudflare Polish, e a
+ * mesma URL entrega o arquivo de origem ou uma recompressão dele conforme o
+ * cache da borda. Fora daqui, o que o índice garante é formato e dimensões.
+ * Fonte nova só entra depois de ter a entrega medida.
+ */
+export const BYTE_STABLE_SOURCES: ReadonlySet<AssetSource> = new Set<AssetSource>(["ddragon"]);
+
+/** Se o `sha256` do índice serve para conferir o que o navegador baixou. */
+export function isByteStable(source: AssetSource): boolean {
+  return BYTE_STABLE_SOURCES.has(source);
+}
+
 export interface LocalizedName {
   pt_BR: string;
   en_US?: string;
@@ -72,7 +88,9 @@ export interface Asset {
   format: "png" | "jpeg";
   /** Quando true, o asset nunca pode ser convertido para JPEG (ADR 0001). */
   hasAlpha: boolean;
+  /** O arquivo que o indexador recebeu. No cdragon, o entregue pode ser menor (ADR 0019). */
   bytes: number;
+  /** Dos bytes que o indexador recebeu. Confere o download só se `isByteStable(source)`. */
   sha256: string;
 }
 
