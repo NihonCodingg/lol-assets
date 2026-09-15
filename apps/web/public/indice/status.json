@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "1.2.0",
-  "startedAt": "2026-09-10T08:09:41Z",
-  "finishedAt": "2026-09-10T08:40:55Z",
-  "durationSeconds": 1873.488,
+  "schemaVersion": "1.3.0",
+  "startedAt": "2026-09-15T00:42:56Z",
+  "finishedAt": "2026-09-15T01:04:12Z",
+  "durationSeconds": 1276.27,
   "ok": true,
   "gameVersion": "16.18.1",
-  "runId": "34453657471",
+  "runId": "34914303093",
   "counts": {
     "assets": 27313,
     "champions": 173,
@@ -27,10 +27,10 @@
     }
   },
   "bytes": {
-    "index": 19054929,
+    "index": 19054620,
     "catalogGzip": 62746,
-    "largestShardGzip": 1397075,
-    "describedAssets": 2374683373
+    "largestShardGzip": 1396925,
+    "describedAssets": 2250648066
   },
   "source": {
     "files": 34613,

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.2.0",
-  "generatedAt": "2026-09-10T08:09:41Z",
+  "schemaVersion": "1.3.0",
+  "generatedAt": "2026-09-15T00:42:56Z",
   "currentVersion": "16.18.1",
   "generation": {
     "indexer": 3,
@@ -18,73 +18,73 @@
   "versions": [
     {
       "gameVersion": "16.18.1",
-      "indexedAt": "2026-09-10T08:09:41Z",
+      "indexedAt": "2026-09-15T00:42:56Z",
       "assetsCopied": false,
       "catalog": {
-        "url": "catalog-c63d0024187c.json",
+        "url": "catalog-98e444acc49f.json",
         "champions": 173,
         "skins": 2121,
         "bytes": 780498,
-        "sha256": "c63d0024187c9edd2bd481b68acb0f2bdfadad6418c104713d430dfbd8b76d29"
+        "sha256": "98e444acc49fc91a4b6e9afecef79d6e4791b09952ba98af54df5e3dfbc9368b"
       },
       "totalAssets": 27313,
-      "totalBytes": 2374683373,
+      "totalBytes": 2250648066,
       "shards": [
         {
           "category": "champion",
-          "url": "index-champion-82964b988c6f.json",
+          "url": "index-champion-c6f9a208261b.json",
           "assets": 18397,
-          "bytes": 13022464,
-          "sha256": "82964b988c6f17ab7ba7513de6b198fe6a9686e0c69b58037ac6770a0e6fb511"
+          "bytes": 13022189,
+          "sha256": "c6f9a208261bbf4234750a584dc14063f6cae7948207d9152dc84942e12566f6"
         },
         {
           "category": "item",
-          "url": "index-item-71fe4cb7fc47.json",
+          "url": "index-item-0c744ecea513.json",
           "assets": 868,
           "bytes": 625623,
-          "sha256": "71fe4cb7fc47949473a5694da9c69de0d307e7a31bdb51f4b5c86e2c049c557f"
+          "sha256": "0c744ecea513a3e385fb1fe77a16bfc5aaf983f1542f84c7d9a8c14682969271"
         },
         {
           "category": "summoner_spell",
-          "url": "index-summoner_spell-ccb9930fcde8.json",
+          "url": "index-summoner_spell-986e89bbb955.json",
           "assets": 34,
           "bytes": 21724,
-          "sha256": "ccb9930fcde8c2db527514c462373ca4477f3047cd0759ca63dc639fc7aa7300"
+          "sha256": "986e89bbb955fc7f95d0c2be2d0c7bf7541971f58577b0a58aa5e9f3bb156524"
         },
         {
           "category": "profile_icon",
-          "url": "index-profile_icon-60f09e3eac3c.json",
+          "url": "index-profile_icon-0c7ed22c33f8.json",
           "assets": 5042,
           "bytes": 2728556,
-          "sha256": "60f09e3eac3c853d3bcc118d15f733ae877ac7c3b0a3146e0d4a3195d361ff08"
+          "sha256": "0c7ed22c33f81c396f22cc48b33b520415b802f6e3af25ece5177391771aaf96"
         },
         {
           "category": "rune",
-          "url": "index-rune-3a6e655c2a61.json",
+          "url": "index-rune-34f68b7d3359.json",
           "assets": 77,
           "bytes": 50795,
-          "sha256": "3a6e655c2a61455ae0ac10abeda5723fbc121be0a08c769fe954a7fee01e13e7"
+          "sha256": "34f68b7d335938ac9d865f3c0dda16f9afca46950955c6e372812ff0db7e2b0e"
         },
         {
           "category": "map",
-          "url": "index-map-c0f0771bca64.json",
+          "url": "index-map-0ed283231ced.json",
           "assets": 5,
           "bytes": 2941,
-          "sha256": "c0f0771bca643dd6cb761545cde718a2ff4e0a562d086239ac848342a8991b03"
+          "sha256": "0ed283231ced6e5e39b42773144ab641181c228fa78365250fe97ab58a1bf5cc"
         },
         {
           "category": "emote",
-          "url": "index-emote-0ac6c6313126.json",
+          "url": "index-emote-18a65970300d.json",
           "assets": 2358,
-          "bytes": 1496009,
-          "sha256": "0ac6c63131265290185aa43839ac4f81af3f4b3c0d089b6d4efb09e6ad74801a"
+          "bytes": 1496001,
+          "sha256": "18a65970300d86310a805fa482d15f7f2912775e72c854e31b3644a2e572b3fa"
         },
         {
           "category": "ward",
-          "url": "index-ward-ecae6e7bdf8e.json",
+          "url": "index-ward-288c9801aae3.json",
           "assets": 532,
-          "bytes": 323607,
-          "sha256": "ecae6e7bdf8ec429cefeb2d5202a3c42c968168667e641ffa4b9f6c122f1e987"
+          "bytes": 323581,
+          "sha256": "288c9801aae32c2d4b8aa1a949e154f3af9d09163f23ba3b6a6d75094c771f96"
         }
       ]
     }
