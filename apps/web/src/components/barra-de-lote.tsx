@@ -12,7 +12,9 @@
  * O progresso não é enfeite: a categoria `item` leva ~31 s. Sem barra, meio
  * minuto de nada acontecendo é indistinguível de travado, e a aba fecha.
  *
- * Tela crua de propósito; o design chega no T-30.
+ * **As miniaturas (T-47b)** mostram o que vai no zip sem abrir lista nenhuma: as
+ * cinco primeiras e quantas faltam. São decorativas — a contagem já está escrita
+ * ao lado, e é ela que o leitor de tela ouve.
  */
 
 import { useCallback, useRef, useState } from "react";
@@ -20,9 +22,13 @@ import { useCallback, useRef, useState } from "react";
 import type { Asset } from "@lol-assets/schema";
 
 import { Botao } from "@/components/ui/botao";
-import { formatBytes, saveBlob } from "@/lib/asset-file";
+import { Imagem } from "@/components/ui/imagem";
+import { assetUrl, formatBytes, saveBlob } from "@/lib/asset-file";
 import { aviso, duracao, nomeDoZip, resumir } from "@/lib/selecao";
 import { montarZip, ZipCanceladoError, type Falha, type Progresso } from "@/lib/zip";
+
+/** Quantas miniaturas a bandeja mostra antes de dizer "+N". */
+const MINIATURAS = 5;
 
 export interface BarraDeLoteProps {
   /** Os assets **selecionados**, já resolvidos. */
@@ -83,6 +89,28 @@ export function BarraDeLote({
       className="flex flex-none flex-col gap-1.5 border-t border-borda-forte bg-superficie-lote px-3.5 py-2.5"
     >
       <div className="flex items-center gap-2.5">
+        <ul aria-hidden="true" className="flex flex-none -space-x-2">
+          {assets.slice(0, MINIATURAS).map((asset) => (
+            <li
+              key={asset.id}
+              data-miniatura=""
+              className="size-8 overflow-hidden rounded-tecla border-2 border-superficie-lote bg-campo"
+            >
+              <Imagem
+                src={assetUrl(asset, assetsBaseUrl)}
+                alt=""
+                erroCompacto
+                classeDaCaixa="size-full"
+                className="object-cover"
+              />
+            </li>
+          ))}
+          {assets.length > MINIATURAS && (
+            <li className="grid size-8 place-items-center rounded-tecla border-2 border-superficie-lote bg-campo-alto font-mono text-10 text-texto-suave">
+              +{assets.length - MINIATURAS}
+            </li>
+          )}
+        </ul>
         <p className="font-mono text-11 text-texto-suave">
           {resumo.arquivos} {resumo.arquivos === 1 ? "selecionado" : "selecionados"} ·{" "}
           {formatBytes(resumo.bytes)} · ~{duracao(resumo.segundos)}

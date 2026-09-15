@@ -2365,7 +2365,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 1. ✅ J1 e J2 continuam em ≤ 3 cliques.
 2. ✅ Os testes do seletor de skin mudam de `<select>` para rádio, com a justificativa no PR.
 
-### ⏳ T-47b — Painel do campeão: as artes em grade
+### ✅ T-47b — Painel do campeão: as artes em grade
 
 | | |
 |---|---|
@@ -2373,15 +2373,21 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 | **Dependências** | T-47 |
 | **Cobre** | RF-09 a RF-12, RF-17; ADR 0001 |
 
+> **Entregue em 15/09/2026.** Duas decisões no caminho. As artes se agrupam por **família**, e
+> não por tipo: por tipo seriam sete cabeçalhos para dez cartões, a maioria encabeçando um só.
+> E o retorno do download é o ícone do botão — gira, depois ✓ — mais o anúncio "Arquivo baixado"
+> para o leitor de tela: trocar o **texto** do botão mudaria o nome pelo qual ele é achado.
+
 **Entra**
-- Artes agrupadas por tipo, em grade, com a prévia na proporção real.
+- Artes agrupadas por família (splash e tela de carregamento, retratos, passiva e habilidades),
+  em grade, com a prévia na proporção real e nunca maior que o arquivo.
 - Ampliação ao clicar na prévia; `Escape` na ordem ampliação → chromas → painel.
-- Feedback de download no cartão: "Baixando…" → "Baixado" → volta.
+- Retorno de download no cartão: o ícone gira enquanto baixa e vira ✓ quando termina.
 - A bandeja do lote com as miniaturas do que foi selecionado.
 
 **Critérios de aceite**
-1. A ficha continua à vista antes de qualquer clique (RF-09).
-2. A ampliação fecha no `Escape` sem fechar o painel.
+1. ✅ A ficha continua à vista antes de qualquer clique (RF-09).
+2. ✅ A ampliação fecha no `Escape` sem fechar o painel.
 
 ### ⏳ T-48 — Categorias em galeria
 
@@ -2569,4 +2575,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
-| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → T-47b → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

@@ -24,6 +24,12 @@
  * nome. Tudo rola junto; só o fechar e a bandeja do lote ficam parados. E há um
  * fechar só, o do canto: o "fechar" da lista de dentro saiu, porque fechava o
  * mesmo painel por outro caminho.
+ *
+ * ## As artes em grade (T-47b)
+ *
+ * As artes vêm em grade, agrupadas por família, e a prévia de cada uma amplia a
+ * arte. A ampliação mora aqui, e não no cartão, pelo mesmo motivo do `Escape`:
+ * é daqui que a tecla sai, na ordem ampliação → chromas → painel.
  */
 
 import { X } from "lucide-react";
@@ -31,6 +37,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
+import { Ampliacao } from "@/components/ampliacao";
 import { BarraDeLote } from "@/components/barra-de-lote";
 import { PainelDeAsset } from "@/components/painel-de-asset";
 import { SeletorDeSkin } from "@/components/seletor-de-skin";
@@ -70,13 +77,14 @@ export function PainelDoCampeao({
   const [skinNum, setSkinNum] = useState(padrao);
   const [chromasAbertos, setChromasAbertos] = useState(false);
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
+  const [ampliado, setAmpliado] = useState<Asset | null>(null);
 
   /**
    * `Escape` mora aqui, e não nos painéis de dentro, por dois motivos.
    *
-   * O primeiro é ordem: com os chromas abertos, `Escape` fecha os chromas — o
-   * de dentro primeiro, como todo mundo espera. Dois ouvintes na mesma tecla
-   * fechariam os dois de uma vez.
+   * O primeiro é ordem: com a ampliação aberta, `Escape` fecha a ampliação; com
+   * os chromas abertos, fecha os chromas — o de dentro primeiro, como todo mundo
+   * espera. Dois ouvintes na mesma tecla fechariam os dois de uma vez.
    *
    * O segundo é tempo: o painel aparece antes de a fatia chegar, e um ouvinte
    * que só existe depois dos assets deixa `Escape` sem efeito exatamente
@@ -85,12 +93,13 @@ export function PainelDoCampeao({
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
       if (evento.key !== "Escape") return;
-      if (chromasAbertos) setChromasAbertos(false);
+      if (ampliado) setAmpliado(null);
+      else if (chromasAbertos) setChromasAbertos(false);
       else onClose();
     }
     window.addEventListener("keydown", aoTeclar);
     return () => window.removeEventListener("keydown", aoTeclar);
-  }, [chromasAbertos, onClose]);
+  }, [ampliado, chromasAbertos, onClose]);
 
   // A busca pode trocar de campeão com o painel aberto: sem isto, a skin
   // selecionada ficaria a do campeão anterior — e a seleção levaria assets de
@@ -99,6 +108,7 @@ export function PainelDoCampeao({
     setSkinNum(padrao);
     setChromasAbertos(false);
     setSelecao(new Set());
+    setAmpliado(null);
   }, [padrao, champion.championKey]);
 
   const lista = useMemo(() => assets ?? [], [assets]);
@@ -129,8 +139,8 @@ export function PainelDoCampeao({
       aberto
       onFechar={onClose}
       titulo={`Painel de ${champion.names.pt_BR}`}
-      // O `Escape` daqui tem ordem própria (chroma antes do painel) e o clique
-      // fora nunca fechou. Ver o comentário em `PainelLateral`.
+      // O `Escape` daqui tem ordem própria (ampliação e chroma antes do painel)
+      // e o clique fora nunca fechou. Ver o comentário em `PainelLateral`.
       fecharPorEsc={false}
       fecharPorFora={false}
       // 880 px: a splash é 16:9, e é ela que o painel mostra primeiro. Nos
@@ -198,6 +208,8 @@ export function PainelDoCampeao({
               onAlternar={alternarNoLote}
               fecharComEsc={false}
               embutido
+              grade
+              onAmpliar={setAmpliado}
             />
           )}
 
@@ -224,6 +236,8 @@ export function PainelDoCampeao({
                   onAlternar={alternarNoLote}
                   fecharComEsc={false}
                   embutido
+                  grade
+                  onAmpliar={setAmpliado}
                 />
               )}
             </section>
@@ -239,6 +253,14 @@ export function PainelDoCampeao({
           onLimpar={() => setSelecao(new Set())}
         />
       </section>
+
+      {ampliado && (
+        <Ampliacao
+          asset={ampliado}
+          url={assetUrl(ampliado, assetsBaseUrl)}
+          onFechar={() => setAmpliado(null)}
+        />
+      )}
     </PainelLateral>
   );
 }
