@@ -103,13 +103,15 @@ E dois mudam de lugar, não de estado: o **T-39** sai da fila e vira gatilho da 
 
 ## Os PRs abertos
 
-Simulado com `git merge-tree` em 15/09/2026: **o #58, o #59 e o #60 entram em qualquer ordem**,
-sem conflito entre si nem com o `main`.
+Simulado com `git merge-tree` em 15/09/2026: **nenhum par de PRs abertos conflita**, entre si
+ou com o `main`. A única ordem que importa é a do empilhamento: o #61 contém o #59, então o #59
+entra antes.
 
 | PR | Lista | Estado |
 |---|---|---|
 | #60 — T-52 | B | Pronto, CI verde |
 | #59 — T-47 | C | Esperando o seu ok no preview |
+| #61 — T-47b | C | Empilhado sobre o #59; espera o ok no preview, depois dele |
 | #58 — o fechamento do T-51 | A | Rascunho até o carimbo; a conferência de 16/09 completa |
 
 ## Onde eu discordo do corte

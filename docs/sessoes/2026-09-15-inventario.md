@@ -26,7 +26,7 @@ e seguir com o que estiver desbloqueado do essencial. O resultado está em
 | | |
 |---|---|
 | Uso do `sha256Hex` fora de teste | nenhum — o RNF-13 nunca chegou à tela |
-| Simulações de merge entre #58, #59, #60 e `main` | todas limpas |
+| Simulações de merge entre #58, #59, #60, #61, #62 e `main` | todas limpas; o #61 está empilhado sobre o #59, que entra antes |
 | Execuções agendadas de 15/09 depois da reindexação | 08:42 e 14:20 UTC, sem carimbar — o índice tinha menos de 24 h |
 
 ## O que foi assumido
