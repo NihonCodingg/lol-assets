@@ -4,7 +4,7 @@
  * O JSON Schema em `schemas/` é a fonte de verdade; os tipos abaixo são
  * escritos à mão por enquanto e passam a ser gerados no ticket da etapa 6.
  */
-export const SCHEMA_VERSION = "1.2.0";
+export const SCHEMA_VERSION = "1.3.0";
 
 export type AssetCategory =
   | "champion"
@@ -135,6 +135,12 @@ export interface Generation {
 export interface IndexManifest {
   schemaVersion: string;
   generatedAt: string;
+  /**
+   * Última vez que a indexação automática conferiu que o índice ainda é o do
+   * patch atual (ADR 0018). Ausente num manifesto recém-gerado e nos anteriores
+   * ao 1.3.0: aí vale o `generatedAt`.
+   */
+  checkedAt?: string;
   assetsBaseUrl?: string;
   currentVersion: string;
   /** Ausente nos índices gerados antes do T-38. */

@@ -8,6 +8,11 @@ name: Indexação
 # índice, commita e dá push; o deploy da Vercel publica. Nenhum segredo de
 # storage é necessário — só o GITHUB_TOKEN que o Actions já fornece.
 #
+# "Nada a fazer" também publica, no máximo uma vez por dia (ADR 0018): o
+# `check --stamp` carimba no manifesto a hora da verificação, e o carimbo é
+# commitado como o índice. É o que o aviso de índice velho do site lê — sem ele,
+# o site não distingue "a Riot não lançou patch" de "a indexação parou".
+#
 # O segredo VERCEL_DEPLOY_HOOK é opcional e é o plano B do ADR 0016: se um dia a
 # Vercel recusar o commit do bot, o dono cria um deploy hook e guarda a URL nele.
 # Sem o segredo, o último passo não roda.
@@ -66,7 +71,9 @@ jobs:
 
       - name: Há patch novo?
         id: decidir
-        run: uv run lol-assets-indexer check
+        # `--stamp`: sem patch novo, carimba `checkedAt` no manifesto se o último
+        # carimbo passou de 24 h (ADR 0018). Com patch novo, não toca em nada.
+        run: uv run lol-assets-indexer check --stamp
 
       - name: Indexar
         id: indexar
@@ -82,7 +89,17 @@ jobs:
 
       - name: Commitar o índice
         id: commitar
-        if: steps.indexar.outcome == 'success'
+        # Duas coisas publicam: a indexação que deu certo, ou o carimbo de uma
+        # verificação sem patch novo. Carimbo junto de indexação que falhou não
+        # entra — a árvore do runner teria um status.json de falha.
+        if: >-
+          steps.indexar.outcome == 'success' ||
+          (steps.indexar.outcome == 'skipped' && steps.decidir.outputs.stamped == 'true')
+        env:
+          MENSAGEM: >-
+            ${{ steps.indexar.outcome == 'success'
+            && format('chore(indice): patch {0}', steps.decidir.outputs.game_version)
+            || format('chore(indice): {0} conferido', steps.decidir.outputs.game_version) }}
         run: |
           set -euo pipefail
           # `status --porcelain`, não `diff`: na primeira execução os arquivos
@@ -95,7 +112,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Um commit só, do diretório inteiro: ou entra tudo, ou não entra nada.
           git add -- apps/web/public/indice
-          git commit -m "chore(indice): patch ${{ steps.decidir.outputs.game_version }}" \
+          git commit -m "$MENSAGEM" \
             -m "Gerado por .github/workflows/index.yml, execução ${{ github.run_id }}."
 
           # A indexação leva ~40 min. Nesse tempo a `main` anda: um PR mergeado
