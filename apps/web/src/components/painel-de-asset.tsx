@@ -590,13 +590,19 @@ function PreviaDaGrade({
         maxHeight: Math.min(ALTURA_MAXIMA_DA_PREVIA, asset.height),
       }}
     >
+      {/* Absoluta e centralizada, no tamanho do arquivo e nunca maior que a
+          caixa. Altura em porcentagem, aqui, não resolvia: a tela de
+          carregamento crescia pela largura e aparecia cortada no meio. */}
       <Imagem
         src={url}
         alt={`Prévia de ${asset.names.pt_BR}`}
         data-previa={asset.type}
-        classeDaCaixa="grid size-full place-items-center"
-        className="object-contain"
-        style={{ maxWidth: asset.width, maxHeight: asset.height }}
+        classeDaCaixa="size-full"
+        className="absolute inset-0 m-auto size-auto"
+        style={{
+          maxWidth: `min(100%, ${asset.width}px)`,
+          maxHeight: `min(100%, ${asset.height}px)`,
+        }}
       />
     </div>
   );

@@ -110,8 +110,9 @@ describe("a grade do painel do campeão", () => {
     const icone = screen
       .getByLabelText("Jax_ability_icon.png")
       .querySelector("img[data-previa]") as HTMLImageElement;
-    expect(icone.style.maxWidth).toBe("64px");
-    expect(icone.style.maxHeight).toBe("64px");
+    // O menor entre a caixa e o arquivo: cabe inteira, e nunca passa de 64 px.
+    expect(icone.style.maxWidth).toBe("min(100%, 64px)");
+    expect(icone.style.maxHeight).toBe("min(100%, 64px)");
   });
 
   it("a prévia é o botão da ampliação", () => {
