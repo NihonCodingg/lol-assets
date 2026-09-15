@@ -32,6 +32,8 @@ import { normalize } from "@/lib/search";
 export interface Categoria {
   readonly category: AssetCategory;
   readonly rotulo: string;
+  /** Quantos assets a fatia tem, como o manifesto declara (T-46). */
+  readonly total?: number;
 }
 
 /**
@@ -61,10 +63,18 @@ export function rotuloDaCategoria(category: string): string {
   return CATEGORIAS.find((c) => c.category === category)?.rotulo ?? category;
 }
 
-/** Categorias que o manifesto tem, na ordem de `CATEGORIAS`. */
-export function categoriasDisponiveis(shards: readonly { category: string }[]): Categoria[] {
-  const tem = new Set(shards.map((s) => s.category));
-  return CATEGORIAS.filter((c) => tem.has(c.category));
+/**
+ * Categorias que o manifesto tem, na ordem de `CATEGORIAS`, cada uma com a
+ * contagem que a fatia declara — é o número ao lado do nome na barra (T-46).
+ */
+export function categoriasDisponiveis(
+  shards: readonly { category: string; assets?: number }[],
+): Categoria[] {
+  const totais = new Map(shards.map((s) => [s.category, s.assets]));
+  return CATEGORIAS.filter((c) => totais.has(c.category)).map((c) => {
+    const total = totais.get(c.category);
+    return total === undefined ? c : { ...c, total };
+  });
 }
 
 // --- grupos de filtro ------------------------------------------------------------------

@@ -2034,7 +2034,7 @@ limite de 500 linhas.
 
 ---
 
-### ⏳ T-40 — Densidade da grade
+### ✅ T-40 — Densidade da grade
 
 | | |
 |---|---|
@@ -2049,6 +2049,9 @@ limite de 500 linhas.
 > (210px) — e **nenhum requisito pede isso**. O T-30 implementou só o denso, que é o padrão
 > do design, e os dois valores já estão no tema como `--spacing-alvo-cartao-*`.
 
+> **Fechado em 14/09/2026, dentro do T-46.** O controle são dois botões de ícone na barra da
+> grade — "Grade densa" e "Grade confortável" —, com a escolha em `biblioteca:densidade`.
+
 **Entra**
 - Um controle na barra do título da grade que alterna entre as duas larguras-alvo.
 - A escolha guardada no `localStorage` — é preferência de quem usa, não estado de sessão.
@@ -2058,12 +2061,14 @@ limite de 500 linhas.
 - Guardar em conta. Não há conta ([ADR 0005](adr/0005-arquitetura-estatica-custo-zero.md)).
 
 **Critérios de aceite**
-1. Alternar muda o número de colunas na mesma largura de janela.
-2. A escolha sobrevive a recarregar a página.
-3. Sem `localStorage` disponível, o padrão é `densa` e nada quebra.
+1. ✅ Alternar muda o número de colunas na mesma largura de janela.
+2. ✅ A escolha sobrevive a recarregar a página.
+3. ✅ Sem `localStorage` disponível, o padrão é `densa` e nada quebra.
 
 **Testes que provam**
-- Vitest com as duas densidades na mesma largura, contando colunas.
+- ~~Vitest com as duas densidades na mesma largura, contando colunas.~~ O jsdom não faz layout:
+  o vitest prova a largura-alvo e a memória, e as colunas são contadas no navegador, pelo e2e
+  `densidade.spec.ts`, que também recarrega a página.
 - Teste com `localStorage` que lança, porque navegador em modo privado faz isso.
 
 ---
@@ -2312,7 +2317,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 3. ✅ Imagem que falha diz "a fonte não respondeu", e o nome continua para o leitor de tela.
 4. ✅ Tokens novos no `TOKENS.md` e no tema, com o teste de paridade verde.
 
-### ⏳ T-46 — Home: busca protagonista e grade nítida
+### ✅ T-46 — Home: busca protagonista e grade nítida
 
 | | |
 |---|---|
@@ -2329,9 +2334,16 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - Barra lateral: ícone e contagem por categoria; sai "Início"; os avisos ficam mais leves, sem
   deixar de ser literais e inteiros.
 
+> **Entregue em 14/09/2026.** Duas decisões no caminho. Escolher um resultado fecha a lista e
+> **limpa o campo**: quem volta do painel acha o campo pronto para o próximo nome. E a marca, no
+> topo da barra, virou o link para a home — com "Início" fora, era o único caminho de volta da
+> página Sobre.
+
 **Critérios de aceite**
-1. O cartão não amplia imagem menor que ele.
-2. A busca continua abaixo de 50 ms, e a home continua sem buscar fatia nenhuma.
+1. ✅ O cartão não amplia imagem menor que ele. O *tile* tem 380 px; o cartão só passa disso com
+   uma coluna só, na densidade confortável, numa janela de 408 a 462 px — e aí em no máximo 14%.
+2. ✅ A busca continua abaixo de 50 ms, e a home continua sem buscar fatia nenhuma: os dois e2e
+   seguem verdes.
 
 ### ⏳ T-47 — Painel do campeão: vitrine da skin
 
@@ -2403,6 +2415,9 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - Vazios que ensinam; erros que dizem o que fazer; aviso de índice velho no vocabulário novo.
 - RNF-13: sha256 divergente vira aviso, sem bloquear o download.
 - Microcopy em pt-BR revisada e a página Sobre.
+- Na página Sobre, os botões de categoria da barra — que aparecem depois de passar pela home —
+  marcam a categoria e ficam na Sobre. Precisam levar para a home, já na categoria. Existe desde
+  o T-41; achado no T-46.
 - Uma rodada de inspeção (1440×900 e 390×844), um lote de correções, no máximo mais uma rodada.
 
 ---

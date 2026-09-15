@@ -284,3 +284,133 @@ describe("orçamento de 3 cliques", () => {
     expect(cliques.total).toBe(3);
   });
 });
+
+// --- a arte do cartão (T-46) ------------------------------------------------------------
+
+describe("a arte do cartão (T-46)", () => {
+  const COM_SQUARE: CatalogChampion = {
+    ...JAX,
+    thumbnailUrl: "https://exemplo.invalido/Jax_square.png",
+  };
+  const BASE_COM_TILE: CatalogSkin = {
+    ...SKINS_DO_JAX[0],
+    thumbnailUrl: "https://exemplo.invalido/Jax_000_tile.jpg",
+  };
+
+  it("é o tile 380×380 da skin base, não o square de 128 esticado", () => {
+    render(<GradeDeCampeoes champions={[COM_SQUARE]} skins={[BASE_COM_TILE]} onAbrir={vi.fn()} />);
+    expect(screen.getByRole("img", { name: "Jax" }).getAttribute("src")).toBe(
+      BASE_COM_TILE.thumbnailUrl,
+    );
+  });
+
+  it("sem a skin base no catálogo, o square fica de reserva", () => {
+    render(<GradeDeCampeoes champions={[COM_SQUARE]} onAbrir={vi.fn()} />);
+    expect(screen.getByRole("img", { name: "Jax" }).getAttribute("src")).toBe(
+      COM_SQUARE.thumbnailUrl,
+    );
+  });
+});
+
+// --- densidade (T-40, fechado no T-46) ---------------------------------------------------
+//
+// O jsdom não faz layout, então aqui se prova a largura-alvo e a memória. As
+// colunas, contadas de verdade, estão no e2e `densidade.spec.ts`.
+
+describe("densidade da grade (T-40)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    window.localStorage.clear();
+  });
+
+  const lista = () => screen.getByRole("list", { name: "Campeões" });
+
+  it("abre densa, e alternar troca a largura-alvo do cartão", () => {
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    expect(lista().dataset.densidade).toBe("densa");
+    expect(lista().className).toContain("--spacing-alvo-cartao-denso");
+
+    fireEvent.click(screen.getByRole("button", { name: "Grade confortável" }));
+    expect(lista().dataset.densidade).toBe("confortavel");
+    expect(lista().className).toContain("--spacing-alvo-cartao-confortavel");
+    expect(
+      screen.getByRole("button", { name: "Grade confortável" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(screen.getByRole("button", { name: "Grade densa" }).getAttribute("aria-pressed")).toBe(
+      "false",
+    );
+  });
+
+  it("a escolha sobrevive a montar de novo — que é o que recarregar faz", () => {
+    const { unmount } = render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Grade confortável" }));
+    unmount();
+
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    expect(lista().dataset.densidade).toBe("confortavel");
+  });
+
+  it("sem localStorage — o modo privado lança —, abre densa e nada quebra", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("SecurityError");
+    });
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("SecurityError");
+    });
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    expect(lista().dataset.densidade).toBe("densa");
+
+    // A escolha vale até recarregar.
+    fireEvent.click(screen.getByRole("button", { name: "Grade confortável" }));
+    expect(lista().dataset.densidade).toBe("confortavel");
+  });
+});
+
+// --- a busca flutua sobre a grade (T-46) --------------------------------------------------
+
+describe("a busca flutuante (T-46)", () => {
+  function digitar(consulta: string) {
+    render(<PaletaDeBusca catalog={CATALOGO_DO_JAX} onChampion={vi.fn()} onSkin={vi.fn()} />);
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: consulta } });
+  }
+  const lista = () => document.querySelector("[data-aberta]") as HTMLElement;
+  const campo = () => screen.getByRole("combobox") as HTMLInputElement;
+
+  it("cada resultado diz o que é: campeão com as skins, skin com o dono (RF-24)", () => {
+    digitar("jax");
+    expect(screen.getByText("Campeão · 2 skins")).toBeTruthy();
+    cleanup();
+    digitar("deus da guerra");
+    expect(screen.getByText("Skin · Jax")).toBeTruthy();
+  });
+
+  it("escolher fecha a lista e limpa o campo para o próximo nome", () => {
+    digitar("jax");
+    expect(lista().dataset.aberta).toBe("true");
+    fireEvent.click(document.querySelector("[cmdk-item]")!);
+    expect(lista().dataset.aberta).toBe("false");
+    expect(campo().value).toBe("");
+  });
+
+  it("o primeiro Escape fecha a lista; o segundo apaga o que foi digitado", () => {
+    digitar("jax");
+    fireEvent.keyDown(campo(), { key: "Escape" });
+    expect(lista().dataset.aberta).toBe("false");
+    expect(campo().value).toBe("jax");
+
+    fireEvent.keyDown(campo(), { key: "Escape" });
+    expect(campo().value).toBe("");
+  });
+
+  it("clicar fora fecha", () => {
+    digitar("jax");
+    fireEvent.pointerDown(document.body);
+    expect(lista().dataset.aberta).toBe("false");
+  });
+
+  it("nada encontrado ensina o que dá para digitar", () => {
+    digitar("zzzz");
+    expect(screen.getByText("Nada para “zzzz”.")).toBeTruthy();
+    expect(screen.getByText(/um apelido como mf ou j4/)).toBeTruthy();
+  });
+});
