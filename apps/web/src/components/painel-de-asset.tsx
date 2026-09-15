@@ -72,6 +72,12 @@ export interface PainelDeAssetProps {
    * aberto perderia o painel do campeão junto.
    */
   readonly fecharComEsc?: boolean;
+  /**
+   * Dentro de outro painel que já tem o próprio fechar (T-47): o "fechar"
+   * daqui some. Dois botões fechando a mesma coisa por caminhos diferentes são
+   * um a mais para achar e um a mais para entender.
+   */
+  readonly embutido?: boolean;
 }
 
 async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: string): Promise<void> {
@@ -96,6 +102,7 @@ export function PainelDeAsset({
   selecao,
   onAlternar,
   fecharComEsc = true,
+  embutido = false,
 }: PainelDeAssetProps) {
   const ordenados = useMemo(() => orderAssets(assets), [assets]);
   const [estados, setEstados] = useState<Record<string, EstadoDoCartao>>({});
@@ -120,9 +127,11 @@ export function PainelDeAsset({
         <span className="font-mono text-11 text-texto-suave">
           {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
         </span>
-        <Botao variante="fantasma" tamanho="md" onClick={onClose} className="ml-auto">
-          fechar
-        </Botao>
+        {!embutido && (
+          <Botao variante="fantasma" tamanho="md" onClick={onClose} className="ml-auto">
+            fechar
+          </Botao>
+        )}
       </div>
 
       {ordenados.length > LIMITE_DE_VIRTUALIZACAO ? (

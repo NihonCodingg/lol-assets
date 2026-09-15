@@ -159,6 +159,13 @@ body {
   outline-offset: 0;
 }
 
+/* Contêiner que recebe o foco só para o teclado começar dentro dele — o painel
+   lateral ao abrir (T-47). Ele não é controle: o anel fica para o que se
+   aperta, e o primeiro Tab já chega no fechar. */
+[data-foco-contido]:focus-visible {
+  outline: none;
+}
+
 /* Quem pede menos movimento ao sistema recebe menos movimento: transição e
    pulso viram instantâneos, e o estado continua dito pela cor e pelo texto. */
 @media (prefers-reduced-motion: reduce) {

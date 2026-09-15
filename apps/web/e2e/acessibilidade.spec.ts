@@ -84,14 +84,20 @@ test.describe("só com teclado", () => {
       const marca = await page.evaluate(() => {
         const foco = document.activeElement as HTMLElement | null;
         if (!foco || foco === document.body) return "";
-        return `${foco.tagName}:${foco.getAttribute("aria-label") ?? foco.textContent?.trim().slice(0, 40) ?? ""}`;
+        // O tipo entra na marca desde o T-47: o seletor de skin virou um grupo
+        // de rádios, e rádio não tem `aria-label` nem texto próprio — o nome
+        // dele vem do rótulo com o tile.
+        const tipo = foco.getAttribute("type") ?? "";
+        return `${foco.tagName}:${tipo}:${foco.getAttribute("aria-label") ?? foco.textContent?.trim().slice(0, 40) ?? ""}`;
       });
       if (marca) alcancados.add(marca);
     }
 
     expect([...alcancados].some((m) => m.includes("Baixar original"))).toBe(true);
-    expect([...alcancados].some((m) => m.includes("Selecionar skin"))).toBe(true);
-    expect([...alcancados].some((m) => m.includes("fechar"))).toBe(true);
+    // O seletor de skin (T-47): o grupo de rádios é uma parada só no Tab.
+    expect([...alcancados].some((m) => m.startsWith("INPUT:radio:"))).toBe(true);
+    // Um fechar só desde o T-47: o "Fechar" do canto, com F maiúsculo.
+    expect([...alcancados].some((m) => m.toLowerCase().includes("fechar"))).toBe(true);
   });
 
   test("Escape fecha o painel, como manda o padrão", async ({ page }) => {
@@ -183,11 +189,20 @@ test.describe("texto alternativo", () => {
     await page.click('button:has-text("Jax")');
     await expect(page.locator("img[data-previa]").first()).toBeVisible();
 
-    const semAlt = await page
-      .locator("img")
-      .evaluateAll((imgs) =>
-        imgs.filter((img) => !(img as HTMLImageElement).alt.trim()).map((img) => img.outerHTML),
-      );
+    // Desde o T-46 e o T-47 há imagem decorativa de propósito — a miniatura ao
+    // lado de um nome já escrito, o tile desfocado atrás da vitrine. Para elas o
+    // certo é `alt=""`, e a regra passa a ser: toda imagem tem `alt`, e `alt`
+    // vazio só vale se a imagem se declarar decorativa com `aria-hidden`.
+    // Imagem esquecida, sem o atributo ou vazia sem declaração, continua caindo.
+    const semAlt = await page.locator("img").evaluateAll((imgs) =>
+      imgs
+        .filter((img) => {
+          const alt = img.getAttribute("alt");
+          if (alt === null) return true;
+          return !alt.trim() && img.getAttribute("aria-hidden") !== "true";
+        })
+        .map((img) => img.outerHTML),
+    );
 
     expect(semAlt).toEqual([]);
   });
