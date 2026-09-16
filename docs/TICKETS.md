@@ -2233,7 +2233,7 @@ limite de 500 linhas.
 
 ---
 
-### ⏳ T-44 — A faixa do topo no telefone
+### ✅ T-44 — A faixa do topo no telefone
 
 | | |
 |---|---|
@@ -2262,6 +2262,9 @@ limite de 500 linhas.
 2. Os dois avisos continuam em toda página, inteiros — o e2e de tela estreita segue passando.
 
 > **Decidido em 14/09/2026:** no celular, os avisos vão para o fim da página. Executado no **T-49**.
+>
+> **Fechado pelo T-49 em 16/09/2026:** a faixa tem 92 px em 390×844, e os dois avisos continuam
+> inteiros em toda página, no fim dela.
 
 ---
 
@@ -2426,7 +2429,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
    máximo 66 *tiles* no DOM. A lista de antes dava 16,6 ms com 21 cartões.
 2. ✅ "Selecionar os N filtrados" continua selecionando só o que o filtro mostra — agora com teste.
 
-### ⏳ T-49 — Celular (fecha o T-44)
+### ✅ T-49 — Celular (fecha o T-44)
 
 | | |
 |---|---|
@@ -2434,18 +2437,34 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 | **Dependências** | T-46, T-47, T-48 |
 | **Cobre** | RF-21, RNF-11; fecha o **T-44** |
 
+> **Entregue em 16/09/2026.** Três decisões e dois defeitos no caminho.
+> - **A faixa do topo tem duas linhas:** a marca, e uma linha que rola de lado com as categorias
+>   e depois "Sobre" e "Código". É a mesma ordem do DOM e do computador; pôr as seções ao lado
+>   da marca exigiria reordenar só com CSS, e o foco do teclado andaria fora da ordem visual.
+> - **Os avisos da Riot são duas cópias no DOM**, e só uma aparece em cada largura: a da barra
+>   lateral no computador, a do fim da área que rola no telefone — depois da grade, da galeria,
+>   do vazio. A página Sobre já os tem em destaque; a 404 ganhou página própria para tê-los.
+> - **Alvo de toque de 44 px** vale para o painel do campeão inteiro em tela de toque
+>   (`pointer: coarse`), para a faixa do topo e para a barra da categoria no telefone. A caixa do
+>   lote continua com 17 px, e ganha uma área invisível de 45 px em volta.
+> - **Defeito: o telefone mostrava o site reduzido.** Duas causas com o mesmo sintoma, as duas só
+>   com o índice real, que tem mais categorias que a fixture: a coluna implícita do grid crescia até
+>   a largura da linha de categorias (668 px), e a caixa escondida de cada chip de função, em
+>   `position: absolute` sem ancestral posicionado, escapava da linha que rola. O e2e alarga as
+>   duas linhas e confere que a página continua com 390 px.
+> - **Defeito: `min-h-11` não é 44 px aqui.** A raiz tem 14 px, e a escala numérica do Tailwind
+>   anda em 3,5 px. Os 44 px usam o token `controle-xl`.
+
 **Entra**
 - Topo compacto; categorias numa linha rolável.
 - Os dois avisos no fim da página, em toda página; no computador continuam no pé da barra lateral.
 - Painel do campeão em tela cheia, com alvos de toque de 44 px.
 
 **Critérios de aceite**
-1. A faixa do topo ocupa menos de 200 px em 390×844.
-2. Os e2e de 375 px passam.
-3. Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando linhas em
-   375×720. Em 14/09 ela ficava sem nenhuma: o aviso tomava a última altura que sobrava para a
-   lista virtual. Achado quando a fixture do e2e passou de 72 horas (#54); vira um e2e com
-   índice velho.
+1. ✅ A faixa do topo ocupa menos de 200 px em 390×844: **92 px** (eram 274).
+2. ✅ Os e2e de 375 px passam — e há um arquivo novo, `e2e/celular.spec.ts`, em 390×844 com toque.
+3. ✅ Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando *tiles* em
+   375×720: e2e com o relógio dez dias depois da fixture.
 
 ### ⏳ T-50 — Acabamento
 
@@ -2593,4 +2612,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
-| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

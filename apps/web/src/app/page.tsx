@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Asset, Catalog, CatalogChampion, IndexManifest } from "@lol-assets/schema";
 
 import { AvisoDeIndiceVelho } from "@/components/aviso-de-indice-velho";
+import { AvisosNoFim } from "@/components/avisos-da-riot";
 import { EsqueletoDaGrade, GradeDeCampeoes } from "@/components/grade-de-campeoes";
 import { useNavegacao } from "@/components/navegacao-context";
 import { NavegacaoPorCategoria } from "@/components/navegacao-por-categoria";
@@ -110,7 +111,7 @@ export default function HomePage() {
           Carregando o catálogo…
         </p>
         <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
-          <Esqueleto className="h-controle-lg w-full max-w-busca-max rounded-medio md:h-controle-xl" />
+          <Esqueleto className="h-controle-xl w-full max-w-busca-max rounded-medio" />
         </div>
         <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
           <Esqueleto className="h-controle-md w-80 max-w-full" />
@@ -118,6 +119,7 @@ export default function HomePage() {
         <div className="min-h-0 flex-1 overflow-hidden">
           <EsqueletoDaGrade />
         </div>
+        <AvisosNoFim className="flex-none" />
       </main>
     );
   }
@@ -138,6 +140,7 @@ export default function HomePage() {
         <Botao tamanho="md" onClick={() => window.location.reload()}>
           Recarregar
         </Botao>
+        <AvisosNoFim className="mt-6 w-full max-w-busca-max text-left" />
       </Moldura>
     );
   }
@@ -176,6 +179,8 @@ export default function HomePage() {
               assetsBaseUrl={BASE_ASSETS}
               onAbrir={(champion) => void abrirCampeao(champion)}
             />
+            {/* RF-21 no telefone: o fim da página é o fim da grade (T-49). */}
+            <AvisosNoFim />
           </div>
         ) : (
           /* RF-08: o outro caminho, para quem não tem nome para digitar.

@@ -26,6 +26,13 @@
  *
  * O `Escape` mora aqui, pela mesma razão do painel do campeão: com a ampliação
  * aberta, fecha a ampliação; senão, volta aos campeões.
+ *
+ * ## No telefone (T-49)
+ *
+ * Voltar e o filtro por texto dividem a primeira linha; os grupos, "Mais filtros"
+ * e "Mostrar tudo" vão numa linha só que rola de lado — em linhas quebradas,
+ * eles tomavam a altura que sobrava para a galeria. O "N de M" sai: o título da
+ * galeria já diz quantos. E os avisos da Riot ficam no fim da área que rola.
  */
 
 import { ArrowLeft, ListChecks, Search, SlidersHorizontal } from "lucide-react";
@@ -34,6 +41,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Asset, AssetCategory, IndexShard } from "@lol-assets/schema";
 
 import { Ampliacao } from "@/components/ampliacao";
+import { AvisosNoFim } from "@/components/avisos-da-riot";
 import { BarraDeLote } from "@/components/barra-de-lote";
 import { PainelDeAsset } from "@/components/painel-de-asset";
 import { Botao } from "@/components/ui/botao";
@@ -194,14 +202,19 @@ export function NavegacaoPorCategoria({
     <section aria-label="Categorias" className="flex min-h-0 flex-1 flex-col">
       <div className="flex-none border-b border-borda bg-fundo-barra">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2">
-          <Botao variante="fantasma" tamanho="md" className="-ml-1.5 px-1.5" onClick={onFechar}>
+          <Botao
+            variante="fantasma"
+            tamanho="md"
+            className="-ml-1.5 px-1.5 max-md:min-h-controle-xl"
+            onClick={onFechar}
+          >
             <ArrowLeft aria-hidden="true" strokeWidth={1.75} className="size-4" />
             Voltar aos campeões
           </Botao>
 
           {pronta && (
             <>
-              <label className="relative flex items-center">
+              <label className="relative flex items-center max-md:min-w-0 max-md:flex-1">
                 <span className="sr-only">Filtrar por texto</span>
                 <Search
                   aria-hidden="true"
@@ -214,45 +227,51 @@ export function NavegacaoPorCategoria({
                   value={consulta}
                   placeholder="Nome ou arquivo"
                   onChange={(evento) => setConsulta(evento.target.value)}
-                  className="h-controle-md w-52 pr-2 pl-8 text-12"
+                  className="h-controle-md w-52 pr-2 pl-8 text-12 max-md:h-controle-xl max-md:w-full max-md:text-13"
                 />
               </label>
 
-              {naBarra.map((grupo) => (
-                <GrupoDeChips
-                  key={grupo.chave}
-                  grupo={grupo}
-                  marcadas={marcadas}
-                  onAlternar={alternarFiltro}
-                />
-              ))}
+              {/* No telefone, uma linha que rola de lado; no computador este
+                  `div` some (`contents`) e os filtros quebram na barra. */}
+              {(naBarra.length > 0 || maisFiltros.length > 0 || marcadas.size > 0) && (
+                <div className="flex items-center gap-x-3 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none] md:contents">
+                  {naBarra.map((grupo) => (
+                    <GrupoDeChips
+                      key={grupo.chave}
+                      grupo={grupo}
+                      marcadas={marcadas}
+                      onAlternar={alternarFiltro}
+                    />
+                  ))}
 
-              {maisFiltros.length > 0 && (
-                <Botao
-                  variante={maisFiltrosAbertos ? "contorno" : "fantasma"}
-                  tamanho="md"
-                  aria-expanded={maisFiltrosAbertos}
-                  aria-controls={ID_DE_MAIS_FILTROS}
-                  onClick={() => setMaisFiltrosAbertos((aberto) => !aberto)}
-                >
-                  <SlidersHorizontal aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
-                  Mais filtros
-                  {escondidas > 0 && (
-                    <span className="rounded-min bg-acento-suave px-1 font-mono text-10 text-acento-mais-claro">
-                      {escondidas}
-                    </span>
+                  {maisFiltros.length > 0 && (
+                    <Botao
+                      variante={maisFiltrosAbertos ? "contorno" : "fantasma"}
+                      tamanho="md"
+                      aria-expanded={maisFiltrosAbertos}
+                      aria-controls={ID_DE_MAIS_FILTROS}
+                      onClick={() => setMaisFiltrosAbertos((aberto) => !aberto)}
+                    >
+                      <SlidersHorizontal aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
+                      Mais filtros
+                      {escondidas > 0 && (
+                        <span className="rounded-min bg-acento-suave px-1 font-mono text-10 text-acento-mais-claro">
+                          {escondidas}
+                        </span>
+                      )}
+                    </Botao>
                   )}
-                </Botao>
+
+                  {/* §B.1.6: a categoria `item` abre filtrada, e isto é a saída. */}
+                  {marcadas.size > 0 && (
+                    <Botao variante="fantasma" tamanho="md" onClick={() => setMarcadas(new Set())}>
+                      Mostrar tudo
+                    </Botao>
+                  )}
+                </div>
               )}
 
-              {/* §B.1.6: a categoria `item` abre filtrada, e isto é a saída. */}
-              {marcadas.size > 0 && (
-                <Botao variante="fantasma" tamanho="md" onClick={() => setMarcadas(new Set())}>
-                  Mostrar tudo
-                </Botao>
-              )}
-
-              <p className="ml-auto font-mono text-11 tabular-nums text-texto-suave">
+              <p className="ml-auto hidden font-mono text-11 tabular-nums text-texto-suave md:block">
                 {filtrados.length} de {assets.length}
               </p>
             </>
@@ -262,7 +281,9 @@ export function NavegacaoPorCategoria({
         {pronta && maisFiltrosAbertos && maisFiltros.length > 0 && (
           <div
             id={ID_DE_MAIS_FILTROS}
-            className="flex flex-col gap-2 border-t border-borda px-3.5 pt-2 pb-2.5"
+            // No telefone são dez linhas de classes: com altura máxima, a galeria
+            // continua aparecendo embaixo.
+            className="flex flex-col gap-2 border-t border-borda px-3.5 pt-2 pb-2.5 max-md:max-h-48 max-md:overflow-y-auto"
           >
             {maisFiltros.map((grupo) => (
               <GrupoDeChips
@@ -276,49 +297,55 @@ export function NavegacaoPorCategoria({
         )}
       </div>
 
-      {carga.fase === "carregando" && <Carregando rotulo={rotulo} />}
-      {carga.fase === "erro" && (
-        <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
-          Falhou ao carregar: {carga.motivo}
-        </p>
+      {(carga.fase !== "pronta" || filtrados.length === 0) && (
+        // Carregando, erro e vazio: o que houver, e os avisos embaixo, na mesma
+        // área que rola.
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {carga.fase === "carregando" && <Carregando rotulo={rotulo} />}
+          {carga.fase === "erro" && (
+            <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
+              Falhou ao carregar: {carga.motivo}
+            </p>
+          )}
+          {pronta && <Vazio descricao={descreverFiltro(marcadas, consulta, grupos)} />}
+          <AvisosNoFim className="mt-auto" />
+        </div>
       )}
 
-      {pronta &&
-        (filtrados.length === 0 ? (
-          <Vazio descricao={descreverFiltro(marcadas, consulta, grupos)} />
-        ) : (
-          <>
-            <PainelDeAsset
-              titulo={rotulo}
-              assets={filtrados}
-              assetsBaseUrl={assetsBaseUrl}
-              onClose={onFechar}
-              fecharComEsc={false}
-              selecao={selecao}
-              onAlternar={alternarNoLote}
-              onAmpliar={setAmpliado}
-              acoes={
-                <Botao
-                  variante="fantasma"
-                  tamanho="md"
-                  onClick={() => setSelecao(tudoDo(filtrados, true))}
-                >
-                  <ListChecks aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
-                  Selecionar os {filtrados.length} filtrados
-                </Botao>
-              }
-            />
+      {pronta && filtrados.length > 0 && (
+        <>
+          <PainelDeAsset
+            titulo={rotulo}
+            assets={filtrados}
+            assetsBaseUrl={assetsBaseUrl}
+            onClose={onFechar}
+            fecharComEsc={false}
+            selecao={selecao}
+            onAlternar={alternarNoLote}
+            onAmpliar={setAmpliado}
+            fim={<AvisosNoFim />}
+            acoes={
+              <Botao
+                variante="fantasma"
+                tamanho="md"
+                onClick={() => setSelecao(tudoDo(filtrados, true))}
+              >
+                <ListChecks aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
+                Selecionar os {filtrados.length} filtrados
+              </Botao>
+            }
+          />
 
-            {/* No pé, como no painel do campeão: com 40 selecionados, o botão
-                de baixar não pode estar a uma rolagem de distância. */}
-            <BarraDeLote
-              assets={noLote}
-              rotulo={rotulo}
-              assetsBaseUrl={assetsBaseUrl}
-              onLimpar={() => setSelecao(new Set())}
-            />
-          </>
-        ))}
+          {/* No pé, como no painel do campeão: com 40 selecionados, o botão
+              de baixar não pode estar a uma rolagem de distância. */}
+          <BarraDeLote
+            assets={noLote}
+            rotulo={rotulo}
+            assetsBaseUrl={assetsBaseUrl}
+            onLimpar={() => setSelecao(new Set())}
+          />
+        </>
+      )}
 
       {ampliado && (
         <Ampliacao
@@ -342,7 +369,7 @@ function GrupoDeChips({
   onAlternar: (tag: string) => void;
 }) {
   return (
-    <fieldset className="flex flex-wrap items-center gap-1.5">
+    <fieldset className="flex min-w-0 flex-none flex-wrap items-center gap-1.5 max-md:flex-nowrap">
       <legend className="float-left mr-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
         {grupo.rotulo}
       </legend>
