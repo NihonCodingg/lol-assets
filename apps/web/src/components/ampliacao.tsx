@@ -4,10 +4,11 @@
  * A ampliação: a arte no tamanho que a tela aguenta, para conferir o detalhe
  * antes de baixar (T-47b).
  *
- * É um diálogo por cima do painel, e o `Escape` dele **não** mora aqui: o painel
- * do campeão já trata a tecla, na ordem ampliação → chromas → painel (ver
- * `painel-do-campeao.tsx`). Por isso o Radix não fecha sozinho no `Escape` — dois
- * donos para a mesma tecla fechariam a ampliação e o painel de uma vez.
+ * É um diálogo por cima do painel, e o `Escape` dele **não** mora aqui: quem a
+ * abre já trata a tecla — o painel do campeão, na ordem ampliação → chromas →
+ * painel, e a categoria, na ordem ampliação → voltar aos campeões (T-48). Por
+ * isso o Radix não fecha sozinho no `Escape` — dois donos para a mesma tecla
+ * fechariam a ampliação e o que está embaixo dela de uma vez.
  *
  * A arte aparece no tamanho do arquivo, no máximo: um ícone de 64 px continua com
  * 64 px, nítido, em vez de esticado até a tela. Clicar fora da arte fecha.

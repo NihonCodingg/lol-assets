@@ -12,25 +12,43 @@
  * comportamento real como padrão. É o mesmo desenho do `PngDeps` do
  * `asset-file.ts`: testável sem mock de módulo.
  *
- * **Lista grande vira lista virtual.** Acima de `LIMITE_DE_VIRTUALIZACAO` cartões
- * o painel troca o `<ul>` por um scroller do TanStack Virtual ([ADR 0011]): a
- * categoria `profile_icon` tem 5.042 ícones, e 5.042 `<article>` no DOM é o
- * tipo de coisa que só se percebe no meio da rolagem. Abaixo do limite nada
- * muda — o painel de um campeão tem dezenas de cartões e não paga scroller
- * próprio por isso.
+ * **Dois desenhos.**
  *
- * **Grade, no painel do campeão (T-47b).** Com `grade`, os cartões vêm agrupados
- * por família — a arte grande, os retratos, as habilidades —, cada um com a
- * prévia na proporção real e sem ampliar imagem menor que a caixa. Com
- * `onAmpliar`, a prévia vira o botão da ampliação. As categorias continuam em
- * lista até o T-48.
+ * - **Grade** (`grade`), no painel do campeão (T-47b): cartões agrupados por
+ *   família — a arte grande, os retratos, as habilidades —, cada um com a prévia
+ *   na proporção real.
+ * - **Galeria**, nas categorias (T-48): *tiles* de altura igual, com a prévia, o
+ *   nome e a ficha à vista, e as ações por cima da prévia no *hover* e no foco —
+ *   sempre à vista em tela de toque, onde não há *hover*.
+ *
+ * **Galeria grande vira galeria virtual.** Acima de `LIMITE_DE_VIRTUALIZACAO`
+ * *tiles* o painel desenha só as linhas que estão na tela ([ADR 0011]): a
+ * categoria `profile_icon` tem 5.042 ícones. A altura do *tile* é a mesma na
+ * lista inteira, calculada dos arquivos dela (`medidasDaGaleria`), e é isso que
+ * deixa virtualizar por linha sem medir nada.
+ *
+ * **Sem "fechar" (T-48).** Quem contém o painel fecha: o `×` do painel do
+ * campeão, o "Voltar aos campeões" da categoria. Um botão a mais fechando a
+ * mesma coisa era um a mais para achar e um a mais para entender. O `Escape`
+ * continua aqui, para quem não trata a tecla por conta própria.
  *
  * Baixar dá retorno no próprio botão: o ícone gira enquanto baixa e vira ✓ por
  * dois segundos quando termina, e o leitor de tela ouve "Arquivo baixado". O
  * nome do botão não muda — quem procura "Baixar original" continua achando.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from "react";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Check, Link2, Maximize2 } from "lucide-react";
@@ -39,11 +57,14 @@ import type { Asset } from "@lol-assets/schema";
 
 import {
   agruparPorFamilia,
+  colunasDaGaleria,
   LIMITE_DE_VIRTUALIZACAO,
+  medidasDaGaleria,
   orderAssets,
   rotuloDoTipo,
+  VAO_DA_GALERIA,
+  type MedidasDaGaleria,
 } from "@/lib/asset-panel";
-import { Botao } from "@/components/ui/botao";
 import { BotaoIcone } from "@/components/ui/botao-icone";
 import { Imagem } from "@/components/ui/imagem";
 import { ParDeDownload, type QualDownload } from "@/components/ui/par-de-download";
@@ -53,6 +74,7 @@ import {
   assetUrl,
   canConvertToPng,
   convertToPng,
+  formatBytes,
   pngFileName,
   saveBlob,
 } from "@/lib/asset-file";
@@ -63,6 +85,7 @@ export interface PainelDeAssetProps {
   readonly titulo: string;
   readonly assets: readonly Asset[];
   readonly assetsBaseUrl?: string;
+  /** O que o `Escape` faz, quando `fecharComEsc`. */
   readonly onClose: () => void;
   readonly baixar?: (asset: Asset, comoPng: boolean, url: string) => Promise<void>;
   readonly copiar?: (texto: string) => Promise<void>;
@@ -85,18 +108,14 @@ export interface PainelDeAssetProps {
    */
   readonly fecharComEsc?: boolean;
   /**
-   * Dentro de outro painel que já tem o próprio fechar (T-47): o "fechar"
-   * daqui some. Dois botões fechando a mesma coisa por caminhos diferentes são
-   * um a mais para achar e um a mais para entender.
-   */
-  readonly embutido?: boolean;
-  /**
    * Grade agrupada por família, com a prévia na proporção real (T-47b). É o
-   * painel do campeão; as categorias continuam em lista até o T-48.
+   * painel do campeão; sem ela, a galeria das categorias.
    */
   readonly grade?: boolean;
-  /** Quem amplia a arte. Com ele, a prévia do cartão da grade vira botão. */
+  /** Quem amplia a arte. Com ele, a prévia vira botão. */
   readonly onAmpliar?: (asset: Asset) => void;
+  /** Ações da lista inteira, à direita do título — "Selecionar os N filtrados". */
+  readonly acoes?: ReactNode;
 }
 
 async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: string): Promise<void> {
@@ -121,9 +140,9 @@ export function PainelDeAsset({
   selecao,
   onAlternar,
   fecharComEsc = true,
-  embutido = false,
   grade = false,
   onAmpliar,
+  acoes,
 }: PainelDeAssetProps) {
   const ordenados = useMemo(() => orderAssets(assets), [assets]);
   const grupos = useMemo(() => (grade ? agruparPorFamilia(ordenados) : []), [grade, ordenados]);
@@ -142,18 +161,26 @@ export function PainelDeAsset({
     setEstados((anteriores) => ({ ...anteriores, [id]: estado }));
   }, []);
 
+  const doCartao = (asset: Asset) => ({
+    asset,
+    url: assetUrl(asset, assetsBaseUrl),
+    estado: estados[asset.id] ?? "pronto",
+    marcar,
+    baixar,
+    copiar,
+    selecionado: selecao?.has(asset.id),
+    onAlternar,
+    onAmpliar,
+  });
+
   return (
     <section aria-label={titulo} className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-none items-center gap-2 px-3.5 py-2">
+      <div className="flex flex-none flex-wrap items-center gap-x-2 gap-y-1 px-3.5 py-2">
         <h2 className="truncate text-12 font-medium text-texto-forte">{titulo}</h2>
         <span className="font-mono text-11 text-texto-suave">
           {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
         </span>
-        {!embutido && (
-          <Botao variante="fantasma" tamanho="md" onClick={onClose} className="ml-auto">
-            fechar
-          </Botao>
-        )}
+        {acoes && <div className="ml-auto flex items-center gap-1.5">{acoes}</div>}
       </div>
 
       {grade ? (
@@ -163,17 +190,7 @@ export function PainelDeAsset({
               <ul className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] items-start gap-3">
                 {grupo.assets.map((asset) => (
                   <li key={asset.id}>
-                    <CartaoDaGrade
-                      asset={asset}
-                      url={assetUrl(asset, assetsBaseUrl)}
-                      estado={estados[asset.id] ?? "pronto"}
-                      marcar={marcar}
-                      baixar={baixar}
-                      copiar={copiar}
-                      selecionado={selecao?.has(asset.id)}
-                      onAlternar={onAlternar}
-                      onAmpliar={onAmpliar}
-                    />
+                    <CartaoDaGrade {...doCartao(asset)} />
                   </li>
                 ))}
               </ul>
@@ -193,144 +210,129 @@ export function PainelDeAsset({
             );
           })}
         </div>
-      ) : ordenados.length > LIMITE_DE_VIRTUALIZACAO ? (
-        <ListaVirtual
-          assets={ordenados}
-          assetsBaseUrl={assetsBaseUrl}
-          estados={estados}
-          marcar={marcar}
-          baixar={baixar}
-          copiar={copiar}
-          selecao={selecao}
-          onAlternar={onAlternar}
-        />
       ) : (
-        <ul className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3.5 pb-4">
-          {ordenados.map((asset) => (
-            <li key={asset.id}>
-              <CartaoDeAsset
-                asset={asset}
-                url={assetUrl(asset, assetsBaseUrl)}
-                estado={estados[asset.id] ?? "pronto"}
-                marcar={marcar}
-                baixar={baixar}
-                copiar={copiar}
-                selecionado={selecao?.has(asset.id)}
-                onAlternar={onAlternar}
-              />
-            </li>
-          ))}
-        </ul>
+        <Galeria
+          assets={ordenados}
+          virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
+          modoSelecao={(selecao?.size ?? 0) > 0}
+          tile={(asset, medidas, modoSelecao) => (
+            <TileDaGaleria {...doCartao(asset)} medidas={medidas} modoSelecao={modoSelecao} />
+          )}
+        />
       )}
     </section>
   );
 }
 
-interface ListaVirtualProps {
-  readonly assets: readonly Asset[];
-  readonly assetsBaseUrl?: string;
-  readonly estados: Record<string, EstadoDoCartao>;
-  readonly marcar: (id: string, estado: EstadoDoCartao) => void;
-  readonly baixar: (asset: Asset, comoPng: boolean, url: string) => Promise<void>;
-  readonly copiar: (texto: string) => Promise<void>;
-  readonly selecao?: ReadonlySet<string>;
-  readonly onAlternar?: (id: string) => void;
-  /**
-   * Se `Escape` fecha **este** painel.
-   *
-   * `false` quando ele está dentro de outro que já trata a tecla: dois
-   * ouvintes na mesma tecla fechariam os dois de uma vez, e quem tem chroma
-   * aberto perderia o painel do campeão junto.
-   */
-  readonly fecharComEsc?: boolean;
-}
+// --- a galeria (categorias, T-48) ---------------------------------------------------------
 
 /**
- * Altura **estimada** de um cartão, só para o primeiro quadro.
+ * A largura de um elemento, acompanhada.
  *
- * O virtualizador mede cada linha de verdade depois de desenhá-la (ver
- * `measureElement` abaixo); esta constante existe só para ele dimensionar a
- * barra de rolagem antes de ter medido qualquer coisa. Errar aqui custa um
- * salto no scroll, não um cartão por cima do outro.
+ * `useLayoutEffect` para a primeira leitura: as colunas ficam certas antes da
+ * primeira pintura, sem um quadro de uma coluna só. No jsdom, que não faz
+ * layout, a largura é 0 — e 0 é uma coluna, que é o que os testes esperam.
  */
-const ALTURA_ESTIMADA = 93;
+function useLargura(elemento: RefObject<HTMLElement | null>): number {
+  const [largura, setLargura] = useState(0);
+  useLayoutEffect(() => {
+    const atual = elemento.current;
+    if (!atual) return;
+    setLargura(atual.clientWidth);
+    const observador = new ResizeObserver(([entrada]) => {
+      if (entrada) setLargura(entrada.contentRect.width);
+    });
+    observador.observe(atual);
+    return () => observador.disconnect();
+  }, [elemento]);
+  return largura;
+}
 
-function ListaVirtual({
-  assets,
-  assetsBaseUrl,
-  estados,
-  marcar,
-  baixar,
-  copiar,
-  selecao,
-  onAlternar,
-}: ListaVirtualProps) {
+interface GaleriaProps {
+  readonly assets: readonly Asset[];
+  readonly virtual: boolean;
+  /** Com alguma coisa selecionada, as caixas ficam à vista em todos os tiles. */
+  readonly modoSelecao: boolean;
+  readonly tile: (asset: Asset, medidas: MedidasDaGaleria, modoSelecao: boolean) => ReactNode;
+}
+
+function Galeria({ assets, virtual, modoSelecao, tile }: GaleriaProps) {
   const scroller = useRef<HTMLDivElement>(null);
-  // Sem `measureElement`: o cartão tem altura previsível e medir de volta em
-  // jsdom (que não faz layout) devolveria zero e faria a lista se recalcular
-  // para sempre. Estimativa fixa é o que mantém isto testável.
-  const virtual = useVirtualizer({
-    count: assets.length,
+  const lista = useRef<HTMLUListElement>(null);
+  const largura = useLargura(lista);
+  const medidas = useMemo(() => medidasDaGaleria(assets), [assets]);
+  const colunas = colunasDaGaleria(largura, medidas);
+  const passo = medidas.alturaDoTile + VAO_DA_GALERIA;
+
+  // As linhas, não os tiles: é uma linha que tem altura fixa, e é por linha
+  // que a rolagem anda. Sem `measureElement` de propósito ([ADR 0011]).
+  const linhas = useVirtualizer({
+    count: virtual ? Math.ceil(assets.length / colunas) : 0,
     getScrollElement: () => scroller.current,
-    estimateSize: () => ALTURA_ESTIMADA,
-    overscan: 6,
-    /**
-     * Mede cada linha de verdade, em vez de assumir uma altura.
-     *
-     * Altura cravada não sobrevive: o cartão muda de forma entre telefone e
-     * desktop, o nome do asset quebra em duas linhas ou não, e os botões descem
-     * quando não cabem. Já quebrou duas vezes — a categoria `emote` chegou a
-     * desenhar imagem por cima do texto da linha seguinte.
-     *
-     * O `|| ALTURA_ESTIMADA` é o que mantém isto testável: o jsdom não faz
-     * layout e devolve 0 para tudo, e uma lista de alturas zero não desenha
-     * nada. Fora do navegador, vale a estimativa.
-     */
-    measureElement: (elemento) => elemento.getBoundingClientRect().height || ALTURA_ESTIMADA,
+    estimateSize: () => passo,
+    overscan: 3,
+    paddingEnd: 24 - VAO_DA_GALERIA,
   });
 
+  // `scrollbar-gutter: stable`: a barra de rolagem que aparece ou some não muda
+  // a largura, e as colunas não ficam trocando de número na borda.
+  const classeDoScroller = "min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]";
+
+  if (!virtual) {
+    return (
+      <div className={classeDoScroller}>
+        <ul
+          ref={lista}
+          className="mx-3.5 mb-6 grid"
+          style={{
+            gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
+            gridAutoRows: medidas.alturaDoTile,
+            gap: VAO_DA_GALERIA,
+          }}
+        >
+          {assets.map((asset) => (
+            <li key={asset.id}>{tile(asset, medidas, modoSelecao)}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   return (
-    <div
-      ref={scroller}
-      data-virtual="sim"
-      // `flex-1 min-h-0` em vez de uma altura fixa: a altura vem do pai, que é
-      // a coluna do painel. Uma `70vh` cravada aqui ignoraria a bandeja do lote
-      // e a barra de filtros que dividem a mesma tela.
-      className="min-h-0 flex-1 overflow-y-auto contain-strict"
-    >
-      <ul style={{ height: virtual.getTotalSize(), position: "relative", margin: 0, padding: 0 }}>
-        {virtual.getVirtualItems().map((item) => {
-          const asset = assets[item.index];
-          return (
+    // `flex-1 min-h-0` em vez de uma altura fixa: a altura vem do pai, que é a
+    // coluna do painel. Uma `70vh` cravada aqui ignoraria a bandeja do lote e a
+    // barra de filtros que dividem a mesma tela.
+    <div ref={scroller} data-virtual="sim" className={cn(classeDoScroller, "contain-strict")}>
+      <ul ref={lista} className="relative mx-3.5" style={{ height: linhas.getTotalSize() }}>
+        {linhas.getVirtualItems().flatMap((linha) => {
+          const inicio = linha.index * colunas;
+          return assets.slice(inicio, inicio + colunas).map((asset, coluna) => (
             <li
               key={asset.id}
-              data-index={item.index}
-              ref={virtual.measureElement}
+              // A lista tem 5.042 itens e desenha 40: sem isto, o leitor de tela
+              // anunciaria "item 3 de 40".
+              aria-setsize={assets.length}
+              aria-posinset={inicio + coluna + 1}
               style={{
                 position: "absolute",
                 top: 0,
-                left: 0,
-                width: "100%",
-                transform: `translateY(${item.start}px)`,
+                // Coluna k de c, com vão g: começa em k · (100% + g) / c.
+                left: `calc(${coluna} * (100% + ${VAO_DA_GALERIA}px) / ${colunas})`,
+                width: `calc((100% - ${(colunas - 1) * VAO_DA_GALERIA}px) / ${colunas})`,
+                height: medidas.alturaDoTile,
+                transform: `translateY(${linha.start}px)`,
               }}
             >
-              <CartaoDeAsset
-                asset={asset}
-                url={assetUrl(asset, assetsBaseUrl)}
-                estado={estados[asset.id] ?? "pronto"}
-                marcar={marcar}
-                baixar={baixar}
-                copiar={copiar}
-                selecionado={selecao?.has(asset.id)}
-                onAlternar={onAlternar}
-              />
+              {tile(asset, medidas, modoSelecao)}
             </li>
-          );
+          ));
         })}
       </ul>
     </div>
   );
 }
+
+// --- o que os cartões compartilham ---------------------------------------------------------
 
 interface CartaoProps {
   readonly asset: Asset;
@@ -341,9 +343,8 @@ interface CartaoProps {
   readonly copiar: (texto: string) => Promise<void>;
   readonly selecionado?: boolean;
   readonly onAlternar?: (id: string) => void;
+  readonly onAmpliar?: (asset: Asset) => void;
 }
-
-// --- o que os dois cartões compartilham ---------------------------------------------------
 
 /**
  * O download de um cartão: o estado dele no painel, e qual dos dois botões gira
@@ -426,10 +427,22 @@ function anuncioDe(copia: EstadoDaCopia, feito: QualDownload | null): string {
   return "";
 }
 
-function BotaoDeCopiar({ copia, onClick }: { copia: EstadoDaCopia; onClick: () => void }) {
+function BotaoDeCopiar({
+  copia,
+  onClick,
+  className,
+  leve = false,
+}: {
+  copia: EstadoDaCopia;
+  onClick: () => void;
+  className?: string;
+  /** A dica em CSS: na galeria virtual, o Radix de cada tile pesava na rolagem. */
+  leve?: boolean;
+}) {
   return (
     <BotaoIcone
       rotulo="Copiar URL"
+      dicaLeve={leve}
       dica={copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar" : undefined}
       dicaAberta={copia !== "parado"}
       icone={
@@ -440,6 +453,7 @@ function BotaoDeCopiar({ copia, onClick }: { copia: EstadoDaCopia; onClick: () =
         )
       }
       onClick={onClick}
+      className={className}
     />
   );
 }
@@ -482,9 +496,78 @@ function CaixaDeSelecao({
   );
 }
 
-// --- o cartão da lista (categorias) -------------------------------------------------------
+/**
+ * A prévia: absoluta e centralizada, no tamanho do arquivo e nunca maior que a
+ * caixa — um ícone de 64 px fica com 64 px, em vez de esticado e borrado. Com
+ * `onAmpliar`, ela é o botão da ampliação.
+ */
+function Previa({
+  asset,
+  url,
+  caixa,
+  folga,
+  onAmpliar,
+}: {
+  asset: Asset;
+  url: string;
+  caixa: { className?: string; style?: CSSProperties };
+  /** O respiro entre a imagem e a borda da caixa. */
+  folga?: string;
+  onAmpliar?: (asset: Asset) => void;
+}) {
+  const limite = folga ? `100% - ${folga}` : "100%";
+  const imagem = (
+    <div className={cn("w-full", caixa.className)} style={caixa.style}>
+      <Imagem
+        src={url}
+        alt={`Prévia de ${asset.names.pt_BR}`}
+        data-previa={asset.type}
+        classeDaCaixa="size-full"
+        className="absolute inset-0 m-auto size-auto"
+        style={{
+          maxWidth: `min(${limite}, ${asset.width}px)`,
+          maxHeight: `min(${limite}, ${asset.height}px)`,
+        }}
+      />
+    </div>
+  );
 
-function CartaoDeAsset({
+  if (!onAmpliar) return imagem;
+  return (
+    <button
+      type="button"
+      onClick={() => onAmpliar(asset)}
+      aria-label={`Ampliar ${asset.fileName}`}
+      className="group/previa relative block w-full cursor-zoom-in"
+    >
+      {imagem}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute top-2 right-2 grid size-7 place-items-center rounded-padrao bg-superficie/80 text-texto opacity-0 transition-opacity duration-150 ease-saida group-hover/previa:opacity-100 group-focus-visible/previa:opacity-100"
+      >
+        <Maximize2 strokeWidth={1.75} className="size-3.5" />
+      </span>
+    </button>
+  );
+}
+
+// --- o tile da galeria (categorias, T-48) --------------------------------------------------
+
+/**
+ * O que aparece no *hover* e no foco, e fica sempre à vista onde não há *hover*.
+ * Escondido com opacidade, não com `display`: continua alcançável pelo Tab, e o
+ * foco é justamente o que o mostra.
+ */
+const SO_NO_HOVER =
+  "opacity-0 transition-opacity duration-150 ease-saida group-hover/tile:opacity-100 group-focus-within/tile:opacity-100 [@media(hover:none)]:opacity-100";
+
+/**
+ * Memorizado: a cada quadro de rolagem a galeria virtual desenha de novo, e sem
+ * isto os 60 tiles na tela renderizavam inteiros junto — só para sair iguais.
+ * Com ele, rolar monta só as linhas que entram. As props são todas estáveis:
+ * valores simples e funções que não mudam enquanto a lista não muda.
+ */
+const TileDaGaleria = memo(function TileDaGaleria({
   asset,
   url,
   estado,
@@ -493,138 +576,103 @@ function CartaoDeAsset({
   copiar,
   selecionado,
   onAlternar,
-}: CartaoProps) {
+  onAmpliar,
+  medidas,
+  modoSelecao,
+}: CartaoProps & { readonly medidas: MedidasDaGaleria; readonly modoSelecao: boolean }) {
   const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
   const { copia, copiarUrl } = useCopia(copiar, url);
-  const ocupado = estado === "baixando";
+  // Enquanto alguma coisa acontece no tile, as ações não somem debaixo do mouse.
+  const ativo = estado !== "pronto" || andamento !== null || feito !== null || copia !== "parado";
 
   return (
     <article
       aria-label={asset.fileName}
       data-tipo={asset.type}
       data-estado={estado}
-      className="flex flex-col items-start gap-2 border-b border-borda px-0.5 py-2.5 sm:flex-row sm:items-center sm:gap-3"
+      className={cn(
+        "group/tile flex h-full flex-col overflow-hidden rounded-medio border bg-superficie-alta",
+        "transition-colors duration-150 ease-saida",
+        selecionado ? "border-acento" : "border-borda hover:border-borda-forte",
+      )}
     >
-      {onAlternar && (
-        <CaixaDeSelecao asset={asset} selecionado={selecionado} onAlternar={onAlternar} />
-      )}
-
-      {/* RNF-02: a prévia é o que responde "é esta arte?" antes de baixar 121 KB.
-          `loading="lazy"` porque uma categoria tem milhares de cartões e nem
-          todos passam pela tela.
-
-          `<img>` e não `next/image`: a URL é de terceiro e o [ADR 0012] não tem
-          storage nem proxy — otimizar exigiria servir os bytes por conta
-          própria, que é exatamente o que o projeto decidiu não fazer.
-
-          Altura cravada e `object-contain`: a linha da lista virtual tem altura
-          fixa, e prévia livre a estoura — foi o que fez a categoria `emote`
-          desenhar imagem por cima do texto da linha seguinte. */}
-      <Imagem
-        src={url}
-        alt={`Prévia de ${asset.names.pt_BR}`}
-        data-previa={asset.type}
-        classeDaCaixa="h-18 w-24 flex-none rounded-padrao"
-        className="object-contain"
-      />
-
-      {/* **Nome primeiro, tipo depois.** No painel de um campeão as linhas são
-          tipos da mesma arte e o nome se repete; numa categoria são 2.338
-          assets diferentes e o tipo se repete. Mostrar os dois é o único
-          arranjo que serve aos dois casos — sem ele, `emote` vira 2.338 linhas
-          escritas "Emote". */}
-      <div className="min-w-0 flex-1">
-        <h3 className="truncate text-13 font-medium text-texto-forte">{asset.names.pt_BR}</h3>
-        <p className="truncate font-mono text-10 uppercase tracking-rotulo text-texto-suave">
-          {rotuloDoTipo(asset.type)}
-        </p>
-        {/* RF-09: a ficha aparece antes de qualquer clique de download. */}
-        <p className="truncate font-mono text-11 text-texto-suave">{assetSummary(asset)}</p>
-      </div>
-
-      <div className="flex w-full flex-none flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end">
-        <ParDeDownload
-          podeConverter={canConvertToPng(asset)}
-          ocupado={ocupado}
-          baixando={andamento}
-          baixado={feito}
-          onOriginal={() => void acionar(false)}
-          onPng={() => void acionar(true)}
+      <div className="relative flex-none" style={{ height: medidas.alturaDaPrevia }}>
+        <Previa
+          asset={asset}
+          url={url}
+          caixa={{ style: { height: medidas.alturaDaPrevia } }}
+          folga="16px"
+          onAmpliar={onAmpliar}
         />
-        <BotaoDeCopiar copia={copia} onClick={copiarUrl} />
-        <span role="status" className="sr-only">
-          {anuncioDe(copia, feito)}
-        </span>
+
+        {onAlternar && (
+          <CaixaDeSelecao
+            asset={asset}
+            selecionado={selecionado}
+            onAlternar={onAlternar}
+            className={cn("absolute top-2 left-2", SO_NO_HOVER, (selecionado || modoSelecao) && "opacity-100")}
+          />
+        )}
+
+        <div
+          className={cn(
+            "absolute inset-x-0 bottom-0 flex items-center gap-1 bg-linear-to-t from-superficie/90 to-transparent p-1.5 pt-5",
+            SO_NO_HOVER,
+            ativo && "opacity-100",
+          )}
+        >
+          <ParDeDownload
+            compacto
+            podeConverter={canConvertToPng(asset)}
+            ocupado={estado === "baixando"}
+            baixando={andamento}
+            baixado={feito}
+            onOriginal={() => void acionar(false)}
+            onPng={() => void acionar(true)}
+          />
+          <div className="ml-auto">
+            <BotaoDeCopiar
+              leve
+              copia={copia}
+              onClick={copiarUrl}
+              className="bg-superficie/80 text-texto hover:bg-superficie"
+            />
+          </div>
+        </div>
+
+        {estado === "erro" && (
+          <p
+            role="alert"
+            className="absolute inset-x-1.5 top-1.5 rounded-padrao bg-superficie/90 px-2 py-1 text-11 leading-cartao text-acento-mais-claro"
+          >
+            Falhou ao baixar. Tente de novo.
+          </p>
+        )}
       </div>
 
-      {estado === "erro" && (
-        <p role="alert" className="flex-none text-11 text-acento-mais-claro">
-          Falhou ao baixar. Tente de novo.
+      <div className="flex min-w-0 flex-col px-2.5 pt-2 pb-2.5">
+        <h3 title={asset.names.pt_BR} className="truncate text-13 leading-5 font-medium text-texto-forte">
+          {asset.names.pt_BR}
+        </h3>
+        {/* RF-09: a ficha aparece antes de qualquer clique de download. Em duas
+            linhas, porque inteira ela não cabe num tile: um texto só, com a
+            quebra dentro, para continuar sendo uma ficha e não duas. */}
+        <p className="overflow-hidden font-mono text-11 leading-4 text-ellipsis whitespace-pre text-texto-suave">
+          {`${asset.width}×${asset.height} · ${asset.format}\n${formatBytes(asset.bytes)} · ${asset.source}`}
         </p>
-      )}
+      </div>
+
+      <span role="status" className="sr-only">
+        {anuncioDe(copia, feito)}
+      </span>
     </article>
   );
-}
+});
 
 // --- o cartão da grade (painel do campeão, T-47b) ----------------------------------------
 
 /** A altura máxima da prévia na grade: uma tela de carregamento é mais alta que larga. */
 const ALTURA_MAXIMA_DA_PREVIA = 256;
-
-function PreviaDaGrade({
-  asset,
-  url,
-  onAmpliar,
-}: {
-  asset: Asset;
-  url: string;
-  onAmpliar?: (asset: Asset) => void;
-}) {
-  const caixa = (
-    // Proporção real, e nunca maior que o arquivo: um ícone de 64 px fica com
-    // 64 px, centralizado, em vez de esticado e borrado.
-    <div
-      className="min-h-24 w-full"
-      style={{
-        aspectRatio: `${asset.width} / ${asset.height}`,
-        maxHeight: Math.min(ALTURA_MAXIMA_DA_PREVIA, asset.height),
-      }}
-    >
-      {/* Absoluta e centralizada, no tamanho do arquivo e nunca maior que a
-          caixa. Altura em porcentagem, aqui, não resolvia: a tela de
-          carregamento crescia pela largura e aparecia cortada no meio. */}
-      <Imagem
-        src={url}
-        alt={`Prévia de ${asset.names.pt_BR}`}
-        data-previa={asset.type}
-        classeDaCaixa="size-full"
-        className="absolute inset-0 m-auto size-auto"
-        style={{
-          maxWidth: `min(100%, ${asset.width}px)`,
-          maxHeight: `min(100%, ${asset.height}px)`,
-        }}
-      />
-    </div>
-  );
-
-  if (!onAmpliar) return caixa;
-  return (
-    <button
-      type="button"
-      onClick={() => onAmpliar(asset)}
-      aria-label={`Ampliar ${asset.fileName}`}
-      className="group/previa relative block w-full cursor-zoom-in"
-    >
-      {caixa}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute right-2 bottom-2 grid size-7 place-items-center rounded-padrao bg-superficie/80 text-texto opacity-0 transition-opacity duration-150 ease-saida group-hover/previa:opacity-100 group-focus-visible/previa:opacity-100"
-      >
-        <Maximize2 strokeWidth={1.75} className="size-3.5" />
-      </span>
-    </button>
-  );
-}
 
 function CartaoDaGrade({
   asset,
@@ -636,7 +684,7 @@ function CartaoDaGrade({
   selecionado,
   onAlternar,
   onAmpliar,
-}: CartaoProps & { readonly onAmpliar?: (asset: Asset) => void }) {
+}: CartaoProps) {
   const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
   const { copia, copiarUrl } = useCopia(copiar, url);
   const ocupado = estado === "baixando";
@@ -649,7 +697,21 @@ function CartaoDaGrade({
       className="flex flex-col overflow-hidden rounded-medio border border-borda bg-superficie-alta"
     >
       <div className="relative">
-        <PreviaDaGrade asset={asset} url={url} onAmpliar={onAmpliar} />
+        {/* Proporção real, e nunca maior que o arquivo. Altura em porcentagem,
+            aqui, não resolvia: a tela de carregamento crescia pela largura e
+            aparecia cortada no meio. */}
+        <Previa
+          asset={asset}
+          url={url}
+          caixa={{
+            className: "min-h-24",
+            style: {
+              aspectRatio: `${asset.width} / ${asset.height}`,
+              maxHeight: Math.min(ALTURA_MAXIMA_DA_PREVIA, asset.height),
+            },
+          }}
+          onAmpliar={onAmpliar}
+        />
         {onAlternar && (
           <CaixaDeSelecao
             asset={asset}

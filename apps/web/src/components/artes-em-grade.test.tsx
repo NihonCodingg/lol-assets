@@ -67,7 +67,6 @@ function grade() {
       onClose={() => {}}
       baixar={baixar}
       copiar={vi.fn().mockResolvedValue(undefined)}
-      embutido
       grade
       onAmpliar={onAmpliar}
     />,
@@ -92,7 +91,6 @@ describe("a grade do painel do campeão", () => {
         titulo="Chromas de Jax"
         assets={[asset("chroma", { id: "chroma:9", skinNum: 9 })]}
         onClose={() => {}}
-        embutido
         grade
       />,
     );

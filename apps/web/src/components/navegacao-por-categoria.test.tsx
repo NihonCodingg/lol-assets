@@ -292,7 +292,8 @@ describe("filtros", () => {
     fireEvent.click(screen.getByRole("button", { name: "Mostrar tudo" }));
     fireEvent.click(screen.getByLabelText(/ARAM/));
     expect(screen.getByText("2 de 4")).toBeTruthy();
-    fireEvent.click(screen.getByLabelText(/^boots/));
+    // "Botas" e não `boots` desde o T-48: a classe de item sai em pt-BR.
+    fireEvent.click(screen.getByLabelText(/^Botas/));
     expect(screen.getByText("1 de 4")).toBeTruthy();
   });
 
@@ -360,8 +361,9 @@ describe("5.042 ícones de perfil", () => {
    * provar coisa alguma.
    *
    * Emprestar uma janela de 700 px é o que faz o teste medir o que interessa:
-   * **tendo** o que desenhar, quantos nós ele desenha. 700 px sobre cartões de
-   * 132 px são ~6 visíveis mais 6 de folga do `overscan`.
+   * **tendo** o que desenhar, quantos nós ele desenha. Sem largura, a galeria
+   * tem uma coluna só (T-48); 700 px sobre linhas de 220 px são ~4 visíveis mais
+   * 3 de folga do `overscan`.
    *
    * `offsetHeight` e não `getBoundingClientRect`: é o que o `getRect` do
    * virtual-core lê.
@@ -410,6 +412,109 @@ describe("5.042 ícones de perfil", () => {
     // icone-1, icone-1x, icone-1xx, icone-1xxx: 1 + 10 + 100 + 1000 = 1.111.
     expect(screen.getByText("1111 de 5042")).toBeTruthy();
     expect(container.querySelector("[data-virtual='sim']")).not.toBeNull();
+  });
+});
+
+// --- a galeria (T-48) ---------------------------------------------------------------------
+
+describe("a galeria das categorias (T-48)", () => {
+  function palco(fatias: Partial<Record<AssetCategory, IndexShard>>) {
+    const carregar = vi.fn(async (category: AssetCategory) => {
+      const shard = fatias[category];
+      if (!shard) throw new Error(`sem fatia ${category}`);
+      return shard;
+    });
+    return render(
+      <Palco shards={Object.keys(fatias).map((category) => ({ category }))} carregar={carregar} />,
+    );
+  }
+
+  it("o arquivo de marcação não aparece, nem na conta", async () => {
+    palco({
+      emote: fatia("emote", [
+        asset("emote_icon:0", {
+          type: "emote_icon",
+          category: "emote",
+          sourceUrl: "https://exemplo.invalido/summoneremotes/emote_fpo_inventory.png",
+          fileName: "Emote_0.png",
+        }),
+        asset("emote_icon:1", { type: "emote_icon", category: "emote" }),
+        asset("emote_icon:2", { type: "emote_icon", category: "emote" }),
+      ]),
+    });
+    await abrir("Emotes");
+    expect(screen.getByText("2 de 2")).toBeTruthy();
+    expect(screen.queryByLabelText("Emote_0.png")).toBeNull();
+  });
+
+  it("grupo grande fica atrás de 'Mais filtros', que diz quantos estão marcados lá dentro", async () => {
+    const classes = ["boots", "armor", "damage", "health", "mana", "consumable", "vision"];
+    palco({
+      item: fatia(
+        "item",
+        classes.map((classe) => asset(classe, { tags: ["compravel", "mapa:sr", `classe:${classe}`] })),
+      ),
+    });
+    await abrir("Itens");
+    // Os pequenos, na barra; as sete classes, não.
+    expect(screen.getByRole("group", { name: "Mapa" })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Classe" })).toBeNull();
+
+    const mais = screen.getByRole("button", { name: /^Mais filtros/ });
+    expect(mais.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(mais);
+    expect(mais.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.click(within(screen.getByRole("group", { name: "Classe" })).getByLabelText(/^Visão/));
+    expect(screen.getByText("1 de 7")).toBeTruthy();
+
+    // Fechado, o botão continua contando o que ficou marcado lá dentro.
+    fireEvent.click(mais);
+    expect(screen.queryByRole("group", { name: "Classe" })).toBeNull();
+    expect(mais.textContent).toBe("Mais filtros1");
+  });
+
+  it("'Selecionar os N filtrados' seleciona só o que o filtro mostra (critério 2)", async () => {
+    montar();
+    await abrir("Itens");
+    // O padrão de item deixa 2 de 4 na tela.
+    fireEvent.click(screen.getByRole("button", { name: "Selecionar os 2 filtrados" }));
+
+    const lote = screen.getByRole("region", { name: "Seleção" });
+    expect(lote.textContent).toContain("2 selecionados");
+    expect((screen.getByLabelText("Selecionar botas.png") as HTMLInputElement).checked).toBe(true);
+    // Mostrar tudo revela os outros dois, e eles não vieram junto.
+    fireEvent.click(screen.getByRole("button", { name: "Mostrar tudo" }));
+    expect((screen.getByLabelText("Selecionar poro.png") as HTMLInputElement).checked).toBe(false);
+  });
+
+  it("'Voltar aos campeões' fecha a categoria", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.click(screen.getByRole("button", { name: "Voltar aos campeões" }));
+    expect(screen.queryByLabelText("Filtrar por texto")).toBeNull();
+  });
+
+  it("o Escape fecha a ampliação antes de sair da categoria", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.click(screen.getByRole("button", { name: "Ampliar botas.png" }));
+    expect(screen.getByRole("dialog", { name: /^Ampliação de Botas/ })).toBeTruthy();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: /^Ampliação de/ })).toBeNull();
+    expect(screen.getByLabelText("Filtrar por texto")).toBeTruthy();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByLabelText("Filtrar por texto")).toBeNull();
+  });
+
+  it("no campo de filtro com texto, o Escape não tira da categoria", async () => {
+    montar();
+    await abrir("Itens");
+    const campo = screen.getByLabelText("Filtrar por texto");
+    fireEvent.change(campo, { target: { value: "botas" } });
+    fireEvent.keyDown(campo, { key: "Escape" });
+    expect(screen.getByLabelText("Filtrar por texto")).toBeTruthy();
   });
 });
 

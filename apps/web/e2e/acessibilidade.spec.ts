@@ -262,6 +262,11 @@ test.describe("axe", () => {
     // Grupos de filtro, caixas de seleção e a lista: é a tela com mais controles
     // do produto, e por isso a mais fácil de quebrar sem perceber.
     await expect(page.getByRole("group", { name: "Mapa" })).toBeVisible();
+    // T-48: com "Mais filtros" aberto e as ações de um tile à vista — o que fica
+    // escondido até alguém pedir também precisa passar.
+    await page.getByRole("button", { name: /^Mais filtros/ }).click();
+    await expect(page.getByRole("group", { name: "Classe" })).toBeVisible();
+    await page.locator("[data-virtual='sim'] article").first().hover();
 
     const violacoes = await violacoesGraves(page);
     expect(resumir(violacoes)).toBe("");
@@ -328,9 +333,12 @@ test.describe("tela estreita", () => {
       const caixas = [...document.querySelectorAll("[data-virtual='sim'] article")].map((a) =>
         a.getBoundingClientRect(),
       );
+      // Retângulo contra retângulo: a galeria tem duas colunas no telefone (T-48).
+      const cruzam = (a: DOMRect, b: DOMRect) =>
+        a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
       return {
         transborda: doc.scrollWidth > doc.clientWidth + 1,
-        sobrepoe: caixas.slice(1).some((caixa, i) => caixa.top < caixas[i].bottom - 1),
+        sobrepoe: caixas.some((a, i) => caixas.slice(i + 1).some((b) => cruzam(a, b))),
       };
     });
     expect(medidas.transborda, "a categoria transbordou na horizontal").toBe(false);

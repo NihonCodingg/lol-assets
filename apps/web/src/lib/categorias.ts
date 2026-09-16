@@ -15,15 +15,22 @@
  * `classe:*`, o grupo some da tela sozinho, sem código morto e sem filtro que
  * não filtra nada.
  *
- * ## Rótulo: dado primeiro, tabela só para o vocabulário que é nosso
+ * ## Rótulo: dado primeiro, tabela para o resto
  *
  * `arvore:8000` vira "Precisão" lendo o nome do próprio `rune_tree_icon` que
- * está na fatia — o dado se explica. A tabela fixa cobre **só** as etiquetas
- * cujo vocabulário o indexador inventou (`mapa:sr`, `arvore:nenhuma`), porque aí
- * traduzir é desfazer um mapeamento nosso, não adivinhar o da Riot. O que sobra
- * aparece cru: `classe:damage` é `damage`, em inglês, como a Riot escreve — e
- * traduzir 30 tags à mão seria inventar rótulo, que é justamente o que este
- * projeto não faz.
+ * está na fatia — o dado se explica. A tabela fixa cobre dois vocabulários:
+ *
+ * - o que o **indexador inventou** (`mapa:sr`, `arvore:nenhuma`, `slot:0`):
+ *   traduzir aqui é desfazer um mapeamento nosso, não adivinhar o da Riot;
+ * - as **classes de item** (`classe:*`), desde o T-48. Até ele elas saíam cruas,
+ *   "como a Riot escreve", para não inventar rótulo. Na tela, isso era
+ *   `abilityhaste` e `nonbootsmovement` num site em português, e o dono pediu
+ *   "intuitivo". A tabela usa as palavras da loja do jogo em pt-BR; classe que
+ *   ela não conhece continua saindo crua — aparece, em vez de sumir.
+ *
+ * Duas etiquetas da Riot para a mesma coisa — `SpellBlock` e `MagicResist` são
+ * resistência mágica — viram uma opção só, com os assets das duas. Duas caixas
+ * com o mesmo nome seriam uma pergunta que ninguém sabe responder.
  */
 import type { Asset, AssetCategory, CatalogChampion } from "@lol-assets/schema";
 
@@ -77,6 +84,19 @@ export function categoriasDisponiveis(
   });
 }
 
+/**
+ * Arquivo de marcação, não arte (T-48).
+ *
+ * `fpo` é *for placement only*: o quadrado que ocupa o lugar enquanto a arte não
+ * chega. O índice tem um — `emote_fpo_inventory.png`, publicado como "Emote 0" —,
+ * e na galeria ele era um emote igual aos outros. Sai da tela aqui; tirá-lo do
+ * índice é trabalho do indexador.
+ */
+export function ehMarcacao(asset: Pick<Asset, "sourceUrl">): boolean {
+  const arquivo = asset.sourceUrl.slice(asset.sourceUrl.lastIndexOf("/") + 1);
+  return /(?:^|[_-])fpo(?:[_.-]|$)/i.test(arquivo);
+}
+
 // --- grupos de filtro ------------------------------------------------------------------
 
 export interface Opcao {
@@ -92,13 +112,56 @@ export interface GrupoDeFiltro {
   readonly opcoes: readonly Opcao[];
 }
 
-/** Só o vocabulário que o indexador inventou. O resto sai cru, de propósito. */
-const ROTULO_FIXO: Record<string, string> = {
+/** O vocabulário que o indexador inventou: traduzir é desfazer um mapeamento nosso. */
+const DO_INDEXADOR: Record<string, string> = {
   "mapa:sr": "Summoner's Rift",
   "mapa:aram": "ARAM",
   "mapa:arena": "Arena",
   "arvore:nenhuma": "sem árvore",
+  // O `slot` é a linha da árvore; a primeira é a da runa principal.
+  "slot:0": "Principal",
+  "slot:1": "Slot 1",
+  "slot:2": "Slot 2",
+  "slot:3": "Slot 3",
 };
+
+/** As classes de item com as palavras da loja do jogo em pt-BR (T-48). */
+const CLASSES_DE_ITEM: Record<string, string> = {
+  "classe:abilityhaste": "Aceleração de habilidade",
+  "classe:active": "Efeito ativo",
+  "classe:armor": "Armadura",
+  "classe:armorpenetration": "Penetração de armadura",
+  "classe:attackspeed": "Velocidade de ataque",
+  "classe:aura": "Aura",
+  "classe:bilgewater": "Bilgewater",
+  "classe:boots": "Botas",
+  "classe:consumable": "Consumível",
+  "classe:cooldownreduction": "Redução de recarga",
+  "classe:criticalstrike": "Acerto crítico",
+  "classe:damage": "Dano de ataque",
+  "classe:goldper": "Geração de ouro",
+  "classe:health": "Vida",
+  "classe:healthregen": "Regeneração de vida",
+  "classe:jungle": "Selva",
+  "classe:lane": "Rota",
+  "classe:lifesteal": "Roubo de vida",
+  "classe:magicpenetration": "Penetração mágica",
+  "classe:mana": "Mana",
+  "classe:manaregen": "Regeneração de mana",
+  "classe:nonbootsmovement": "Velocidade de movimento",
+  "classe:onhit": "Efeito ao acertar",
+  "classe:slow": "Lentidão",
+  "classe:spellblock": "Resistência mágica",
+  "classe:spelldamage": "Poder de habilidade",
+  "classe:spellvamp": "Vampirismo mágico",
+  "classe:stealth": "Furtividade",
+  "classe:tenacity": "Tenacidade",
+  "classe:trinket": "Berloque",
+  "classe:vision": "Visão",
+};
+
+/** `Map`, e não objeto: uma etiqueta chamada `constructor` não pode achar rótulo. */
+const ROTULO_FIXO = new Map(Object.entries({ ...DO_INDEXADOR, ...CLASSES_DE_ITEM }));
 
 const ROTULO_DO_GRUPO: Record<string, string> = {
   compravel: "Comprável",
@@ -107,6 +170,16 @@ const ROTULO_DO_GRUPO: Record<string, string> = {
   arvore: "Árvore de runa",
   slot: "Slot da runa",
 };
+
+/** Etiquetas diferentes da Riot para a mesma coisa: contam e filtram como uma só. */
+const SINONIMOS = new Map([["classe:magicresist", "classe:spellblock"]]);
+
+/** As etiquetas de um asset, com os sinônimos já resolvidos e sem repetição. */
+export function etiquetasDe(asset: Pick<Asset, "tags">): readonly string[] {
+  const tags = asset.tags ?? [];
+  if (!tags.some((tag) => SINONIMOS.has(tag))) return tags;
+  return [...new Set(tags.map((tag) => SINONIMOS.get(tag) ?? tag))];
+}
 
 export function grupoDaTag(tag: string): string {
   const corte = tag.indexOf(":");
@@ -136,7 +209,7 @@ export function gruposDeFiltro(assets: readonly Asset[]): GrupoDeFiltro[] {
   const nomes = nomesPorRef(assets);
   const contagem = new Map<string, number>();
   for (const asset of assets) {
-    for (const tag of asset.tags ?? []) contagem.set(tag, (contagem.get(tag) ?? 0) + 1);
+    for (const tag of etiquetasDe(asset)) contagem.set(tag, (contagem.get(tag) ?? 0) + 1);
   }
 
   const porGrupo = new Map<string, Opcao[]>();
@@ -160,10 +233,30 @@ export function gruposDeFiltro(assets: readonly Asset[]): GrupoDeFiltro[] {
 
 /** O rótulo de uma etiqueta: tabela, depois dado, depois o valor cru. */
 export function rotuloDaTag(tag: string, nomes: ReadonlyMap<string, string> = new Map()): string {
-  const fixo = ROTULO_FIXO[tag];
+  const fixo = ROTULO_FIXO.get(tag);
   if (fixo) return fixo;
   const valor = valorDaTag(tag);
   return nomes.get(valor) ?? valor;
+}
+
+/**
+ * Quantas opções um grupo pode ter e ainda ficar na barra (T-48).
+ *
+ * Mapa tem 3 e árvore de runa tem 6; classe de item tem 32 — em linha, elas
+ * empurravam a galeria meia tela para baixo. Grupo maior que isto vai para
+ * "Mais filtros". A regra é pelo tamanho e não pelo nome: um grupo novo e grande
+ * cai no lugar certo sozinho.
+ */
+export const OPCOES_NA_BARRA = 6;
+
+export function separarGrupos(grupos: readonly GrupoDeFiltro[]): {
+  naBarra: GrupoDeFiltro[];
+  maisFiltros: GrupoDeFiltro[];
+} {
+  return {
+    naBarra: grupos.filter((grupo) => grupo.opcoes.length <= OPCOES_NA_BARRA),
+    maisFiltros: grupos.filter((grupo) => grupo.opcoes.length > OPCOES_NA_BARRA),
+  };
 }
 
 /**
@@ -186,7 +279,8 @@ export function filtrosPadrao(
 // --- aplicar ---------------------------------------------------------------------------
 
 /**
- * A fatia preparada para filtrar: o texto de cada asset já normalizado.
+ * A fatia preparada para filtrar: o texto de cada asset já normalizado, e as
+ * etiquetas com os sinônimos resolvidos.
  *
  * São 5.042 ícones de perfil. Normalizar na hora da consulta refaria 5.042 `NFD`
  * mais regex **a cada tecla**; aqui é uma vez por fatia. Mesmo desenho do
@@ -195,6 +289,7 @@ export function filtrosPadrao(
 export interface ListaDeCategoria {
   readonly assets: readonly Asset[];
   readonly texto: readonly string[];
+  readonly etiquetas: readonly (readonly string[])[];
 }
 
 export function prepararLista(assets: readonly Asset[]): ListaDeCategoria {
@@ -203,6 +298,7 @@ export function prepararLista(assets: readonly Asset[]): ListaDeCategoria {
     texto: assets.map((asset) =>
       normalize(`${asset.names.pt_BR} ${asset.names.en_US ?? ""} ${asset.fileName}`),
     ),
+    etiquetas: assets.map(etiquetasDe),
   };
 }
 
@@ -228,16 +324,16 @@ export function filtrar(
 
   const achados: Asset[] = [];
   for (let i = 0; i < lista.assets.length; i += 1) {
-    const asset = lista.assets[i];
     if (alvo && !lista.texto[i].includes(alvo)) continue;
+    const etiquetas = lista.etiquetas[i];
     let passa = true;
     for (const grupo of exigidas.values()) {
-      if (!grupo.some((tag) => asset.tags?.includes(tag))) {
+      if (!grupo.some((tag) => etiquetas.includes(tag))) {
         passa = false;
         break;
       }
     }
-    if (passa) achados.push(asset);
+    if (passa) achados.push(lista.assets[i]);
   }
   return achados;
 }
@@ -266,11 +362,9 @@ export function descreverFiltro(
 /**
  * As seis classes que a Riot dá a campeão, em português.
  *
- * Esta é a exceção à regra de não traduzir do topo do arquivo, e a linha é
- * proposital: são **seis** valores, o conjunto é fechado, não muda há mais de
- * dez anos, e o próprio cliente do jogo em pt-BR usa exatamente estas palavras.
- * As ~30 `classe:*` de item não têm nenhuma dessas três propriedades. Valor fora
- * da tabela sai cru, como em todo o resto.
+ * São **seis** valores, o conjunto é fechado, não muda há mais de dez anos, e o
+ * próprio cliente do jogo em pt-BR usa exatamente estas palavras. Valor fora da
+ * tabela sai cru, como a classe de item que a tabela de cima não conhece.
  */
 const FUNCOES: Record<string, string> = {
   Assassin: "Assassino",

@@ -172,3 +172,73 @@ export function agruparPorFamilia(assets: readonly Asset[]): GrupoDeArtes[] {
   const posicao = (chave: string) => ORDEM_DA_FAMILIA.get(chave) ?? FAMILIAS.length;
   return [...grupos.values()].sort((a, b) => posicao(a.chave) - posicao(b.chave));
 }
+
+// --- a galeria das categorias (T-48) ----------------------------------------------------
+
+/** O vão entre os tiles da galeria, nas duas direções, em px. */
+export const VAO_DA_GALERIA = 12;
+
+/**
+ * O que o tile tem embaixo da prévia: o nome (20 px), a ficha em duas linhas
+ * (32 px), o respiro em volta (18 px) e a borda (2 px). Somado à prévia, é a
+ * altura do tile.
+ */
+const TEXTO_DO_TILE = 72;
+
+/**
+ * A largura que as ações do tile pedem: "Original", "PNG" e o copiar, com o
+ * respiro. Tile mais estreito que isto quebra os botões em duas linhas.
+ */
+const LARGURA_DAS_ACOES = 176;
+
+export interface MedidasDaGaleria {
+  /** A largura mínima do tile: é ela que decide quantas colunas cabem. */
+  readonly larguraMinima: number;
+  readonly alturaDaPrevia: number;
+  /** A mesma na lista inteira: é o que deixa virtualizar por linha sem medir ([ADR 0011]). */
+  readonly alturaDoTile: number;
+}
+
+/**
+ * A altura da prévia pelo tamanho típico do arquivo. Ícone de 64 px numa caixa
+ * de 136 fica perdido no meio; emote de 256 numa de 96 vira selo.
+ */
+function alturaDaPrevia(lado: number): number {
+  if (lado < 200) return 96; // ícones de 64 px: itens, runas, feitiços
+  if (lado < 480) return 136; // 256 a 300 px: emotes, ícones de perfil
+  return 232; // arte grande: wards e mapas
+}
+
+/**
+ * As medidas do tile para uma lista.
+ *
+ * Pela **mediana**, não pelo maior: um item de 512 px entre 865 de 64 não pode
+ * decidir o tamanho dos outros 865. A largura mínima é a que cabe a imagem
+ * inteira na proporção dela, com 8 px de cada lado — e nunca menos que as ações.
+ */
+export function medidasDaGaleria(
+  assets: readonly Pick<Asset, "width" | "height">[],
+): MedidasDaGaleria {
+  const meio = Math.floor(assets.length / 2);
+  const lados = assets.map((a) => Math.max(a.width, a.height)).sort((x, y) => x - y);
+  const proporcoes = assets.map((a) => a.width / a.height).sort((x, y) => x - y);
+  const altura = alturaDaPrevia(lados[meio] ?? 0);
+  return {
+    larguraMinima: Math.max(LARGURA_DAS_ACOES, Math.ceil(altura * (proporcoes[meio] ?? 1)) + 16),
+    alturaDaPrevia: altura,
+    alturaDoTile: altura + TEXTO_DO_TILE,
+  };
+}
+
+/** Abaixo desta largura de lista — um telefone —, o tile encolhe para caberem duas colunas. */
+const LISTA_ESTREITA = 480;
+const MINIMA_NO_ESTREITO = 160;
+
+/** Quantas colunas cabem na largura da lista; nunca menos que uma. */
+export function colunasDaGaleria(largura: number, medidas: MedidasDaGaleria): number {
+  const minima =
+    largura < LISTA_ESTREITA
+      ? Math.min(MINIMA_NO_ESTREITO, medidas.larguraMinima)
+      : medidas.larguraMinima;
+  return Math.max(1, Math.floor((largura + VAO_DA_GALERIA) / (minima + VAO_DA_GALERIA)));
+}
