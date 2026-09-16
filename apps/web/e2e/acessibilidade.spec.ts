@@ -120,7 +120,7 @@ test.describe("só com teclado", () => {
     });
 
     await page.click('button:has-text("Jax")');
-    await expect(page.getByText("carregando os assets…")).toBeVisible();
+    await expect(page.getByText("Carregando as artes…")).toBeVisible();
     await page.keyboard.press("Escape");
 
     await expect(page.getByRole("region", { name: "Painel de Jax" })).toBeHidden();

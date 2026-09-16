@@ -21,26 +21,26 @@ afterEach(cleanup);
 
 describe("BotaoIcone", () => {
   it("o nome acessível é o rótulo, não o desenho", () => {
-    render(<BotaoIcone rotulo="Copiar URL" icone={<Download aria-hidden="true" />} />);
-    expect(screen.getByRole("button", { name: "Copiar URL" })).toBeTruthy();
+    render(<BotaoIcone rotulo="Copiar link" icone={<Download aria-hidden="true" />} />);
+    expect(screen.getByRole("button", { name: "Copiar link" })).toBeTruthy();
   });
 
   it("a dica pode dizer outra coisa sem trocar o nome", () => {
     render(
-      <BotaoIcone rotulo="Copiar URL" dica="Link copiado" icone={<Download aria-hidden="true" />} />,
+      <BotaoIcone rotulo="Copiar link" dica="Link copiado" icone={<Download aria-hidden="true" />} />,
     );
-    expect(screen.getByRole("button", { name: "Copiar URL" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copiar link" })).toBeTruthy();
   });
 
   it("sem hover, foco nem dicaAberta, a dica não está na tela", () => {
-    render(<BotaoIcone rotulo="Copiar URL" icone={<Download aria-hidden="true" />} />);
+    render(<BotaoIcone rotulo="Copiar link" icone={<Download aria-hidden="true" />} />);
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
 
   it("dicaAberta mostra a dica sem hover — é assim que ela responde a um clique", () => {
     render(
       <BotaoIcone
-        rotulo="Copiar URL"
+        rotulo="Copiar link"
         dica="Link copiado"
         dicaAberta
         icone={<Download aria-hidden="true" />}
@@ -68,9 +68,9 @@ describe("ParDeDownload", () => {
     expect(png.textContent).toBe("Baixar PNG");
   });
 
-  it("origem PNG: o botão fica, desabilitado, dizendo 'já é PNG' (RF-12)", () => {
+  it("origem PNG: o botão fica, desabilitado, dizendo 'Já é PNG' (RF-12)", () => {
     render(<ParDeDownload podeConverter={false} onOriginal={() => {}} onPng={() => {}} />);
-    const png = screen.getByRole("button", { name: "já é PNG" }) as HTMLButtonElement;
+    const png = screen.getByRole("button", { name: "Já é PNG" }) as HTMLButtonElement;
     expect(png.disabled).toBe(true);
   });
 
@@ -114,7 +114,7 @@ describe("Imagem", () => {
     render(<Imagem src={SRC} alt="Prévia de Jax" />);
     fireEvent.error(screen.getByRole("img", { name: "Prévia de Jax" }));
 
-    expect(screen.getByText("a fonte não respondeu")).toBeTruthy();
+    expect(screen.getByText("A fonte não respondeu")).toBeTruthy();
     // O nome continua lá para o leitor de tela, agora na caixa.
     expect(screen.getByRole("img", { name: "Prévia de Jax" }).tagName).toBe("DIV");
   });
@@ -136,7 +136,7 @@ describe("Imagem", () => {
   it("erro compacto mostra só o ícone, para miniatura onde a frase não cabe (T-46)", () => {
     render(<Imagem src={SRC} alt="Jax" erroCompacto />);
     fireEvent.error(screen.getByRole("img", { name: "Jax" }));
-    expect(screen.queryByText("a fonte não respondeu")).toBeNull();
+    expect(screen.queryByText("A fonte não respondeu")).toBeNull();
     expect(screen.getByRole("img", { name: "Jax" }).tagName).toBe("DIV");
   });
 });

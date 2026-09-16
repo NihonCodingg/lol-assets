@@ -157,7 +157,7 @@ function montar(shards = SHARDS) {
 
 async function abrir(rotulo: string) {
   fireEvent.click(screen.getByRole("button", { name: rotulo }));
-  await waitFor(() => expect(screen.queryByText(/^carregando /)).toBeNull());
+  await waitFor(() => expect(screen.queryByText(/^Carregando /)).toBeNull());
 }
 
 // --- carga sob demanda (critérios 1 e 3) ---------------------------------------------
@@ -262,7 +262,7 @@ describe("filtros", () => {
   it("item abre marcado em comprável e SR (§B.1.6)", async () => {
     montar();
     await abrir("Itens");
-    expect((screen.getByLabelText(/^sim/) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByLabelText(/^Sim/) as HTMLInputElement).checked).toBe(true);
     expect((screen.getByLabelText(/Summoner's Rift/) as HTMLInputElement).checked).toBe(true);
     // botas, elmo e missão estão no SR; só os dois primeiros são compráveis.
     expect(screen.getByText("2 de 4")).toBeTruthy();
@@ -313,7 +313,7 @@ describe("filtros", () => {
     expect(screen.getByRole("group", { name: "Árvore de runa" })).toBeTruthy();
     expect(screen.queryByRole("group", { name: "Mapa" })).toBeNull();
     // O rótulo da árvore sai do nome do próprio ícone; `nenhuma` é dos stat mods.
-    expect(screen.getByLabelText(/sem árvore/)).toBeTruthy();
+    expect(screen.getByLabelText(/Sem árvore/)).toBeTruthy();
   });
 
   it("categoria sem etiqueta nenhuma não mostra filtro nenhum", async () => {
@@ -332,6 +332,39 @@ describe("filtros", () => {
   });
 });
 
+// --- os estados, no vocabulário do T-50 ------------------------------------------------
+
+describe("erro e vazio que dizem o que fazer (T-50)", () => {
+  it("o erro de carga oferece tentar de novo, e tentar de novo busca outra vez", async () => {
+    let falhar = true;
+    const carregar = vi.fn(async (category: AssetCategory) => {
+      if (falhar) throw new Error("HTTP 503");
+      return FATIAS[category]!;
+    });
+    render(<Palco shards={SHARDS} carregar={carregar} />);
+    fireEvent.click(screen.getByRole("button", { name: "Itens" }));
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toContain("Não deu para carregar Itens");
+
+    falhar = false;
+    fireEvent.click(within(alerta).getByRole("button", { name: "Tentar de novo" }));
+    await waitFor(() => expect(screen.getByText("2 de 4")).toBeTruthy());
+    expect(carregar).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("o vazio tem a saída: 'Limpar filtros' desmarca tudo e apaga o texto", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
+
+    fireEvent.click(within(screen.getByRole("status")).getByRole("button", { name: "Limpar filtros" }));
+    expect(screen.getByText("4 de 4")).toBeTruthy();
+    expect((screen.getByLabelText("Filtrar por texto") as HTMLInputElement).value).toBe("");
+  });
+});
+
 // --- o vazio (critério 4) --------------------------------------------------------------
 
 describe("estado vazio", () => {
@@ -345,7 +378,7 @@ describe("estado vazio", () => {
     const vazio = screen.getByRole("status");
     expect(vazio.textContent).toContain("Nenhum asset");
     const aplicado = within(vazio).getByRole("list", { name: "Filtro aplicado" });
-    expect(aplicado.textContent).toContain("Comprável: sim");
+    expect(aplicado.textContent).toContain("Comprável: Sim");
     expect(aplicado.textContent).toContain("Mapa: Summoner's Rift");
     expect(aplicado.textContent).toContain("não existe");
   });

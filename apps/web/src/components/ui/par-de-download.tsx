@@ -7,7 +7,7 @@
  * mais no orçamento do RF-15 e uma opção que ninguém descobre.
  *
  * Asset que já é PNG não oferece conversão, e o botão **fica** — desabilitado,
- * dizendo "já é PNG" (RF-12). Um botão que some deixa a pessoa procurando.
+ * dizendo "Já é PNG" (RF-12). Um botão que some deixa a pessoa procurando.
  *
  * **O retorno (T-47b).** O botão do download em andamento troca o ícone por um
  * que gira, e o do que acabou de dar certo mostra ✓ por um instante. O **texto**
@@ -73,7 +73,7 @@ export function ParDeDownload({
   onPng,
   className,
 }: ParDeDownloadProps) {
-  const nomeDoPng = podeConverter ? "Baixar PNG" : "já é PNG";
+  const nomeDoPng = podeConverter ? "Baixar PNG" : "Já é PNG";
   return (
     <div className={cn("inline-flex items-center", compacto ? "gap-1" : "gap-1.5", className)}>
       <Botao

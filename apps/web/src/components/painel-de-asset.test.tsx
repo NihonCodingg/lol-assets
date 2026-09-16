@@ -86,7 +86,7 @@ describe("ficha honesta antes de qualquer download", () => {
   it("um asset que já é PNG não oferece conversão", () => {
     const square = DO_JAX.find((a) => a.format === "png")!;
     abrir([square]);
-    expect(screen.getByRole("button", { name: "já é PNG" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("button", { name: "Já é PNG" }).hasAttribute("disabled")).toBe(true);
   });
 });
 
@@ -117,7 +117,7 @@ describe("copiar URL", () => {
   it("copia a URL pública do asset", async () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     const { copiar } = abrir([square]);
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
 
     await waitFor(() => expect(copiar).toHaveBeenCalledTimes(1));
     const copiado = copiar.mock.calls[0][0] as string;
@@ -131,7 +131,7 @@ describe("copiar URL", () => {
     // esconderia do leitor de tela. A confirmação mora no cartão.
     const square = DO_JAX.find((a) => a.type === "square")!;
     abrir([square]);
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
 
     await waitFor(() =>
       expect(within(cartoes()[0]).getByRole("status").textContent).toBe("Link copiado"),
@@ -142,14 +142,14 @@ describe("copiar URL", () => {
     const dica = cartoes()[0].querySelector("[data-dica]");
     expect(dica?.getAttribute("data-dica")).toBe("aberta");
     expect(dica?.textContent).toBe("Link copiado");
-    // O nome do botão não muda: quem procura "Copiar URL" continua achando.
-    expect(screen.getByRole("button", { name: "Copiar URL" })).toBeTruthy();
+    // O nome do botão não muda: quem procura "Copiar link" continua achando.
+    expect(screen.getByRole("button", { name: "Copiar link" })).toBeTruthy();
   });
 
   it("na grade do painel do campeão, a dica é a do Radix, e abre sozinha", async () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     abrir([square], { grade: true });
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
     await waitFor(() => expect(screen.getByRole("tooltip").textContent).toBe("Link copiado"));
   });
 
@@ -160,7 +160,7 @@ describe("copiar URL", () => {
       throw new Error("sem clipboard");
     });
     abrir([square], { copiar });
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
 
     await waitFor(() =>
       expect(within(cartoes()[0]).getByRole("status").textContent).toBe(

@@ -276,13 +276,24 @@ describe("chromas", () => {
 describe("estados do painel", () => {
   it("sem a fatia carregada, avisa em vez de mostrar vazio", () => {
     abrir({ assets: null });
-    expect(screen.getByText("carregando os assets…")).toBeTruthy();
+    expect(screen.getByText("Carregando as artes…")).toBeTruthy();
   });
 
   it("com erro, mostra o erro e não finge que carregou", () => {
     abrir({ assets: null, erro: "HTTP 500" });
     expect(screen.getByRole("alert").textContent).toContain("HTTP 500");
-    expect(screen.queryByText("carregando os assets…")).toBeNull();
+    expect(screen.queryByText("Carregando as artes…")).toBeNull();
+  });
+
+  it("com erro, diz em português o que houve e oferece tentar de novo (T-50)", () => {
+    const onTentarDeNovo = vi.fn();
+    abrir({ assets: null, erro: "Failed to fetch", onTentarDeNovo });
+    const alerta = screen.getByRole("alert");
+    expect(alerta.textContent).toContain("Não deu para carregar as artes de Jax");
+    // O motivo técnico fica, pequeno, para quem precisa relatar.
+    expect(alerta.textContent).toContain("Failed to fetch");
+    fireEvent.click(within(alerta).getByRole("button", { name: "Tentar de novo" }));
+    expect(onTentarDeNovo).toHaveBeenCalledTimes(1);
   });
 
   it("o seletor existe mesmo antes de a fatia chegar", () => {
