@@ -260,7 +260,8 @@ A segunda metade do T-47, empilhada sobre ele.
 - **"Failed to fetch" era o título do erro** em três lugares: o painel do campeão, a categoria e
   o catálogo. Nenhum dizia o que fazer.
 - **O RNF-13 depende do T-52** (#60): comparar o `sha256` no cdragon avisaria em todo download,
-  porque a borda dele recomprime o PNG. Foi para o T-50b.
+  porque a borda dele recomprime o PNG. Foi para o T-50b, e o dono o fechou no mesmo dia: o aviso
+  sai da Spec, e o RNF-13 passa a dizer que quem verifica é a conferência no navegador.
 - **O teste do "carregando" teria passado sem esperar nada:** o ajudante da categoria esperava
   `/^carregando /` sumir, e com a maiúscula a frase nunca casaria. Mudou junto com o texto.
 
@@ -283,7 +284,8 @@ A segunda metade do T-47, empilhada sobre ele.
   cdragon recomprime o PNG.
 - **O T-47 e o T-47b têm o ok do dono** (16/09); o merge é dele, um de cada vez.
 - **O ok do dono nos previews do T-48, do T-49 e do T-50.**
-- **O T-50b (RNF-13)**, depois do merge do T-52 (#60).
+- ~~O T-50b (RNF-13)~~ — fechado sem executar em 16/09, por decisão do dono; o RNF-13 foi
+  emendado na Spec.
 - **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono

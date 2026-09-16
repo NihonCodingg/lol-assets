@@ -143,7 +143,7 @@ implementa e pelo teste que o prova.
 | **RNF-07** | Resiliência **degradada, e assumida** | Se ddragon/cdragon caírem, **as imagens não carregam** — o catálogo e a busca continuam, porque são estáticos do app. O site diz que a fonte está fora, em vez de mostrar quadrado quebrado | e2e com as fontes bloqueadas: busca funciona, imagem mostra estado de erro |
 | **RNF-08** | Etiqueta de rede | User-Agent identificado, concorrência ≤ 4, backoff em 429/5xx | Teste unitário do cliente HTTP |
 | **RNF-09** | Wiki | Zero requisições enquanto `WIKI_CONSENT_GRANTED` for falso | Trava em código que levanta exceção |
-| **RNF-13** | Integridade **verificável, não garantida** | O `sha256` do índice descreve os bytes medidos na indexação. Como quem serve é a fonte, ele vira **detector**: o front compara e avisa quando diverge, em vez de impedir | Teste: `sha256` divergente produz aviso visível e não bloqueia o download |
+| **RNF-13** | Integridade **verificável, não garantida** | O `sha256` do índice descreve os bytes **medidos na indexação**, na origem. Como quem serve é a fonte, ele não garante o que chega ao navegador — e não bloqueia nada. Quem verifica é a **conferência no navegador contra o site no ar** (`conferir:navegador`): o `sha256` nas fontes de bytes estáveis, formato e dimensões nas outras (ADR 0019, do T-52). **Emendado em 16/09/2026:** o aviso na tela a cada download saiu, por decisão do dono — só valeria para o ddragon, que diverge por horas entre um patch e a reindexação (T-50b) | `conferir:navegador` passa contra a URL publicada |
 | **RNF-10** | Legal | Aviso da Riot visível; produto registrado no Developer Portal antes do lançamento | Checklist de lançamento |
 | **RNF-11** | Acessibilidade | Navegável por teclado, contraste AA, `alt` em toda imagem; primitivas acessíveis via Radix ([ADR 0011](adr/0011-base-de-componentes-do-front.md)) | axe no e2e |
 | **RNF-12** | Qualidade | ruff, ruff format, mypy strict, pytest, eslint, tsc, vitest verdes em todo PR | CI |
@@ -489,7 +489,7 @@ jeito de o site apodrecer.
 | cdragon muda caminhos | Assets somem do catálogo | Nunca montar caminho; partir do JSON. Teste de contrato agendado → issue |
 | ddragon troca a resolução de publicação | Fusão escolhe errado | Teste de contrato valida **dimensão**, não só status |
 | Grafia de `championId` muda entre patches | Apelidos e URLs quebram | Teste de contrato dos apelidos; `Fiddlesticks`×`FiddleSticks` já aconteceu |
-| Fonte muda a arte sob uma URL não versionada | O `sha256` do índice diverge do arquivo servido, até a próxima indexação (≤ 24 h) | RNF-13: o front compara e **avisa**, em vez de impedir. É o preço medido do [ADR 0012](adr/0012-onde-guardar-os-assets.md) |
+| Fonte muda a arte sob uma URL não versionada | O `sha256` do índice diverge do arquivo servido, até a próxima indexação (≤ 24 h) | RNF-13: a conferência no navegador acusa a divergência, e o download nunca é impedido. É o preço medido do [ADR 0012](adr/0012-onde-guardar-os-assets.md) |
 | Fonte fora do ar | Imagens não carregam | Catálogo e busca continuam, porque são estáticos do app; a UI diz que a fonte caiu (RNF-07) |
 | Índice cresce no repositório | Repositório grande | ~10 MB por versão corrente e ~3 MB por versão antiga; revisitar se passar de 500 MB |
 | ~~Remoção do patch anterior apaga cedo demais~~ | — | **Não se aplica**: sem storage, não há remoção ([ADR 0012](adr/0012-onde-guardar-os-assets.md)) |
