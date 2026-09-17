@@ -91,16 +91,19 @@ conflito em `docs/adr/README.md` foi resolvido com as duas linhas.
 **Uma correção:** a descrição do #56 dizia que a linha RNF-06 do mapa de cobertura tinha
 ganhado o T-51. A edição foi planejada e não aplicada; entrou no PR de fechamento.
 
-## O que ficou pendente
+## O primeiro carimbo — 16/09/2026
 
-- **O primeiro carimbo diário**, na primeira execução depois de 16/09/2026 00:43 UTC — na
-  prática ~08:00 UTC, pelo atraso do Actions. Uma conferência agendada roda às 09:30 UTC e
-  relata. Quando o carimbo chegar ao site, o critério 5 do T-51 fecha.
+| | |
+|---|---|
+| Execução | agendada, [35074752615](https://github.com/NihonCodingg/lol-assets/actions/runs/35074752615), às 08:37 UTC — a primeira depois das 24 h do índice |
+| Log | `verificação carimbada no manifesto: 2026-09-16T08:37:12Z` e `nada a fazer: já indexado em 16.18.1` |
+| Commit | `6239943` `chore(indice): 16.18.1 conferido`, do `github-actions[bot]`: uma linha no `manifest.json` |
+| A anterior | 15/09 às 23:32 UTC, menos de 24 h depois do índice: não carimbou, como deve |
+| As seguintes | 14:12, 18:54 e 23:39 UTC de 16/09: não carimbaram de novo, como devem |
+| Site no ar | `checkedAt` 2026-09-16T08:37:12Z no `manifest.json` publicado, igual ao do repositório; `conferir-publicacao.mjs` com **26 de 26** |
 
-## Próximo passo sugerido
-
-Depois do primeiro carimbo, marcar o T-51 ✅ e o critério 5 no PR de fechamento
-(`docs/T-51-fechamento`) e mergeá-lo.
+A conferência agendada das 09:30 UTC não completou este PR; a sessão do redesenho conferiu à
+mão, na mesma noite. Com isso o critério 5 fecha, e o T-51 também.
 
 ## Decisões do dono em 15/09/2026
 
@@ -111,4 +114,4 @@ Depois do primeiro carimbo, marcar o T-51 ✅ e o critério 5 no PR de fechament
 
 ## Só o dono pode fazer
 
-- Mergear o PR de fechamento quando o carimbo tiver chegado.
+- Mergear o PR de fechamento (#58): o carimbo chegou.

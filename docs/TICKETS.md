@@ -2459,7 +2459,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
-### T-51 — O aviso de índice velho mede a última verificação
+### ✅ T-51 — O aviso de índice velho mede a última verificação
 
 | | |
 |---|---|
@@ -2481,8 +2481,13 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 > reindexou o 16.18.1 com o motivo "contrato do índice mudou de 1.2.0 para 1.3.0" e publicou
 > `63dacdb`; a Vercel levou esse commit do bot a produção às 01:05 UTC, sem deploy hook — o
 > que responde a dúvida do item 4 do [ADR 0016](adr/0016-publicacao-na-vercel.md). No ar:
-> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26. O primeiro carimbo
-> sai na primeira execução depois de 16/09/2026 00:43 UTC.
+> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26.
+>
+> **Fechado em 16/09/2026** com o primeiro carimbo: a execução agendada das 08:37 UTC
+> ([35074752615](https://github.com/NihonCodingg/lol-assets/actions/runs/35074752615)) — a
+> primeira depois das 24 h — carimbou `checkedAt` 2026-09-16T08:37:12Z e publicou `6239943`
+> (`chore(indice): 16.18.1 conferido`, uma linha no `manifest.json`). As três execuções
+> seguintes não carimbaram de novo, como devem.
 
 **Entra**
 - `checkedAt` opcional no manifesto — contrato **1.3.0**.
@@ -2504,9 +2509,11 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 3. ✅ O carimbo muda uma linha do `manifest.json` — conferido também contra o manifesto
    publicado de verdade, não só contra um feito para o teste.
 4. ✅ O intervalo do carimbo cabe três vezes no limite do aviso, e um teste lê os dois lados.
-5. 🟡 O site publicado para de avisar sem que a indexação tenha parado. **Metade conferida em
-   15/09/2026:** a reindexação do contrato 1.3.0 chegou ao ar e o aviso sumiu. Falta o
-   primeiro carimbo diário chegar ao site.
+5. ✅ O site publicado para de avisar sem que a indexação tenha parado. Em 15/09/2026 a
+   reindexação do contrato 1.3.0 chegou ao ar e o aviso sumiu; em 16/09/2026 o primeiro carimbo
+   chegou ao site — o `manifest.json` publicado tem `checkedAt` 2026-09-16T08:37:12Z, igual ao do
+   repositório, e `conferir-publicacao.mjs` deu 26 de 26. Sem patch novo, o aviso só acende se
+   a indexação ficar 72 h sem conferir.
 
 **Testes que provam**
 - `test_carimbo.py`: a regra, o formato, a linha única, a saída do Actions e o limite do front.
