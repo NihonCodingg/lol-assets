@@ -2414,6 +2414,12 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 **Entra**
 - Vazios que ensinam; erros que dizem o que fazer; aviso de índice velho no vocabulário novo.
 - RNF-13: sha256 divergente vira aviso, sem bloquear o download.
+  > **Nota do T-52 ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)):**
+  > comparar o `sha256` só quando `isByteStable(asset.source)`, de `@lol-assets/schema`. No
+  > cdragon, divergir é o normal da borda — o Cloudflare Polish recomprime —, e avisar seria
+  > alarme falso em quase todo emote, ward e chroma; ali o detector que sobra é formato e
+  > dimensão, lidos do começo do arquivo baixado. E o `bytes` do cdragon é o tamanho na fonte:
+  > o arquivo entregue pode ser até ~10× menor.
 - Microcopy em pt-BR revisada e a página Sobre.
 - Na página Sobre, os botões de categoria da barra — que aparecem depois de passar pela home —
   marcam a categoria e ficam na Sobre. Precisam levar para a home, já na categoria. Existe desde
@@ -2522,6 +2528,56 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-52 — O `sha256` do cdragon não confere o download
+
+| | |
+|---|---|
+| **Objetivo** | Que a conferência no navegador e o índice concordem sobre o que o cdragon garante |
+| **Dependências** | T-22, T-43 |
+| **Estimativa** | ~120 linhas |
+| **Effort** | médio |
+| **Cobre** | RF-10, RNF-13 |
+
+> Aberto em **15/09/2026**, pela conferência no navegador contra o site no ar: 8 de 9. O
+> download do primeiro emote funcionava e o nome batia; o `sha256`, não — e os oito primeiros
+> emotes da fatia publicada divergiam todos. A causa é o Cloudflare Polish na frente do
+> `raw.communitydragon.org`: a mesma URL entrega o arquivo de origem numa falta de cache e uma
+> recompressão sem perdas depois. O indexador mediu a origem, e mediu certo; o visitante recebe
+> a recompressão. A decisão está no
+> [ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md).
+
+**Entra**
+- A medição — com o `SourceClient` do indexador e com cabeçalhos de navegador — em
+  `docs/SPIKES.md` e em `docs/evidencias/t52-polish-do-cdragon.json`.
+- `BYTE_STABLE_SOURCES` e `isByteStable(source)` no contrato TypeScript; as descrições do
+  `sha256` e do `bytes` no JSON Schema.
+- `navegador.spec.ts`: todo download é o que a fonte entregou ao navegador, com o formato e as
+  dimensões do índice; o `sha256` do índice, só nas fontes de bytes estáveis.
+- Uma nota no T-50 dizendo em que o aviso do RNF-13 se apoia.
+
+**NÃO entra**
+- Interface: o aviso do RNF-13 é do T-50, e o redesenho do front está nessas telas.
+- Mudar o índice ou a versão do contrato: o `sha256` continua obrigatório (as alternativas estão
+  no ADR).
+- Forçar a origem do cdragon com URL que fure o cache.
+
+**Critérios de aceite**
+1. ✅ A causa medida: `cf-polished: ok, orig_size=N`, com N igual ao `bytes` do índice; a origem
+   numa falta de cache e a recompressão com o cache quente, qualquer que seja o cabeçalho; os
+   pixels visíveis iguais.
+2. ✅ `isByteStable` diz `true` só para o ddragon, e um teste quebra se a lista mudar sem ADR
+   novo.
+3. ✅ A conferência no navegador contra o site no ar passa 9 de 9 (15/09/2026). O cenário do
+   cdragon baixou justamente a recompressão do `Emote_0.png` — 26.479 bytes contra 262.513 no
+   índice — e anotou isso em vez de falhar.
+4. ✅ O T-50 sabe em que se apoiar.
+
+**Testes que provam**
+- `index.test.ts` (schema): a lista das fontes de bytes estáveis.
+- `navegador.spec.ts`: os dois cenários de download, rodados contra o site no ar.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -2534,7 +2590,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RF-06 | T-20 |
 | RF-08 | T-21, T-22, T-24 |
 | RF-09, RF-12, RF-13, RF-14 | T-08, T-15 |
-| RF-10, RF-11 | T-05, T-08 |
+| RF-10, RF-11 | T-05, T-08; o critério do RF-10, T-52 |
 | RF-15 | T-19, T-29 |
 | ~~RF-16~~ | ⏸️ T-23 suspenso — fora da v1 ([ADR 0012](adr/0012-onde-guardar-os-assets.md)) |
 | RF-17, RF-18 | T-25 |
@@ -2553,6 +2609,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RNF-10 | T-27, T-33, T-42 |
 | RNF-11 | T-28, T-30 |
 | RNF-12 | CI, em todo ticket; **T-35** |
+| RNF-13, o que cada fonte garante ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)) | T-52 |
 
 ## Resumo das ondas
 
