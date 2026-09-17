@@ -207,7 +207,6 @@ export function PainelDoCampeao({
               selecao={selecao}
               onAlternar={alternarNoLote}
               fecharComEsc={false}
-              embutido
               grade
               onAmpliar={setAmpliado}
             />
@@ -235,7 +234,6 @@ export function PainelDoCampeao({
                   selecao={selecao}
                   onAlternar={alternarNoLote}
                   fecharComEsc={false}
-                  embutido
                   grade
                   onAmpliar={setAmpliado}
                 />

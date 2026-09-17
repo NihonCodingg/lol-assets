@@ -31,6 +31,7 @@ import { useMemo, useState } from "react";
 import type { CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
 import { BotaoIcone } from "@/components/ui/botao-icone";
+import { Chip } from "@/components/ui/chip";
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
 import { filtrarCampeoes, funcoesDe } from "@/lib/categorias";
@@ -117,30 +118,15 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
             <legend className="float-left mr-1.5 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
               Função
             </legend>
-            {funcoes.map((funcao) => {
-              const marcada = marcadas.has(funcao.tag);
-              return (
-                <label
-                  key={funcao.tag}
-                  className={cn(
-                    "inline-flex h-controle-md cursor-pointer items-center rounded-padrao border px-2.5 text-12",
-                    "transition-colors duration-150 ease-saida",
-                    "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
-                    marcada
-                      ? "border-acento bg-acento-suave text-texto"
-                      : "border-borda-forte text-texto-suave hover:bg-campo hover:text-texto",
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    className="sr-only"
-                    checked={marcada}
-                    onChange={() => alternar(funcao.tag)}
-                  />
-                  {funcao.rotulo} <span className="ml-1 font-mono text-10">({funcao.total})</span>
-                </label>
-              );
-            })}
+            {funcoes.map((funcao) => (
+              <Chip
+                key={funcao.tag}
+                marcado={marcadas.has(funcao.tag)}
+                onAlternar={() => alternar(funcao.tag)}
+              >
+                {funcao.rotulo} <span className="ml-1 font-mono text-10">({funcao.total})</span>
+              </Chip>
+            ))}
             {marcadas.size > 0 && (
               <button
                 type="button"

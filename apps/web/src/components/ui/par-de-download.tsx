@@ -12,6 +12,11 @@
  * **O retorno (T-47b).** O botão do download em andamento troca o ícone por um
  * que gira, e o do que acabou de dar certo mostra ✓ por um instante. O **texto**
  * não muda: o nome do botão é o jeito de achá-lo, para gente e para teste.
+ *
+ * **Compacto (T-48).** No tile da galeria, "Baixar original" e "Baixar PNG" não
+ * cabem lado a lado. O texto encurta para "Original" e "PNG", e o nome
+ * acessível continua o inteiro: é por ele que o botão é achado, e o que está
+ * escrito continua dentro do nome — quem comanda por voz diz o que vê.
  */
 
 import { Check, Download, LoaderCircle } from "lucide-react";
@@ -32,6 +37,8 @@ export interface ParDeDownloadProps {
   readonly baixando?: QualDownload | null;
   /** O que acabou de dar certo: o botão dele mostra ✓ por um instante. */
   readonly baixado?: QualDownload | null;
+  /** Texto curto, nome inteiro: o par dentro do tile da galeria. */
+  readonly compacto?: boolean;
   readonly onOriginal: () => void;
   readonly onPng: () => void;
   readonly className?: string;
@@ -61,35 +68,41 @@ export function ParDeDownload({
   ocupado = false,
   baixando = null,
   baixado = null,
+  compacto = false,
   onOriginal,
   onPng,
   className,
 }: ParDeDownloadProps) {
+  const nomeDoPng = podeConverter ? "Baixar PNG" : "já é PNG";
   return (
-    <div className={cn("inline-flex items-center gap-1.5", className)}>
+    <div className={cn("inline-flex items-center", compacto ? "gap-1" : "gap-1.5", className)}>
       <Botao
         variante="primario"
         tamanho="md"
         disabled={ocupado}
         aria-busy={baixando === "original" || undefined}
+        aria-label={compacto ? "Baixar original" : undefined}
+        className={cn(compacto && "px-2")}
         onClick={onOriginal}
       >
         <IconeDoBotao
           qual="original"
           baixando={baixando}
           baixado={baixado}
-          padrao={<Download aria-hidden="true" className="size-3.5" />}
+          padrao={compacto ? undefined : <Download aria-hidden="true" className="size-3.5" />}
         />
-        Baixar original
+        {compacto ? "Original" : "Baixar original"}
       </Botao>
       <Botao
         tamanho="md"
         disabled={ocupado || !podeConverter}
         aria-busy={baixando === "png" || undefined}
+        aria-label={compacto ? nomeDoPng : undefined}
+        className={cn(compacto && "bg-superficie/80 px-2")}
         onClick={onPng}
       >
         <IconeDoBotao qual="png" baixando={baixando} baixado={baixado} />
-        {podeConverter ? "Baixar PNG" : "já é PNG"}
+        {compacto ? "PNG" : nomeDoPng}
       </Botao>
     </div>
   );

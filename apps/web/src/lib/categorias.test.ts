@@ -5,6 +5,8 @@ import type { Asset, CatalogChampion } from "@lol-assets/schema";
 import {
   categoriasDisponiveis,
   descreverFiltro,
+  ehMarcacao,
+  etiquetasDe,
   filtrar,
   filtrarCampeoes,
   filtrosPadrao,
@@ -12,8 +14,10 @@ import {
   grupoDaTag,
   gruposDeFiltro,
   prepararLista,
+  OPCOES_NA_BARRA,
   rotuloDaCategoria,
   rotuloDaTag,
+  separarGrupos,
 } from "./categorias";
 
 /**
@@ -129,8 +133,23 @@ describe("rótulo da etiqueta", () => {
     expect(rotuloDaTag("arvore:nenhuma")).toBe("sem árvore");
   });
 
-  it("o resto sai cru, como a Riot escreve", () => {
-    expect(rotuloDaTag("classe:damage")).toBe("damage");
+  // Mudou no T-48, de propósito: até ali a classe de item saía crua, e a tela
+  // mostrava `abilityhaste` num site em português. Ver o topo de `categorias.ts`.
+  it("classe de item sai com a palavra da loja do jogo (T-48)", () => {
+    expect(rotuloDaTag("classe:damage")).toBe("Dano de ataque");
+    expect(rotuloDaTag("classe:nonbootsmovement")).toBe("Velocidade de movimento");
+    expect(rotuloDaTag("classe:abilityhaste")).toBe("Aceleração de habilidade");
+  });
+
+  it("classe que a tabela não conhece continua saindo crua, em vez de sumir", () => {
+    expect(rotuloDaTag("classe:novidade")).toBe("novidade");
+    // Nome de propriedade de objeto não é rótulo.
+    expect(rotuloDaTag("constructor")).toBe("sim");
+  });
+
+  it("o slot da runa diz qual é a linha", () => {
+    expect(rotuloDaTag("slot:0")).toBe("Principal");
+    expect(rotuloDaTag("slot:2")).toBe("Slot 2");
   });
 
   it("`arvore:8000` vira o nome da árvore lendo o próprio ícone dela", () => {
@@ -326,5 +345,69 @@ describe("funções do campeão", () => {
 
   it("função sem ninguém devolve grade vazia", () => {
     expect(filtrarCampeoes(CAMPEOES, new Set(["Especialista"]))).toEqual([]);
+  });
+});
+
+// --- T-48: sinônimos, marcação e a barra de filtros -----------------------------------
+
+describe("duas etiquetas da Riot para a mesma coisa", () => {
+  // No índice real: 99 itens com `SpellBlock`, 33 com `MagicResist`, 23 com as duas.
+  const RESISTENCIA: Asset[] = [
+    asset("so-spellblock", { tags: ["classe:spellblock"] }),
+    asset("so-magicresist", { tags: ["classe:magicresist"] }),
+    asset("as-duas", { tags: ["classe:spellblock", "classe:magicresist"] }),
+  ];
+
+  it("viram uma opção só, contando cada asset uma vez", () => {
+    const classe = gruposDeFiltro(RESISTENCIA).find((g) => g.chave === "classe");
+    expect(classe?.opcoes).toEqual([
+      { tag: "classe:spellblock", rotulo: "Resistência mágica", total: 3 },
+    ]);
+  });
+
+  it("e a opção filtra os três", () => {
+    const ids = filtrar(prepararLista(RESISTENCIA), new Set(["classe:spellblock"])).map((a) => a.id);
+    expect(ids).toEqual(["so-spellblock", "so-magicresist", "as-duas"]);
+  });
+
+  it("asset sem sinônimo devolve as próprias etiquetas", () => {
+    const tags = ["compravel", "mapa:sr"];
+    expect(etiquetasDe({ tags })).toBe(tags);
+  });
+});
+
+describe("marcação não é arte", () => {
+  it("o `_fpo` do índice é marcação", () => {
+    expect(
+      ehMarcacao({
+        sourceUrl:
+          "https://raw.communitydragon.org/latest/game/assets/loadouts/summoneremotes/emote_fpo_inventory.png",
+      }),
+    ).toBe(true);
+  });
+
+  it("`fpo` dentro de outra palavra não é", () => {
+    expect(ehMarcacao({ sourceUrl: "https://exemplo.invalido/pasta_fpo/campfpont.png" })).toBe(false);
+    expect(ehMarcacao({ sourceUrl: "https://exemplo.invalido/icone-1.png" })).toBe(false);
+  });
+});
+
+describe("a barra de filtros", () => {
+  function grupo(chave: string, opcoes: number) {
+    return {
+      chave,
+      rotulo: chave,
+      opcoes: Array.from({ length: opcoes }, (_, i) => ({ tag: `${chave}:${i}`, rotulo: `${i}`, total: 1 })),
+    };
+  }
+
+  it("grupo pequeno fica na barra; grande vai para 'Mais filtros'", () => {
+    const { naBarra, maisFiltros } = separarGrupos([
+      grupo("mapa", 3),
+      grupo("arvore", OPCOES_NA_BARRA),
+      grupo("classe", 32),
+    ]);
+    expect(naBarra.map((g) => g.chave)).toEqual(["mapa", "arvore"]);
+    expect(maisFiltros.map((g) => g.chave)).toEqual(["classe"]);
   });
 });

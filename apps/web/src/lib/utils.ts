@@ -17,12 +17,38 @@
  * herdou o branco do corpo e passou a ter **3,1:1** de contraste sobre o violeta
  * em vez de 4,64:1. Nenhum teste de unidade pegou — quem pegou foi o axe do
  * T-28, no e2e, porque só ali as classes viram cor de verdade.
+ *
+ * As medidas com nome (`h-controle-md`, `size-controle-min`) são o mesmo caso,
+ * com o sinal trocado: sem conhecê-las, o `twMerge` não vê conflito e **mantém
+ * as duas**, e quem vence é a ordem do CSS. `cn("h-controle-lg", "h-controle-md")`
+ * saía com as duas classes (T-48).
  */
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
 const twMerge = extendTailwindMerge({
   extend: {
+    // As `--spacing-*` do `globals.css`, pelo nome.
+    theme: {
+      spacing: [
+        "controle-min",
+        "controle-xs",
+        "controle-sm",
+        "controle-md",
+        "controle",
+        "controle-lg",
+        "controle-xl",
+        "barra",
+        "paleta-rodape",
+        "paleta-campo",
+        "cabecalho",
+        "bandeja",
+        "barra-lateral",
+        "busca-max",
+        "alvo-cartao-denso",
+        "alvo-cartao-confortavel",
+      ],
+    },
     classGroups: {
       "font-size": [{ text: ["9", "10", "11", "12", "13", "14", "16", "19", "22"] }],
     },

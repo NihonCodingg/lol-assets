@@ -2389,7 +2389,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 1. ✅ A ficha continua à vista antes de qualquer clique (RF-09).
 2. ✅ A ampliação fecha no `Escape` sem fechar o painel.
 
-### ⏳ T-48 — Categorias em galeria
+### ✅ T-48 — Categorias em galeria
 
 | | |
 |---|---|
@@ -2397,16 +2397,34 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 | **Dependências** | T-45 |
 | **Cobre** | RF-08, RF-09, RF-17; ADR 0011 |
 
+> **Entregue em 16/09/2026.** Quatro decisões no caminho.
+> - **A altura do *tile* é uma por lista, não por breakpoint.** Sai da mediana dos arquivos da
+>   categoria: ícone de 64 px ganha prévia de 96, emote de 136, ward e mapa de 232. Continua sendo
+>   o que o [ADR 0011](adr/0011-base-de-componentes-do-front.md) pede — altura fixa, nada medido —,
+>   só que decidida pelo conteúdo, e não pela janela.
+> - **A classe de item sai em pt-BR**, com as palavras da loja do jogo, e `SpellBlock` e
+>   `MagicResist` viram uma opção só ("Resistência mágica"). Classe que a tabela não conhece
+>   continua crua. Isso reverte, por escrito, a regra do topo de `lib/categorias.ts`.
+> - **O "Mais filtros" abre embaixo da barra, e não por cima da galeria:** dá para marcar três
+>   classes sem ele fechar a cada clique. Vai para lá todo grupo com mais de seis opções.
+> - **A dica do copiar, nos *tiles*, é CSS.** Medido: o Radix Tooltip de cada *tile* custava
+>   ~2,5 ms por quadro de rolagem, e 5.042 ícones rolavam a 50 quadros por segundo. Com a dica leve
+>   e os *tiles* memorizados, voltaram aos 60.
+>
+> O `_fpo` sai na tela; tirá-lo do índice é trabalho do indexador, que fica para depois.
+
 **Entra**
-- A lista vira galeria de *tiles* virtualizada por linha, com altura fixa por breakpoint.
+- A lista vira galeria de *tiles* virtualizada por linha, com a mesma altura na lista inteira.
 - Filtros compactos: grupos pequenos em linha, "Classe" em "Mais filtros".
 - Rótulos de `classe:*` em pt-BR. **Revê a decisão de `lib/categorias.ts`** de mostrar o valor
   cru: `abilityhaste` e `nonbootsmovement` não são rótulo para gente, e o dono pediu "intuitivo".
 - O asset `_fpo` (marcação, não arte) sai da tela.
 
 **Critérios de aceite**
-1. As categorias de 5.042 e 2.338 itens rolam sem travar.
-2. "Selecionar os N filtrados" continua selecionando só o que o filtro mostra.
+1. ✅ As categorias de 5.042 e 2.357 itens rolam sem travar. Medido no build de produção, rolando
+   7.200 px/s: mediana de 16,7 ms por quadro nos ícones de perfil e 17,5 ms nos emotes, com no
+   máximo 66 *tiles* no DOM. A lista de antes dava 16,6 ms com 21 cartões.
+2. ✅ "Selecionar os N filtrados" continua selecionando só o que o filtro mostra — agora com teste.
 
 ### ⏳ T-49 — Celular (fecha o T-44)
 
@@ -2649,4 +2667,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
-| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

@@ -173,6 +173,42 @@ A segunda metade do T-47, empilhada sobre ele.
 | e2e | **40 de 40**, com o da ampliação |
 | Build de produção | limpo; a home com 168 kB no primeiro carregamento |
 
+## T-48 — as categorias em galeria
+
+- **Galeria:** a lista de linhas vira *tiles* com a imagem na frente, o nome e a ficha embaixo,
+  sempre à vista. As ações — original, PNG, copiar e a caixa do lote — aparecem por cima da
+  prévia no *hover* e no foco, e ficam sempre à vista no toque. A prévia amplia, como no painel.
+- **Filtros numa barra só:** voltar, o filtro por texto com ícone e os grupos pequenos. As 32
+  classes de item ficam atrás de "Mais filtros", em pt-BR, e o botão conta as que estão marcadas
+  lá dentro.
+- **Um fechar só:** o "fechar" do painel de assets saiu de vez; quem fecha é quem o contém.
+- **O "Emote 0" saiu:** era `emote_fpo_inventory.png`, um quadrado de marcação.
+
+### Achados
+
+- **O Radix Tooltip pesava na rolagem.** Com seis *tiles* por linha, cada linha que entra monta
+  seis dicas. A medida A/B no build de produção: 21,7 ms por quadro com a galeria como estava,
+  19,0 ms com os *tiles* memorizados, 16,6 ms sem a dica. A dica do copiar, na galeria, virou CSS
+  (`dicaLeve`), com o mesmo desenho; no painel do campeão continua a do Radix.
+- **O `twMerge` não conhecia as medidas com nome.** `cn("h-controle-lg", "h-controle-md")`
+  mantinha as duas classes, e quem vencia era a ordem do CSS — o mesmo tipo de defeito do T-28,
+  com o sinal trocado. As `--spacing-*` entraram na configuração, com teste.
+- **O teste de "cartões não se sobrepõem" só servia para uma coluna:** comparava cada cartão com
+  o anterior, e numa galeria o vizinho da mesma linha começa na mesma altura. Virou comparação
+  de retângulo com retângulo, e ganhou a conferência de que há mais de uma coluna.
+- **Duas etiquetas da Riot para a mesma coisa:** `SpellBlock` (99 itens) e `MagicResist` (33, 23
+  com as duas). Em pt-BR as duas seriam "Resistência mágica"; viraram uma opção.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **451 de 451** — 34 novos; 4 mudados de propósito (o rótulo cru da classe e o `boots` que virou "Botas", o "fechar" do painel, a dica do copiar na galeria) |
+| `tsc` e `eslint` | limpos |
+| e2e | **40 de 40**; os dois de sobreposição agora comparam retângulos, e o axe da categoria roda com "Mais filtros" aberto e um *tile* em *hover* |
+| Rolagem (critério 1) | 16,7 ms por quadro nos 5.042 ícones de perfil, 17,5 ms nos emotes; no máximo 66 *tiles* no DOM |
+| Build de produção | limpo; a home com 170 kB no primeiro carregamento |
+
 ## O que resta
 
 - **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
@@ -181,8 +217,9 @@ A segunda metade do T-47, empilhada sobre ele.
   divergência do cdragon, anterior a esta onda. Ela ganhou causa e PR próprio numa tarefa
   separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
   cdragon recomprime o PNG.
-- **O ok do dono nos previews do T-47 e do T-47b.** Só depois de cada um, o merge.
-- **T-48 a T-50**, um PR e um ok de cada vez.
+- **O T-47 e o T-47b têm o ok do dono** (16/09); o merge é dele, um de cada vez.
+- **O ok do dono no preview do T-48.** Depois, T-49 e T-50, um PR e um ok de cada vez.
+- **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono
   iniciou em outra sessão: o aviso passou a medir a última verificação. Os ramos do T-45 e do
