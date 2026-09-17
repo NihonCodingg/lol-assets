@@ -35,7 +35,7 @@
  * galeria já diz quantos. E os avisos da Riot ficam no fim da área que rola.
  */
 
-import { ArrowLeft, ListChecks, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, CloudOff, ListChecks, Search, SearchX, SlidersHorizontal } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Asset, AssetCategory, IndexShard } from "@lol-assets/schema";
@@ -47,6 +47,7 @@ import { PainelDeAsset } from "@/components/painel-de-asset";
 import { Botao } from "@/components/ui/botao";
 import { Campo } from "@/components/ui/campo";
 import { Chip } from "@/components/ui/chip";
+import { Estado } from "@/components/ui/estado";
 import { assetUrl } from "@/lib/asset-file";
 import {
   descreverFiltro,
@@ -101,6 +102,9 @@ export function NavegacaoPorCategoria({
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
   const [maisFiltrosAbertos, setMaisFiltrosAbertos] = useState(false);
   const [ampliado, setAmpliado] = useState<Asset | null>(null);
+  // Muda a cada "Tentar de novo": é o que faz o efeito de carga rodar outra vez.
+  // O `AssetsClient` esquece a promessa que falhou, então a nova vai à rede.
+  const [tentativa, setTentativa] = useState(0);
 
   /**
    * Carrega a fatia quando a categoria aberta muda.
@@ -143,7 +147,7 @@ export function NavegacaoPorCategoria({
     return () => {
       cancelado = true;
     };
-  }, [aberta, carregar]);
+  }, [aberta, carregar, tentativa]);
 
   useEffect(() => {
     if (aberta === null) return;
@@ -303,11 +307,25 @@ export function NavegacaoPorCategoria({
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
           {carga.fase === "carregando" && <Carregando rotulo={rotulo} />}
           {carga.fase === "erro" && (
-            <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
-              Falhou ao carregar: {carga.motivo}
-            </p>
+            <Estado
+              role="alert"
+              icone={CloudOff}
+              titulo={`Não deu para carregar ${rotulo}`}
+              detalhe={carga.motivo}
+              acao={<Botao onClick={() => setTentativa((n) => n + 1)}>Tentar de novo</Botao>}
+            >
+              O índice desta categoria não chegou. Confira a conexão e tente de novo.
+            </Estado>
           )}
-          {pronta && <Vazio descricao={descreverFiltro(marcadas, consulta, grupos)} />}
+          {pronta && (
+            <Vazio
+              descricao={descreverFiltro(marcadas, consulta, grupos)}
+              onLimpar={() => {
+                setConsulta("");
+                setMarcadas(new Set());
+              }}
+            />
+          )}
           <AvisosNoFim className="mt-auto" />
         </div>
       )}
@@ -386,7 +404,7 @@ function GrupoDeChips({
 function Carregando({ rotulo }: { rotulo: string }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <p className="px-3.5 py-2 text-12 text-texto-suave">carregando {rotulo}…</p>
+      <p className="px-3.5 py-2 text-12 text-texto-suave">Carregando {rotulo}…</p>
       <div
         aria-hidden="true"
         className="grid grid-cols-[repeat(auto-fill,minmax(176px,1fr))] gap-3 px-3.5"
@@ -403,15 +421,23 @@ function Carregando({ rotulo }: { rotulo: string }) {
   );
 }
 
-/** Critério 4: o vazio diz **o que** foi filtrado, não só que deu zero. */
-function Vazio({ descricao }: { descricao: readonly string[] }) {
+/**
+ * Critério 4: o vazio diz **o que** foi filtrado, não só que deu zero. E ensina a
+ * sair dele (T-50): a frase do que fazer, e o botão que limpa tudo de uma vez.
+ */
+function Vazio({ descricao, onLimpar }: { descricao: readonly string[]; onLimpar: () => void }) {
   return (
-    <div role="status" className="px-3.5 py-20 text-center">
-      <p className="mb-1 text-14 font-medium">Nenhum asset com esse filtro.</p>
+    <Estado
+      role="status"
+      icone={SearchX}
+      titulo="Nenhum asset com esses filtros"
+      acao={<Botao onClick={onLimpar}>Limpar filtros</Botao>}
+    >
+      <p>Tente outro nome, ou desmarque um dos filtros.</p>
       {descricao.length > 0 && (
         <ul
           aria-label="Filtro aplicado"
-          className="flex flex-wrap justify-center gap-1.5 font-mono text-11 text-texto-suave"
+          className="mt-2.5 flex flex-wrap justify-center gap-1.5 font-mono text-11 text-texto-suave"
         >
           {descricao.map((parte) => (
             <li key={parte} className="rounded-padrao border border-borda-forte px-2 py-0.75">
@@ -420,6 +446,6 @@ function Vazio({ descricao }: { descricao: readonly string[] }) {
           ))}
         </ul>
       )}
-    </div>
+    </Estado>
   );
 }

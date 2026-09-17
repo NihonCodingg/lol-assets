@@ -454,7 +454,7 @@ function BotaoDeCopiar({
 }) {
   return (
     <BotaoIcone
-      rotulo="Copiar URL"
+      rotulo="Copiar link"
       dicaLeve={leve}
       dica={copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar" : undefined}
       dicaAberta={copia !== "parado"}
@@ -660,7 +660,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
             role="alert"
             className="absolute inset-x-1.5 top-1.5 rounded-padrao bg-superficie/90 px-2 py-1 text-11 leading-cartao text-acento-mais-claro"
           >
-            Falhou ao baixar. Tente de novo.
+            Não deu para baixar. Tente de novo.
           </p>
         )}
       </div>
@@ -763,7 +763,7 @@ function CartaoDaGrade({
 
       {estado === "erro" && (
         <p role="alert" className="px-3 pb-3 text-11 text-acento-mais-claro">
-          Falhou ao baixar. Tente de novo.
+          Não deu para baixar. Tente de novo.
         </p>
       )}
     </article>

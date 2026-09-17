@@ -39,7 +39,7 @@
  * 44 px, e a caixa do lote ganha área de toque em volta (ver `CaixaDeSelecao`).
  */
 
-import { X } from "lucide-react";
+import { CloudOff, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
@@ -50,6 +50,7 @@ import { PainelDeAsset } from "@/components/painel-de-asset";
 import { SeletorDeSkin } from "@/components/seletor-de-skin";
 import { Botao } from "@/components/ui/botao";
 import { BotaoIcone } from "@/components/ui/botao-icone";
+import { Estado } from "@/components/ui/estado";
 import { PainelLateral } from "@/components/ui/painel-lateral";
 import { VitrineDaSkin } from "@/components/vitrine-da-skin";
 import { assetUrl, thumbnailSrc } from "@/lib/asset-file";
@@ -64,6 +65,8 @@ export interface PainelDoCampeaoProps {
   readonly skinInicial?: number;
   readonly assetsBaseUrl?: string;
   readonly erro?: string | null;
+  /** Pede a fatia de novo, depois de um erro (T-50). Sem ele, não há o botão. */
+  readonly onTentarDeNovo?: () => void;
   readonly onClose: () => void;
 }
 
@@ -74,6 +77,7 @@ export function PainelDoCampeao({
   skinInicial,
   assetsBaseUrl,
   erro,
+  onTentarDeNovo,
   onClose,
 }: PainelDoCampeaoProps) {
   const doCampeao = useMemo(() => skinsOf(skins, champion), [skins, champion]);
@@ -197,12 +201,19 @@ export function PainelDoCampeao({
           )}
 
           {erro && (
-            <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
-              {erro}
-            </p>
+            <Estado
+              role="alert"
+              icone={CloudOff}
+              titulo={`Não deu para carregar as artes de ${champion.names.pt_BR}`}
+              detalhe={erro}
+              acao={onTentarDeNovo && <Botao onClick={onTentarDeNovo}>Tentar de novo</Botao>}
+              className="py-10"
+            >
+              O índice dos campeões não chegou. Confira a conexão e tente de novo.
+            </Estado>
           )}
           {!assets && !erro && (
-            <p className="px-3.5 py-3 text-13 text-texto-suave">carregando os assets…</p>
+            <p className="px-3.5 py-3 text-13 text-texto-suave">Carregando as artes…</p>
           )}
 
           {assets && (

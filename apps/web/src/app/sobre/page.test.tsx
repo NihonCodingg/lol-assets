@@ -89,6 +89,16 @@ describe("avisos legais da Riot", () => {
 
 // --- RF-22: as fontes ---------------------------------------------------------------------
 
+describe("como usar (T-50)", () => {
+  it("ensina a busca por apelido e a diferença entre original e PNG", () => {
+    render(<SobrePage />);
+    const secao = screen.getByLabelText("Como usar");
+    expect(secao.textContent).toContain("mf");
+    expect(secao.textContent).toContain("Baixar original");
+    expect(secao.textContent).toContain("PNG");
+  });
+});
+
 describe("créditos das fontes", () => {
   it("toda fonte do contrato tem crédito — fonte nova não entra sem ele", () => {
     for (const fonte of FONTES_DO_CONTRATO) {

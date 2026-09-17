@@ -117,7 +117,7 @@ const DO_INDEXADOR: Record<string, string> = {
   "mapa:sr": "Summoner's Rift",
   "mapa:aram": "ARAM",
   "mapa:arena": "Arena",
-  "arvore:nenhuma": "sem árvore",
+  "arvore:nenhuma": "Sem árvore",
   // O `slot` é a linha da árvore; a primeira é a da runa principal.
   "slot:0": "Principal",
   "slot:1": "Slot 1",
@@ -188,7 +188,7 @@ export function grupoDaTag(tag: string): string {
 
 function valorDaTag(tag: string): string {
   const corte = tag.indexOf(":");
-  return corte === -1 ? "sim" : tag.slice(corte + 1);
+  return corte === -1 ? "Sim" : tag.slice(corte + 1);
 }
 
 /**
@@ -353,7 +353,7 @@ export function descreverFiltro(
     grupos.flatMap((g) => g.opcoes.map((o) => [o.tag, `${g.rotulo}: ${o.rotulo}`] as const)),
   );
   const partes = [...tags].sort().map((tag) => rotulos.get(tag) ?? tag);
-  if (consulta.trim()) partes.push(`texto: “${consulta.trim()}”`);
+  if (consulta.trim()) partes.push(`Texto: “${consulta.trim()}”`);
   return partes;
 }
 

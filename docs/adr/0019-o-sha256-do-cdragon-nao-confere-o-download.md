@@ -101,7 +101,13 @@ testado, porque testar já seria o abuso.
 
 ## O que o T-50 deve usar
 
-O RNF-13 na interface — `sha256` divergente vira aviso, nunca bloqueio — fica assim:
+> **Emendado em 16/09/2026:** o aviso na interface **não foi construído**. O dono decidiu tirar do
+> RNF-13 o aviso a cada download (T-50b, fechado sem executar): ele só valeria para o ddragon,
+> que diverge por horas entre um patch e a reindexação. A regra abaixo continua valendo para a
+> conferência no navegador contra o site no ar — que é quem verifica o RNF-13 — e para qualquer
+> aviso que um dia volte a ser pedido.
+
+O RNF-13 na interface — `sha256` divergente vira aviso, nunca bloqueio — ficaria assim:
 
 - **Comparar o `sha256` só quando `isByteStable(asset.source)`.** No cdragon, divergir é o
   normal da borda: avisar seria alarme falso em quase todo download de emote, ward e chroma — o

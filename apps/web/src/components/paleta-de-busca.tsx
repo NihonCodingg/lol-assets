@@ -229,15 +229,15 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
             <span className="ml-auto hidden items-center gap-1 sm:flex">
               <Tecla>↑</Tecla>
               <Tecla>↓</Tecla>
-              navegar
+              Navegar
             </span>
             <span className="hidden items-center gap-1 sm:flex">
               <Tecla>↵</Tecla>
-              abrir
+              Abrir
             </span>
             <span className="hidden items-center gap-1 sm:flex">
               <Tecla>esc</Tecla>
-              fechar
+              Fechar
             </span>
           </div>
         </div>

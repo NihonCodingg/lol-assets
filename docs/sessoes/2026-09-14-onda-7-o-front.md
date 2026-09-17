@@ -243,6 +243,37 @@ A segunda metade do T-47, empilhada sobre ele.
 | Faixa do topo em 390×844 | **92 px** (eram 274) |
 | Computador | sem mudança visível na home |
 
+## T-50 — o acabamento
+
+- **Vazio, erro e 404 falam igual** (`Estado`): ícone, título em português, o que fazer, o
+  detalhe técnico pequeno e a ação. O erro de carga da categoria e o do painel do campeão ganharam
+  "Tentar de novo"; o do catálogo, "Recarregar".
+- **O vazio da categoria** diz o que tente, mostra o que estava filtrado e tem "Limpar filtros".
+- **O aviso de índice velho** ganhou ícone e a frase principal em destaque.
+- **Microcopy:** maiúscula só no início da frase, erro começando com "Não deu para…", "Copiar
+  link" no lugar de "Copiar URL", e o rodapé com "Patch" e "2.121 skins".
+- **Sobre:** uma seção "Como usar" — apelidos na busca, original contra PNG, o zip das categorias.
+- **Na Sobre, as categorias levam para a home** já abertas; antes marcavam e ficavam lá.
+
+### Achados
+
+- **"Failed to fetch" era o título do erro** em três lugares: o painel do campeão, a categoria e
+  o catálogo. Nenhum dizia o que fazer.
+- **O RNF-13 depende do T-52** (#60): comparar o `sha256` no cdragon avisaria em todo download,
+  porque a borda dele recomprime o PNG. Foi para o T-50b, e o dono o fechou no mesmo dia: o aviso
+  sai da Spec, e o RNF-13 passa a dizer que quem verifica é a conferência no navegador.
+- **O teste do "carregando" teria passado sem esperar nada:** o ajudante da categoria esperava
+  `/^carregando /` sumir, e com a maiúscula a frase nunca casaria. Mudou junto com o texto.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **463 de 463** — 7 novos; 11 mudados de propósito, todos pela microcopy |
+| `tsc` e `eslint` | limpos |
+| e2e | **46 de 46**; 2 mudados pela microcopy ("Já é PNG", "Carregando as artes…") |
+| Inspeção | 13 estados em 1440×900 e 390×844; um lote de correções e a segunda rodada limpa |
+
 ## O que resta
 
 - **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
@@ -252,7 +283,9 @@ A segunda metade do T-47, empilhada sobre ele.
   separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
   cdragon recomprime o PNG.
 - **O T-47 e o T-47b têm o ok do dono** (16/09); o merge é dele, um de cada vez.
-- **O ok do dono nos previews do T-48 e do T-49.** Depois, o T-50.
+- **O ok do dono nos previews do T-48, do T-49 e do T-50.**
+- ~~O T-50b (RNF-13)~~ — fechado sem executar em 16/09, por decisão do dono; o RNF-13 foi
+  emendado na Spec.
 - **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono

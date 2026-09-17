@@ -173,7 +173,7 @@ test("no ar, é HTTPS e contexto seguro", async ({ page }) => {
   // O modo local é HTTP num domínio falso: **não** é contexto seguro, e o
   // Chromium sem janela ignora a flag que o fingiria. Que os cenários de
   // download, PNG e zip passem assim prova que eles não dependem disso. Quem
-  // depende é o "Copiar URL", e ele só precisa do HTTPS que a Vercel já dá.
+  // depende é o "Copiar link", e ele só precisa do HTTPS que a Vercel já dá.
   test.skip(!process.env.URL_PUBLICADA, "só contra o site no ar");
   await irParaHome(page);
   expect(new URL(page.url()).protocol).toBe("https:");

@@ -2466,28 +2466,67 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 3. ✅ Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando *tiles* em
    375×720: e2e com o relógio dez dias depois da fixture.
 
-### ⏳ T-50 — Acabamento
+### ✅ T-50 — Acabamento
 
 | | |
 |---|---|
 | **Objetivo** | Os estados que faltam e a última revisão |
 | **Dependências** | T-46 a T-49 |
-| **Cobre** | RNF-13 e a microcopy do produto |
+| **Cobre** | A microcopy do produto |
+
+> **Entregue em 16/09/2026.** Quatro decisões no caminho.
+> - **O RNF-13 não entrou.** Ele compararia o `sha256` só nas fontes de bytes estáveis, pela
+>   `isByteStable` que o T-52 traz (#60), e o #60 ainda espera o merge. Foi separado no T-50b —
+>   que o dono fechou sem executar no mesmo dia (ver abaixo).
+> - **Um desenho só para vazio, erro e página que não existe** (`Estado`): ícone, título em
+>   português, o que fazer, o detalhe técnico pequeno e a ação. Erro não é vermelho — o tema
+>   tem um acento só —, e o "Failed to fetch" cru virou detalhe, não título.
+> - **Vocabulário:** frase com maiúscula só no início ("Já é PNG", "Sim", "Texto: …"), erro
+>   começa com "Não deu para…", e "Copiar URL" virou "Copiar link" — a confirmação já dizia
+>   "Link copiado".
+> - **Na página Sobre, as categorias viram links para a home**, e o clique já abre a categoria.
+>   Na home continuam botões marcáveis.
+>
+> A rodada de inspeção passou por 13 estados em 1440×900 e 390×844 — com a fonte fora do ar, o
+> índice velho e a página que não existe. Um lote de correções, e a segunda rodada saiu limpa.
 
 **Entra**
 - Vazios que ensinam; erros que dizem o que fazer; aviso de índice velho no vocabulário novo.
-- RNF-13: sha256 divergente vira aviso, sem bloquear o download.
-  > **Nota do T-52 ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)):**
-  > comparar o `sha256` só quando `isByteStable(asset.source)`, de `@lol-assets/schema`. No
-  > cdragon, divergir é o normal da borda — o Cloudflare Polish recomprime —, e avisar seria
-  > alarme falso em quase todo emote, ward e chroma; ali o detector que sobra é formato e
-  > dimensão, lidos do começo do arquivo baixado. E o `bytes` do cdragon é o tamanho na fonte:
-  > o arquivo entregue pode ser até ~10× menor.
 - Microcopy em pt-BR revisada e a página Sobre.
 - Na página Sobre, os botões de categoria da barra — que aparecem depois de passar pela home —
   marcam a categoria e ficam na Sobre. Precisam levar para a home, já na categoria. Existe desde
   o T-41; achado no T-46.
 - Uma rodada de inspeção (1440×900 e 390×844), um lote de correções, no máximo mais uma rodada.
+
+**Critérios de aceite**
+1. ✅ Nenhum erro chega em inglês cru como título, e todo erro de carga tem "Tentar de novo" ou
+   "Recarregar".
+2. ✅ O vazio da categoria diz o que filtrou e tem "Limpar filtros".
+3. ✅ Da Sobre, clicar numa categoria leva para a home com ela aberta.
+
+### ⏸️ T-50b — RNF-13: `sha256` divergente vira aviso
+
+> **Fechado sem executar em 16/09/2026, por decisão do dono:** o aviso sai da Spec em vez de ser
+> construído. Ele só valeria para o ddragon — no cdragon a borda recomprime o PNG (ADR 0019, no
+> #60) —, e o ddragon só diverge nas horas entre um patch e a reindexação, que a própria
+> indexação fecha. O que o aviso mediria já é verificado pela conferência no navegador contra o
+> site no ar (`conferir:navegador`, T-43 e T-52). O RNF-13 foi emendado para dizer isso; o
+> ticket fica abaixo como estava, para o registro.
+
+| | |
+|---|---|
+| **Objetivo** | Quem baixa fica sabendo quando o arquivo não é o que o índice descreve |
+| **Dependências** | T-52 (#60, `isByteStable`), T-50 |
+| **Cobre** | RNF-13 |
+
+**Entra**
+- Depois de baixar, comparar o `sha256` com o do índice **só quando `isByteStable(asset.source)`**
+  — hoje, só o ddragon ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)).
+- Divergiu: aviso no próprio cartão, no vocabulário do T-50, **sem bloquear** o arquivo já salvo.
+
+**Critérios de aceite**
+1. `sha256` divergente numa fonte estável produz aviso visível e não bloqueia o download.
+2. No cdragon, não produz aviso.
 
 ---
 
@@ -2665,7 +2704,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RNF-03 | T-10, T-08, T-24 |
 | RNF-04 | T-13, T-42 |
 | RNF-05 | T-02, T-10, T-11, ✅ T-36, ✅ T-37 |
-| RNF-13 | T-15 (aviso de divergência), T-09 (medição do sha256) |
+| RNF-13 | T-09 (medição do `sha256`), T-43 e T-52 (conferência no navegador contra o site no ar); o aviso na tela saiu da Spec em 16/09/2026 (⏸️ T-50b) |
 | RNF-06 | T-12, T-13, T-31, T-51 |
 | RNF-07 | T-08 |
 | RNF-08, RNF-09 | T-03 |
@@ -2686,4 +2725,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
-| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → ✅ T-50 (⏸️ T-50b) | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

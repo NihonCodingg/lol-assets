@@ -26,6 +26,10 @@
  * nessa ordem, que é a mesma do DOM e a do computador. Os avisos da Riot descem
  * para o fim da página (ver `avisos-da-riot.tsx`).
  *
+ * **T-50:** fora da home — na página Sobre —, cada categoria é um link para a
+ * home, já com a categoria aberta. Antes ela era botão em toda página: marcava a
+ * categoria e deixava a pessoa na Sobre, sem nada mudar na tela.
+ *
  * O quadrado violeta de 20px no topo é a marca do design. Ele não é logotipo: é
  * o acento, do tamanho que o desenho pede, no lugar que o desenho reservou para
  * `[ nome do produto ]`.
@@ -46,6 +50,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { AvisosDaRiot } from "@/components/avisos-da-riot";
@@ -78,6 +83,10 @@ const ITEM_DE_SECAO = cn(
 export function Rodape() {
   const { categorias, campeoes, aberta, abrir } = useNavegacao();
   const linha = useRef<HTMLDivElement>(null);
+  // `null` fora do roteador do Next — nos testes que montam a barra sozinha.
+  // Lá, como na home, as categorias são botões.
+  const caminho = usePathname();
+  const naHome = caminho === null || caminho === "/";
 
   // Na linha que rola de lado, a categoria aberta vem para a tela: quem abre
   // "Mapas" pela home não pode ficar com o botão marcado fora da vista.
@@ -123,7 +132,8 @@ export function Rodape() {
               rotulo="Campeões"
               icone={Swords}
               total={campeoes ?? undefined}
-              ativo={aberta === null}
+              ativo={naHome && aberta === null}
+              naHome={naHome}
               onClick={() => abrir(null)}
             />
             {categorias.map((categoria) => (
@@ -132,14 +142,17 @@ export function Rodape() {
                 rotulo={categoria.rotulo}
                 icone={ICONE_DA_CATEGORIA[categoria.category] ?? Shapes}
                 total={categoria.total}
-                ativo={aberta === categoria.category}
+                ativo={naHome && aberta === categoria.category}
+                naHome={naHome}
                 onClick={() => abrir(categoria.category)}
               />
             ))}
           </nav>
         )}
 
-        <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-borda-forte md:hidden" />
+        {categorias.length > 0 && (
+          <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-borda-forte md:hidden" />
+        )}
 
         <nav
           aria-label="Seções"
@@ -173,36 +186,47 @@ function ItemDeCategoria({
   icone: Icone,
   total,
   ativo,
+  naHome = true,
   onClick,
 }: {
   rotulo: string;
   icone: LucideIcon;
   total?: number;
   ativo: boolean;
+  /** Fora da home, o item é um link para ela; o clique escolhe a categoria antes de ir. */
+  naHome?: boolean;
   onClick: () => void;
 }) {
+  const classe = cn(
+    "flex w-full cursor-pointer items-center gap-2.5 rounded-padrao px-2 py-1.5 text-left text-13 whitespace-nowrap",
+    "transition-colors duration-150 ease-saida md:pr-12",
+    "max-md:min-h-controle-xl max-md:px-2.5",
+    ativo ? "bg-selecionado text-texto" : "text-texto-suave hover:bg-campo hover:text-texto",
+  );
+  const conteudo = (
+    <>
+      {/* Ícone e contagem só a partir de `md`: na linha do telefone eles
+          alargariam cada botão, e menos categorias caberiam à vista (T-44). */}
+      <Icone
+        aria-hidden="true"
+        strokeWidth={TRACO}
+        className={cn("hidden size-4 flex-none md:block", ativo && "text-acento-claro")}
+      />
+      {rotulo}
+    </>
+  );
+
   return (
     <div className="relative flex-none">
-      <button
-        type="button"
-        aria-pressed={ativo}
-        onClick={onClick}
-        className={cn(
-          "flex w-full cursor-pointer items-center gap-2.5 rounded-padrao px-2 py-1.5 text-left text-13 whitespace-nowrap",
-          "transition-colors duration-150 ease-saida md:pr-12",
-          "max-md:min-h-controle-xl max-md:px-2.5",
-          ativo ? "bg-selecionado text-texto" : "text-texto-suave hover:bg-campo hover:text-texto",
-        )}
-      >
-        {/* Ícone e contagem só a partir de `md`: na linha do telefone eles
-            alargariam cada botão, e menos categorias caberiam à vista (T-44). */}
-        <Icone
-          aria-hidden="true"
-          strokeWidth={TRACO}
-          className={cn("hidden size-4 flex-none md:block", ativo && "text-acento-claro")}
-        />
-        {rotulo}
-      </button>
+      {naHome ? (
+        <button type="button" aria-pressed={ativo} onClick={onClick} className={classe}>
+          {conteudo}
+        </button>
+      ) : (
+        <Link href="/" onClick={onClick} className={classe}>
+          {conteudo}
+        </Link>
+      )}
       {total !== undefined && (
         <span
           aria-hidden="true"

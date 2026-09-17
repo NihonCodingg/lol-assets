@@ -130,7 +130,7 @@ describe("grupos de filtro", () => {
 describe("rótulo da etiqueta", () => {
   it("traduz só o vocabulário que o indexador inventou", () => {
     expect(rotuloDaTag("mapa:sr")).toBe("Summoner's Rift");
-    expect(rotuloDaTag("arvore:nenhuma")).toBe("sem árvore");
+    expect(rotuloDaTag("arvore:nenhuma")).toBe("Sem árvore");
   });
 
   // Mudou no T-48, de propósito: até ali a classe de item saía crua, e a tela
@@ -144,7 +144,7 @@ describe("rótulo da etiqueta", () => {
   it("classe que a tabela não conhece continua saindo crua, em vez de sumir", () => {
     expect(rotuloDaTag("classe:novidade")).toBe("novidade");
     // Nome de propriedade de objeto não é rótulo.
-    expect(rotuloDaTag("constructor")).toBe("sim");
+    expect(rotuloDaTag("constructor")).toBe("Sim");
   });
 
   it("o slot da runa diz qual é a linha", () => {
@@ -271,13 +271,13 @@ describe("descrever o filtro", () => {
 
   it("diz o grupo e a opção de cada etiqueta marcada", () => {
     expect(descreverFiltro(new Set(["compravel", "mapa:aram"]), "", grupos)).toEqual([
-      "Comprável: sim",
+      "Comprável: Sim",
       "Mapa: ARAM",
     ]);
   });
 
   it("inclui o texto digitado", () => {
-    expect(descreverFiltro(new Set(), "poro", grupos)).toEqual(["texto: “poro”"]);
+    expect(descreverFiltro(new Set(), "poro", grupos)).toEqual(["Texto: “poro”"]);
   });
 
   it("sem nada marcado, não descreve nada", () => {

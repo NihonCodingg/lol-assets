@@ -208,7 +208,7 @@ test.describe("converter para PNG no cliente", () => {
     await page.click('button:has-text("Jax")');
     const botao = page
       .locator('article[aria-label="Jax_square.png"]')
-      .getByRole("button", { name: "já é PNG" });
+      .getByRole("button", { name: "Já é PNG" });
     await expect(botao).toBeDisabled();
   });
 });

@@ -167,7 +167,7 @@ export function BarraDeLote({
 
       {estado.fase === "erro" && (
         <p role="alert" className="text-11 text-acento-mais-claro">
-          Falhou ao montar o zip: {estado.motivo}
+          Não deu para montar o zip ({estado.motivo}). Tente de novo.
         </p>
       )}
     </section>
