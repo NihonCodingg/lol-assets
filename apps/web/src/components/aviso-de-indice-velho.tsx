@@ -8,7 +8,9 @@
  * informação que precisa estar na tela para quem for olhar. Leitor de tela
  * anuncia sem cortar o que estava sendo lido.
  *
- * Tela crua de propósito; o design chega no T-30.
+ * No telefone ele é mais baixo — letra de 10 px e menos respiro (T-49): em
+ * 375×720, com ele na tela, a lista de uma categoria chegou a ficar sem nenhuma
+ * linha à vista.
  */
 
 import type { IndexManifest } from "@lol-assets/schema";
@@ -29,7 +31,7 @@ export function AvisoDeIndiceVelho({ manifest, agora }: AvisoDeIndiceVelhoProps)
     <p
       role="status"
       data-indice="velho"
-      className="flex-none border-b border-borda bg-acento-suave px-3.5 py-2 text-11 leading-cartao text-texto-medio"
+      className="flex-none border-b border-borda bg-acento-suave px-3.5 py-1.5 text-10 leading-cartao text-texto-medio md:py-2 md:text-11"
     >
       Este índice foi gerado há {idadeEmPalavras(frescor.horas)}, em{" "}
       <time dateTime={manifest.generatedAt}>{dataLegivel(frescor.geradoEm)}</time>. A

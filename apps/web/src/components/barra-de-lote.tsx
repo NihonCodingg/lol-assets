@@ -15,6 +15,10 @@
  * **As miniaturas (T-47b)** mostram o que vai no zip sem abrir lista nenhuma: as
  * cinco primeiras e quantas faltam. São decorativas — a contagem já está escrita
  * ao lado, e é ela que o leitor de tela ouve.
+ *
+ * **No telefone (T-49)** os botões descem para uma linha própria, dividindo a
+ * largura: lado a lado com as miniaturas e o resumo, "Baixar 10 como zip" saía
+ * cortado da tela.
  */
 
 import { useCallback, useRef, useState } from "react";
@@ -88,7 +92,7 @@ export function BarraDeLote({
       aria-label="Seleção"
       className="flex flex-none flex-col gap-1.5 border-t border-borda-forte bg-superficie-lote px-3.5 py-2.5"
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2">
         <ul aria-hidden="true" className="flex flex-none -space-x-2">
           {assets.slice(0, MINIATURAS).map((asset) => (
             <li
@@ -111,15 +115,20 @@ export function BarraDeLote({
             </li>
           )}
         </ul>
-        <p className="font-mono text-11 text-texto-suave">
+        <p className="min-w-0 flex-1 font-mono text-11 text-texto-suave">
           {resumo.arquivos} {resumo.arquivos === 1 ? "selecionado" : "selecionados"} ·{" "}
           {formatBytes(resumo.bytes)} · ~{duracao(resumo.segundos)}
         </p>
-        <div className="ml-auto flex flex-none items-center gap-1.5">
-          <Botao onClick={onLimpar} disabled={montando}>
+        <div className="ml-auto flex flex-none items-center gap-1.5 max-md:w-full">
+          <Botao onClick={onLimpar} disabled={montando} className="max-md:flex-1 max-md:justify-center">
             Limpar seleção
           </Botao>
-          <Botao variante="primario" onClick={() => void baixar()} disabled={montando}>
+          <Botao
+            variante="primario"
+            onClick={() => void baixar()}
+            disabled={montando}
+            className="max-md:flex-1 max-md:justify-center"
+          >
             Baixar {resumo.arquivos} como zip
           </Botao>
         </div>

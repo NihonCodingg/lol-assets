@@ -155,12 +155,11 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
             }
           }}
           placeholder="Campeão ou skin — tente mf, j4, K/DA"
-          // 44 px a partir de `md`; na faixa do telefone o campo fica com a
-          // altura de antes até o T-49 refazer o topo inteiro. Anel fino: o
-          // campo abre focado, e o anel de 2 px somado à borda violeta virava
-          // uma moldura grossa na primeira coisa que se vê.
+          // 44 px em toda largura: no telefone é também o alvo de toque (T-49).
+          // Anel fino: o campo abre focado, e o anel de 2 px somado à borda
+          // violeta virava uma moldura grossa na primeira coisa que se vê.
           data-anel="fino"
-          className="h-controle-lg w-full rounded-medio border border-borda-forte bg-campo pr-11 pl-10 font-interface text-13 text-texto caret-acento transition-colors duration-150 ease-saida placeholder:text-texto-suave hover:border-borda-fraca focus:border-acento md:h-controle-xl md:text-14"
+          className="h-controle-xl w-full rounded-medio border border-borda-forte bg-campo pr-11 pl-10 font-interface text-14 text-texto caret-acento transition-colors duration-150 ease-saida placeholder:text-texto-suave hover:border-borda-fraca focus:border-acento"
         />
         <Tecla className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 sm:block">
           /

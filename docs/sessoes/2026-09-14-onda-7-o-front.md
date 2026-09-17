@@ -209,6 +209,40 @@ A segunda metade do T-47, empilhada sobre ele.
 | Rolagem (critério 1) | 16,7 ms por quadro nos 5.042 ícones de perfil, 17,5 ms nos emotes; no máximo 66 *tiles* no DOM |
 | Build de produção | limpo; a home com 170 kB no primeiro carregamento |
 
+## T-49 — o celular
+
+- **Faixa do topo em duas linhas:** a marca, e uma linha que rola de lado com as categorias e
+  as seções. Eram 274 px de 844 antes da busca; agora são 92.
+- **Avisos da Riot no fim da página**, no telefone: depois da grade, da galeria, do vazio. No
+  computador continuam no pé da barra lateral. A 404 ganhou página própria para tê-los.
+- **Funções da home e filtros da categoria** numa linha que rola de lado, em vez de três linhas
+  quebradas; o filtro por texto divide a linha com "Voltar aos campeões".
+- **Painel do campeão em tela cheia**, com botões de 44 px em tela de toque, e a bandeja do lote
+  com os botões numa linha própria.
+- O aviso de índice velho ficou mais baixo, e a busca tem 44 px em toda largura.
+
+### Achados
+
+- **O telefone mostrava o site reduzido, e a fixture não deixava ver.** Com o índice real, a
+  linha de categorias passa de 390 px. A coluna implícita do grid do `body` crescia até ela, e a
+  página inteira ficava com 668 px de largura. Corrigida a coluna, sobrou 537: a caixa escondida
+  (`sr-only`) de cada chip de função é `position: absolute`, e sem ancestral posicionado escapava
+  da linha que rola. O e2e agora alarga as duas linhas antes de medir.
+- **A raiz tem 14 px**, então `min-h-11` dá 38,5 px, e não 44. O alvo de toque usa o token
+  `controle-xl`, que é px.
+- **`next dev` apaga o build de produção** na mesma pasta `.next`: rodar o e2e entre um build e o
+  `next start` dos prints obriga a construir de novo.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **456 de 456** — 5 novos |
+| `tsc` e `eslint` | limpos |
+| e2e | **46 de 46** — 6 novos em `e2e/celular.spec.ts`; 1 mudado de propósito (os avisos em tela estreita: agora são duas cópias, e vale a visível) |
+| Faixa do topo em 390×844 | **92 px** (eram 274) |
+| Computador | sem mudança visível na home |
+
 ## O que resta
 
 - **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
@@ -218,7 +252,7 @@ A segunda metade do T-47, empilhada sobre ele.
   separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
   cdragon recomprime o PNG.
 - **O T-47 e o T-47b têm o ok do dono** (16/09); o merge é dele, um de cada vez.
-- **O ok do dono no preview do T-48.** Depois, T-49 e T-50, um PR e um ok de cada vez.
+- **O ok do dono nos previews do T-48 e do T-49.** Depois, o T-50.
 - **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono

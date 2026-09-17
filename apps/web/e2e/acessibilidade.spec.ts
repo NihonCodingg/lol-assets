@@ -299,8 +299,10 @@ test.describe("tela estreita", () => {
   test("os dois avisos da Riot continuam inteiros (RF-21)", async ({ page }) => {
     await irParaHome(page);
     for (const qual of ["riot", "jibber-jabber"]) {
-      const aviso = page.locator(`[data-aviso='${qual}']`);
-      await expect(aviso).toBeVisible();
+      // Desde o T-49 há duas cópias: a da barra lateral, que o telefone esconde,
+      // e a do fim da página. Vale a que aparece.
+      const aviso = page.locator(`[data-aviso='${qual}']:visible`);
+      await expect(aviso).toHaveCount(1);
       // Sem corte: o texto renderizado tem que ser o texto todo.
       const cortado = await aviso.evaluate((el) => el.scrollHeight > el.clientHeight + 1);
       expect(cortado, `o aviso ${qual} foi cortado`).toBe(false);

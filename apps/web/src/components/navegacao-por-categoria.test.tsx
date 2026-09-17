@@ -508,6 +508,24 @@ describe("a galeria das categorias (T-48)", () => {
     expect(screen.queryByLabelText("Filtrar por texto")).toBeNull();
   });
 
+  it("os avisos da Riot vão por último, dentro da área que rola da galeria (T-49)", async () => {
+    const { container } = montar();
+    await abrir("Itens");
+    const fim = container.querySelector("[data-avisos='fim']");
+    const lista = container.querySelector("article")?.closest("ul");
+    // Irmãos no mesmo scroller, e os avisos depois da lista.
+    expect(fim?.parentElement).toBe(lista?.parentElement);
+    expect(lista?.compareDocumentPosition(fim!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it("no vazio também há avisos no fim (T-49)", async () => {
+    const { container } = montar();
+    await abrir("Itens");
+    fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
+    expect(screen.getByRole("status").parentElement?.querySelector("[data-avisos='fim']")).not.toBeNull();
+    expect(container.querySelectorAll("[data-avisos='fim']")).toHaveLength(1);
+  });
+
   it("no campo de filtro com texto, o Escape não tira da categoria", async () => {
     montar();
     await abrir("Itens");

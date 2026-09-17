@@ -20,6 +20,12 @@
  * interface: continuam inteiros e literais, e deixam de parecer um bloco de
  * código no pé da tela.
  *
+ * **T-49, o telefone.** Abaixo de `md` a barra vira faixa no topo, e a faixa
+ * tomava 274 px de 844 — um terço da tela antes da busca (T-44). Agora são duas
+ * linhas: a marca, e uma linha só que rola de lado com as categorias e as seções,
+ * nessa ordem, que é a mesma do DOM e a do computador. Os avisos da Riot descem
+ * para o fim da página (ver `avisos-da-riot.tsx`).
+ *
  * O quadrado violeta de 20px no topo é a marca do design. Ele não é logotipo: é
  * o acento, do tamanho que o desenho pede, no lugar que o desenho reservou para
  * `[ nome do produto ]`.
@@ -40,7 +46,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
+import { AvisosDaRiot } from "@/components/avisos-da-riot";
 import { useNavegacao } from "@/components/navegacao-context";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
@@ -61,86 +69,100 @@ const ICONE_DA_CATEGORIA: Readonly<Record<string, LucideIcon>> = {
 const TRACO = 1.75;
 
 const ITEM_DE_SECAO = cn(
-  "flex items-center gap-2.5 rounded-padrao px-2 py-1.5 text-13 text-texto-suave",
+  "flex flex-none items-center gap-2.5 rounded-padrao px-2 py-1.5 text-13 text-texto-suave",
   "transition-colors duration-150 ease-saida hover:bg-campo hover:text-texto",
+  // No telefone, alvo de toque de 44 px (T-49).
+  "max-md:min-h-controle-xl max-md:px-2.5",
 );
 
 export function Rodape() {
   const { categorias, campeoes, aberta, abrir } = useNavegacao();
+  const linha = useRef<HTMLDivElement>(null);
+
+  // Na linha que rola de lado, a categoria aberta vem para a tela: quem abre
+  // "Mapas" pela home não pode ficar com o botão marcado fora da vista.
+  useEffect(() => {
+    linha.current
+      ?.querySelector<HTMLElement>("[aria-pressed='true']")
+      ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [aberta, categorias]);
 
   return (
-    <aside className="flex min-h-0 flex-row flex-wrap items-center gap-x-2 border-b border-borda bg-superficie md:flex-col md:flex-nowrap md:items-stretch md:gap-x-0 md:overflow-y-auto md:border-b-0 md:border-r">
+    <aside className="flex min-h-0 flex-col border-b border-borda bg-superficie md:overflow-y-auto md:border-b-0 md:border-r">
       {/* A marca leva para a home. Com "Início" fora (T-46), é o caminho de
           volta de quem está na página Sobre. */}
-      <Link href="/" className="flex h-cabecalho flex-none items-center gap-2 rounded-padrao px-3.5">
+      <Link
+        href="/"
+        className="flex h-12 flex-none items-center gap-2 self-start rounded-padrao px-3.5 md:h-cabecalho md:self-auto"
+      >
         <div className="size-5 flex-none rounded-marca bg-acento" aria-hidden="true" />
         <span className="text-13 font-semibold tracking-marca text-texto-forte">
           {siteConfig.displayName}
         </span>
       </Link>
 
-      {/* Sem provedor — como no teste do T-27, que monta este componente sozinho
-          — a lista vem vazia e a barra desenha só o resto. */}
-      {categorias.length > 0 && (
+      {/* No telefone, as duas listas numa linha só que rola de lado; no
+          computador este `div` some (`contents`) e elas empilham na coluna. */}
+      <div
+        ref={linha}
+        className="flex flex-none items-center gap-0.5 overflow-x-auto px-2 pb-1.5 [scrollbar-width:none] md:contents"
+      >
+        {/* Sem provedor — como no teste do T-27, que monta este componente
+            sozinho — a lista vem vazia e a barra desenha só o resto. */}
+        {categorias.length > 0 && (
+          <nav
+            aria-label="Categorias"
+            className="flex flex-none flex-row gap-0.5 md:flex-col md:px-2"
+          >
+            <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
+              Categorias
+            </span>
+            {/* RF-04: campeão é a navegação padrão, e no design ele é a
+                primeira categoria da lista. `null` é a grade de campeões. */}
+            <ItemDeCategoria
+              rotulo="Campeões"
+              icone={Swords}
+              total={campeoes ?? undefined}
+              ativo={aberta === null}
+              onClick={() => abrir(null)}
+            />
+            {categorias.map((categoria) => (
+              <ItemDeCategoria
+                key={categoria.category}
+                rotulo={categoria.rotulo}
+                icone={ICONE_DA_CATEGORIA[categoria.category] ?? Shapes}
+                total={categoria.total}
+                ativo={aberta === categoria.category}
+                onClick={() => abrir(categoria.category)}
+              />
+            ))}
+          </nav>
+        )}
+
+        <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-borda-forte md:hidden" />
+
         <nav
-          aria-label="Categorias"
-          className="flex w-full flex-row flex-wrap gap-0.5 px-2 md:w-auto md:flex-none md:flex-col md:flex-nowrap"
+          aria-label="Seções"
+          className="flex flex-none flex-row gap-0.5 md:mt-3 md:flex-col md:px-2"
         >
           <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
-            Categorias
+            Projeto
           </span>
-          {/* RF-04: campeão é a navegação padrão, e no design ele é a primeira
-              categoria da lista. `null` é a grade de campeões. */}
-          <ItemDeCategoria
-            rotulo="Campeões"
-            icone={Swords}
-            total={campeoes ?? undefined}
-            ativo={aberta === null}
-            onClick={() => abrir(null)}
-          />
-          {categorias.map((categoria) => (
-            <ItemDeCategoria
-              key={categoria.category}
-              rotulo={categoria.rotulo}
-              icone={ICONE_DA_CATEGORIA[categoria.category] ?? Shapes}
-              total={categoria.total}
-              ativo={aberta === categoria.category}
-              onClick={() => abrir(categoria.category)}
-            />
-          ))}
+          <Link href="/sobre" className={ITEM_DE_SECAO}>
+            <Info aria-hidden="true" strokeWidth={TRACO} className="hidden size-4 flex-none md:block" />
+            Sobre e créditos
+          </Link>
+          <a href={siteConfig.repositoryUrl} className={ITEM_DE_SECAO}>
+            <CodeXml aria-hidden="true" strokeWidth={TRACO} className="hidden size-4 flex-none md:block" />
+            Código
+          </a>
         </nav>
-      )}
+      </div>
 
-      <nav
-        aria-label="Seções"
-        className="flex w-full flex-row flex-wrap gap-0.5 px-2 md:mt-3 md:w-auto md:flex-none md:flex-col md:flex-nowrap"
-      >
-        <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
-          Projeto
-        </span>
-        <Link href="/sobre" className={ITEM_DE_SECAO}>
-          <Info aria-hidden="true" strokeWidth={TRACO} className="hidden size-4 flex-none md:block" />
-          Sobre e créditos
-        </Link>
-        <a href={siteConfig.repositoryUrl} className={ITEM_DE_SECAO}>
-          <CodeXml aria-hidden="true" strokeWidth={TRACO} className="hidden size-4 flex-none md:block" />
-          Código
-        </a>
-      </nav>
-
-      {/* RF-21: os dois textos da Riot, **inteiros**, em toda página — o do
-          Developer Portal e o do Legal Jibber Jabber (ver `site-config.ts`). Em
-          tela estreita eles ocupam a linha toda da faixa em vez de serem
-          cortados: "visível" com reticências não é visível. `mt-auto` põe o
-          rodapé no pé da coluna quando há coluna. `lang="en"` porque o texto é
-          copiado, não traduzido. */}
-      <footer className="flex w-full flex-none flex-col gap-2 px-3.5 pb-2 md:mt-auto md:w-auto md:border-t md:border-borda md:pt-3 md:pb-3.5">
-        <p data-aviso="riot" lang="en" className="text-10 leading-solta text-texto-suave">
-          {siteConfig.riotLegalNotice}
-        </p>
-        <p data-aviso="jibber-jabber" lang="en" className="text-10 leading-solta text-texto-suave">
-          {siteConfig.riotJibberJabberNotice}
-        </p>
+      {/* RF-21: os dois textos da Riot, inteiros, no pé da coluna — no
+          computador. No telefone eles estão no fim de cada página. */}
+      <footer className="hidden flex-none px-3.5 md:mt-auto md:block md:border-t md:border-borda md:pt-3 md:pb-3.5">
+        <AvisosDaRiot />
       </footer>
     </aside>
   );
@@ -160,19 +182,20 @@ function ItemDeCategoria({
   onClick: () => void;
 }) {
   return (
-    <div className="relative">
+    <div className="relative flex-none">
       <button
         type="button"
         aria-pressed={ativo}
         onClick={onClick}
         className={cn(
-          "flex w-full cursor-pointer items-center gap-2.5 rounded-padrao px-2 py-1.5 text-left text-13",
+          "flex w-full cursor-pointer items-center gap-2.5 rounded-padrao px-2 py-1.5 text-left text-13 whitespace-nowrap",
           "transition-colors duration-150 ease-saida md:pr-12",
+          "max-md:min-h-controle-xl max-md:px-2.5",
           ativo ? "bg-selecionado text-texto" : "text-texto-suave hover:bg-campo hover:text-texto",
         )}
       >
-        {/* Ícone e contagem só a partir de `md`: na faixa do telefone eles
-            quebrariam a linha e comeriam a altura que a grade precisa (T-44). */}
+        {/* Ícone e contagem só a partir de `md`: na linha do telefone eles
+            alargariam cada botão, e menos categorias caberiam à vista (T-44). */}
         <Icone
           aria-hidden="true"
           strokeWidth={TRACO}

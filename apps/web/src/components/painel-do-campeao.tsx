@@ -30,6 +30,13 @@
  * As artes vêm em grade, agrupadas por família, e a prévia de cada uma amplia a
  * arte. A ampliação mora aqui, e não no cartão, pelo mesmo motivo do `Escape`:
  * é daqui que a tecla sai, na ordem ampliação → chromas → painel.
+ *
+ * ## No telefone (T-49)
+ *
+ * Tela cheia: os 92% de antes deixavam uma tira da home à esquerda, que não
+ * servia para nada e parecia clicável. O `×` fica parado no canto e a bandeja no
+ * pé, como no computador. Em tela de toque, todo botão do painel tem pelo menos
+ * 44 px, e a caixa do lote ganha área de toque em volta (ver `CaixaDeSelecao`).
  */
 
 import { X } from "lucide-react";
@@ -144,12 +151,12 @@ export function PainelDoCampeao({
       fecharPorEsc={false}
       fecharPorFora={false}
       // 880 px: a splash é 16:9, e é ela que o painel mostra primeiro. Nos
-      // 540 px de antes ela ficava do tamanho de um cartão.
-      className="w-[min(880px,92vw)]"
+      // 540 px de antes ela ficava do tamanho de um cartão. No telefone, tudo.
+      className="w-full max-md:border-l-0 md:w-[min(880px,92vw)]"
     >
       <section
         aria-label={`Painel de ${champion.names.pt_BR}`}
-        className="relative flex min-h-0 flex-1 flex-col"
+        className="relative flex min-h-0 flex-1 flex-col pointer-coarse:[&_button]:min-h-controle-xl pointer-coarse:[&_button]:min-w-controle-xl"
       >
         {/* Um fechar só, parado no canto enquanto o resto rola. */}
         <BotaoIcone

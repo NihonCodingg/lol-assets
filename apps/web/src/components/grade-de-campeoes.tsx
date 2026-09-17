@@ -108,13 +108,13 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
     <>
       {/* Uma barra só: filtro à esquerda, contagem e densidade à direita. A
           partir de `md` ela fica presa no topo enquanto a grade rola — filtrar
-          no meio da rolagem não obriga a voltar lá em cima. No telefone, não:
-          com os filtros quebrando em três linhas, presa ela tomaria um terço da
-          altura que sobra para a grade. */}
+          no meio da rolagem não obriga a voltar lá em cima. No telefone, não
+          fica presa, e as funções vão numa linha só que rola de lado: em três
+          linhas quebradas, elas tomavam 150 px antes do primeiro cartão (T-49). */}
       <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10">
         <h2 className="sr-only">Campeões</h2>
         {funcoes.length > 0 && (
-          <fieldset className="flex flex-wrap items-center gap-1.5">
+          <fieldset className="flex min-w-0 flex-wrap items-center gap-1.5 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]">
             <legend className="float-left mr-1.5 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
               Função
             </legend>
@@ -131,7 +131,7 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
               <button
                 type="button"
                 onClick={() => setMarcadas(new Set())}
-                className="h-controle-md cursor-pointer rounded-padrao px-2 text-12 text-texto-suave transition-colors duration-150 ease-saida hover:bg-campo hover:text-texto"
+                className="h-controle-md flex-none cursor-pointer whitespace-nowrap rounded-padrao px-2 text-12 text-texto-suave transition-colors duration-150 ease-saida hover:bg-campo hover:text-texto"
               >
                 Todas as funções
               </button>

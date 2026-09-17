@@ -116,6 +116,12 @@ export interface PainelDeAssetProps {
   readonly onAmpliar?: (asset: Asset) => void;
   /** Ações da lista inteira, à direita do título — "Selecionar os N filtrados". */
   readonly acoes?: ReactNode;
+  /**
+   * O que vem depois do último tile, **dentro** da área que rola da galeria: os
+   * avisos da Riot no telefone (T-49). Fora dela, eles ficariam fixos embaixo e
+   * comeriam a altura da lista.
+   */
+  readonly fim?: ReactNode;
 }
 
 async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: string): Promise<void> {
@@ -143,6 +149,7 @@ export function PainelDeAsset({
   grade = false,
   onAmpliar,
   acoes,
+  fim,
 }: PainelDeAssetProps) {
   const ordenados = useMemo(() => orderAssets(assets), [assets]);
   const grupos = useMemo(() => (grade ? agruparPorFamilia(ordenados) : []), [grade, ordenados]);
@@ -215,6 +222,7 @@ export function PainelDeAsset({
           assets={ordenados}
           virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
           modoSelecao={(selecao?.size ?? 0) > 0}
+          fim={fim}
           tile={(asset, medidas, modoSelecao) => (
             <TileDaGaleria {...doCartao(asset)} medidas={medidas} modoSelecao={modoSelecao} />
           )}
@@ -254,9 +262,10 @@ interface GaleriaProps {
   /** Com alguma coisa selecionada, as caixas ficam à vista em todos os tiles. */
   readonly modoSelecao: boolean;
   readonly tile: (asset: Asset, medidas: MedidasDaGaleria, modoSelecao: boolean) => ReactNode;
+  readonly fim?: ReactNode;
 }
 
-function Galeria({ assets, virtual, modoSelecao, tile }: GaleriaProps) {
+function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
   const scroller = useRef<HTMLDivElement>(null);
   const lista = useRef<HTMLUListElement>(null);
   const largura = useLargura(lista);
@@ -276,7 +285,9 @@ function Galeria({ assets, virtual, modoSelecao, tile }: GaleriaProps) {
 
   // `scrollbar-gutter: stable`: a barra de rolagem que aparece ou some não muda
   // a largura, e as colunas não ficam trocando de número na borda.
-  const classeDoScroller = "min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]";
+  // Só a partir de `md`: no telefone a barra de rolagem flutua por cima, e a
+  // reserva deixava a margem da direita maior que a da esquerda (T-49).
+  const classeDoScroller = "min-h-0 flex-1 overflow-y-auto md:[scrollbar-gutter:stable]";
 
   if (!virtual) {
     return (
@@ -294,6 +305,7 @@ function Galeria({ assets, virtual, modoSelecao, tile }: GaleriaProps) {
             <li key={asset.id}>{tile(asset, medidas, modoSelecao)}</li>
           ))}
         </ul>
+        {fim}
       </div>
     );
   }
@@ -328,6 +340,7 @@ function Galeria({ assets, virtual, modoSelecao, tile }: GaleriaProps) {
           ));
         })}
       </ul>
+      {fim}
     </div>
   );
 }
@@ -478,6 +491,8 @@ function CaixaDeSelecao({
       className={cn(
         "grid size-controle-min flex-none cursor-pointer place-items-center rounded-tecla border",
         "font-mono text-10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
+        // No toque, a caixa de 17 px ganha uma área invisível de 45 px em volta (T-49).
+        "pointer-coarse:before:absolute pointer-coarse:before:-inset-[14px] pointer-coarse:before:content-['']",
         selecionado
           ? "border-acento bg-acento text-superficie"
           : "border-borda-fraca bg-superficie/80 text-texto-suave hover:border-acento",
