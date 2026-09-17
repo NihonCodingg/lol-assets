@@ -483,14 +483,44 @@ def test_a_varredura_so_roda_depois_do_manifesto(
     assert antes <= documentos_de_indice(destino), "a versão anterior foi apagada antes da hora"
 
 
-def test_reindexar_o_mesmo_patch_nao_duplica_nem_deixa_lixo(
-    tarball_local: Path, destino: Path
+def test_reindexar_o_mesmo_patch_no_mesmo_instante_escreve_os_mesmos_documentos(
+    tarball_local: Path, destino: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Mesmo patch, mesmo instante: os mesmos nomes, nada duplicado.
+
+    O relógio fica parado de propósito. O catálogo e as fatias levam o
+    `generatedAt` com precisão de segundo, e o nome de cada documento é o hash do
+    conteúdo — sem o relógio parado, duas indexações que atravessam a virada de
+    um segundo escrevem nomes diferentes, e o teste falhava ao acaso na CI
+    (17/09/2026).
+    """
+    monkeypatch.setattr("lol_assets_indexer.cli._agora", lambda: "2026-09-17T10:00:00Z")
     indexar(tarball_local, destino)
     primeiro = documentos_de_indice(destino)
     indexar(tarball_local, destino)
 
     assert documentos_de_indice(destino) == primeiro
+    assert len(ler(destino, "manifest.json")["versions"]) == 1
+
+
+def test_reindexar_o_mesmo_patch_mais_tarde_troca_os_documentos_sem_deixar_lixo(
+    tarball_local: Path, destino: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Mesmo patch, outro instante — o caso real de uma reindexação (T-38).
+
+    O `generatedAt` muda, então os documentos ganham nomes novos. O que não pode
+    é sobrar o da execução anterior: a varredura tira cada um, e o manifesto
+    continua com uma versão só.
+    """
+    monkeypatch.setattr("lol_assets_indexer.cli._agora", lambda: "2026-09-17T10:00:00Z")
+    indexar(tarball_local, destino)
+    primeiro = documentos_de_indice(destino)
+    monkeypatch.setattr("lol_assets_indexer.cli._agora", lambda: "2026-09-17T10:00:07Z")
+    indexar(tarball_local, destino)
+    segundo = documentos_de_indice(destino)
+
+    assert len(segundo) == len(primeiro)
+    assert primeiro & segundo == {"manifest.json"}, "sobrou documento da execução anterior"
     assert len(ler(destino, "manifest.json")["versions"]) == 1
 
 
