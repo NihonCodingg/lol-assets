@@ -9,6 +9,7 @@ arquivo daqui.
 | [`spikes/`](spikes/) | As quatro sondagens que sustentam a Spec e os ADRs | 02–03/09/2026 |
 | [`t09-indexacao-real.json`](t09-indexacao-real.json) | A primeira indexação do patch inteiro pelo tarball (T-09) | 07/09/2026 |
 | [`t22-emotes-e-wards.json`](t22-emotes-e-wards.json) | Emotes e ward skins medidos por inteiro, contra a extrapolação do S4 (T-22) | 09/09/2026 |
+| [`t52-polish-do-cdragon.json`](t52-polish-do-cdragon.json) | A borda do cdragon recomprimindo imagens: a mesma URL em vários perfis de requisição, e os pixels comparados (T-52) | 15/09/2026 |
 
 ## `t09-indexacao-real.json`
 

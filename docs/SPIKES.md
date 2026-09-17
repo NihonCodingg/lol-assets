@@ -219,6 +219,32 @@ as outras 26 são chromas e são exatamente as que trazem o campo `parentSkin`. 
 reporta 18 skins para Jax. Confirma §B.1.4 sem ressalvas: filtrar por presença de
 `parentSkin` antes de montar URL de splash.
 
+### A borda recomprime as imagens — Cloudflare Polish (medido em 15/09/2026, T-52)
+
+> Medição posterior aos spikes, contra o índice do patch 16.18.1. Dados brutos em
+> [`t52-polish-do-cdragon.json`](evidencias/t52-polish-do-cdragon.json); a decisão está no
+> [ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md).
+
+O `raw.communitydragon.org` responde pela Cloudflare com o Polish ligado. A mesma URL entrega o
+arquivo de origem quando a borda não tem cópia, e uma recompressão sem perdas depois:
+
+| Arquivo | Origem (= índice) | Recomprimido | `cf-polished` |
+|---|---:|---:|---|
+| `Emote_10001.png` | 67.187 B | 62.621 B | `ok, orig_size=67187` |
+| `Emote_0.png` | 262.513 B | 26.479 B | `ok, orig_size=262513` |
+
+- **A variante é do cache, não da requisição.** Com o cache quente, o `SourceClient` do
+  indexador, os cabeçalhos de um `<img>` e os do `fetch()` do site receberam a mesma
+  recompressão; a origem veio só nas faltas de cache.
+- **A arte é a mesma.** Formato, dimensões e canal alfa idênticos; mudam a cor debaixo do alfa
+  0 (14.295 e 3.271 pixels, nenhum visível) e a compressão do `IDAT`.
+- **O navegador não lê o `cf-polished`:** o cdragon não manda `Access-Control-Expose-Headers`.
+- **O ddragon não recomprime.** CloudFront sobre S3: o `Jax.png` veio com os 27.107 bytes e o
+  `sha256` do índice.
+
+Consequência: no cdragon, o `sha256` do índice não confere o download — o que confere é formato
+e dimensões.
+
 ---
 
 ## S3 — Volume real e custo do PNG
