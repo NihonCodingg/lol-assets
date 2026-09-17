@@ -141,14 +141,48 @@ grade, a ampliação e o feedback de download vão para o T-47b.
 | Build de produção | limpo; a home com 166 kB no primeiro carregamento |
 | Prints | antes (site no ar) e depois (build local), 1440×900 e 390×844 |
 
+## T-47b — as artes em grade
+
+A segunda metade do T-47, empilhada sobre ele.
+
+- **Grade por família:** splash e tela de carregamento, retratos, passiva e habilidades — cada
+  arte com a prévia na proporção real, e nunca maior que o arquivo: o ícone de 64 px continua
+  com 64 px, nítido.
+- **Ampliação:** a prévia é um botão; a arte abre no tamanho que a tela aguenta. O `Escape`
+  fecha na ordem ampliação → chromas → painel, e é o painel que manda na tecla.
+- **Retorno do download:** o ícone do botão gira enquanto baixa e vira ✓ por dois segundos; o
+  leitor de tela ouve "Arquivo baixado".
+- **Bandeja:** as cinco primeiras miniaturas do que foi selecionado, e quantas faltam.
+
+### Achados
+
+- **Por tipo, eram sete cabeçalhos para dez cartões.** A família junta o que se procura junto,
+  e uma família sozinha não ganha cabeçalho.
+- **Trocar o texto do botão mudaria o nome dele.** "Baixando…" no lugar de "Baixar original"
+  faria quem procura o botão — gente e teste — não achá-lo no meio do download. O retorno ficou
+  no ícone e no anúncio.
+- **A ampliação não tem `Escape` próprio.** Dois donos para a tecla fechariam a ampliação e o
+  painel de uma vez; o painel, que já ordenava os chromas antes dele, ordena a ampliação também.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **417 de 417** — 13 novos, nenhum existente alterado |
+| `tsc` e `eslint` | limpos |
+| e2e | **40 de 40**, com o da ampliação |
+| Build de produção | limpo; a home com 168 kB no primeiro carregamento |
+
 ## O que resta
 
 - **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
   e [#57](https://github.com/NihonCodingg/lol-assets/pull/57)), com o ok do dono. No ar, o
   `conferir-publicacao` passou limpo, e o `conferir:navegador` deu 8 de 9 — o que falhou é a
-  divergência do cdragon, anterior a esta onda.
-- **O ok do dono no preview do T-47.** Só depois dele o merge.
-- **T-47b a T-50**, um PR e um ok de cada vez.
+  divergência do cdragon, anterior a esta onda. Ela ganhou causa e PR próprio numa tarefa
+  separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
+  cdragon recomprime o PNG.
+- **O ok do dono nos previews do T-47 e do T-47b.** Só depois de cada um, o merge.
+- **T-48 a T-50**, um PR e um ok de cada vez.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono
   iniciou em outra sessão: o aviso passou a medir a última verificação. Os ramos do T-45 e do

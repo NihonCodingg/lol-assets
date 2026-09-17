@@ -49,3 +49,16 @@ test("sobrou um fechar só, e ele fecha", async ({ page }) => {
   await page.getByRole("button", { name: "Fechar" }).click();
   await expect(painel).toBeHidden();
 });
+
+test("a prévia amplia a arte, e o Escape fecha só a ampliação (T-47b)", async ({ page }) => {
+  const painel = await abrirJax(page);
+  await page.getByRole("button", { name: "Ampliar Jax_000_splash_centered.jpg" }).click();
+
+  const ampliacao = page.getByRole("dialog", { name: /^Ampliação de/ });
+  await expect(ampliacao).toBeVisible();
+  await expect(ampliacao.locator("img[data-ampliacao]")).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(ampliacao).toBeHidden();
+  await expect(painel).toBeVisible();
+});
