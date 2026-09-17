@@ -103,7 +103,7 @@ implementa e pelo teste que o prova.
 | # | Requisito | Critério de aceite |
 |---|---|---|
 | **RF-09** | O card mostra formato, resolução, tamanho e fonte **antes** do download | O card exibe `1280×720 · image/jpeg · 121 KB · ddragon` sem nenhum clique extra |
-| **RF-10** | Download individual entrega os **bytes de origem**, sem re-encode | O `sha256` do arquivo baixado é igual ao `sha256` do índice |
+| **RF-10** | Download individual entrega os **bytes de origem**, sem re-encode | O arquivo baixado é o que a fonte entregou ao navegador, com o formato e as dimensões do índice; nas fontes de bytes estáveis (`isByteStable` — hoje, só o ddragon), também o `sha256` do índice ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)) |
 | **RF-11** | O botão "Baixar PNG" converte no navegador, no clique | O arquivo salvo é `image/png` com as mesmas dimensões; nenhum PNG foi armazenado no bucket |
 | **RF-12** | Asset com origem PNG não oferece conversão | O botão aparece desabilitado com rótulo "já é PNG" |
 | **RF-13** | Nome de arquivo previsível | `Jax_004_splash_centered.jpg`, `Item_3031.png`, `Rank_Diamond_IV.png` — casa com `^[A-Za-z0-9_.-]+\.(png\|jpg)$` |
@@ -143,7 +143,7 @@ implementa e pelo teste que o prova.
 | **RNF-07** | Resiliência **degradada, e assumida** | Se ddragon/cdragon caírem, **as imagens não carregam** — o catálogo e a busca continuam, porque são estáticos do app. O site diz que a fonte está fora, em vez de mostrar quadrado quebrado | e2e com as fontes bloqueadas: busca funciona, imagem mostra estado de erro |
 | **RNF-08** | Etiqueta de rede | User-Agent identificado, concorrência ≤ 4, backoff em 429/5xx | Teste unitário do cliente HTTP |
 | **RNF-09** | Wiki | Zero requisições enquanto `WIKI_CONSENT_GRANTED` for falso | Trava em código que levanta exceção |
-| **RNF-13** | Integridade **verificável, não garantida** | O `sha256` do índice descreve os bytes **medidos na indexação**, na origem. Como quem serve é a fonte, ele não garante o que chega ao navegador — e não bloqueia nada. Quem verifica é a **conferência no navegador contra o site no ar** (`conferir:navegador`): o `sha256` nas fontes de bytes estáveis, formato e dimensões nas outras (ADR 0019, do T-52). **Emendado em 16/09/2026:** o aviso na tela a cada download saiu, por decisão do dono — só valeria para o ddragon, que diverge por horas entre um patch e a reindexação (T-50b) | `conferir:navegador` passa contra a URL publicada |
+| **RNF-13** | Integridade **verificável, não garantida** | O `sha256` do índice descreve os bytes **medidos na indexação**, na origem. Como quem serve é a fonte, ele não garante o que chega ao navegador — e não bloqueia nada. Quem verifica é a **conferência no navegador contra o site no ar** (`conferir:navegador`): o `sha256` nas fontes de bytes estáveis, formato e dimensões nas outras ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)). **Emendado em 16/09/2026:** o aviso na tela a cada download saiu, por decisão do dono — só valeria para o ddragon, que diverge por horas entre um patch e a reindexação (T-50b) | `conferir:navegador` passa contra a URL publicada |
 | **RNF-10** | Legal | Aviso da Riot visível; produto registrado no Developer Portal antes do lançamento | Checklist de lançamento |
 | **RNF-11** | Acessibilidade | Navegável por teclado, contraste AA, `alt` em toda imagem; primitivas acessíveis via Radix ([ADR 0011](adr/0011-base-de-componentes-do-front.md)) | axe no e2e |
 | **RNF-12** | Qualidade | ruff, ruff format, mypy strict, pytest, eslint, tsc, vitest verdes em todo PR | CI |
@@ -306,6 +306,10 @@ O registro de asset carrega `id`, `type` (nome canônico), `category`, as chaves
 identidade (`championKey`, `championId`, `skinId`, `skinNum`, `itemId`, `refId`), `names`
 por idioma, `aliases`, `tags`, `source`, `sourceUrl`, `storageKey` (opcional), `fileName`,
 `width`, `height`, `format`, `hasAlpha`, `bytes` e `sha256`.
+
+`bytes` e `sha256` são do arquivo que o indexador recebeu. Só conferem o download nas fontes
+de bytes estáveis — `BYTE_STABLE_SOURCES` no contrato TypeScript, hoje só o ddragon
+([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)).
 
 Duas regras estão **no schema**, não só na prosa, e há teste que prova cada uma:
 
@@ -490,6 +494,7 @@ jeito de o site apodrecer.
 | ddragon troca a resolução de publicação | Fusão escolhe errado | Teste de contrato valida **dimensão**, não só status |
 | Grafia de `championId` muda entre patches | Apelidos e URLs quebram | Teste de contrato dos apelidos; `Fiddlesticks`×`FiddleSticks` já aconteceu |
 | Fonte muda a arte sob uma URL não versionada | O `sha256` do índice diverge do arquivo servido, até a próxima indexação (≤ 24 h) | RNF-13: a conferência no navegador acusa a divergência, e o download nunca é impedido. É o preço medido do [ADR 0012](adr/0012-onde-guardar-os-assets.md) |
+| A borda da fonte recomprime a imagem (Cloudflare Polish no cdragon, medido em 15/09/2026) | O `sha256` e o `bytes` do índice divergem do arquivo servido **o tempo todo**, sem a arte mudar | O `sha256` só confere as fontes de bytes estáveis; no cdragon, formato e dimensões ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)) |
 | Fonte fora do ar | Imagens não carregam | Catálogo e busca continuam, porque são estáticos do app; a UI diz que a fonte caiu (RNF-07) |
 | Índice cresce no repositório | Repositório grande | ~10 MB por versão corrente e ~3 MB por versão antiga; revisitar se passar de 500 MB |
 | ~~Remoção do patch anterior apaga cedo demais~~ | — | **Não se aplica**: sem storage, não há remoção ([ADR 0012](adr/0012-onde-guardar-os-assets.md)) |
@@ -534,4 +539,5 @@ jeito de o site apodrecer.
 | [0015](adr/0015-orcamento-do-indice-depois-da-segunda-fonte.md) orçamento depois da segunda fonte | RNF-05, D4 — emenda o 0007 e o 0013 |
 | [0016](adr/0016-publicacao-na-vercel.md) publicação na Vercel | §9 — emenda a tabela de cache; RNF-10 |
 | [0018](adr/0018-aviso-mede-a-ultima-verificacao.md) aviso mede a última verificação | §5.3, §6, §11, RNF-06 — emenda o item 4 da §11 |
+| [0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md) o `sha256` do cdragon não confere o download | RF-10, RNF-13, §6, riscos — emenda o critério do RF-10 e o RNF-13 |
 | [0009](adr/0009-apelidos-de-busca-mantidos-a-mao.md) apelidos | RF-03, §6, §10 |

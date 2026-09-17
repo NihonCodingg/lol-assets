@@ -13,6 +13,12 @@ um teste varrendo o fonte atrás de f-string com extensão de imagem.
 Caminho declarado que não começa com `/lol-game-data/assets/` é **registrado como
 não mapeável**, não descartado em silêncio: é assim que a próxima mudança de
 formato do cliente aparece no `status.json` em vez de virar asset faltando.
+
+**O `sha256` medido aqui não confere o download** ([ADR 0019]). O
+`raw.communitydragon.org` passa pelo Cloudflare Polish: a mesma URL entrega o
+arquivo de origem quando a borda ainda não o tem em cache, e uma recompressão dele
+depois — outros bytes, os mesmos pixels visíveis. O que fica no índice é o que a
+borda do runner entregou naquela hora.
 """
 
 from __future__ import annotations
