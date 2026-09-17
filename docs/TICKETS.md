@@ -2459,7 +2459,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
-### T-51 — O aviso de índice velho mede a última verificação
+### ✅ T-51 — O aviso de índice velho mede a última verificação
 
 | | |
 |---|---|
@@ -2475,6 +2475,19 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 > aviso media o `generatedAt`, que só anda quando o índice muda — então três dias sem patch
 > bastavam para acendê-lo para todo visitante. A decisão está no
 > [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md).
+>
+> **Mergeado em 15/09/2026** (#56, `b411b09`). A execução disparada à mão
+> ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093))
+> reindexou o 16.18.1 com o motivo "contrato do índice mudou de 1.2.0 para 1.3.0" e publicou
+> `63dacdb`; a Vercel levou esse commit do bot a produção às 01:05 UTC, sem deploy hook — o
+> que responde a dúvida do item 4 do [ADR 0016](adr/0016-publicacao-na-vercel.md). No ar:
+> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26.
+>
+> **Fechado em 16/09/2026** com o primeiro carimbo: a execução agendada das 08:37 UTC
+> ([35074752615](https://github.com/NihonCodingg/lol-assets/actions/runs/35074752615)) — a
+> primeira depois das 24 h — carimbou `checkedAt` 2026-09-16T08:37:12Z e publicou `6239943`
+> (`chore(indice): 16.18.1 conferido`, uma linha no `manifest.json`). As três execuções
+> seguintes não carimbaram de novo, como devem.
 
 **Entra**
 - `checkedAt` opcional no manifesto — contrato **1.3.0**.
@@ -2483,8 +2496,9 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - O site passa a medir `max(generatedAt, checkedAt)` contra as mesmas 72 h.
 
 **NÃO entra**
-- Mudar o texto do aviso. Ele continua dizendo quando o índice foi gerado; trocar o texto é
-  decisão do dono, e o redesenho do front (T-45 a T-50) está nessas telas.
+- Mudar o texto do aviso. **Decidido pelo dono em 15/09/2026:** ele continua dizendo quando o
+  índice foi gerado — quem visita quer saber se a arte é do patch atual, e a data da
+  conferência é detalhe de operação, que confundiria.
 - Canal sem commit — API do GitHub, `raw.githubusercontent.com`, deploy hook. Ver o ADR.
 - Regenerar o fixture do e2e: ele fica no 1.2.0, sem carimbo, e exercita a compatibilidade.
 
@@ -2495,8 +2509,11 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 3. ✅ O carimbo muda uma linha do `manifest.json` — conferido também contra o manifesto
    publicado de verdade, não só contra um feito para o teste.
 4. ✅ O intervalo do carimbo cabe três vezes no limite do aviso, e um teste lê os dois lados.
-5. O site publicado para de avisar sem que a indexação tenha parado — conferido depois do
-   merge.
+5. ✅ O site publicado para de avisar sem que a indexação tenha parado. Em 15/09/2026 a
+   reindexação do contrato 1.3.0 chegou ao ar e o aviso sumiu; em 16/09/2026 o primeiro carimbo
+   chegou ao site — o `manifest.json` publicado tem `checkedAt` 2026-09-16T08:37:12Z, igual ao do
+   repositório, e `conferir-publicacao.mjs` deu 26 de 26. Sem patch novo, o aviso só acende se
+   a indexação ficar 72 h sem conferir.
 
 **Testes que provam**
 - `test_carimbo.py`: a regra, o formato, a linha única, a saída do Actions e o limite do front.
@@ -2530,7 +2547,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RNF-04 | T-13, T-42 |
 | RNF-05 | T-02, T-10, T-11, ✅ T-36, ✅ T-37 |
 | RNF-13 | T-15 (aviso de divergência), T-09 (medição do sha256) |
-| RNF-06 | T-12, T-13, T-31 |
+| RNF-06 | T-12, T-13, T-31, T-51 |
 | RNF-07 | T-08 |
 | RNF-08, RNF-09 | T-03 |
 | RNF-10 | T-27, T-33, T-42 |
