@@ -95,7 +95,8 @@ E dois mudam de lugar, não de estado: o **T-39** sai da fila e vira gatilho da 
 ## Os PRs abertos
 
 Nenhum além deste. Em 17/09/2026 entraram, nesta ordem: #58 (fechamento do T-51), #60 (T-52),
-#59 (T-47), #66 (ADR 0020), #61 (T-47b), #63 (T-48), #64 (T-49) e #65 (T-50).
+#59 (T-47), #66 (ADR 0020), #61 (T-47b), #63 (T-48), #64 (T-49), #65 (T-50) e #67 (um teste
+intermitente do indexador).
 
 ## Onde eu discordo do corte
 

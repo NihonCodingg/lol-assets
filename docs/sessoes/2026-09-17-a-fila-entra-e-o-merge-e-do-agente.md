@@ -27,6 +27,8 @@ que não se resolva. Relatório por lote, não por PR.
   | 6 | [#63](https://github.com/NihonCodingg/lol-assets/pull/63) | T-48 — categorias em galeria | `fd2883c` |
   | 7 | [#64](https://github.com/NihonCodingg/lol-assets/pull/64) | T-49 — o celular | `0c10b61` |
   | 8 | [#65](https://github.com/NihonCodingg/lol-assets/pull/65) | T-50 — o acabamento | `d222d77` |
+  | 9 | [#67](https://github.com/NihonCodingg/lol-assets/pull/67) | O teste de reindexar sem depender do relógio | — |
+  | 10 | [#62](https://github.com/NihonCodingg/lol-assets/pull/62) | Este inventário e este relatório | — |
 
 - **As worktrees e os ramos locais** do T-51, do T-52 e da fila removidos.
 - **O inventário atualizado:** a lista A está vazia, fora o D6.
@@ -61,6 +63,13 @@ que não se resolva. Relatório por lote, não por PR.
   (o #60 a reescreveu; ficou a emenda do T-50, com o link do ADR 0019 e a linha de risco nova do
   T-52) e o mapa de cobertura (RNF-13 do T-50, RNF-06 com o T-51). O ADR 0019 ganhou a nota de que
   o aviso na tela não foi construído.
+- **Um teste do indexador falhava ao acaso** e pegou justamente este PR, que só tem docs:
+  `test_reindexar_o_mesmo_patch_nao_duplica_nem_deixa_lixo` esperava os mesmos nomes de
+  documento em duas indexações seguidas, mas o nome é o hash de um conteúdo que leva o
+  `generatedAt` com precisão de segundo. Medido antes de mudar: com 7 s de diferença, os 7
+  documentos trocam de nome e a varredura tira todos os antigos — o comportamento estava certo.
+  O [#67](https://github.com/NihonCodingg/lol-assets/pull/67) parou o relógio no teste e separou
+  as duas promessas (mesmo instante, mesmos documentos; outro instante, nada sobra).
 - **O #58, o #60 e o #59 entraram sem a CI da combinação** — cada um estava verde sobre um `main`
   mais velho, e nenhum mexia nos arquivos dos outros. A combinação foi testada logo depois, na CI
   do #61, que rodou sobre os três. Nos PRs seguintes, a CI sempre rodou na árvore já com o `main`.
