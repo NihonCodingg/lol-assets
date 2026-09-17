@@ -5,6 +5,8 @@
 - **Emenda:** a parte de storage do [ADR 0005](0005-arquitetura-estatica-custo-zero.md) e o
   [ADR 0007](0007-politica-de-versoes-e-orcamento.md) inteiro
 - **Restrição declarada:** não cadastrar cartão na Cloudflare
+- **Emendado por:** [ADR 0019](0019-o-sha256-do-cdragon-nao-confere-o-download.md) — o `sha256`
+  só vira detector nas fontes de bytes estáveis; o cdragon passa pelo Cloudflare Polish
 
 ## Decisão
 
@@ -215,6 +217,10 @@ sempre. O que se perde não é a fusão: é o efeito de tê-la escolhido.
 **O `sha256` deixa de ser garantia e vira detector.** O front ainda pode calcular o hash do
 que baixou e comparar — o T-08 já tem `sha256Hex`. A diferença é que a divergência passa a
 ser possível, e o melhor que dá para fazer é avisar em vez de impedir.
+
+> **Emendado em 15/09/2026 pelo [ADR 0019](0019-o-sha256-do-cdragon-nao-confere-o-download.md):**
+> detector só nas fontes que entregam os bytes medidos — hoje, o ddragon. O cdragon passa pelo
+> Cloudflare Polish, e a mesma URL entrega bytes diferentes conforme o cache da borda.
 
 **JSZip: funciona** — testado acima, com bytes de dois hosts diferentes.
 

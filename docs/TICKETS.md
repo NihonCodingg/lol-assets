@@ -2458,6 +2458,12 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 **Entra**
 - Vazios que ensinam; erros que dizem o que fazer; aviso de índice velho no vocabulário novo.
 - RNF-13: sha256 divergente vira aviso, sem bloquear o download.
+  > **Nota do T-52 ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)):**
+  > comparar o `sha256` só quando `isByteStable(asset.source)`, de `@lol-assets/schema`. No
+  > cdragon, divergir é o normal da borda — o Cloudflare Polish recomprime —, e avisar seria
+  > alarme falso em quase todo emote, ward e chroma; ali o detector que sobra é formato e
+  > dimensão, lidos do começo do arquivo baixado. E o `bytes` do cdragon é o tamanho na fonte:
+  > o arquivo entregue pode ser até ~10× menor.
 - Microcopy em pt-BR revisada e a página Sobre.
 - Na página Sobre, os botões de categoria da barra — que aparecem depois de passar pela home —
   marcam a categoria e ficam na Sobre. Precisam levar para a home, já na categoria. Existe desde
@@ -2503,7 +2509,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
-### T-51 — O aviso de índice velho mede a última verificação
+### ✅ T-51 — O aviso de índice velho mede a última verificação
 
 | | |
 |---|---|
@@ -2519,6 +2525,19 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 > aviso media o `generatedAt`, que só anda quando o índice muda — então três dias sem patch
 > bastavam para acendê-lo para todo visitante. A decisão está no
 > [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md).
+>
+> **Mergeado em 15/09/2026** (#56, `b411b09`). A execução disparada à mão
+> ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093))
+> reindexou o 16.18.1 com o motivo "contrato do índice mudou de 1.2.0 para 1.3.0" e publicou
+> `63dacdb`; a Vercel levou esse commit do bot a produção às 01:05 UTC, sem deploy hook — o
+> que responde a dúvida do item 4 do [ADR 0016](adr/0016-publicacao-na-vercel.md). No ar:
+> manifesto 1.3.0, aviso sumido e `conferir-publicacao.mjs` com 26 de 26.
+>
+> **Fechado em 16/09/2026** com o primeiro carimbo: a execução agendada das 08:37 UTC
+> ([35074752615](https://github.com/NihonCodingg/lol-assets/actions/runs/35074752615)) — a
+> primeira depois das 24 h — carimbou `checkedAt` 2026-09-16T08:37:12Z e publicou `6239943`
+> (`chore(indice): 16.18.1 conferido`, uma linha no `manifest.json`). As três execuções
+> seguintes não carimbaram de novo, como devem.
 
 **Entra**
 - `checkedAt` opcional no manifesto — contrato **1.3.0**.
@@ -2527,8 +2546,9 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - O site passa a medir `max(generatedAt, checkedAt)` contra as mesmas 72 h.
 
 **NÃO entra**
-- Mudar o texto do aviso. Ele continua dizendo quando o índice foi gerado; trocar o texto é
-  decisão do dono, e o redesenho do front (T-45 a T-50) está nessas telas.
+- Mudar o texto do aviso. **Decidido pelo dono em 15/09/2026:** ele continua dizendo quando o
+  índice foi gerado — quem visita quer saber se a arte é do patch atual, e a data da
+  conferência é detalhe de operação, que confundiria.
 - Canal sem commit — API do GitHub, `raw.githubusercontent.com`, deploy hook. Ver o ADR.
 - Regenerar o fixture do e2e: ele fica no 1.2.0, sem carimbo, e exercita a compatibilidade.
 
@@ -2539,13 +2559,66 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 3. ✅ O carimbo muda uma linha do `manifest.json` — conferido também contra o manifesto
    publicado de verdade, não só contra um feito para o teste.
 4. ✅ O intervalo do carimbo cabe três vezes no limite do aviso, e um teste lê os dois lados.
-5. O site publicado para de avisar sem que a indexação tenha parado — conferido depois do
-   merge.
+5. ✅ O site publicado para de avisar sem que a indexação tenha parado. Em 15/09/2026 a
+   reindexação do contrato 1.3.0 chegou ao ar e o aviso sumiu; em 16/09/2026 o primeiro carimbo
+   chegou ao site — o `manifest.json` publicado tem `checkedAt` 2026-09-16T08:37:12Z, igual ao do
+   repositório, e `conferir-publicacao.mjs` deu 26 de 26. Sem patch novo, o aviso só acende se
+   a indexação ficar 72 h sem conferir.
 
 **Testes que provam**
 - `test_carimbo.py`: a regra, o formato, a linha única, a saída do Actions e o limite do front.
 - `test_cli.py`: o `check` de ponta a ponta, sem baixar nada.
 - `frescor.test.ts`: o aviso mede a verificação, e o texto continua falando da geração.
+
+---
+
+### T-52 — O `sha256` do cdragon não confere o download
+
+| | |
+|---|---|
+| **Objetivo** | Que a conferência no navegador e o índice concordem sobre o que o cdragon garante |
+| **Dependências** | T-22, T-43 |
+| **Estimativa** | ~120 linhas |
+| **Effort** | médio |
+| **Cobre** | RF-10, RNF-13 |
+
+> Aberto em **15/09/2026**, pela conferência no navegador contra o site no ar: 8 de 9. O
+> download do primeiro emote funcionava e o nome batia; o `sha256`, não — e os oito primeiros
+> emotes da fatia publicada divergiam todos. A causa é o Cloudflare Polish na frente do
+> `raw.communitydragon.org`: a mesma URL entrega o arquivo de origem numa falta de cache e uma
+> recompressão sem perdas depois. O indexador mediu a origem, e mediu certo; o visitante recebe
+> a recompressão. A decisão está no
+> [ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md).
+
+**Entra**
+- A medição — com o `SourceClient` do indexador e com cabeçalhos de navegador — em
+  `docs/SPIKES.md` e em `docs/evidencias/t52-polish-do-cdragon.json`.
+- `BYTE_STABLE_SOURCES` e `isByteStable(source)` no contrato TypeScript; as descrições do
+  `sha256` e do `bytes` no JSON Schema.
+- `navegador.spec.ts`: todo download é o que a fonte entregou ao navegador, com o formato e as
+  dimensões do índice; o `sha256` do índice, só nas fontes de bytes estáveis.
+- Uma nota no T-50 dizendo em que o aviso do RNF-13 se apoia.
+
+**NÃO entra**
+- Interface: o aviso do RNF-13 é do T-50, e o redesenho do front está nessas telas.
+- Mudar o índice ou a versão do contrato: o `sha256` continua obrigatório (as alternativas estão
+  no ADR).
+- Forçar a origem do cdragon com URL que fure o cache.
+
+**Critérios de aceite**
+1. ✅ A causa medida: `cf-polished: ok, orig_size=N`, com N igual ao `bytes` do índice; a origem
+   numa falta de cache e a recompressão com o cache quente, qualquer que seja o cabeçalho; os
+   pixels visíveis iguais.
+2. ✅ `isByteStable` diz `true` só para o ddragon, e um teste quebra se a lista mudar sem ADR
+   novo.
+3. ✅ A conferência no navegador contra o site no ar passa 9 de 9 (15/09/2026). O cenário do
+   cdragon baixou justamente a recompressão do `Emote_0.png` — 26.479 bytes contra 262.513 no
+   índice — e anotou isso em vez de falhar.
+4. ✅ O T-50 sabe em que se apoiar.
+
+**Testes que provam**
+- `index.test.ts` (schema): a lista das fontes de bytes estáveis.
+- `navegador.spec.ts`: os dois cenários de download, rodados contra o site no ar.
 
 ---
 
@@ -2561,7 +2634,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RF-06 | T-20 |
 | RF-08 | T-21, T-22, T-24 |
 | RF-09, RF-12, RF-13, RF-14 | T-08, T-15 |
-| RF-10, RF-11 | T-05, T-08 |
+| RF-10, RF-11 | T-05, T-08; o critério do RF-10, T-52 |
 | RF-15 | T-19, T-29 |
 | ~~RF-16~~ | ⏸️ T-23 suspenso — fora da v1 ([ADR 0012](adr/0012-onde-guardar-os-assets.md)) |
 | RF-17, RF-18 | T-25 |
@@ -2574,12 +2647,13 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RNF-04 | T-13, T-42 |
 | RNF-05 | T-02, T-10, T-11, ✅ T-36, ✅ T-37 |
 | RNF-13 | T-15 (aviso de divergência), T-09 (medição do sha256) |
-| RNF-06 | T-12, T-13, T-31 |
+| RNF-06 | T-12, T-13, T-31, T-51 |
 | RNF-07 | T-08 |
 | RNF-08, RNF-09 | T-03 |
 | RNF-10 | T-27, T-33, T-42 |
 | RNF-11 | T-28, T-30 |
 | RNF-12 | CI, em todo ticket; **T-35** |
+| RNF-13, o que cada fonte garante ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)) | T-52 |
 
 ## Resumo das ondas
 
