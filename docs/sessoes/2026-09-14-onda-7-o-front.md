@@ -276,22 +276,13 @@ A segunda metade do T-47, empilhada sobre ele.
 
 ## O que resta
 
-- **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
-  e [#57](https://github.com/NihonCodingg/lol-assets/pull/57)), com o ok do dono. No ar, o
-  `conferir-publicacao` passou limpo, e o `conferir:navegador` deu 8 de 9 — o que falhou é a
-  divergência do cdragon, anterior a esta onda. Ela ganhou causa e PR próprio numa tarefa
-  separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
-  cdragon recomprime o PNG.
-- **O T-47 e o T-47b têm o ok do dono** (16/09); o merge é dele, um de cada vez.
-- **O ok do dono nos previews do T-48, do T-49 e do T-50.**
+- **A onda inteira está no ar desde 17/09/2026.** Com o [ADR 0020](../adr/0020-o-merge-e-do-agente.md),
+  o merge passou a ser do agente, e a fila entrou na ordem #59 (T-47), #61 (T-47b), #63 (T-48),
+  #64 (T-49) e #65 (T-50), junto do T-51 (#58) e do T-52 (#60). No ar: `conferir-publicacao` com 26
+  de 26 e `conferir:navegador` com 9 de 9. O relatório está em
+  [2026-09-17-a-fila-entra-e-o-merge-e-do-agente.md](2026-09-17-a-fila-entra-e-o-merge-e-do-agente.md).
 - ~~O T-50b (RNF-13)~~ — fechado sem executar em 16/09, por decisão do dono; o RNF-13 foi
   emendado na Spec.
-- **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela.
-- ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
-  ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono
-  iniciou em outra sessão: o aviso passou a medir a última verificação. Os ramos do T-45 e do
-  T-46 receberam o `main` com ele; o único conflito foi a tabela de ADRs, onde a 0017 e a 0018
-  entraram no mesmo lugar. Depois do merge: **397 de 397** na unidade e **37 de 37** no e2e.
-- **Confirmado em 15/09:** a Vercel publica sozinha o commit do bot. O `chore(indice): patch
-  16.18.1` (`63dacdb`, de `github-actions[bot]`) virou deploy de produção sem ninguém mexer.
-- Do T-33, ainda: o registro no Developer Portal da Riot.
+- **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela. Está na lista C do
+  inventário.
+- Do T-33, ainda: o registro no Developer Portal da Riot (D6), que é conta do dono.
