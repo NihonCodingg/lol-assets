@@ -22,9 +22,10 @@
 - **Estimativa** é linha de lógica, não linha de diff.
 - Todo ticket herda a Definição de Pronto da §0.4 do KICKOFF: CI verde, sem `TODO` órfão,
   doc atualizada se o comportamento observável mudou, relatório em `docs/sessoes/`.
-- **Desde 15/09/2026 o projeto está em operação.** O que resta está em
-  [INVENTARIO.md](INVENTARIO.md), em três listas — essencial, manutenção e desejável. Antes de
-  abrir ticket novo, ver lá em que lista ele cai.
+- **Desde 17/09/2026 o projeto está em manutenção** ([ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md)):
+  conserta-se o que quebra, e **não se abre ticket de funcionalidade nova**. Oportunidade vira
+  ideia anotada no fim deste arquivo. O que resta está em [INVENTARIO.md](INVENTARIO.md), em três
+  listas — essencial (vazia), manutenção (roda sozinha) e desejável (espera o dono).
 
 ## Nota sobre os tickets de interface
 
@@ -1984,11 +1985,13 @@ limite de 500 linhas.
 > Portal e o aviso do *Legal Jibber Jabber* —, e os dois textos foram copiados das páginas e
 > travados em teste. O `[A CONFIRMAR]` saiu e a lista de pendentes chegou a zero.
 >
-> **O que falta é só 🔑:**
+> ✅ **Fechado em 17/09/2026:** o dono registrou a Biblioteca de Assets no Developer Portal da
+> Riot, como produto pessoal. Era a última condição que a Spec punha para o site estar no ar
+> (RNF-10) e o último item da lista A do [inventário](INVENTARIO.md).
 >
 > | | O que é |
 > |---|---|
-> | **D6** registro | Registrar "Biblioteca de Assets" no Developer Portal — passo a passo no checklist |
+> | ~~**D6** registro~~ | ✅ **Registrado em 17/09/2026** no Developer Portal, como produto pessoal. O identificador do app fica no painel do dono; não é segredo, mas também não precisa estar aqui |
 > | ~~**D7**~~ | ✅ **No ar desde 11/09/2026** — projeto `biblioteca-de-assets` na Vercel, criado com autorização do dono; o domínio de produção abre sem login |
 >
 > O **D2** não está bloqueado, está **esperando**: se o consentimento da Weird Gloop chegar,
@@ -2016,7 +2019,8 @@ limite de 500 linhas.
 1. ✅ `siteConfig.displayName` não é mais placeholder e passa na regra do ADR 0003.
 2. ✅ Os avisos legais são idênticos aos textos oficiais — comparação registrada no PR, no
    checklist e em `docs/evidencias/politicas-da-riot-2026-09-10.md`.
-3. 🔑 O produto aparece registrado no Developer Portal (print no PR).
+3. ✅ O produto aparece registrado no Developer Portal — feito pelo dono em 17/09/2026, como
+   produto pessoal. Não há API pública para conferir; quem confirma é ele.
 4. ✅ A URL de produção da Vercel resolve para o site — no ar em 11/09/2026, conferida contra
    a URL publicada: 26 de 26 por HTTP e 9 de 9 no navegador. *Ajustado em 10/09/2026:* era "o
    domínio resolve"; o dono decidiu publicar sem domínio próprio, e o subdomínio segue a
@@ -2727,5 +2731,20 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 4 | (T-21 ∥ T-22); (T-24 ∥ T-25) ∥ · ⏸️ T-23 e T-26 suspensos | 2 frentes | Catálogo inteiro e download em lote pelo cliente |
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
-| — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
+| — | ✅ T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**, e registrado no Developer Portal em 17/09/2026 |
 | 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → ✅ T-50 (⏸️ T-50b) | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+
+---
+
+## Ideias não executadas
+
+Desde 17/09/2026 o projeto está em manutenção ([ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md)):
+oportunidade encontrada no caminho **não vira ticket** — é anotada aqui, com a data e o que ela
+entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o dono.
+
+| Data | Ideia | O que entregaria |
+|---|---|---|
+| 15/09/2026 | Tirar o `_fpo` do índice, no indexador | O "Emote 0" — um quadrado de marcação — sai também do índice; na tela já saiu no T-48 |
+| 15/09/2026 | Comparar com o `versions.json` do ddragon | Um aviso quando já existe patch mais novo que o índice (anotada no [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
+| 15/09/2026 | Dependabot | Atualização de segurança das dependências sem ninguém lembrar |
+| 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |

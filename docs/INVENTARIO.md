@@ -5,6 +5,10 @@
 > resta fica aqui, em três listas. **A lista A se executa; a B roda sozinha; a C espera a decisão
 > dele.** Cada linha diz o que o item entrega a ele, não o que faz por dentro.
 >
+> **Desde 17/09/2026 o projeto está em manutenção** ([ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md)):
+> a lista A fechou, a C foi despachada, e o agente conserta o que quebra sem abrir trabalho novo.
+> Oportunidade encontrada no caminho vira ideia anotada no fim do [TICKETS.md](TICKETS.md).
+>
 > **Desde 17/09/2026 o merge é do agente** ([ADR 0020](adr/0020-o-merge-e-do-agente.md)): com a
 > CI verde, ele mergeia e segue; só para por decisão de produto, contradição com a Spec ou um ADR,
 > segredo ou conta do dono, ou CI vermelha que não resolva.
@@ -20,11 +24,11 @@ no navegador (17/09/2026).
 
 ## A — Essencial
 
-**A lista A está vazia, fora o D6** — que é conta sua.
+**A lista A está vazia.** O último item, o D6, fechou em 17/09/2026.
 
 | Item | O que te entrega | Estado |
 |---|---|---|
-| **D6 — registrar a Biblioteca de Assets no Developer Portal da Riot** (RNF-10, T-33) | O site passa a cumprir a condição que a Spec pôs para estar no ar | 🔑 **Você** — é conta sua. Passo a passo no [LANCAMENTO.md](LANCAMENTO.md) |
+| ~~**D6 — registrar a Biblioteca de Assets no Developer Portal da Riot**~~ (RNF-10, T-33) | O site cumpre a condição que a Spec pôs para estar no ar | ✅ **Registrado em 17/09/2026**, como produto pessoal. Fecha o T-33 |
 | ~~O primeiro carimbo diário do T-51~~ | O aviso falso de "a indexação pode ter parado" não volta | ✅ Chegou em 16/09/2026 às 08:37 UTC, e o de 17/09 também. O fechamento (#58) entrou em 17/09 |
 | ~~RNF-13 — avisar quando o arquivo baixado difere do índice~~ | Saber que a arte baixada não é a que o índice mediu | ✅ **Decidido pelo dono em 16/09/2026: sai da Spec.** O RNF-13 foi emendado — quem verifica é a conferência no navegador contra o site no ar —, e o T-50b fechou sem executar |
 
@@ -61,10 +65,14 @@ de repositório público parado há 60 dias; o commit diário do carimbo deve co
 (provável, não medido), e, se o agendamento parar mesmo assim, o aviso de índice velho acende em
 72 h.
 
-## C — Desejável: espera a sua decisão
+## C — Desejável: **despachada** em 17/09/2026
 
-A Onda 7 saiu desta lista: foi entregue e está no ar desde 17/09/2026 (T-47, T-47b, T-48, T-49
-— que fechou o T-44 — e T-50).
+Você encerrou a fase de construção: **nada daqui se executa sem você pedir**, e o agente não
+propõe mais nem abre ticket por conta própria. A lista fica como memória do que foi considerado
+e recusado por ora; as mesmas ideias estão anotadas no fim do [TICKETS.md](TICKETS.md).
+
+A Onda 7 saiu desta lista antes disso: foi entregue e está no ar desde 17/09/2026 (T-47, T-47b,
+T-48, T-49 — que fechou o T-44 — e T-50).
 
 | Item | O que te entrega |
 |---|---|
@@ -89,14 +97,14 @@ A Onda 7 saiu desta lista: foi entregue e está no ar desde 17/09/2026 (T-47, T-
 | ✅ T-44 — a faixa do topo no telefone | Fechado pelo T-49 em 17/09/2026: 92 px em 390×844 |
 | ⏸️ T-50b — o aviso do RNF-13 | Fechado sem executar em 16/09/2026, por decisão do dono |
 
-E dois mudam de lugar, não de estado: o **T-39** sai da fila e vira gatilho da lista B, e o
-**T-33** fica aberto só pelo D6.
+E um muda de lugar, não de estado: o **T-39** sai da fila e vira gatilho da lista B. O **T-33**
+fechou com o registro na Riot, em 17/09/2026.
 
 ## Os PRs abertos
 
 Nenhum além deste. Em 17/09/2026 entraram, nesta ordem: #58 (fechamento do T-51), #60 (T-52),
-#59 (T-47), #66 (ADR 0020), #61 (T-47b), #63 (T-48), #64 (T-49), #65 (T-50) e #67 (um teste
-intermitente do indexador).
+#59 (T-47), #66 (ADR 0020), #61 (T-47b), #63 (T-48), #64 (T-49), #65 (T-50), #67 (um teste
+intermitente do indexador) e #62 (o inventário e o relatório do lote).
 
 ## Onde eu discordo do corte
 
