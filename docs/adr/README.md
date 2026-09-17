@@ -24,3 +24,4 @@ com contexto, decisão e consequências. A Spec referencia; não repete.
 | [0017](0017-icones-lucide.md) | **Ícones: `lucide-react`**, sempre decorativos; o nome é do controle | ✅ aceito — emenda 0011 |
 | [0018](0018-aviso-mede-a-ultima-verificacao.md) | **O aviso de índice velho mede a última verificação**: `checkedAt` no manifesto, carimbado no máximo 1×/dia | ✅ aceito — contrato 1.3.0; emenda a §11 da Spec |
 | [0019](0019-o-sha256-do-cdragon-nao-confere-o-download.md) | **O `sha256` do cdragon não confere o download**: a borda recomprime (Cloudflare Polish); `isByteStable` diz em que fonte ele confere | ✅ aceito — emenda o RF-10, o RNF-13 e uma consequência do 0012 |
+| [0020](0020-o-merge-e-do-agente.md) | **O merge é do agente**: com a CI verde ele mergeia e segue a fila; só para por decisão de produto, contradição com Spec ou ADR, segredo/conta ou CI vermelha | ✅ aceito — revoga a decisão do dono de 15/09/2026 |

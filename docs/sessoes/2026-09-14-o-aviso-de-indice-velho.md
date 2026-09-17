@@ -109,7 +109,7 @@ mão, na mesma noite. Com isso o critério 5 fecha, e o T-51 também.
 
 - **O aviso continua dizendo quando o índice foi gerado.** Quem visita quer saber se a arte é
   do patch atual; a data da conferência é detalhe de operação e confundiria.
-- **Nenhuma regra de permissão para `gh pr merge`.** O dono é o único revisor humano, e o merge
+- ~~**Nenhuma regra de permissão para `gh pr merge`.**~~ *Revogada em 17/09/2026 pelo dono — ver o [ADR 0020](../adr/0020-o-merge-e-do-agente.md).* O dono é o único revisor humano, e o merge
   é o último ponto em que ele olha o que entra. As sessões entregam o comando pronto.
 
 ## Só o dono pode fazer
