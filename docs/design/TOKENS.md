@@ -207,6 +207,11 @@ sempre com a mesma curva:
 Movimento diz estado, nunca enfeita. Quem pede menos movimento ao sistema
 (`prefers-reduced-motion`) recebe transição e pulso instantâneos.
 
+**Acréscimo de 15/09/2026 (T-47b).** Uma segunda animação: o ícone do botão de download
+**gira** enquanto o arquivo baixa (`animate-spin` do Tailwind, 1 s linear) e vira ✓ quando
+termina. Ela diz estado — há um download em andamento neste botão — e some junto com ele. Com
+`prefers-reduced-motion`, o giro para, e o ícone continua dizendo o estado.
+
 ## Foco
 
 ```css

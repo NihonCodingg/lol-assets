@@ -14,7 +14,7 @@
  * construção em vez de por vigilância.
  */
 import * as Dialog from "@radix-ui/react-dialog";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -47,6 +47,7 @@ export function PainelLateral({
   fecharPorEsc = true,
   fecharPorFora = true,
 }: PainelLateralProps) {
+  const conteudo = useRef<HTMLDivElement>(null);
   return (
     <Dialog.Root open={aberto} onOpenChange={(proximo) => !proximo && onFechar()}>
       <Dialog.Portal>
@@ -55,8 +56,19 @@ export function PainelLateral({
           style={{ background: "var(--veu)" }}
         />
         <Dialog.Content
+          ref={conteudo}
+          tabIndex={-1}
+          data-foco-contido=""
           aria-label={titulo}
           aria-describedby={undefined}
+          // Ao abrir, o foco vai para o painel, e não para o primeiro botão dele
+          // (T-47). O primeiro botão é o fechar, e o foco nele abria a dica
+          // "Fechar (Esc)" toda vez que o painel abria, por cima da arte. O
+          // primeiro Tab chega no fechar do mesmo jeito.
+          onOpenAutoFocus={(evento) => {
+            evento.preventDefault();
+            conteudo.current?.focus();
+          }}
           onEscapeKeyDown={(evento) => !fecharPorEsc && evento.preventDefault()}
           onPointerDownOutside={(evento) => !fecharPorFora && evento.preventDefault()}
           onInteractOutside={(evento) => !fecharPorFora && evento.preventDefault()}

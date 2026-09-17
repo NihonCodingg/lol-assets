@@ -113,3 +113,62 @@ export function orderAssets(assets: readonly Asset[]): Asset[] {
 export function availableTypes(assets: readonly Asset[]): AssetType[] {
   return [...new Set(orderAssets(assets).map((asset) => asset.type))];
 }
+
+// --- famílias: como o painel do campeão agrupa as artes (T-47b) ------------------------
+
+/**
+ * As famílias do painel do campeão, na ordem em que aparecem.
+ *
+ * Agrupar por **tipo** daria sete cabeçalhos para dez cartões — "Tile quadrado
+ * (1)", "Ícone do campeão (1)" —, e cabeçalho que encabeça um cartão só é ruído.
+ * A família junta o que se procura junto: a arte grande, os retratos, a passiva
+ * e as habilidades, os chromas.
+ */
+export const FAMILIAS: readonly {
+  readonly chave: string;
+  readonly rotulo: string;
+  readonly tipos: readonly AssetType[];
+}[] = [
+  {
+    chave: "splash",
+    rotulo: "Splash e tela de carregamento",
+    tipos: ["splash_centered", "splash_wide", "loading", "loading_vintage"],
+  },
+  { chave: "retrato", rotulo: "Retratos", tipos: ["tile", "square"] },
+  { chave: "habilidade", rotulo: "Passiva e habilidades", tipos: ["passive_icon", "ability_icon"] },
+  { chave: "chroma", rotulo: "Chromas", tipos: ["chroma"] },
+];
+
+export interface GrupoDeArtes {
+  readonly chave: string;
+  readonly rotulo: string;
+  readonly assets: readonly Asset[];
+}
+
+const FAMILIA_DO_TIPO = new Map(
+  FAMILIAS.flatMap((familia) => familia.tipos.map((tipo) => [tipo, familia] as const)),
+);
+const ORDEM_DA_FAMILIA = new Map(FAMILIAS.map((familia, indice) => [familia.chave, indice]));
+
+/**
+ * Os assets agrupados por família: as famílias na ordem de `FAMILIAS`, e dentro
+ * de cada uma a ordem do `orderAssets`. Tipo sem família vira um grupo com o
+ * próprio rótulo, no fim — aparece, em vez de sumir. Família sem asset não vira
+ * grupo nenhum.
+ */
+export function agruparPorFamilia(assets: readonly Asset[]): GrupoDeArtes[] {
+  const grupos = new Map<string, { chave: string; rotulo: string; assets: Asset[] }>();
+  for (const asset of orderAssets(assets)) {
+    const familia = FAMILIA_DO_TIPO.get(asset.type);
+    const chave = familia?.chave ?? asset.type;
+    const grupo = grupos.get(chave) ?? {
+      chave,
+      rotulo: familia?.rotulo ?? rotuloDoTipo(asset.type),
+      assets: [],
+    };
+    grupo.assets.push(asset);
+    grupos.set(chave, grupo);
+  }
+  const posicao = (chave: string) => ORDEM_DA_FAMILIA.get(chave) ?? FAMILIAS.length;
+  return [...grupos.values()].sort((a, b) => posicao(a.chave) - posicao(b.chave));
+}

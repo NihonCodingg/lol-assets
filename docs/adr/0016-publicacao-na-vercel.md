@@ -53,6 +53,11 @@ quando o site sai do `localhost`:
    Vercel recusar o commit do bot, o dono cria um *deploy hook* e guarda a URL no segredo
    `VERCEL_DEPLOY_HOOK`. O workflow do índice chama o hook depois do push; sem o segredo, o
    passo não roda.
+
+   > **Confirmado em 15/09/2026:** a integração do Git publica o commit do
+   > `github-actions[bot]`. O `63dacdb` (`chore(indice): patch 16.18.1`, a reindexação do
+   > T-51) foi para produção às 01:05 UTC, sem deploy hook. O plano B continua pronto e
+   > desligado.
 8. **A CI passa a buildar para produção.** O e2e sobe `next dev`, e até 10/09/2026 o build de
    produção nunca tinha rodado — passou na primeira, em 85 s. Agora roda em todo PR, e o
    servidor de produção do Next é conferido pelo mesmo script que o dono roda contra a URL

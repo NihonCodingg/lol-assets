@@ -248,9 +248,9 @@ describe("orçamento de 3 cliques", () => {
         onClose={vi.fn()}
       />,
     );
-    // Escolher a skin conta como um clique.
-    cliques.clicar(screen.getByLabelText("Selecionar skin"));
-    fireEvent.change(screen.getByLabelText("Selecionar skin"), { target: { value: "4" } });
+    // Escolher a skin é um clique: no rádio com o tile dela (T-47). Com o
+    // `<select>` eram dois eventos contados como um; agora é um só.
+    cliques.clicar(screen.getByRole("radio", { name: "Jax Deus da Guerra" }));
 
     const cartao = screen.getByLabelText("Jax_004_splash_centered.jpg");
     cliques.clicar(within(cartao).getByRole("button", { name: "Baixar original" }));
@@ -275,8 +275,7 @@ describe("orçamento de 3 cliques", () => {
         onClose={vi.fn()}
       />,
     );
-    cliques.clicar(screen.getByLabelText("Selecionar skin"));
-    fireEvent.change(screen.getByLabelText("Selecionar skin"), { target: { value: "4" } });
+    cliques.clicar(screen.getByRole("radio", { name: "Jax Deus da Guerra" }));
 
     const cartao = screen.getByLabelText("Jax_004_splash_centered.jpg");
     cliques.clicar(within(cartao).getByRole("button", { name: "Baixar original" }));

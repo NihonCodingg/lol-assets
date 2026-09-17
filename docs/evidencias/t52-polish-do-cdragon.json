@@ -1,0 +1,221 @@
+{
+  "medicao": "O CDN do cdragon recomprime as imagens — Cloudflare Polish (T-52, ADR 0019)",
+  "data": "2026-09-15",
+  "indice": "63dacdb (chore(indice): patch 16.18.1, contrato 1.3.0); as entradas medidas aqui têm os mesmos valores no a8b3c4a, de 11/09",
+  "etiqueta": "uma requisição por vez, todas com o User-Agent da regra 4: 10 ao cdragon, 1 ao ddragon",
+  "userAgent": "lol-assets-indexer/0.0.0 (+https://github.com/NihonCodingg/lol-assets; https://github.com/NihonCodingg/lol-assets/issues)",
+  "amostras": [
+    {
+      "arquivo": "Emote_10001.png",
+      "sourceUrl": "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/loadouts/summoneremotes/tft/10001_em_prestige_chibi_ezreal_porcelain_inventory.png",
+      "noIndice": {
+        "bytes": 67187,
+        "sha256": "d776f4561f74626e13bbe69bc0c613730d79d7f51d10acda2292f393d6b64613"
+      },
+      "respostas": [
+        {
+          "perfil": "o SourceClient do próprio indexador, sem mudar nada (httpx 0.28.1; mandou Accept: */*, Accept-Encoding: gzip, deflate e o User-Agent da regra 4)",
+          "status": "200",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 2435,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        },
+        {
+          "perfil": "curl com os cabeçalhos do httpx (Accept: */*; Accept-Encoding: gzip, deflate)",
+          "status": "200 OK",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 2440,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        },
+        {
+          "perfil": "curl com os cabeçalhos de um <img> do Chrome (Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8; Accept-Encoding: gzip, deflate, br, zstd; Sec-Fetch-Dest: image)",
+          "status": "200 OK",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 2441,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        },
+        {
+          "perfil": "curl com os cabeçalhos do fetch() do site (Origin: https://biblioteca-de-assets.vercel.app; Sec-Fetch-Mode: cors; Sec-Fetch-Dest: empty; Accept-Encoding: gzip, deflate, br, zstd)",
+          "status": "200 OK",
+          "cfCacheStatus": "MISS",
+          "cfPolished": null,
+          "age": null,
+          "borda": "GRU",
+          "bytes": 67187,
+          "sha256": "d776f4561f74626e13bbe69bc0c613730d79d7f51d10acda2292f393d6b64613"
+        },
+        {
+          "perfil": "curl, Accept: */* e só o Origin do site",
+          "status": "200 OK",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 115,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        },
+        {
+          "perfil": "curl, Accept: */* e só Sec-Fetch-Mode: cors",
+          "status": "200 OK",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 2557,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        },
+        {
+          "perfil": "curl, os cabeçalhos do fetch() do site de novo (Origin: https://biblioteca-de-assets.vercel.app; Sec-Fetch-Mode: cors; Sec-Fetch-Dest: empty)",
+          "status": "200 OK",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 116,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        },
+        {
+          "perfil": "curl, Accept: */* de novo",
+          "status": "200 OK",
+          "cfCacheStatus": "HIT",
+          "cfPolished": "ok, orig_size=67187",
+          "age": 2559,
+          "borda": "GRU",
+          "bytes": 62621,
+          "sha256": "c77d344158fe94713c50d005559f9e5d997af16eb249a42b003a4cd885005481"
+        }
+      ],
+      "comparacao": {
+        "origem": {
+          "formato": "PNG",
+          "modo": "RGBA",
+          "dimensoes": [
+            256,
+            256
+          ],
+          "chunks": {
+            "IHDR": 1,
+            "IDAT": 1,
+            "IEND": 1
+          }
+        },
+        "recomprimido": {
+          "formato": "PNG",
+          "modo": "RGBA",
+          "dimensoes": [
+            256,
+            256
+          ],
+          "chunks": {
+            "IHDR": 1,
+            "IDAT": 1,
+            "IEND": 1
+          }
+        },
+        "pixels": 65536,
+        "pixelsDiferentes": 14295,
+        "comAlfaDiferente": 0,
+        "diferentesVisiveis": 0
+      }
+    },
+    {
+      "arquivo": "Emote_0.png",
+      "sourceUrl": "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/loadouts/summoneremotes/templates/emote_fpo_inventory.png",
+      "noIndice": {
+        "bytes": 262513,
+        "sha256": "7ecc3c95b594de8bc6a4af457d5c77a90a9e1a0b7fd684c7f43026b1f217d3e4"
+      },
+      "recebidoNaConferenciaDoNavegador": "ea46dfef1512c5fff8d12c220e91e8382684f9676a3bef7e161b3203eca1f14c",
+      "respostas": [
+        {
+          "perfil": "curl, Accept: */*",
+          "status": "200 OK",
+          "cfCacheStatus": "REVALIDATED",
+          "cfPolished": "ok, orig_size=262513",
+          "age": null,
+          "borda": "GRU",
+          "bytes": 26479,
+          "sha256": "ea46dfef1512c5fff8d12c220e91e8382684f9676a3bef7e161b3203eca1f14c"
+        },
+        {
+          "perfil": "curl, os cabeçalhos do fetch() do site (Origin: https://biblioteca-de-assets.vercel.app; Sec-Fetch-Mode: cors; Sec-Fetch-Dest: empty)",
+          "status": "200 OK",
+          "cfCacheStatus": "MISS",
+          "cfPolished": null,
+          "age": null,
+          "borda": "GRU",
+          "bytes": 262513,
+          "sha256": "7ecc3c95b594de8bc6a4af457d5c77a90a9e1a0b7fd684c7f43026b1f217d3e4"
+        }
+      ],
+      "comparacao": {
+        "origem": {
+          "formato": "PNG",
+          "modo": "RGBA",
+          "dimensoes": [
+            256,
+            256
+          ],
+          "chunks": {
+            "IHDR": 1,
+            "IDAT": 1,
+            "IEND": 1
+          }
+        },
+        "recomprimido": {
+          "formato": "PNG",
+          "modo": "RGBA",
+          "dimensoes": [
+            256,
+            256
+          ],
+          "chunks": {
+            "IHDR": 1,
+            "IDAT": 1,
+            "IEND": 1
+          }
+        },
+        "pixels": 65536,
+        "pixelsDiferentes": 3271,
+        "comAlfaDiferente": 0,
+        "diferentesVisiveis": 0
+      },
+      "recebidoNaConferenciaEraARecomprimida": true
+    }
+  ],
+  "controleDdragon": {
+    "arquivo": "Jax_square.png",
+    "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/champion/Jax.png",
+    "noIndice": {
+      "bytes": 27107,
+      "sha256": "441e8d865d461bc338a2d2d5a2a09f6151bbfdb4795ec8b59e66ee8654eebcca"
+    },
+    "servidor": "AmazonS3 via CloudFront",
+    "xCache": "RefreshHit from cloudfront",
+    "resposta": {
+      "perfil": "curl, Accept: */*",
+      "status": "200 OK",
+      "cfCacheStatus": null,
+      "cfPolished": null,
+      "age": null,
+      "borda": null,
+      "bytes": 27107,
+      "sha256": "441e8d865d461bc338a2d2d5a2a09f6151bbfdb4795ec8b59e66ee8654eebcca"
+    },
+    "igualAoIndice": true
+  },
+  "cors": {
+    "accessControlAllowOrigin": "*",
+    "accessControlExposeHeaders": null,
+    "consequencia": "sem Access-Control-Expose-Headers, o fetch() do navegador não lê o cf-polished"
+  }
+}

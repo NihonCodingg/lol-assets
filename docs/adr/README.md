@@ -16,10 +16,12 @@ com contexto, decisão e consequências. A Spec referencia; não repete.
 | [0009](0009-apelidos-de-busca-mantidos-a-mao.md) | Apelidos em JSON estático mantido à mão | aceito |
 | [0010](0010-navegacao-por-campeao-busca-por-skin.md) | Navegação por campeão, busca por skin; catálogo vira documento próprio | aceito — emenda o 0008 |
 | [0011](0011-base-de-componentes-do-front.md) | shadcn/ui sobre Radix, TanStack Virtual, cmdk; Fuse.js fora | aceito |
-| [0012](0012-onde-guardar-os-assets.md) | **Sem storage**: o índice aponta para as URLs das fontes | ✅ aceito — emenda 0005 e 0007 |
+| [0012](0012-onde-guardar-os-assets.md) | **Sem storage**: o índice aponta para as URLs das fontes | ✅ aceito — emenda 0005 e 0007; o `sha256` como detector, emendado pelo 0019 |
 | [0013](0013-uma-versao-por-vez-no-indice.md) | **Uma versão por vez** no índice; histórico sai da v1 | ✅ aceito — emenda 0007 |
 | [0014](0014-onde-vive-o-indice-gerado.md) | Índice gerado vive no `main`; crescimento medido | ✅ aceito |
 | [0015](0015-orcamento-do-indice-depois-da-segunda-fonte.md) | Teto do índice vai a **24 MiB**; emotes, wards e chromas cabem | ✅ aceito — emenda 0007 e 0013 |
 | [0016](0016-publicacao-na-vercel.md) | **Publicação na Vercel**: pnpm fixado, manifesto sempre revalida, `noindex` por padrão | ✅ aceito — emenda a §9 da Spec |
 | [0017](0017-icones-lucide.md) | **Ícones: `lucide-react`**, sempre decorativos; o nome é do controle | ✅ aceito — emenda 0011 |
 | [0018](0018-aviso-mede-a-ultima-verificacao.md) | **O aviso de índice velho mede a última verificação**: `checkedAt` no manifesto, carimbado no máximo 1×/dia | ✅ aceito — contrato 1.3.0; emenda a §11 da Spec |
+| [0019](0019-o-sha256-do-cdragon-nao-confere-o-download.md) | **O `sha256` do cdragon não confere o download**: a borda recomprime (Cloudflare Polish); `isByteStable` diz em que fonte ele confere | ✅ aceito — emenda o RF-10, o RNF-13 e uma consequência do 0012 |
+| [0020](0020-o-merge-e-do-agente.md) | **O merge é do agente**: com a CI verde ele mergeia e segue a fila; só para por decisão de produto, contradição com Spec ou ADR, segredo/conta ou CI vermelha | ✅ aceito — revoga a decisão do dono de 15/09/2026 |

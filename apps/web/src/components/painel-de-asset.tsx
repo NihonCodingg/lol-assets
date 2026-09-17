@@ -19,22 +19,34 @@
  * muda — o painel de um campeão tem dezenas de cartões e não paga scroller
  * próprio por isso.
  *
- * Tela crua de propósito; o design chega no T-30, e as medidas inline do
- * scroller vão junto.
+ * **Grade, no painel do campeão (T-47b).** Com `grade`, os cartões vêm agrupados
+ * por família — a arte grande, os retratos, as habilidades —, cada um com a
+ * prévia na proporção real e sem ampliar imagem menor que a caixa. Com
+ * `onAmpliar`, a prévia vira o botão da ampliação. As categorias continuam em
+ * lista até o T-48.
+ *
+ * Baixar dá retorno no próprio botão: o ícone gira enquanto baixa e vira ✓ por
+ * dois segundos quando termina, e o leitor de tela ouve "Arquivo baixado". O
+ * nome do botão não muda — quem procura "Baixar original" continua achando.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Check, Link2 } from "lucide-react";
+import { Check, Link2, Maximize2 } from "lucide-react";
 
 import type { Asset } from "@lol-assets/schema";
 
-import { LIMITE_DE_VIRTUALIZACAO, orderAssets, rotuloDoTipo } from "@/lib/asset-panel";
+import {
+  agruparPorFamilia,
+  LIMITE_DE_VIRTUALIZACAO,
+  orderAssets,
+  rotuloDoTipo,
+} from "@/lib/asset-panel";
 import { Botao } from "@/components/ui/botao";
 import { BotaoIcone } from "@/components/ui/botao-icone";
 import { Imagem } from "@/components/ui/imagem";
-import { ParDeDownload } from "@/components/ui/par-de-download";
+import { ParDeDownload, type QualDownload } from "@/components/ui/par-de-download";
 import { cn } from "@/lib/utils";
 import {
   assetSummary,
@@ -72,6 +84,19 @@ export interface PainelDeAssetProps {
    * aberto perderia o painel do campeão junto.
    */
   readonly fecharComEsc?: boolean;
+  /**
+   * Dentro de outro painel que já tem o próprio fechar (T-47): o "fechar"
+   * daqui some. Dois botões fechando a mesma coisa por caminhos diferentes são
+   * um a mais para achar e um a mais para entender.
+   */
+  readonly embutido?: boolean;
+  /**
+   * Grade agrupada por família, com a prévia na proporção real (T-47b). É o
+   * painel do campeão; as categorias continuam em lista até o T-48.
+   */
+  readonly grade?: boolean;
+  /** Quem amplia a arte. Com ele, a prévia do cartão da grade vira botão. */
+  readonly onAmpliar?: (asset: Asset) => void;
 }
 
 async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: string): Promise<void> {
@@ -96,8 +121,12 @@ export function PainelDeAsset({
   selecao,
   onAlternar,
   fecharComEsc = true,
+  embutido = false,
+  grade = false,
+  onAmpliar,
 }: PainelDeAssetProps) {
   const ordenados = useMemo(() => orderAssets(assets), [assets]);
+  const grupos = useMemo(() => (grade ? agruparPorFamilia(ordenados) : []), [grade, ordenados]);
   const [estados, setEstados] = useState<Record<string, EstadoDoCartao>>({});
 
   useEffect(() => {
@@ -120,12 +149,51 @@ export function PainelDeAsset({
         <span className="font-mono text-11 text-texto-suave">
           {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
         </span>
-        <Botao variante="fantasma" tamanho="md" onClick={onClose} className="ml-auto">
-          fechar
-        </Botao>
+        {!embutido && (
+          <Botao variante="fantasma" tamanho="md" onClick={onClose} className="ml-auto">
+            fechar
+          </Botao>
+        )}
       </div>
 
-      {ordenados.length > LIMITE_DE_VIRTUALIZACAO ? (
+      {grade ? (
+        <div className="flex flex-col gap-6 px-3.5 pb-6">
+          {grupos.map((grupo) => {
+            const cartoes = (
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] items-start gap-3">
+                {grupo.assets.map((asset) => (
+                  <li key={asset.id}>
+                    <CartaoDaGrade
+                      asset={asset}
+                      url={assetUrl(asset, assetsBaseUrl)}
+                      estado={estados[asset.id] ?? "pronto"}
+                      marcar={marcar}
+                      baixar={baixar}
+                      copiar={copiar}
+                      selecionado={selecao?.has(asset.id)}
+                      onAlternar={onAlternar}
+                      onAmpliar={onAmpliar}
+                    />
+                  </li>
+                ))}
+              </ul>
+            );
+            // Um grupo só não ganha cabeçalho: seria o nome da lista, repetido.
+            if (grupos.length === 1) return <div key={grupo.chave}>{cartoes}</div>;
+            return (
+              <section key={grupo.chave} aria-label={grupo.rotulo}>
+                <h3 className="mb-2.5 flex items-baseline gap-2 text-12 font-medium text-texto-forte">
+                  {grupo.rotulo}
+                  <span className="font-mono text-10 font-normal text-texto-suave">
+                    {grupo.assets.length}
+                  </span>
+                </h3>
+                {cartoes}
+              </section>
+            );
+          })}
+        </div>
+      ) : ordenados.length > LIMITE_DE_VIRTUALIZACAO ? (
         <ListaVirtual
           assets={ordenados}
           assetsBaseUrl={assetsBaseUrl}
@@ -275,40 +343,60 @@ interface CartaoProps {
   readonly onAlternar?: (id: string) => void;
 }
 
-function CartaoDeAsset({
-  asset,
-  url,
-  estado,
-  marcar,
-  baixar,
-  copiar,
-  selecionado,
-  onAlternar,
-}: CartaoProps) {
+// --- o que os dois cartões compartilham ---------------------------------------------------
+
+/**
+ * O download de um cartão: o estado dele no painel, e qual dos dois botões gira
+ * ou confirma (T-47b). A confirmação volta sozinha em dois segundos.
+ */
+function useDownload(
+  asset: Asset,
+  url: string,
+  marcar: (id: string, estado: EstadoDoCartao) => void,
+  baixar: (asset: Asset, comoPng: boolean, url: string) => Promise<void>,
+) {
+  const [andamento, setAndamento] = useState<QualDownload | null>(null);
+  const [feito, setFeito] = useState<QualDownload | null>(null);
+
+  useEffect(() => {
+    if (!feito) return;
+    const volta = window.setTimeout(() => setFeito(null), 2000);
+    return () => window.clearTimeout(volta);
+  }, [feito]);
+
   const acionar = useCallback(
     async (comoPng: boolean) => {
+      const qual: QualDownload = comoPng ? "png" : "original";
       marcar(asset.id, "baixando");
+      setAndamento(qual);
+      setFeito(null);
       try {
         await baixar(asset, comoPng, url);
         marcar(asset.id, "pronto");
+        setFeito(qual);
       } catch {
         // O erro fica no cartão. Derrubar o painel por causa de um asset seria
         // esconder os outros trinta que funcionam.
         marcar(asset.id, "erro");
+      } finally {
+        setAndamento(null);
       }
     },
     [asset, baixar, marcar, url],
   );
 
-  const ocupado = estado === "baixando";
+  return { acionar, andamento, feito };
+}
 
-  /**
-   * A confirmação de "Copiar URL" mora no próprio botão, não num aviso
-   * flutuante (T-45). O painel do campeão é um diálogo, e o Radix esconde do
-   * leitor de tela tudo o que está fora dele: um aviso lá fora nunca seria
-   * anunciado. Aqui, o ícone vira ✓, a dica abre sozinha dizendo "Link
-   * copiado", e uma região `role="status"` dentro do cartão anuncia.
-   */
+/**
+ * Copiar a URL, com a confirmação no próprio botão (T-45).
+ *
+ * Não num aviso flutuante: o painel do campeão é um diálogo, e o Radix esconde
+ * do leitor de tela tudo o que está fora dele — um aviso lá fora nunca seria
+ * anunciado. Aqui, o ícone vira ✓, a dica abre sozinha dizendo "Link copiado",
+ * e a região `role="status"` do cartão anuncia.
+ */
+function useCopia(copiar: (texto: string) => Promise<void>, url: string) {
   const [copia, setCopia] = useState<"parado" | "copiado" | "falhou">("parado");
   useEffect(() => {
     if (copia === "parado") return;
@@ -325,6 +413,90 @@ function CartaoDeAsset({
         () => setCopia("falhou"),
       );
   }, [copiar, url]);
+  return { copia, copiarUrl };
+}
+
+type EstadoDaCopia = ReturnType<typeof useCopia>["copia"];
+
+/** O que a região `role="status"` do cartão diz: a última coisa que aconteceu. */
+function anuncioDe(copia: EstadoDaCopia, feito: QualDownload | null): string {
+  if (copia === "copiado") return "Link copiado";
+  if (copia === "falhou") return "Não deu para copiar o link";
+  if (feito) return "Arquivo baixado";
+  return "";
+}
+
+function BotaoDeCopiar({ copia, onClick }: { copia: EstadoDaCopia; onClick: () => void }) {
+  return (
+    <BotaoIcone
+      rotulo="Copiar URL"
+      dica={copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar" : undefined}
+      dicaAberta={copia !== "parado"}
+      icone={
+        copia === "copiado" ? (
+          <Check aria-hidden="true" className="size-4" />
+        ) : (
+          <Link2 aria-hidden="true" className="size-4" />
+        )
+      }
+      onClick={onClick}
+    />
+  );
+}
+
+/**
+ * A caixa do lote (RF-17). O nome acessível vem do `aria-label`, não do texto
+ * do rótulo: o que está escrito é "✓" ou "+", que não diz nada a quem não vê.
+ */
+function CaixaDeSelecao({
+  asset,
+  selecionado,
+  onAlternar,
+  className,
+}: {
+  asset: Asset;
+  selecionado?: boolean;
+  onAlternar: (id: string) => void;
+  className?: string;
+}) {
+  return (
+    <label
+      className={cn(
+        "grid size-controle-min flex-none cursor-pointer place-items-center rounded-tecla border",
+        "font-mono text-10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
+        selecionado
+          ? "border-acento bg-acento text-superficie"
+          : "border-borda-fraca bg-superficie/80 text-texto-suave hover:border-acento",
+        className,
+      )}
+    >
+      <input
+        type="checkbox"
+        className="sr-only"
+        aria-label={`Selecionar ${asset.fileName}`}
+        checked={selecionado ?? false}
+        onChange={() => onAlternar(asset.id)}
+      />
+      <span aria-hidden="true">{selecionado ? "✓" : "+"}</span>
+    </label>
+  );
+}
+
+// --- o cartão da lista (categorias) -------------------------------------------------------
+
+function CartaoDeAsset({
+  asset,
+  url,
+  estado,
+  marcar,
+  baixar,
+  copiar,
+  selecionado,
+  onAlternar,
+}: CartaoProps) {
+  const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
+  const { copia, copiarUrl } = useCopia(copiar, url);
+  const ocupado = estado === "baixando";
 
   return (
     <article
@@ -334,26 +506,7 @@ function CartaoDeAsset({
       className="flex flex-col items-start gap-2 border-b border-borda px-0.5 py-2.5 sm:flex-row sm:items-center sm:gap-3"
     >
       {onAlternar && (
-        <label
-          className={cn(
-            "grid size-controle-min flex-none cursor-pointer place-items-center rounded-tecla border",
-            "font-mono text-10",
-            selecionado
-              ? "border-acento bg-acento text-superficie"
-              : "border-borda-fraca text-texto-suave hover:border-acento",
-          )}
-        >
-          {/* O nome acessível vem do `aria-label`, não do texto do rótulo: o
-              que está escrito é "✓" ou "+", que não diz nada a quem não vê. */}
-          <input
-            type="checkbox"
-            className="sr-only"
-            aria-label={`Selecionar ${asset.fileName}`}
-            checked={selecionado ?? false}
-            onChange={() => onAlternar(asset.id)}
-          />
-          <span aria-hidden="true">{selecionado ? "✓" : "+"}</span>
-        </label>
+        <CaixaDeSelecao asset={asset} selecionado={selecionado} onAlternar={onAlternar} />
       )}
 
       {/* RNF-02: a prévia é o que responde "é esta arte?" antes de baixar 121 KB.
@@ -393,31 +546,146 @@ function CartaoDeAsset({
         <ParDeDownload
           podeConverter={canConvertToPng(asset)}
           ocupado={ocupado}
+          baixando={andamento}
+          baixado={feito}
           onOriginal={() => void acionar(false)}
           onPng={() => void acionar(true)}
         />
-        <BotaoIcone
-          rotulo="Copiar URL"
-          dica={
-            copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar" : undefined
-          }
-          dicaAberta={copia !== "parado"}
-          icone={
-            copia === "copiado" ? (
-              <Check aria-hidden="true" className="size-4" />
-            ) : (
-              <Link2 aria-hidden="true" className="size-4" />
-            )
-          }
-          onClick={copiarUrl}
-        />
+        <BotaoDeCopiar copia={copia} onClick={copiarUrl} />
         <span role="status" className="sr-only">
-          {copia === "copiado" ? "Link copiado" : copia === "falhou" ? "Não deu para copiar o link" : ""}
+          {anuncioDe(copia, feito)}
         </span>
       </div>
 
       {estado === "erro" && (
         <p role="alert" className="flex-none text-11 text-acento-mais-claro">
+          Falhou ao baixar. Tente de novo.
+        </p>
+      )}
+    </article>
+  );
+}
+
+// --- o cartão da grade (painel do campeão, T-47b) ----------------------------------------
+
+/** A altura máxima da prévia na grade: uma tela de carregamento é mais alta que larga. */
+const ALTURA_MAXIMA_DA_PREVIA = 256;
+
+function PreviaDaGrade({
+  asset,
+  url,
+  onAmpliar,
+}: {
+  asset: Asset;
+  url: string;
+  onAmpliar?: (asset: Asset) => void;
+}) {
+  const caixa = (
+    // Proporção real, e nunca maior que o arquivo: um ícone de 64 px fica com
+    // 64 px, centralizado, em vez de esticado e borrado.
+    <div
+      className="min-h-24 w-full"
+      style={{
+        aspectRatio: `${asset.width} / ${asset.height}`,
+        maxHeight: Math.min(ALTURA_MAXIMA_DA_PREVIA, asset.height),
+      }}
+    >
+      {/* Absoluta e centralizada, no tamanho do arquivo e nunca maior que a
+          caixa. Altura em porcentagem, aqui, não resolvia: a tela de
+          carregamento crescia pela largura e aparecia cortada no meio. */}
+      <Imagem
+        src={url}
+        alt={`Prévia de ${asset.names.pt_BR}`}
+        data-previa={asset.type}
+        classeDaCaixa="size-full"
+        className="absolute inset-0 m-auto size-auto"
+        style={{
+          maxWidth: `min(100%, ${asset.width}px)`,
+          maxHeight: `min(100%, ${asset.height}px)`,
+        }}
+      />
+    </div>
+  );
+
+  if (!onAmpliar) return caixa;
+  return (
+    <button
+      type="button"
+      onClick={() => onAmpliar(asset)}
+      aria-label={`Ampliar ${asset.fileName}`}
+      className="group/previa relative block w-full cursor-zoom-in"
+    >
+      {caixa}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-2 bottom-2 grid size-7 place-items-center rounded-padrao bg-superficie/80 text-texto opacity-0 transition-opacity duration-150 ease-saida group-hover/previa:opacity-100 group-focus-visible/previa:opacity-100"
+      >
+        <Maximize2 strokeWidth={1.75} className="size-3.5" />
+      </span>
+    </button>
+  );
+}
+
+function CartaoDaGrade({
+  asset,
+  url,
+  estado,
+  marcar,
+  baixar,
+  copiar,
+  selecionado,
+  onAlternar,
+  onAmpliar,
+}: CartaoProps & { readonly onAmpliar?: (asset: Asset) => void }) {
+  const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
+  const { copia, copiarUrl } = useCopia(copiar, url);
+  const ocupado = estado === "baixando";
+
+  return (
+    <article
+      aria-label={asset.fileName}
+      data-tipo={asset.type}
+      data-estado={estado}
+      className="flex flex-col overflow-hidden rounded-medio border border-borda bg-superficie-alta"
+    >
+      <div className="relative">
+        <PreviaDaGrade asset={asset} url={url} onAmpliar={onAmpliar} />
+        {onAlternar && (
+          <CaixaDeSelecao
+            asset={asset}
+            selecionado={selecionado}
+            onAlternar={onAlternar}
+            className="absolute top-2 left-2"
+          />
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-col gap-0.5 px-3 pt-2.5">
+        <h4 className="truncate text-13 font-medium text-texto-forte">{asset.names.pt_BR}</h4>
+        <p className="truncate font-mono text-10 uppercase tracking-rotulo text-texto-suave">
+          {rotuloDoTipo(asset.type)}
+        </p>
+        {/* RF-09: a ficha aparece antes de qualquer clique de download. */}
+        <p className="truncate font-mono text-11 text-texto-suave">{assetSummary(asset)}</p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2.5 pb-3">
+        <ParDeDownload
+          podeConverter={canConvertToPng(asset)}
+          ocupado={ocupado}
+          baixando={andamento}
+          baixado={feito}
+          onOriginal={() => void acionar(false)}
+          onPng={() => void acionar(true)}
+        />
+        <BotaoDeCopiar copia={copia} onClick={copiarUrl} />
+        <span role="status" className="sr-only">
+          {anuncioDe(copia, feito)}
+        </span>
+      </div>
+
+      {estado === "erro" && (
+        <p role="alert" className="px-3 pb-3 text-11 text-acento-mais-claro">
           Falhou ao baixar. Tente de novo.
         </p>
       )}

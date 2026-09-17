@@ -69,26 +69,49 @@ conferência foi feita pelo DOM.
   checkout da outra sessão, que está na `feat/T-45-fundacao-visual`.
 - **ADR 0018 e T-51**: o 0017 e os T-45 a T-50 já estão reservados na branch da Onda 7.
 
-## O que ficou pendente
+## Depois do merge — 15/09/2026
 
-- **O merge do PR #56.** A CI está verde; o merge foi barrado pela checagem de permissão desta
-  sessão ("merge sem revisão") e ficou com o dono.
-- **Depois do merge:** a próxima execução — agendada para ~08:00 UTC, ou disparada à mão —
-  reindexa o 16.18.1 e publica. Será o primeiro commit do bot depois da publicação na Vercel,
-  o que responde o item 4 do [ADR 0016](../adr/0016-publicacao-na-vercel.md). Conferir no ar:
-  `manifest.json` com `schemaVersion` 1.3.0 e o aviso sumido.
-- **~24 h depois:** o primeiro `chore(indice): 16.18.1 conferido`, com `checkedAt` no
-  manifesto do site. Fecha o critério 5 do T-51.
-- **Um conflito de uma linha** em `docs/adr/README.md` para quem mergear por último entre este
-  PR e o da T-45: manter as duas linhas, a do 0017 antes da do 0018.
+O merge do #56 foi barrado primeiro pela checagem de permissão desta sessão ("merge sem
+revisão"); com o ok explícito do dono, entrou às 00:42 UTC (`b411b09`), e a `Indexação` foi
+disparada à mão ([34914303093](https://github.com/NihonCodingg/lol-assets/actions/runs/34914303093)):
 
-## Próximo passo sugerido
+| | |
+|---|---|
+| Decisão do `check` | `indexar: contrato do índice mudou de 1.2.0 para 1.3.0` — como previsto |
+| Indexação | 00:42:56 → 01:04:12 UTC, 27.313 assets, 9 documentos órfãos varridos |
+| Commit | `63dacdb` `chore(indice): patch 16.18.1`, do `github-actions[bot]` |
+| Vercel | produção do `63dacdb` às **01:05 UTC**, sem deploy hook — responde o item 4 do [ADR 0016](../adr/0016-publicacao-na-vercel.md): a integração do Git publica o commit do bot |
+| Site no ar | manifesto `1.3.0`, `generatedAt` 2026-09-15T00:42:56Z, **sem aviso**, 173 campeões |
+| `conferir-publicacao.mjs` contra a URL publicada | **26 de 26** |
 
-Mergear o #56 e disparar a `Indexação` à mão, sem entradas, para não esperar o agendamento;
-~35 min depois, rodar o `conferir-publicacao.mjs` contra o site no ar.
+As duas execuções agendadas seguintes (08:42 e 14:20 UTC de 15/09) terminaram sem carimbar, e é
+o certo: o índice tinha menos de 24 h. Os PRs da T-45 e da T-46 entraram depois deste, e o
+conflito em `docs/adr/README.md` foi resolvido com as duas linhas.
+
+**Uma correção:** a descrição do #56 dizia que a linha RNF-06 do mapa de cobertura tinha
+ganhado o T-51. A edição foi planejada e não aplicada; entrou no PR de fechamento.
+
+## O primeiro carimbo — 16/09/2026
+
+| | |
+|---|---|
+| Execução | agendada, [35074752615](https://github.com/NihonCodingg/lol-assets/actions/runs/35074752615), às 08:37 UTC — a primeira depois das 24 h do índice |
+| Log | `verificação carimbada no manifesto: 2026-09-16T08:37:12Z` e `nada a fazer: já indexado em 16.18.1` |
+| Commit | `6239943` `chore(indice): 16.18.1 conferido`, do `github-actions[bot]`: uma linha no `manifest.json` |
+| A anterior | 15/09 às 23:32 UTC, menos de 24 h depois do índice: não carimbou, como deve |
+| As seguintes | 14:12, 18:54 e 23:39 UTC de 16/09: não carimbaram de novo, como devem |
+| Site no ar | `checkedAt` 2026-09-16T08:37:12Z no `manifest.json` publicado, igual ao do repositório; `conferir-publicacao.mjs` com **26 de 26** |
+
+A conferência agendada das 09:30 UTC não completou este PR; a sessão do redesenho conferiu à
+mão, na mesma noite. Com isso o critério 5 fecha, e o T-51 também.
+
+## Decisões do dono em 15/09/2026
+
+- **O aviso continua dizendo quando o índice foi gerado.** Quem visita quer saber se a arte é
+  do patch atual; a data da conferência é detalhe de operação e confundiria.
+- ~~**Nenhuma regra de permissão para `gh pr merge`.**~~ *Revogada em 17/09/2026 pelo dono — ver o [ADR 0020](../adr/0020-o-merge-e-do-agente.md).* O dono é o único revisor humano, e o merge
+  é o último ponto em que ele olha o que entra. As sessões entregam o comando pronto.
 
 ## Só o dono pode fazer
 
-- Mergear o PR #56, ou autorizar a sessão a mergear.
-- Se quiser, decidir a troca de texto do aviso — hoje ele diz quando o índice foi gerado, não
-  quando foi conferido.
+- Mergear o PR de fechamento (#58): o carimbo chegou.

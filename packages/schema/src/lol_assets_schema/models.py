@@ -112,6 +112,8 @@ class Asset(_Base):
     height: int = Field(ge=1)
     format: Literal["png", "jpeg"]
     has_alpha: bool
+    #: `bytes` e `sha256` são do arquivo que o indexador recebeu. Só conferem o download
+    #: nas fontes que entregam bytes estáveis — hoje, só o ddragon (ADR 0019).
     bytes: int = Field(ge=1)
     sha256: Sha256
 

@@ -142,6 +142,17 @@ describe("PainelLateral", () => {
     );
     expect(screen.getByRole("button", { name: "Fechar" })).toBeTruthy();
   });
+
+  it("ao abrir, o foco vai para o painel, não para o fechar — a dica não abre sozinha (T-47)", () => {
+    // O primeiro botão do painel do campeão é o fechar, com dica. Foco nele ao
+    // abrir fazia "Fechar (Esc)" aparecer toda vez, por cima da arte.
+    render(
+      <PainelLateral aberto onFechar={() => {}} titulo="Painel">
+        <FecharPainel />
+      </PainelLateral>,
+    );
+    expect(document.activeElement).toBe(screen.getByRole("dialog", { name: "Painel" }));
+  });
 });
 
 // --- critério 5: o cmdk não filtra ----------------------------------------------------

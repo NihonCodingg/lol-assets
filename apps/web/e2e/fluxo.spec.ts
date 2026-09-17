@@ -111,8 +111,8 @@ test.describe("os três cliques", () => {
     contador.cliques += 1;
     await resultado.click();
 
-    const seletor = page.getByLabel("Selecionar skin");
-    await expect(seletor).toHaveValue("7");
+    // A skin 7 vem marcada no seletor — desde o T-47, um rádio com o tile dela.
+    await expect(page.getByRole("radio", { name: "Jax Deus da Guerra" })).toBeChecked();
 
     // 2: baixar a splash daquela skin.
     const cartao = page.locator('article[aria-label="Jax_007_splash_centered.jpg"]');

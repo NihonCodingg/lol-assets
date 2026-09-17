@@ -102,10 +102,87 @@ espera o ok.
 | Detector do skill de design | nenhum achado |
 | Prints | antes (site no ar) e depois (build local), 1440×900 e 390×844 |
 
+## T-47 — a vitrine do painel do campeão
+
+O painel abre na arte. Dividido em dois, como o plano previa: este é a vitrine; as artes em
+grade, a ampliação e o feedback de download vão para o T-47b.
+
+- **Vitrine:** a splash centralizada da skin no topo, em 16:9, com o nome da skin em destaque e
+  o campeão embaixo. Antes de a fatia chegar, o *tile* desfocado segura o lugar.
+- **Seletor de skin:** uma faixa de *tiles* de 72 px — rádios de verdade, escondidos: as setas
+  trocam de skin, e o Tab entra no grupo numa parada só.
+- **Um fechar só**, o `×` do canto, parado enquanto o painel rola. O painel foi a
+  `min(880px, 92vw)`.
+
+### Achados
+
+- **Rádio não tem nome próprio.** O teste de Tab identificava cada parada por `aria-label` ou
+  texto, e o rádio não tem nenhum dos dois — o nome vem do rótulo. A marca passou a levar o
+  `type`.
+- **`alt` vazio é decisão, não esquecimento.** O teste de "nenhuma imagem sem alt" reprovava as
+  miniaturas decorativas. A regra ficou mais precisa: `alt` vazio só vale com `aria-hidden`, e a
+  `Imagem` põe o `aria-hidden` sozinha quando o `alt` é vazio. A splash, que é conteúdo, ganhou
+  alt de verdade.
+- **A dica do fechar abria sozinha.** O diálogo põe o foco no primeiro botão ao abrir, e o
+  primeiro botão é o fechar — cuja dica, que abre no foco, cobria a arte toda vez. Agora o foco
+  vai para o próprio painel, e o primeiro Tab chega no fechar.
+- **O índice e o CommunityDragon discordam.** A conferência do site no ar depois do T-46 falhou
+  num download do cdragon: os 8 emotes conferidos baixam com tamanho e sha256 diferentes do
+  índice, e os valores do índice são os mesmos desde 11/09. Não é da interface; virou tarefa
+  separada, com a evidência.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **404 de 404** — 7 novos; os do seletor migrados de `<select>` para rádio |
+| `tsc` e `eslint` | limpos |
+| e2e | **39 de 39**, com o novo `painel.spec.ts` |
+| Build de produção | limpo; a home com 166 kB no primeiro carregamento |
+| Prints | antes (site no ar) e depois (build local), 1440×900 e 390×844 |
+
+## T-47b — as artes em grade
+
+A segunda metade do T-47, empilhada sobre ele.
+
+- **Grade por família:** splash e tela de carregamento, retratos, passiva e habilidades — cada
+  arte com a prévia na proporção real, e nunca maior que o arquivo: o ícone de 64 px continua
+  com 64 px, nítido.
+- **Ampliação:** a prévia é um botão; a arte abre no tamanho que a tela aguenta. O `Escape`
+  fecha na ordem ampliação → chromas → painel, e é o painel que manda na tecla.
+- **Retorno do download:** o ícone do botão gira enquanto baixa e vira ✓ por dois segundos; o
+  leitor de tela ouve "Arquivo baixado".
+- **Bandeja:** as cinco primeiras miniaturas do que foi selecionado, e quantas faltam.
+
+### Achados
+
+- **Por tipo, eram sete cabeçalhos para dez cartões.** A família junta o que se procura junto,
+  e uma família sozinha não ganha cabeçalho.
+- **Trocar o texto do botão mudaria o nome dele.** "Baixando…" no lugar de "Baixar original"
+  faria quem procura o botão — gente e teste — não achá-lo no meio do download. O retorno ficou
+  no ícone e no anúncio.
+- **A ampliação não tem `Escape` próprio.** Dois donos para a tecla fechariam a ampliação e o
+  painel de uma vez; o painel, que já ordenava os chromas antes dele, ordena a ampliação também.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **417 de 417** — 13 novos, nenhum existente alterado |
+| `tsc` e `eslint` | limpos |
+| e2e | **40 de 40**, com o da ampliação |
+| Build de produção | limpo; a home com 168 kB no primeiro carregamento |
+
 ## O que resta
 
-- **O ok do dono nos previews do T-45 e do T-46.** Só depois de cada um, o merge.
-- **T-47 a T-50**, um PR e um ok de cada vez.
+- **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
+  e [#57](https://github.com/NihonCodingg/lol-assets/pull/57)), com o ok do dono. No ar, o
+  `conferir-publicacao` passou limpo, e o `conferir:navegador` deu 8 de 9 — o que falhou é a
+  divergência do cdragon, anterior a esta onda. Ela ganhou causa e PR próprio numa tarefa
+  separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
+  cdragon recomprime o PNG.
+- **O ok do dono nos previews do T-47 e do T-47b.** Só depois de cada um, o merge.
+- **T-48 a T-50**, um PR e um ok de cada vez.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono
   iniciou em outra sessão: o aviso passou a medir a última verificação. Os ramos do T-45 e do
