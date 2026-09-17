@@ -157,7 +157,7 @@ function montar(shards = SHARDS) {
 
 async function abrir(rotulo: string) {
   fireEvent.click(screen.getByRole("button", { name: rotulo }));
-  await waitFor(() => expect(screen.queryByText(/^carregando /)).toBeNull());
+  await waitFor(() => expect(screen.queryByText(/^Carregando /)).toBeNull());
 }
 
 // --- carga sob demanda (critérios 1 e 3) ---------------------------------------------
@@ -262,7 +262,7 @@ describe("filtros", () => {
   it("item abre marcado em comprável e SR (§B.1.6)", async () => {
     montar();
     await abrir("Itens");
-    expect((screen.getByLabelText(/^sim/) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByLabelText(/^Sim/) as HTMLInputElement).checked).toBe(true);
     expect((screen.getByLabelText(/Summoner's Rift/) as HTMLInputElement).checked).toBe(true);
     // botas, elmo e missão estão no SR; só os dois primeiros são compráveis.
     expect(screen.getByText("2 de 4")).toBeTruthy();
@@ -292,7 +292,8 @@ describe("filtros", () => {
     fireEvent.click(screen.getByRole("button", { name: "Mostrar tudo" }));
     fireEvent.click(screen.getByLabelText(/ARAM/));
     expect(screen.getByText("2 de 4")).toBeTruthy();
-    fireEvent.click(screen.getByLabelText(/^boots/));
+    // "Botas" e não `boots` desde o T-48: a classe de item sai em pt-BR.
+    fireEvent.click(screen.getByLabelText(/^Botas/));
     expect(screen.getByText("1 de 4")).toBeTruthy();
   });
 
@@ -312,7 +313,7 @@ describe("filtros", () => {
     expect(screen.getByRole("group", { name: "Árvore de runa" })).toBeTruthy();
     expect(screen.queryByRole("group", { name: "Mapa" })).toBeNull();
     // O rótulo da árvore sai do nome do próprio ícone; `nenhuma` é dos stat mods.
-    expect(screen.getByLabelText(/sem árvore/)).toBeTruthy();
+    expect(screen.getByLabelText(/Sem árvore/)).toBeTruthy();
   });
 
   it("categoria sem etiqueta nenhuma não mostra filtro nenhum", async () => {
@@ -331,6 +332,39 @@ describe("filtros", () => {
   });
 });
 
+// --- os estados, no vocabulário do T-50 ------------------------------------------------
+
+describe("erro e vazio que dizem o que fazer (T-50)", () => {
+  it("o erro de carga oferece tentar de novo, e tentar de novo busca outra vez", async () => {
+    let falhar = true;
+    const carregar = vi.fn(async (category: AssetCategory) => {
+      if (falhar) throw new Error("HTTP 503");
+      return FATIAS[category]!;
+    });
+    render(<Palco shards={SHARDS} carregar={carregar} />);
+    fireEvent.click(screen.getByRole("button", { name: "Itens" }));
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toContain("Não deu para carregar Itens");
+
+    falhar = false;
+    fireEvent.click(within(alerta).getByRole("button", { name: "Tentar de novo" }));
+    await waitFor(() => expect(screen.getByText("2 de 4")).toBeTruthy());
+    expect(carregar).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("o vazio tem a saída: 'Limpar filtros' desmarca tudo e apaga o texto", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
+
+    fireEvent.click(within(screen.getByRole("status")).getByRole("button", { name: "Limpar filtros" }));
+    expect(screen.getByText("4 de 4")).toBeTruthy();
+    expect((screen.getByLabelText("Filtrar por texto") as HTMLInputElement).value).toBe("");
+  });
+});
+
 // --- o vazio (critério 4) --------------------------------------------------------------
 
 describe("estado vazio", () => {
@@ -344,7 +378,7 @@ describe("estado vazio", () => {
     const vazio = screen.getByRole("status");
     expect(vazio.textContent).toContain("Nenhum asset");
     const aplicado = within(vazio).getByRole("list", { name: "Filtro aplicado" });
-    expect(aplicado.textContent).toContain("Comprável: sim");
+    expect(aplicado.textContent).toContain("Comprável: Sim");
     expect(aplicado.textContent).toContain("Mapa: Summoner's Rift");
     expect(aplicado.textContent).toContain("não existe");
   });
@@ -360,8 +394,9 @@ describe("5.042 ícones de perfil", () => {
    * provar coisa alguma.
    *
    * Emprestar uma janela de 700 px é o que faz o teste medir o que interessa:
-   * **tendo** o que desenhar, quantos nós ele desenha. 700 px sobre cartões de
-   * 132 px são ~6 visíveis mais 6 de folga do `overscan`.
+   * **tendo** o que desenhar, quantos nós ele desenha. Sem largura, a galeria
+   * tem uma coluna só (T-48); 700 px sobre linhas de 220 px são ~4 visíveis mais
+   * 3 de folga do `overscan`.
    *
    * `offsetHeight` e não `getBoundingClientRect`: é o que o `getRect` do
    * virtual-core lê.
@@ -410,6 +445,127 @@ describe("5.042 ícones de perfil", () => {
     // icone-1, icone-1x, icone-1xx, icone-1xxx: 1 + 10 + 100 + 1000 = 1.111.
     expect(screen.getByText("1111 de 5042")).toBeTruthy();
     expect(container.querySelector("[data-virtual='sim']")).not.toBeNull();
+  });
+});
+
+// --- a galeria (T-48) ---------------------------------------------------------------------
+
+describe("a galeria das categorias (T-48)", () => {
+  function palco(fatias: Partial<Record<AssetCategory, IndexShard>>) {
+    const carregar = vi.fn(async (category: AssetCategory) => {
+      const shard = fatias[category];
+      if (!shard) throw new Error(`sem fatia ${category}`);
+      return shard;
+    });
+    return render(
+      <Palco shards={Object.keys(fatias).map((category) => ({ category }))} carregar={carregar} />,
+    );
+  }
+
+  it("o arquivo de marcação não aparece, nem na conta", async () => {
+    palco({
+      emote: fatia("emote", [
+        asset("emote_icon:0", {
+          type: "emote_icon",
+          category: "emote",
+          sourceUrl: "https://exemplo.invalido/summoneremotes/emote_fpo_inventory.png",
+          fileName: "Emote_0.png",
+        }),
+        asset("emote_icon:1", { type: "emote_icon", category: "emote" }),
+        asset("emote_icon:2", { type: "emote_icon", category: "emote" }),
+      ]),
+    });
+    await abrir("Emotes");
+    expect(screen.getByText("2 de 2")).toBeTruthy();
+    expect(screen.queryByLabelText("Emote_0.png")).toBeNull();
+  });
+
+  it("grupo grande fica atrás de 'Mais filtros', que diz quantos estão marcados lá dentro", async () => {
+    const classes = ["boots", "armor", "damage", "health", "mana", "consumable", "vision"];
+    palco({
+      item: fatia(
+        "item",
+        classes.map((classe) => asset(classe, { tags: ["compravel", "mapa:sr", `classe:${classe}`] })),
+      ),
+    });
+    await abrir("Itens");
+    // Os pequenos, na barra; as sete classes, não.
+    expect(screen.getByRole("group", { name: "Mapa" })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Classe" })).toBeNull();
+
+    const mais = screen.getByRole("button", { name: /^Mais filtros/ });
+    expect(mais.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(mais);
+    expect(mais.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.click(within(screen.getByRole("group", { name: "Classe" })).getByLabelText(/^Visão/));
+    expect(screen.getByText("1 de 7")).toBeTruthy();
+
+    // Fechado, o botão continua contando o que ficou marcado lá dentro.
+    fireEvent.click(mais);
+    expect(screen.queryByRole("group", { name: "Classe" })).toBeNull();
+    expect(mais.textContent).toBe("Mais filtros1");
+  });
+
+  it("'Selecionar os N filtrados' seleciona só o que o filtro mostra (critério 2)", async () => {
+    montar();
+    await abrir("Itens");
+    // O padrão de item deixa 2 de 4 na tela.
+    fireEvent.click(screen.getByRole("button", { name: "Selecionar os 2 filtrados" }));
+
+    const lote = screen.getByRole("region", { name: "Seleção" });
+    expect(lote.textContent).toContain("2 selecionados");
+    expect((screen.getByLabelText("Selecionar botas.png") as HTMLInputElement).checked).toBe(true);
+    // Mostrar tudo revela os outros dois, e eles não vieram junto.
+    fireEvent.click(screen.getByRole("button", { name: "Mostrar tudo" }));
+    expect((screen.getByLabelText("Selecionar poro.png") as HTMLInputElement).checked).toBe(false);
+  });
+
+  it("'Voltar aos campeões' fecha a categoria", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.click(screen.getByRole("button", { name: "Voltar aos campeões" }));
+    expect(screen.queryByLabelText("Filtrar por texto")).toBeNull();
+  });
+
+  it("o Escape fecha a ampliação antes de sair da categoria", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.click(screen.getByRole("button", { name: "Ampliar botas.png" }));
+    expect(screen.getByRole("dialog", { name: /^Ampliação de Botas/ })).toBeTruthy();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: /^Ampliação de/ })).toBeNull();
+    expect(screen.getByLabelText("Filtrar por texto")).toBeTruthy();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByLabelText("Filtrar por texto")).toBeNull();
+  });
+
+  it("os avisos da Riot vão por último, dentro da área que rola da galeria (T-49)", async () => {
+    const { container } = montar();
+    await abrir("Itens");
+    const fim = container.querySelector("[data-avisos='fim']");
+    const lista = container.querySelector("article")?.closest("ul");
+    // Irmãos no mesmo scroller, e os avisos depois da lista.
+    expect(fim?.parentElement).toBe(lista?.parentElement);
+    expect(lista?.compareDocumentPosition(fim!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it("no vazio também há avisos no fim (T-49)", async () => {
+    const { container } = montar();
+    await abrir("Itens");
+    fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
+    expect(screen.getByRole("status").parentElement?.querySelector("[data-avisos='fim']")).not.toBeNull();
+    expect(container.querySelectorAll("[data-avisos='fim']")).toHaveLength(1);
+  });
+
+  it("no campo de filtro com texto, o Escape não tira da categoria", async () => {
+    montar();
+    await abrir("Itens");
+    const campo = screen.getByLabelText("Filtrar por texto");
+    fireEvent.change(campo, { target: { value: "botas" } });
+    fireEvent.keyDown(campo, { key: "Escape" });
+    expect(screen.getByLabelText("Filtrar por texto")).toBeTruthy();
   });
 });
 

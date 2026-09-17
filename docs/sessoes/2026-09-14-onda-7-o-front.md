@@ -173,6 +173,107 @@ A segunda metade do T-47, empilhada sobre ele.
 | e2e | **40 de 40**, com o da ampliação |
 | Build de produção | limpo; a home com 168 kB no primeiro carregamento |
 
+## T-48 — as categorias em galeria
+
+- **Galeria:** a lista de linhas vira *tiles* com a imagem na frente, o nome e a ficha embaixo,
+  sempre à vista. As ações — original, PNG, copiar e a caixa do lote — aparecem por cima da
+  prévia no *hover* e no foco, e ficam sempre à vista no toque. A prévia amplia, como no painel.
+- **Filtros numa barra só:** voltar, o filtro por texto com ícone e os grupos pequenos. As 32
+  classes de item ficam atrás de "Mais filtros", em pt-BR, e o botão conta as que estão marcadas
+  lá dentro.
+- **Um fechar só:** o "fechar" do painel de assets saiu de vez; quem fecha é quem o contém.
+- **O "Emote 0" saiu:** era `emote_fpo_inventory.png`, um quadrado de marcação.
+
+### Achados
+
+- **O Radix Tooltip pesava na rolagem.** Com seis *tiles* por linha, cada linha que entra monta
+  seis dicas. A medida A/B no build de produção: 21,7 ms por quadro com a galeria como estava,
+  19,0 ms com os *tiles* memorizados, 16,6 ms sem a dica. A dica do copiar, na galeria, virou CSS
+  (`dicaLeve`), com o mesmo desenho; no painel do campeão continua a do Radix.
+- **O `twMerge` não conhecia as medidas com nome.** `cn("h-controle-lg", "h-controle-md")`
+  mantinha as duas classes, e quem vencia era a ordem do CSS — o mesmo tipo de defeito do T-28,
+  com o sinal trocado. As `--spacing-*` entraram na configuração, com teste.
+- **O teste de "cartões não se sobrepõem" só servia para uma coluna:** comparava cada cartão com
+  o anterior, e numa galeria o vizinho da mesma linha começa na mesma altura. Virou comparação
+  de retângulo com retângulo, e ganhou a conferência de que há mais de uma coluna.
+- **Duas etiquetas da Riot para a mesma coisa:** `SpellBlock` (99 itens) e `MagicResist` (33, 23
+  com as duas). Em pt-BR as duas seriam "Resistência mágica"; viraram uma opção.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **451 de 451** — 34 novos; 4 mudados de propósito (o rótulo cru da classe e o `boots` que virou "Botas", o "fechar" do painel, a dica do copiar na galeria) |
+| `tsc` e `eslint` | limpos |
+| e2e | **40 de 40**; os dois de sobreposição agora comparam retângulos, e o axe da categoria roda com "Mais filtros" aberto e um *tile* em *hover* |
+| Rolagem (critério 1) | 16,7 ms por quadro nos 5.042 ícones de perfil, 17,5 ms nos emotes; no máximo 66 *tiles* no DOM |
+| Build de produção | limpo; a home com 170 kB no primeiro carregamento |
+
+## T-49 — o celular
+
+- **Faixa do topo em duas linhas:** a marca, e uma linha que rola de lado com as categorias e
+  as seções. Eram 274 px de 844 antes da busca; agora são 92.
+- **Avisos da Riot no fim da página**, no telefone: depois da grade, da galeria, do vazio. No
+  computador continuam no pé da barra lateral. A 404 ganhou página própria para tê-los.
+- **Funções da home e filtros da categoria** numa linha que rola de lado, em vez de três linhas
+  quebradas; o filtro por texto divide a linha com "Voltar aos campeões".
+- **Painel do campeão em tela cheia**, com botões de 44 px em tela de toque, e a bandeja do lote
+  com os botões numa linha própria.
+- O aviso de índice velho ficou mais baixo, e a busca tem 44 px em toda largura.
+
+### Achados
+
+- **O telefone mostrava o site reduzido, e a fixture não deixava ver.** Com o índice real, a
+  linha de categorias passa de 390 px. A coluna implícita do grid do `body` crescia até ela, e a
+  página inteira ficava com 668 px de largura. Corrigida a coluna, sobrou 537: a caixa escondida
+  (`sr-only`) de cada chip de função é `position: absolute`, e sem ancestral posicionado escapava
+  da linha que rola. O e2e agora alarga as duas linhas antes de medir.
+- **A raiz tem 14 px**, então `min-h-11` dá 38,5 px, e não 44. O alvo de toque usa o token
+  `controle-xl`, que é px.
+- **`next dev` apaga o build de produção** na mesma pasta `.next`: rodar o e2e entre um build e o
+  `next start` dos prints obriga a construir de novo.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **456 de 456** — 5 novos |
+| `tsc` e `eslint` | limpos |
+| e2e | **46 de 46** — 6 novos em `e2e/celular.spec.ts`; 1 mudado de propósito (os avisos em tela estreita: agora são duas cópias, e vale a visível) |
+| Faixa do topo em 390×844 | **92 px** (eram 274) |
+| Computador | sem mudança visível na home |
+
+## T-50 — o acabamento
+
+- **Vazio, erro e 404 falam igual** (`Estado`): ícone, título em português, o que fazer, o
+  detalhe técnico pequeno e a ação. O erro de carga da categoria e o do painel do campeão ganharam
+  "Tentar de novo"; o do catálogo, "Recarregar".
+- **O vazio da categoria** diz o que tente, mostra o que estava filtrado e tem "Limpar filtros".
+- **O aviso de índice velho** ganhou ícone e a frase principal em destaque.
+- **Microcopy:** maiúscula só no início da frase, erro começando com "Não deu para…", "Copiar
+  link" no lugar de "Copiar URL", e o rodapé com "Patch" e "2.121 skins".
+- **Sobre:** uma seção "Como usar" — apelidos na busca, original contra PNG, o zip das categorias.
+- **Na Sobre, as categorias levam para a home** já abertas; antes marcavam e ficavam lá.
+
+### Achados
+
+- **"Failed to fetch" era o título do erro** em três lugares: o painel do campeão, a categoria e
+  o catálogo. Nenhum dizia o que fazer.
+- **O RNF-13 depende do T-52** (#60): comparar o `sha256` no cdragon avisaria em todo download,
+  porque a borda dele recomprime o PNG. Foi para o T-50b, e o dono o fechou no mesmo dia: o aviso
+  sai da Spec, e o RNF-13 passa a dizer que quem verifica é a conferência no navegador.
+- **O teste do "carregando" teria passado sem esperar nada:** o ajudante da categoria esperava
+  `/^carregando /` sumir, e com a maiúscula a frase nunca casaria. Mudou junto com o texto.
+
+### Conferido
+
+| | |
+|---|---|
+| Testes de unidade | **463 de 463** — 7 novos; 11 mudados de propósito, todos pela microcopy |
+| `tsc` e `eslint` | limpos |
+| e2e | **46 de 46**; 2 mudados pela microcopy ("Já é PNG", "Carregando as artes…") |
+| Inspeção | 13 estados em 1440×900 e 390×844; um lote de correções e a segunda rodada limpa |
+
 ## O que resta
 
 - **T-45 e T-46 estão no ar** desde 15/09 ([#55](https://github.com/NihonCodingg/lol-assets/pull/55)
@@ -181,8 +282,11 @@ A segunda metade do T-47, empilhada sobre ele.
   divergência do cdragon, anterior a esta onda. Ela ganhou causa e PR próprio numa tarefa
   separada: o T-52 ([#60](https://github.com/NihonCodingg/lol-assets/pull/60)) — a borda do
   cdragon recomprime o PNG.
-- **O ok do dono nos previews do T-47 e do T-47b.** Só depois de cada um, o merge.
-- **T-48 a T-50**, um PR e um ok de cada vez.
+- **O T-47 e o T-47b têm o ok do dono** (16/09); o merge é dele, um de cada vez.
+- **O ok do dono nos previews do T-48, do T-49 e do T-50.**
+- ~~O T-50b (RNF-13)~~ — fechado sem executar em 16/09, por decisão do dono; o RNF-13 foi
+  emendado na Spec.
+- **Tirar o `_fpo` do índice**, no indexador — o T-48 só o esconde na tela.
 - ~~O aviso de índice velho acendendo à toa no site no ar~~ — resolvido no T-51
   ([#56](https://github.com/NihonCodingg/lol-assets/pull/56)), na tarefa separada que o dono
   iniciou em outra sessão: o aviso passou a medir a última verificação. Os ramos do T-45 e do

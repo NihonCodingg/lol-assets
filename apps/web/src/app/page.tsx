@@ -12,11 +12,13 @@
  * carregando.
  */
 
+import { CloudOff } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Asset, Catalog, CatalogChampion, IndexManifest } from "@lol-assets/schema";
 
 import { AvisoDeIndiceVelho } from "@/components/aviso-de-indice-velho";
+import { AvisosNoFim } from "@/components/avisos-da-riot";
 import { EsqueletoDaGrade, GradeDeCampeoes } from "@/components/grade-de-campeoes";
 import { useNavegacao } from "@/components/navegacao-context";
 import { NavegacaoPorCategoria } from "@/components/navegacao-por-categoria";
@@ -24,6 +26,7 @@ import { PainelDoCampeao } from "@/components/painel-do-campeao";
 import { PaletaDeBusca } from "@/components/paleta-de-busca";
 import { Botao } from "@/components/ui/botao";
 import { Esqueleto } from "@/components/ui/esqueleto";
+import { Estado } from "@/components/ui/estado";
 import { AssetsClient } from "@/lib/assets-client";
 import { categoriasDisponiveis } from "@/lib/categorias";
 import { siteConfig } from "@/lib/site-config";
@@ -110,7 +113,7 @@ export default function HomePage() {
           Carregando o catálogo…
         </p>
         <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
-          <Esqueleto className="h-controle-lg w-full max-w-busca-max rounded-medio md:h-controle-xl" />
+          <Esqueleto className="h-controle-xl w-full max-w-busca-max rounded-medio" />
         </div>
         <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
           <Esqueleto className="h-controle-md w-80 max-w-full" />
@@ -118,27 +121,35 @@ export default function HomePage() {
         <div className="min-h-0 flex-1 overflow-hidden">
           <EsqueletoDaGrade />
         </div>
+        <AvisosNoFim className="flex-none" />
       </main>
     );
   }
   if (estado.fase === "erro") {
     return (
-      <Moldura>
-        <p role="alert">Falhou ao carregar o catálogo: {estado.motivo}</p>
-        {/* T-43: publicado, quem lê isto é um visitante, não quem roda o
-            indexador. A instrução de gerar o índice só faz sentido no `next dev`. */}
-        {process.env.NODE_ENV === "development" ? (
-          <p>
-            Gere o índice com <code>lol-assets-indexer index</code>; ele é servido de{" "}
-            <code>{BASE_INDICE}</code>.
-          </p>
-        ) : (
-          <p>Recarregue a página. Se continuar, o site pode estar no meio de uma atualização.</p>
-        )}
-        <Botao tamanho="md" onClick={() => window.location.reload()}>
-          Recarregar
-        </Botao>
-      </Moldura>
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <h1 className="sr-only">{siteConfig.displayName}</h1>
+        <Estado
+          role="alert"
+          icone={CloudOff}
+          titulo="Não deu para carregar o catálogo"
+          detalhe={estado.motivo}
+          acao={<Botao onClick={() => window.location.reload()}>Recarregar</Botao>}
+          className="my-auto"
+        >
+          {/* T-43: publicado, quem lê isto é um visitante, não quem roda o
+              indexador. A instrução de gerar o índice só faz sentido no `next dev`. */}
+          {process.env.NODE_ENV === "development" ? (
+            <p>
+              Gere o índice com <code>lol-assets-indexer index</code>; ele é servido de{" "}
+              <code>{BASE_INDICE}</code>.
+            </p>
+          ) : (
+            <p>Recarregue a página. Se continuar, o site pode estar no meio de uma atualização.</p>
+          )}
+        </Estado>
+        <AvisosNoFim />
+      </main>
     );
   }
 
@@ -176,6 +187,8 @@ export default function HomePage() {
               assetsBaseUrl={BASE_ASSETS}
               onAbrir={(champion) => void abrirCampeao(champion)}
             />
+            {/* RF-21 no telefone: o fim da página é o fim da grade (T-49). */}
+            <AvisosNoFim />
           </div>
         ) : (
           /* RF-08: o outro caminho, para quem não tem nome para digitar.
@@ -190,8 +203,8 @@ export default function HomePage() {
       </div>
 
       <p className="flex-none border-t border-borda px-3.5 py-1.5 font-mono text-10 text-texto-suave">
-        patch {manifest.currentVersion} · {catalog.champions.length} campeões ·{" "}
-        {catalog.skins.length} skins
+        Patch {manifest.currentVersion} · {catalog.champions.length.toLocaleString("pt-BR")}{" "}
+        campeões · {catalog.skins.length.toLocaleString("pt-BR")} skins
       </p>
 
       {aberto && (
@@ -202,6 +215,7 @@ export default function HomePage() {
           skinInicial={aberto.skinNum}
           assetsBaseUrl={BASE_ASSETS}
           erro={erroDoPainel}
+          onTentarDeNovo={() => void abrirCampeao(aberto.champion, aberto.skinNum)}
           onClose={() => setAberto(null)}
         />
       )}
@@ -213,14 +227,5 @@ export default function HomePage() {
 function versaoAtual(manifest: IndexManifest): IndexManifest["versions"][number] {
   return (
     manifest.versions.find((v) => v.gameVersion === manifest.currentVersion) ?? manifest.versions[0]
-  );
-}
-
-function Moldura({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-3.5 text-center">
-      <h1 className="text-19 font-semibold tracking-titulo">{siteConfig.displayName}</h1>
-      {children}
-    </main>
   );
 }

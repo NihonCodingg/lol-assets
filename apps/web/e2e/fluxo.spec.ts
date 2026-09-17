@@ -208,7 +208,7 @@ test.describe("converter para PNG no cliente", () => {
     await page.click('button:has-text("Jax")');
     const botao = page
       .locator('article[aria-label="Jax_square.png"]')
-      .getByRole("button", { name: "já é PNG" });
+      .getByRole("button", { name: "Já é PNG" });
     await expect(botao).toBeDisabled();
   });
 });
@@ -330,11 +330,12 @@ test.describe("a origem cruzada", () => {
     expect(cartoes).toBeLessThan(100);
   });
 
-  test("os cartões da lista virtual não se sobrepõem", async ({ page }) => {
-    // O virtualizador posiciona por `top` absoluto. Com altura cravada e
-    // conteúdo mais alto, cada cartão invade o de baixo — foi assim que a
-    // categoria `emote` desenhou imagem por cima do texto seguinte. Agora ele
-    // **mede** cada linha, e este teste é o que garante que continue medindo.
+  test("os tiles da galeria virtual não se sobrepõem", async ({ page }) => {
+    // O virtualizador posiciona por `top` absoluto. Com a altura da linha menor
+    // que o conteúdo, cada tile invade o de baixo — foi assim que a categoria
+    // `emote` desenhou imagem por cima do texto seguinte. Desde o T-48 a galeria
+    // tem colunas, e a conferência é de retângulo contra retângulo: comparar só
+    // com o anterior acusaria o vizinho da mesma linha.
     await irParaHome(page);
     await page
       .getByRole("navigation", { name: "Categorias" })
@@ -342,13 +343,20 @@ test.describe("a origem cruzada", () => {
       .click();
     await expect(page.locator("[data-virtual='sim'] article").first()).toBeVisible();
 
-    const sobrepoe = await page.evaluate(() => {
+    const medidas = await page.evaluate(() => {
       const caixas = [...document.querySelectorAll("[data-virtual='sim'] article")].map((a) =>
         a.getBoundingClientRect(),
       );
-      return caixas.slice(1).some((caixa, i) => caixa.top < caixas[i].bottom - 1);
+      const cruzam = (a: DOMRect, b: DOMRect) =>
+        a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+      return {
+        sobrepoe: caixas.some((a, i) => caixas.slice(i + 1).some((b) => cruzam(a, b))),
+        colunas: new Set(caixas.map((c) => Math.round(c.left))).size,
+      };
     });
-    expect(sobrepoe, "um cartão está por cima do outro").toBe(false);
+    expect(medidas.sobrepoe, "um tile está por cima do outro").toBe(false);
+    // E é galeria de verdade: no computador, mais de uma coluna.
+    expect(medidas.colunas).toBeGreaterThan(1);
   });
 
   test("a grade de campeões some quando uma categoria abre (T-41)", async ({ page }) => {

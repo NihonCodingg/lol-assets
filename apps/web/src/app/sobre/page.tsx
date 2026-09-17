@@ -44,6 +44,31 @@ export default function SobrePage() {
         </p>
       </section>
 
+      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="Como usar">
+        <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">Como usar</h2>
+        {/* T-50: quem chega por um link de amigo não sabe que "mf" acha a Miss
+            Fortune, nem que o PNG é convertido no próprio navegador. */}
+        <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-texto-suave">
+          <li>
+            <strong>Busque</strong> pelo nome do campeão, por um apelido — <code>mf</code>,{" "}
+            <code>j4</code> — ou pelo nome da skin. A tecla <kbd>/</kbd> leva direto à busca.
+          </li>
+          <li>
+            <strong>Abra um campeão</strong> para ver a splash, escolher a skin pela imagem e
+            baixar cada arte.
+          </li>
+          <li>
+            <strong>Baixar original</strong> entrega o arquivo como a fonte o publica.{" "}
+            <strong>PNG</strong> converte a imagem no seu navegador, sem passar por servidor
+            nenhum.
+          </li>
+          <li>
+            <strong>Nas categorias</strong> — itens, runas, ícones, emotes — há filtros; marque
+            vários arquivos e baixe tudo num zip só.
+          </li>
+        </ul>
+      </section>
+
       <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="Não afiliação">
         <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">Não afiliação</h2>
         {/* RF-21 e RNF-10. Os mesmos dois textos do rodapé, aqui em destaque. */}

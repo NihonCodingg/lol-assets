@@ -120,7 +120,7 @@ test.describe("só com teclado", () => {
     });
 
     await page.click('button:has-text("Jax")');
-    await expect(page.getByText("carregando os assets…")).toBeVisible();
+    await expect(page.getByText("Carregando as artes…")).toBeVisible();
     await page.keyboard.press("Escape");
 
     await expect(page.getByRole("region", { name: "Painel de Jax" })).toBeHidden();
@@ -262,6 +262,11 @@ test.describe("axe", () => {
     // Grupos de filtro, caixas de seleção e a lista: é a tela com mais controles
     // do produto, e por isso a mais fácil de quebrar sem perceber.
     await expect(page.getByRole("group", { name: "Mapa" })).toBeVisible();
+    // T-48: com "Mais filtros" aberto e as ações de um tile à vista — o que fica
+    // escondido até alguém pedir também precisa passar.
+    await page.getByRole("button", { name: /^Mais filtros/ }).click();
+    await expect(page.getByRole("group", { name: "Classe" })).toBeVisible();
+    await page.locator("[data-virtual='sim'] article").first().hover();
 
     const violacoes = await violacoesGraves(page);
     expect(resumir(violacoes)).toBe("");
@@ -294,8 +299,10 @@ test.describe("tela estreita", () => {
   test("os dois avisos da Riot continuam inteiros (RF-21)", async ({ page }) => {
     await irParaHome(page);
     for (const qual of ["riot", "jibber-jabber"]) {
-      const aviso = page.locator(`[data-aviso='${qual}']`);
-      await expect(aviso).toBeVisible();
+      // Desde o T-49 há duas cópias: a da barra lateral, que o telefone esconde,
+      // e a do fim da página. Vale a que aparece.
+      const aviso = page.locator(`[data-aviso='${qual}']:visible`);
+      await expect(aviso).toHaveCount(1);
       // Sem corte: o texto renderizado tem que ser o texto todo.
       const cortado = await aviso.evaluate((el) => el.scrollHeight > el.clientHeight + 1);
       expect(cortado, `o aviso ${qual} foi cortado`).toBe(false);
@@ -328,9 +335,12 @@ test.describe("tela estreita", () => {
       const caixas = [...document.querySelectorAll("[data-virtual='sim'] article")].map((a) =>
         a.getBoundingClientRect(),
       );
+      // Retângulo contra retângulo: a galeria tem duas colunas no telefone (T-48).
+      const cruzam = (a: DOMRect, b: DOMRect) =>
+        a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
       return {
         transborda: doc.scrollWidth > doc.clientWidth + 1,
-        sobrepoe: caixas.slice(1).some((caixa, i) => caixa.top < caixas[i].bottom - 1),
+        sobrepoe: caixas.some((a, i) => caixas.slice(i + 1).some((b) => cruzam(a, b))),
       };
     });
     expect(medidas.transborda, "a categoria transbordou na horizontal").toBe(false);

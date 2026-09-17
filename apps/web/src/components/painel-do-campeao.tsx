@@ -30,9 +30,16 @@
  * As artes vêm em grade, agrupadas por família, e a prévia de cada uma amplia a
  * arte. A ampliação mora aqui, e não no cartão, pelo mesmo motivo do `Escape`:
  * é daqui que a tecla sai, na ordem ampliação → chromas → painel.
+ *
+ * ## No telefone (T-49)
+ *
+ * Tela cheia: os 92% de antes deixavam uma tira da home à esquerda, que não
+ * servia para nada e parecia clicável. O `×` fica parado no canto e a bandeja no
+ * pé, como no computador. Em tela de toque, todo botão do painel tem pelo menos
+ * 44 px, e a caixa do lote ganha área de toque em volta (ver `CaixaDeSelecao`).
  */
 
-import { X } from "lucide-react";
+import { CloudOff, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
@@ -43,6 +50,7 @@ import { PainelDeAsset } from "@/components/painel-de-asset";
 import { SeletorDeSkin } from "@/components/seletor-de-skin";
 import { Botao } from "@/components/ui/botao";
 import { BotaoIcone } from "@/components/ui/botao-icone";
+import { Estado } from "@/components/ui/estado";
 import { PainelLateral } from "@/components/ui/painel-lateral";
 import { VitrineDaSkin } from "@/components/vitrine-da-skin";
 import { assetUrl, thumbnailSrc } from "@/lib/asset-file";
@@ -57,6 +65,8 @@ export interface PainelDoCampeaoProps {
   readonly skinInicial?: number;
   readonly assetsBaseUrl?: string;
   readonly erro?: string | null;
+  /** Pede a fatia de novo, depois de um erro (T-50). Sem ele, não há o botão. */
+  readonly onTentarDeNovo?: () => void;
   readonly onClose: () => void;
 }
 
@@ -67,6 +77,7 @@ export function PainelDoCampeao({
   skinInicial,
   assetsBaseUrl,
   erro,
+  onTentarDeNovo,
   onClose,
 }: PainelDoCampeaoProps) {
   const doCampeao = useMemo(() => skinsOf(skins, champion), [skins, champion]);
@@ -144,12 +155,12 @@ export function PainelDoCampeao({
       fecharPorEsc={false}
       fecharPorFora={false}
       // 880 px: a splash é 16:9, e é ela que o painel mostra primeiro. Nos
-      // 540 px de antes ela ficava do tamanho de um cartão.
-      className="w-[min(880px,92vw)]"
+      // 540 px de antes ela ficava do tamanho de um cartão. No telefone, tudo.
+      className="w-full max-md:border-l-0 md:w-[min(880px,92vw)]"
     >
       <section
         aria-label={`Painel de ${champion.names.pt_BR}`}
-        className="relative flex min-h-0 flex-1 flex-col"
+        className="relative flex min-h-0 flex-1 flex-col pointer-coarse:[&_button]:min-h-controle-xl pointer-coarse:[&_button]:min-w-controle-xl"
       >
         {/* Um fechar só, parado no canto enquanto o resto rola. */}
         <BotaoIcone
@@ -190,12 +201,19 @@ export function PainelDoCampeao({
           )}
 
           {erro && (
-            <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
-              {erro}
-            </p>
+            <Estado
+              role="alert"
+              icone={CloudOff}
+              titulo={`Não deu para carregar as artes de ${champion.names.pt_BR}`}
+              detalhe={erro}
+              acao={onTentarDeNovo && <Botao onClick={onTentarDeNovo}>Tentar de novo</Botao>}
+              className="py-10"
+            >
+              O índice dos campeões não chegou. Confira a conexão e tente de novo.
+            </Estado>
           )}
           {!assets && !erro && (
-            <p className="px-3.5 py-3 text-13 text-texto-suave">carregando os assets…</p>
+            <p className="px-3.5 py-3 text-13 text-texto-suave">Carregando as artes…</p>
           )}
 
           {assets && (
@@ -207,7 +225,6 @@ export function PainelDoCampeao({
               selecao={selecao}
               onAlternar={alternarNoLote}
               fecharComEsc={false}
-              embutido
               grade
               onAmpliar={setAmpliado}
             />
@@ -235,7 +252,6 @@ export function PainelDoCampeao({
                   selecao={selecao}
                   onAlternar={alternarNoLote}
                   fecharComEsc={false}
-                  embutido
                   grade
                   onAmpliar={setAmpliado}
                 />

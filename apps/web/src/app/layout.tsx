@@ -35,8 +35,13 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${fonteInterface.variable} ${fonteMono.variable}`}>
       {/* Abaixo de `md` a barra lateral vira faixa no topo: 208px fixos num
           telefone de 375px deixariam 167px para a grade, que não é largura de
-          nada. Acima, as duas colunas do design. */}
-      <body className="grid h-screen grid-rows-[auto_1fr] overflow-hidden bg-fundo text-texto md:grid-cols-[var(--spacing-barra-lateral)_1fr] md:grid-rows-1">
+          nada. Acima, as duas colunas do design.
+
+          A coluna do telefone é `minmax(0, 1fr)`, e não a implícita: a
+          implícita cresce até caber o conteúdo, e a linha de categorias que
+          rola de lado (T-49) tem 668 px — a página inteira ficava com 668, e o
+          telefone a mostrava reduzida. */}
+      <body className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr] overflow-hidden bg-fundo text-texto md:grid-cols-[var(--spacing-barra-lateral)_minmax(0,1fr)] md:grid-rows-1">
         {/* O provedor envolve os dois porque a barra lateral tem os botões de
             categoria e a página tem o conteúdo — e layout não recebe prop de
             página. Ver `navegacao-context.tsx`. */}

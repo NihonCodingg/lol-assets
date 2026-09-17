@@ -2236,7 +2236,7 @@ limite de 500 linhas.
 
 ---
 
-### ⏳ T-44 — A faixa do topo no telefone
+### ✅ T-44 — A faixa do topo no telefone
 
 | | |
 |---|---|
@@ -2265,6 +2265,9 @@ limite de 500 linhas.
 2. Os dois avisos continuam em toda página, inteiros — o e2e de tela estreita segue passando.
 
 > **Decidido em 14/09/2026:** no celular, os avisos vão para o fim da página. Executado no **T-49**.
+>
+> **Fechado pelo T-49 em 16/09/2026:** a faixa tem 92 px em 390×844, e os dois avisos continuam
+> inteiros em toda página, no fim dela.
 
 ---
 
@@ -2392,7 +2395,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 1. ✅ A ficha continua à vista antes de qualquer clique (RF-09).
 2. ✅ A ampliação fecha no `Escape` sem fechar o painel.
 
-### ⏳ T-48 — Categorias em galeria
+### ✅ T-48 — Categorias em galeria
 
 | | |
 |---|---|
@@ -2400,18 +2403,36 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 | **Dependências** | T-45 |
 | **Cobre** | RF-08, RF-09, RF-17; ADR 0011 |
 
+> **Entregue em 16/09/2026.** Quatro decisões no caminho.
+> - **A altura do *tile* é uma por lista, não por breakpoint.** Sai da mediana dos arquivos da
+>   categoria: ícone de 64 px ganha prévia de 96, emote de 136, ward e mapa de 232. Continua sendo
+>   o que o [ADR 0011](adr/0011-base-de-componentes-do-front.md) pede — altura fixa, nada medido —,
+>   só que decidida pelo conteúdo, e não pela janela.
+> - **A classe de item sai em pt-BR**, com as palavras da loja do jogo, e `SpellBlock` e
+>   `MagicResist` viram uma opção só ("Resistência mágica"). Classe que a tabela não conhece
+>   continua crua. Isso reverte, por escrito, a regra do topo de `lib/categorias.ts`.
+> - **O "Mais filtros" abre embaixo da barra, e não por cima da galeria:** dá para marcar três
+>   classes sem ele fechar a cada clique. Vai para lá todo grupo com mais de seis opções.
+> - **A dica do copiar, nos *tiles*, é CSS.** Medido: o Radix Tooltip de cada *tile* custava
+>   ~2,5 ms por quadro de rolagem, e 5.042 ícones rolavam a 50 quadros por segundo. Com a dica leve
+>   e os *tiles* memorizados, voltaram aos 60.
+>
+> O `_fpo` sai na tela; tirá-lo do índice é trabalho do indexador, que fica para depois.
+
 **Entra**
-- A lista vira galeria de *tiles* virtualizada por linha, com altura fixa por breakpoint.
+- A lista vira galeria de *tiles* virtualizada por linha, com a mesma altura na lista inteira.
 - Filtros compactos: grupos pequenos em linha, "Classe" em "Mais filtros".
 - Rótulos de `classe:*` em pt-BR. **Revê a decisão de `lib/categorias.ts`** de mostrar o valor
   cru: `abilityhaste` e `nonbootsmovement` não são rótulo para gente, e o dono pediu "intuitivo".
 - O asset `_fpo` (marcação, não arte) sai da tela.
 
 **Critérios de aceite**
-1. As categorias de 5.042 e 2.338 itens rolam sem travar.
-2. "Selecionar os N filtrados" continua selecionando só o que o filtro mostra.
+1. ✅ As categorias de 5.042 e 2.357 itens rolam sem travar. Medido no build de produção, rolando
+   7.200 px/s: mediana de 16,7 ms por quadro nos ícones de perfil e 17,5 ms nos emotes, com no
+   máximo 66 *tiles* no DOM. A lista de antes dava 16,6 ms com 21 cartões.
+2. ✅ "Selecionar os N filtrados" continua selecionando só o que o filtro mostra — agora com teste.
 
-### ⏳ T-49 — Celular (fecha o T-44)
+### ✅ T-49 — Celular (fecha o T-44)
 
 | | |
 |---|---|
@@ -2419,41 +2440,96 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 | **Dependências** | T-46, T-47, T-48 |
 | **Cobre** | RF-21, RNF-11; fecha o **T-44** |
 
+> **Entregue em 16/09/2026.** Três decisões e dois defeitos no caminho.
+> - **A faixa do topo tem duas linhas:** a marca, e uma linha que rola de lado com as categorias
+>   e depois "Sobre" e "Código". É a mesma ordem do DOM e do computador; pôr as seções ao lado
+>   da marca exigiria reordenar só com CSS, e o foco do teclado andaria fora da ordem visual.
+> - **Os avisos da Riot são duas cópias no DOM**, e só uma aparece em cada largura: a da barra
+>   lateral no computador, a do fim da área que rola no telefone — depois da grade, da galeria,
+>   do vazio. A página Sobre já os tem em destaque; a 404 ganhou página própria para tê-los.
+> - **Alvo de toque de 44 px** vale para o painel do campeão inteiro em tela de toque
+>   (`pointer: coarse`), para a faixa do topo e para a barra da categoria no telefone. A caixa do
+>   lote continua com 17 px, e ganha uma área invisível de 45 px em volta.
+> - **Defeito: o telefone mostrava o site reduzido.** Duas causas com o mesmo sintoma, as duas só
+>   com o índice real, que tem mais categorias que a fixture: a coluna implícita do grid crescia até
+>   a largura da linha de categorias (668 px), e a caixa escondida de cada chip de função, em
+>   `position: absolute` sem ancestral posicionado, escapava da linha que rola. O e2e alarga as
+>   duas linhas e confere que a página continua com 390 px.
+> - **Defeito: `min-h-11` não é 44 px aqui.** A raiz tem 14 px, e a escala numérica do Tailwind
+>   anda em 3,5 px. Os 44 px usam o token `controle-xl`.
+
 **Entra**
 - Topo compacto; categorias numa linha rolável.
 - Os dois avisos no fim da página, em toda página; no computador continuam no pé da barra lateral.
 - Painel do campeão em tela cheia, com alvos de toque de 44 px.
 
 **Critérios de aceite**
-1. A faixa do topo ocupa menos de 200 px em 390×844.
-2. Os e2e de 375 px passam.
-3. Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando linhas em
-   375×720. Em 14/09 ela ficava sem nenhuma: o aviso tomava a última altura que sobrava para a
-   lista virtual. Achado quando a fixture do e2e passou de 72 horas (#54); vira um e2e com
-   índice velho.
+1. ✅ A faixa do topo ocupa menos de 200 px em 390×844: **92 px** (eram 274).
+2. ✅ Os e2e de 375 px passam — e há um arquivo novo, `e2e/celular.spec.ts`, em 390×844 com toque.
+3. ✅ Com o aviso de índice velho na tela, a lista de uma categoria continua mostrando *tiles* em
+   375×720: e2e com o relógio dez dias depois da fixture.
 
-### ⏳ T-50 — Acabamento
+### ✅ T-50 — Acabamento
 
 | | |
 |---|---|
 | **Objetivo** | Os estados que faltam e a última revisão |
 | **Dependências** | T-46 a T-49 |
-| **Cobre** | RNF-13 e a microcopy do produto |
+| **Cobre** | A microcopy do produto |
+
+> **Entregue em 16/09/2026.** Quatro decisões no caminho.
+> - **O RNF-13 não entrou.** Ele compararia o `sha256` só nas fontes de bytes estáveis, pela
+>   `isByteStable` que o T-52 traz (#60), e o #60 ainda espera o merge. Foi separado no T-50b —
+>   que o dono fechou sem executar no mesmo dia (ver abaixo).
+> - **Um desenho só para vazio, erro e página que não existe** (`Estado`): ícone, título em
+>   português, o que fazer, o detalhe técnico pequeno e a ação. Erro não é vermelho — o tema
+>   tem um acento só —, e o "Failed to fetch" cru virou detalhe, não título.
+> - **Vocabulário:** frase com maiúscula só no início ("Já é PNG", "Sim", "Texto: …"), erro
+>   começa com "Não deu para…", e "Copiar URL" virou "Copiar link" — a confirmação já dizia
+>   "Link copiado".
+> - **Na página Sobre, as categorias viram links para a home**, e o clique já abre a categoria.
+>   Na home continuam botões marcáveis.
+>
+> A rodada de inspeção passou por 13 estados em 1440×900 e 390×844 — com a fonte fora do ar, o
+> índice velho e a página que não existe. Um lote de correções, e a segunda rodada saiu limpa.
 
 **Entra**
 - Vazios que ensinam; erros que dizem o que fazer; aviso de índice velho no vocabulário novo.
-- RNF-13: sha256 divergente vira aviso, sem bloquear o download.
-  > **Nota do T-52 ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)):**
-  > comparar o `sha256` só quando `isByteStable(asset.source)`, de `@lol-assets/schema`. No
-  > cdragon, divergir é o normal da borda — o Cloudflare Polish recomprime —, e avisar seria
-  > alarme falso em quase todo emote, ward e chroma; ali o detector que sobra é formato e
-  > dimensão, lidos do começo do arquivo baixado. E o `bytes` do cdragon é o tamanho na fonte:
-  > o arquivo entregue pode ser até ~10× menor.
 - Microcopy em pt-BR revisada e a página Sobre.
 - Na página Sobre, os botões de categoria da barra — que aparecem depois de passar pela home —
   marcam a categoria e ficam na Sobre. Precisam levar para a home, já na categoria. Existe desde
   o T-41; achado no T-46.
 - Uma rodada de inspeção (1440×900 e 390×844), um lote de correções, no máximo mais uma rodada.
+
+**Critérios de aceite**
+1. ✅ Nenhum erro chega em inglês cru como título, e todo erro de carga tem "Tentar de novo" ou
+   "Recarregar".
+2. ✅ O vazio da categoria diz o que filtrou e tem "Limpar filtros".
+3. ✅ Da Sobre, clicar numa categoria leva para a home com ela aberta.
+
+### ⏸️ T-50b — RNF-13: `sha256` divergente vira aviso
+
+> **Fechado sem executar em 16/09/2026, por decisão do dono:** o aviso sai da Spec em vez de ser
+> construído. Ele só valeria para o ddragon — no cdragon a borda recomprime o PNG (ADR 0019, no
+> #60) —, e o ddragon só diverge nas horas entre um patch e a reindexação, que a própria
+> indexação fecha. O que o aviso mediria já é verificado pela conferência no navegador contra o
+> site no ar (`conferir:navegador`, T-43 e T-52). O RNF-13 foi emendado para dizer isso; o
+> ticket fica abaixo como estava, para o registro.
+
+| | |
+|---|---|
+| **Objetivo** | Quem baixa fica sabendo quando o arquivo não é o que o índice descreve |
+| **Dependências** | T-52 (#60, `isByteStable`), T-50 |
+| **Cobre** | RNF-13 |
+
+**Entra**
+- Depois de baixar, comparar o `sha256` com o do índice **só quando `isByteStable(asset.source)`**
+  — hoje, só o ddragon ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)).
+- Divergiu: aviso no próprio cartão, no vocabulário do T-50, **sem bloquear** o arquivo já salvo.
+
+**Critérios de aceite**
+1. `sha256` divergente numa fonte estável produz aviso visível e não bloqueia o download.
+2. No cdragon, não produz aviso.
 
 ---
 
@@ -2631,7 +2707,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | RNF-03 | T-10, T-08, T-24 |
 | RNF-04 | T-13, T-42 |
 | RNF-05 | T-02, T-10, T-11, ✅ T-36, ✅ T-37 |
-| RNF-13 | T-15 (aviso de divergência), T-09 (medição do sha256) |
+| RNF-13 | T-09 (medição do `sha256`), T-43 e T-52 (conferência no navegador contra o site no ar); o aviso na tela saiu da Spec em 16/09/2026 (⏸️ T-50b) |
 | RNF-06 | T-12, T-13, T-31, T-51 |
 | RNF-07 | T-08 |
 | RNF-08, RNF-09 | T-03 |
@@ -2652,4 +2728,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
-| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → ✅ T-50 (⏸️ T-50b) | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

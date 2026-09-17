@@ -86,7 +86,7 @@ describe("ficha honesta antes de qualquer download", () => {
   it("um asset que já é PNG não oferece conversão", () => {
     const square = DO_JAX.find((a) => a.format === "png")!;
     abrir([square]);
-    expect(screen.getByRole("button", { name: "já é PNG" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("button", { name: "Já é PNG" }).hasAttribute("disabled")).toBe(true);
   });
 });
 
@@ -117,7 +117,7 @@ describe("copiar URL", () => {
   it("copia a URL pública do asset", async () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     const { copiar } = abrir([square]);
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
 
     await waitFor(() => expect(copiar).toHaveBeenCalledTimes(1));
     const copiado = copiar.mock.calls[0][0] as string;
@@ -131,15 +131,26 @@ describe("copiar URL", () => {
     // esconderia do leitor de tela. A confirmação mora no cartão.
     const square = DO_JAX.find((a) => a.type === "square")!;
     abrir([square]);
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
 
     await waitFor(() =>
       expect(within(cartoes()[0]).getByRole("status").textContent).toBe("Link copiado"),
     );
-    // E o olho vê: a dica abre sozinha, mesmo o Radix fechando dica no clique.
-    expect(screen.getByRole("tooltip").textContent).toBe("Link copiado");
-    // O nome do botão não muda: quem procura "Copiar URL" continua achando.
-    expect(screen.getByRole("button", { name: "Copiar URL" })).toBeTruthy();
+    // E o olho vê: a dica abre sozinha. Na galeria ela é a dica leve, em CSS
+    // (T-48) — o Radix de cada tile pesava na rolagem —, e por isso não é
+    // `role="tooltip"`: quem ouve já ouviu o `status` acima.
+    const dica = cartoes()[0].querySelector("[data-dica]");
+    expect(dica?.getAttribute("data-dica")).toBe("aberta");
+    expect(dica?.textContent).toBe("Link copiado");
+    // O nome do botão não muda: quem procura "Copiar link" continua achando.
+    expect(screen.getByRole("button", { name: "Copiar link" })).toBeTruthy();
+  });
+
+  it("na grade do painel do campeão, a dica é a do Radix, e abre sozinha", async () => {
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    abrir([square], { grade: true });
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
+    await waitFor(() => expect(screen.getByRole("tooltip").textContent).toBe("Link copiado"));
   });
 
   it("sem área de transferência, diz que não deu — e nada quebra", async () => {
@@ -149,7 +160,7 @@ describe("copiar URL", () => {
       throw new Error("sem clipboard");
     });
     abrir([square], { copiar });
-    fireEvent.click(screen.getByRole("button", { name: "Copiar URL" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
 
     await waitFor(() =>
       expect(within(cartoes()[0]).getByRole("status").textContent).toBe(
@@ -217,10 +228,12 @@ describe("fechar", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it("o botão fechar fecha", () => {
-    const { onClose } = abrir();
-    fireEvent.click(screen.getByRole("button", { name: "fechar" }));
-    expect(onClose).toHaveBeenCalledTimes(1);
+  // Mudou no T-48: o painel não tem mais o próprio "fechar". Quem fecha é quem o
+  // contém — o × do painel do campeão, o "Voltar aos campeões" da categoria —, e
+  // dois botões fechando a mesma coisa eram um a mais para achar.
+  it("não tem botão de fechar: quem fecha é quem contém o painel (T-48)", () => {
+    abrir();
+    expect(screen.queryByRole("button", { name: /fechar/i })).toBeNull();
   });
 
   it("depois de fechado, o Esc não chama mais nada", () => {
@@ -228,5 +241,47 @@ describe("fechar", () => {
     cleanup();
     fireEvent.keyDown(window, { key: "Escape" });
     expect(onClose).not.toHaveBeenCalled();
+  });
+});
+
+// --- a galeria (T-48) ------------------------------------------------------------------------
+
+describe("a galeria das categorias", () => {
+  it("todo tile tem a mesma altura — é o que deixa virtualizar por linha", () => {
+    abrir();
+    const alturas = new Set(
+      screen.getAllByRole("listitem").map((item) => (item as HTMLElement).parentElement?.style.gridAutoRows),
+    );
+    expect(alturas.size).toBe(1);
+    expect([...alturas][0]).toMatch(/^\d+px$/);
+  });
+
+  it("a ficha inteira continua à vista, com a fonte (RF-09)", () => {
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    abrir([square]);
+    const ficha = within(cartoes()[0]).getByText(/·/);
+    expect(ficha.textContent).toContain(`${square.width}×${square.height}`);
+    expect(ficha.textContent).toContain(square.source);
+  });
+
+  it("os botões dizem pouco, e o nome acessível é o inteiro", () => {
+    const jpeg = DO_JAX.find((a) => a.format === "jpeg")!;
+    abrir([jpeg]);
+    const original = screen.getByRole("button", { name: "Baixar original" });
+    expect(original.textContent).toBe("Original");
+    expect(screen.getByRole("button", { name: "Baixar PNG" }).textContent).toBe("PNG");
+  });
+
+  it("com a ampliação, a prévia vira o botão dela", () => {
+    const onAmpliar = vi.fn();
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    abrir([square], { onAmpliar });
+    fireEvent.click(screen.getByRole("button", { name: `Ampliar ${square.fileName}` }));
+    expect(onAmpliar).toHaveBeenCalledWith(square);
+  });
+
+  it("as ações da lista vão ao lado do título", () => {
+    abrir(DO_JAX, { acoes: <button type="button">Selecionar os 3 filtrados</button> });
+    expect(screen.getByRole("button", { name: "Selecionar os 3 filtrados" })).toBeTruthy();
   });
 });
