@@ -6,7 +6,8 @@ amigos.
 > **Estado em 11/09/2026: no ar.** O projeto `biblioteca-de-assets` foi criado na Vercel (time
 > `nihon2`), ligado ao repositório, com Root Directory `apps/web`, e o domínio de produção abre
 > sem login. Conferido contra a URL publicada: **26 de 26** por HTTP e **9 de 9** no navegador.
-> O que falta é o registro na Riot (D6), marcado com 🔑.
+> **Em 17/09/2026 o registro na Riot saiu** (D6): a Biblioteca de Assets está registrada no
+> Developer Portal como produto pessoal. O checklist não tem mais nenhum 🔑 pendente.
 
 ## Publicar — o que você faz, na ordem
 
@@ -116,7 +117,7 @@ se o nome mudar, os avisos acompanham. Dois testes seguram:
 - o nome não contém "Riot", "League of Legends" nem "LoL";
 - o nome não é mais o rótulo provisório "Catálogo de Assets".
 
-## D6 — Avisos legais ✅ e registro 🔑
+## D6 — Avisos legais ✅ e registro ✅
 
 ### Os textos
 
@@ -163,7 +164,12 @@ está em [`evidencias/politicas-da-riot-2026-09-10.md`](evidencias/politicas-da-
 **Quando conferir de novo:** se a Riot atualizar qualquer uma das duas páginas. A data de
 "atualizada em" da tabela acima é o que comparar.
 
-### O registro do produto 🔑
+### O registro do produto ✅
+
+> ✅ **Feito em 17/09/2026:** a Biblioteca de Assets está registrada no Developer Portal como
+> produto pessoal. O passo a passo abaixo fica para refazer, se um dia for preciso — e para o
+> caso de o site deixar de ser "eu e alguns amigos", que é quando o registro tem de virar
+> *Production*.
 
 A política geral exige que todo produto seja registrado — e auditado — pelo Developer Portal,
 mesmo sem usar a API. É conta sua; ninguém faz por você.
@@ -252,5 +258,6 @@ Três coisas, e todas são 🔑:
 
 1. **Se a Riot mudou as políticas.** O teste compara o site com a cópia de 10/09/2026; só uma
    pessoa relendo as duas páginas descobre que a cópia envelheceu.
-2. **Se o produto está registrado.** Não há API pública para verificar.
+2. **Se o produto está registrado.** Não há API pública para verificar. Registrado em
+   17/09/2026, pelo dono.
 3. **Se o endereço resolve.** Não há endereço até alguém criar o projeto na Vercel.

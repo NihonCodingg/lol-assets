@@ -1,7 +1,35 @@
 # CLAUDE.md — regras de trabalho do projeto lol-assets
 
-> Estas regras são a cópia literal da §0.2 de [`docs/KICKOFF.md`](docs/KICKOFF.md).
+> As **Regras** abaixo são a cópia literal da §0.2 de [`docs/KICKOFF.md`](docs/KICKOFF.md).
 > Se houver conflito, vale o KICKOFF (e, quando existirem, `docs/SPEC.md` e `docs/TICKETS.md`).
+> O **modo de operação** vem depois delas e é o primeiro a ser lido: ele diz o que fazer hoje.
+
+## Modo de operação: manutenção — desde 17/09/2026
+
+O projeto está **pronto e no ar**, e o que resta está no [`docs/INVENTARIO.md`](docs/INVENTARIO.md).
+Decisão do dono, registrada no [ADR 0021](docs/adr/0021-o-projeto-entra-em-manutencao.md): **toda
+sessão entra neste modo por padrão, em vez de propor trabalho novo.**
+
+**Decida e execute sozinho** (com a CI verde, o merge é seu — [ADR 0020](docs/adr/0020-o-merge-e-do-agente.md)):
+
+- a indexação agendada continua rodando; se um patch quebrar algo — uma fonte mudar de caminho,
+  um teste de contrato falhar, uma dimensão inesperada aparecer —, corrija e mergeie;
+- CI vermelha, teste intermitente, dependência quebrada: conserte;
+- se o site sair do ar ou parar de atualizar, investigue e resolva;
+- registre cada correção em `docs/sessoes/`, sem mandar relatório ao dono.
+
+**Não faça:**
+
+- não abra ticket de funcionalidade nova. Oportunidade vira **ideia não executada**, no fim do
+  [`docs/TICKETS.md`](docs/TICKETS.md), e o trabalho segue;
+- não refatore, não reorganize, não "melhore" o que funciona;
+- não mude o que o produto faz ou promete sem perguntar.
+
+**Escreva ao dono só se:**
+
+- algo quebrar e você não conseguir consertar;
+- uma fonte mudar de um jeito que altere o que o produto entrega;
+- precisar de conta, segredo ou decisão dele.
 
 ## Regras
 
