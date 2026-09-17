@@ -16,16 +16,29 @@
  * faria o botão selecionar metade. Chroma só entra se estiver revelado, pela
  * mesma razão do RF-06: seleção que arrasta 43 chromas escondidos é a surpresa
  * que o RF-06 existe para evitar.
+ *
+ * ## A vitrine (T-47)
+ *
+ * O painel abre na arte: a splash da skin escolhida no topo, grande, e as skins
+ * numa faixa de *tiles* logo abaixo — escolhe-se a skin pela imagem, não pelo
+ * nome. Tudo rola junto; só o fechar e a bandeja do lote ficam parados. E há um
+ * fechar só, o do canto: o "fechar" da lista de dentro saiu, porque fechava o
+ * mesmo painel por outro caminho.
  */
 
+import { X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
 import { BarraDeLote } from "@/components/barra-de-lote";
 import { PainelDeAsset } from "@/components/painel-de-asset";
+import { SeletorDeSkin } from "@/components/seletor-de-skin";
 import { Botao } from "@/components/ui/botao";
+import { BotaoIcone } from "@/components/ui/botao-icone";
 import { PainelLateral } from "@/components/ui/painel-lateral";
+import { VitrineDaSkin } from "@/components/vitrine-da-skin";
+import { assetUrl, thumbnailSrc } from "@/lib/asset-file";
 import { baseSkin, chromasOf, panelAssets, skinsOf } from "@/lib/champion-panel";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
 
@@ -92,6 +105,15 @@ export function PainelDoCampeao({
   const visiveis = useMemo(() => panelAssets(lista, skinNum), [lista, skinNum]);
   const chromas = useMemo(() => chromasOf(lista, skinNum), [lista, skinNum]);
   const skinAtual = doCampeao.find((skin) => skin.skinNum === skinNum);
+  const nomeDaSkin = skinAtual?.names.pt_BR ?? champion.names.pt_BR;
+  const contagem = `${doCampeao.length} ${doCampeao.length === 1 ? "skin" : "skins"}`;
+
+  // A splash centralizada da skin é a arte da vitrine. Sem a fatia, ela ainda
+  // não existe, e a vitrine fica com o tile do catálogo.
+  const splash = useMemo(() => {
+    const achada = lista.find((a) => a.type === "splash_centered" && a.skinNum === skinNum);
+    return achada && assetUrl(achada, assetsBaseUrl);
+  }, [lista, skinNum, assetsBaseUrl]);
 
   // O que o lote pode alcançar: o que está na tela agora. Chroma escondido não
   // está na tela e por isso não entra nem no "tudo", nem na conta.
@@ -111,102 +133,101 @@ export function PainelDoCampeao({
       // fora nunca fechou. Ver o comentário em `PainelLateral`.
       fecharPorEsc={false}
       fecharPorFora={false}
+      // 880 px: a splash é 16:9, e é ela que o painel mostra primeiro. Nos
+      // 540 px de antes ela ficava do tamanho de um cartão.
+      className="w-[min(880px,92vw)]"
     >
       <section
         aria-label={`Painel de ${champion.names.pt_BR}`}
-        className="flex min-h-0 flex-1 flex-col"
+        className="relative flex min-h-0 flex-1 flex-col"
       >
-        <div className="flex flex-none flex-col gap-2 border-b border-borda px-3.5 py-3.5">
-          <div className="flex items-start gap-2.5">
-            <div className="min-w-0 flex-1">
-              <div className="mb-0.75 font-mono text-10 uppercase tracking-rotulo text-acento">
-                Campeão · {doCampeao.length} {doCampeao.length === 1 ? "skin" : "skins"}
-              </div>
-              <h2 className="text-19 font-semibold leading-apertada tracking-titulo">
-                {champion.names.pt_BR}
-              </h2>
-            </div>
-            <Botao tamanho="sm" onClick={onClose} aria-label="Fechar" title="Fechar (Esc)">
-              ×
-            </Botao>
-          </div>
+        {/* Um fechar só, parado no canto enquanto o resto rola. */}
+        <BotaoIcone
+          rotulo="Fechar"
+          dica="Fechar (Esc)"
+          icone={<X aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 bg-superficie/80 text-texto hover:bg-superficie"
+        />
 
-          <label className="flex items-center gap-2 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
-            Skin
-            <select
-              value={skinNum}
-              onChange={(evento) => setSkinNum(Number(evento.target.value))}
-              aria-label="Selecionar skin"
-              className="h-controle-lg min-w-0 flex-1 rounded-padrao border border-borda-forte bg-campo px-2 font-interface text-13 normal-case tracking-normal text-texto"
-            >
-              {doCampeao.map((skin) => (
-                <option key={skin.skinId} value={skin.skinNum}>
-                  {skin.names.pt_BR}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <VitrineDaSkin
+            titulo={nomeDaSkin}
+            // ADR 0008: a skin em destaque, o campeão embaixo.
+            subtitulo={skinAtual?.isBase ? `Skin base · ${contagem}` : `${champion.names.pt_BR} · ${contagem}`}
+            splash={splash}
+            tile={skinAtual && thumbnailSrc(skinAtual, assetsBaseUrl)}
+          />
+
+          <SeletorDeSkin
+            nome={`skin-${champion.championKey}`}
+            skins={doCampeao}
+            valor={skinNum}
+            onEscolher={setSkinNum}
+            assetsBaseUrl={assetsBaseUrl}
+          />
 
           {/* RF-18: um clique pré-monta a seleção do campeão inteiro. */}
           {assets && alcancaveis.length > 0 && (
-            <Botao
-              tamanho="md"
-              className="self-start"
-              onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}
-            >
-              Tudo de {champion.names.pt_BR} ({alcancaveis.length})
-            </Botao>
+            <div className="flex items-center border-b border-borda px-3.5 pb-3">
+              <Botao
+                tamanho="md"
+                onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}
+              >
+                Tudo de {champion.names.pt_BR} ({alcancaveis.length})
+              </Botao>
+            </div>
           )}
-        </div>
 
-        {erro && (
-          <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
-            {erro}
-          </p>
-        )}
-        {!assets && !erro && (
-          <p className="px-3.5 py-3 text-13 text-texto-suave">carregando os assets…</p>
-        )}
+          {erro && (
+            <p role="alert" className="px-3.5 py-3 text-13 text-acento-mais-claro">
+              {erro}
+            </p>
+          )}
+          {!assets && !erro && (
+            <p className="px-3.5 py-3 text-13 text-texto-suave">carregando os assets…</p>
+          )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
-      {assets && (
-        <PainelDeAsset
-          titulo={skinAtual?.names.pt_BR ?? champion.names.pt_BR}
-          assets={visiveis}
-          assetsBaseUrl={assetsBaseUrl}
-          onClose={onClose}
-          selecao={selecao}
-          onAlternar={alternarNoLote}
-          fecharComEsc={false}
-        />
-      )}
-
-      {/* RF-06: chroma não aparece sozinho; só quando alguém pede o desta skin. */}
-      {assets && chromas.length > 0 && (
-        <section aria-label="Chromas" className="border-t border-borda">
-          <Botao
-            variante="fantasma"
-            tamanho="md"
-            className="m-3.5"
-            aria-expanded={chromasAbertos}
-            onClick={() => setChromasAbertos((aberto) => !aberto)}
-          >
-            {chromasAbertos ? "Esconder" : "Mostrar"} {chromas.length}{" "}
-            {chromas.length === 1 ? "chroma" : "chromas"}
-          </Botao>
-          {chromasAbertos && (
+          {assets && (
             <PainelDeAsset
-              titulo={`Chromas de ${skinAtual?.names.pt_BR ?? champion.names.pt_BR}`}
-              assets={chromas}
+              titulo={`Artes de ${nomeDaSkin}`}
+              assets={visiveis}
               assetsBaseUrl={assetsBaseUrl}
-              onClose={() => setChromasAbertos(false)}
+              onClose={onClose}
               selecao={selecao}
               onAlternar={alternarNoLote}
               fecharComEsc={false}
+              embutido
             />
           )}
-        </section>
-      )}
+
+          {/* RF-06: chroma não aparece sozinho; só quando alguém pede o desta skin. */}
+          {assets && chromas.length > 0 && (
+            <section aria-label="Chromas" className="border-t border-borda">
+              <Botao
+                variante="fantasma"
+                tamanho="md"
+                className="m-3.5"
+                aria-expanded={chromasAbertos}
+                onClick={() => setChromasAbertos((aberto) => !aberto)}
+              >
+                {chromasAbertos ? "Esconder" : "Mostrar"} {chromas.length}{" "}
+                {chromas.length === 1 ? "chroma" : "chromas"}
+              </Botao>
+              {chromasAbertos && (
+                <PainelDeAsset
+                  titulo={`Chromas de ${nomeDaSkin}`}
+                  assets={chromas}
+                  assetsBaseUrl={assetsBaseUrl}
+                  onClose={() => setChromasAbertos(false)}
+                  selecao={selecao}
+                  onAlternar={alternarNoLote}
+                  fecharComEsc={false}
+                  embutido
+                />
+              )}
+            </section>
+          )}
         </div>
 
         {/* A bandeja fica no pé do painel, fixa: com 40 assets selecionados, o

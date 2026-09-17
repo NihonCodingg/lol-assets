@@ -2345,23 +2345,43 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 2. ✅ A busca continua abaixo de 50 ms, e a home continua sem buscar fatia nenhuma: os dois e2e
    seguem verdes.
 
-### ⏳ T-47 — Painel do campeão: vitrine da skin
+### ✅ T-47 — Painel do campeão: a vitrine da skin
 
 | | |
 |---|---|
 | **Objetivo** | Ver a arte grande e escolher a skin pela imagem |
 | **Dependências** | T-45 |
-| **Cobre** | RF-06, RF-09 a RF-12, RF-14, RF-15, RF-18, RF-25; ADR 0001, ADR 0008 |
+| **Cobre** | RF-06, RF-14, RF-15, RF-18, RF-25; ADR 0008 |
+
+> **Dividido em dois em 15/09/2026**, como o plano já previa: inteiro, o ticket passava das
+> ~500 linhas da regra 5. Este leva a vitrine; as artes em grade vão para o **T-47b**.
 
 **Entra**
 - Topo com a splash da skin escolhida em 16:9; nome da skin em destaque, campeão como secundário.
 - Seletor visual de skins: *tiles* num `radiogroup` "Selecionar skin", com setas.
-- Artes agrupadas por tipo, prévia na proporção real, ampliação ao clicar, feedback de download.
-- Um fechar só; `Escape` na ordem ampliação → chromas → painel.
+- Um fechar só, o `×` do canto; o "fechar" das listas de dentro sai.
 
 **Critérios de aceite**
-1. J1 e J2 continuam em ≤ 3 cliques.
-2. Os testes do seletor de skin mudam de `<select>` para rádio, com a justificativa no PR.
+1. ✅ J1 e J2 continuam em ≤ 3 cliques.
+2. ✅ Os testes do seletor de skin mudam de `<select>` para rádio, com a justificativa no PR.
+
+### ⏳ T-47b — Painel do campeão: as artes em grade
+
+| | |
+|---|---|
+| **Objetivo** | Ver cada arte na proporção dela, e baixar sabendo o que aconteceu |
+| **Dependências** | T-47 |
+| **Cobre** | RF-09 a RF-12, RF-17; ADR 0001 |
+
+**Entra**
+- Artes agrupadas por tipo, em grade, com a prévia na proporção real.
+- Ampliação ao clicar na prévia; `Escape` na ordem ampliação → chromas → painel.
+- Feedback de download no cartão: "Baixando…" → "Baixado" → volta.
+- A bandeja do lote com as miniaturas do que foi selecionado.
+
+**Critérios de aceite**
+1. A ficha continua à vista antes de qualquer clique (RF-09).
+2. A ampliação fecha no `Escape` sem fechar o painel.
 
 ### ⏳ T-48 — Categorias em galeria
 
@@ -2623,4 +2643,4 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 5 | (T-27 ∥ T-28 ∥ T-31) → T-29 → T-30 | 3 frentes | Produto fechado e vestido |
 | 6 | T-32 | — | API opcional |
 | — | 🟡 T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**; o que resta do T-33 é o registro na Riot |
-| 7 | ✅ T-45 → T-46 → T-47 → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → T-47b → T-48 → T-49 → T-50 | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |

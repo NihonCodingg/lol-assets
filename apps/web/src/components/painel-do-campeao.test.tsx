@@ -6,11 +6,16 @@ import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 import { PainelDoCampeao } from "./painel-do-campeao";
 
 /**
- * T-19 e T-20 no nível do componente.
+ * T-19, T-20 e T-47 no nível do componente.
  *
  * O que pode quebrar em silêncio aqui: chroma aparecendo na lista de skins
  * (RF-06), e trocar de skin sem trocar os assets — os dois passam por qualquer
  * teste de renderização ingênuo.
+ *
+ * **T-47:** o seletor deixou de ser `<select>` e virou uma faixa de rádios com o
+ * *tile* de cada skin. O que os testes perguntam continua igual — que skins
+ * aparecem, qual está marcada, o que muda ao trocar —, só a pergunta é feita ao
+ * rádio: `value` do `<select>` virou o rádio marcado, e `change` virou clique.
  */
 
 afterEach(cleanup);
@@ -39,18 +44,21 @@ function asset(tipo: string, extra: Partial<Asset> = {}): Asset {
 const ASSETS: Asset[] = [
   asset("square"),
   // `fileName` com o número da skin, como a convenção do §6.2 da Spec manda —
-  // é ele que o painel usa como rótulo do cartão.
+  // é ele que o painel usa como rótulo do cartão. A `sourceUrl` também leva o
+  // número, para a vitrine poder ser conferida por ela.
   asset("splash_centered", {
     skinId: 24000,
     skinNum: 0,
     id: "splash_centered:24000",
     fileName: "Jax_000_splash_centered.jpg",
+    sourceUrl: "https://exemplo.invalido/Jax_000_splash_centered.jpg",
   }),
   asset("splash_centered", {
     skinId: 24007,
     skinNum: 7,
     id: "splash_centered:24007",
     fileName: "Jax_007_splash_centered.jpg",
+    sourceUrl: "https://exemplo.invalido/Jax_007_splash_centered.jpg",
   }),
   asset("chroma", {
     skinId: 24009,
@@ -63,7 +71,14 @@ const ASSETS: Asset[] = [
 ];
 
 const SKINS: CatalogSkin[] = [
-  { skinId: 24000, skinNum: 0, championKey: 24, names: { pt_BR: "Jax" }, isBase: true },
+  {
+    skinId: 24000,
+    skinNum: 0,
+    championKey: 24,
+    names: { pt_BR: "Jax" },
+    isBase: true,
+    thumbnailUrl: "https://exemplo.invalido/Jax_000_tile.jpg",
+  },
   {
     skinId: 24007,
     skinNum: 7,
@@ -71,6 +86,7 @@ const SKINS: CatalogSkin[] = [
     names: { pt_BR: "Nemesis Jax" },
     isBase: false,
     chromaCount: 2,
+    thumbnailUrl: "https://exemplo.invalido/Jax_007_tile.jpg",
   },
   { skinId: 99003, skinNum: 3, championKey: 99, names: { pt_BR: "Lux" }, isBase: false },
 ];
@@ -97,8 +113,18 @@ function abrir(props: Partial<Parameters<typeof PainelDoCampeao>[0]> = {}) {
   return { onClose };
 }
 
-function seletor(): HTMLSelectElement {
-  return screen.getByLabelText("Selecionar skin") as HTMLSelectElement;
+function seletor(): HTMLElement {
+  return screen.getByRole("radiogroup", { name: "Selecionar skin" });
+}
+
+/** O `skinNum` da skin marcada — o que o `<select>` chamava de `value`. */
+function skinMarcada(): string {
+  const radios = within(seletor()).getAllByRole("radio") as HTMLInputElement[];
+  return radios.find((radio) => radio.checked)?.value ?? "";
+}
+
+function escolher(nome: string) {
+  fireEvent.click(screen.getByRole("radio", { name: nome }));
 }
 
 function tiposVisiveis(): string[] {
@@ -106,13 +132,17 @@ function tiposVisiveis(): string[] {
   return painel.map((c) => c.dataset.tipo ?? "");
 }
 
-// --- o seletor de skin (T-19) --------------------------------------------------------
+function srcDaVitrine(camada: "splash" | "tile"): string | null {
+  return document.querySelector(`img[data-vitrine="${camada}"]`)?.getAttribute("src") ?? null;
+}
+
+// --- o seletor de skin (T-19, vestido no T-47) --------------------------------------
 
 describe("seletor de skin", () => {
   it("lista as skins do campeão, com a base primeiro", () => {
     abrir();
-    const opcoes = within(seletor()).getAllByRole("option");
-    expect(opcoes.map((o) => o.textContent)).toEqual(["Jax", "Nemesis Jax"]);
+    const radios = within(seletor()).getAllByRole("radio");
+    expect(radios.map((r) => r.closest("label")?.textContent)).toEqual(["Jax", "Nemesis Jax"]);
   });
 
   it("não lista skin de outro campeão", () => {
@@ -122,12 +152,12 @@ describe("seletor de skin", () => {
 
   it("abre na skin base quando ninguém pediu outra", () => {
     abrir();
-    expect(seletor().value).toBe("0");
+    expect(skinMarcada()).toBe("0");
   });
 
   it("abre na skin que a busca pediu", () => {
     abrir({ skinInicial: 7 });
-    expect(seletor().value).toBe("7");
+    expect(skinMarcada()).toBe("7");
     expect(screen.getByRole("heading", { name: "Nemesis Jax" })).toBeTruthy();
   });
 
@@ -135,18 +165,66 @@ describe("seletor de skin", () => {
     abrir();
     const idsNaBase = screen.getAllByRole("article").map((c) => c.getAttribute("aria-label"));
 
-    fireEvent.change(seletor(), { target: { value: "7" } });
+    escolher("Nemesis Jax");
     const idsNaOutra = screen.getAllByRole("article").map((c) => c.getAttribute("aria-label"));
 
-    expect(seletor().value).toBe("7");
+    expect(skinMarcada()).toBe("7");
     expect(idsNaOutra).not.toEqual(idsNaBase);
   });
 
   it("o asset do campeão sobrevive à troca de skin", () => {
     abrir();
     expect(tiposVisiveis()).toContain("square");
-    fireEvent.change(seletor(), { target: { value: "7" } });
+    escolher("Nemesis Jax");
     expect(tiposVisiveis()).toContain("square");
+  });
+
+  it("cada skin é um rádio do mesmo grupo — é o que faz as setas trocarem de skin", () => {
+    abrir();
+    const nomes = within(seletor())
+      .getAllByRole("radio")
+      .map((r) => (r as HTMLInputElement).name);
+    expect(new Set(nomes)).toEqual(new Set(["skin-24"]));
+  });
+});
+
+// --- a vitrine (T-47) ----------------------------------------------------------------------
+
+describe("vitrine", () => {
+  it("mostra a splash centralizada da skin escolhida", () => {
+    abrir();
+    expect(srcDaVitrine("splash")).toBe("https://exemplo.invalido/Jax_000_splash_centered.jpg");
+
+    escolher("Nemesis Jax");
+    expect(srcDaVitrine("splash")).toBe("https://exemplo.invalido/Jax_007_splash_centered.jpg");
+  });
+
+  it("antes de a fatia chegar, já mostra o tile da skin, que vem do catálogo", () => {
+    abrir({ assets: null, skinInicial: 7 });
+    expect(srcDaVitrine("tile")).toBe("https://exemplo.invalido/Jax_007_tile.jpg");
+    expect(srcDaVitrine("splash")).toBeNull();
+  });
+
+  it("a skin vem em destaque, e o campeão embaixo (ADR 0008)", () => {
+    abrir({ skinInicial: 7 });
+    expect(screen.getByRole("heading", { name: "Nemesis Jax" })).toBeTruthy();
+    expect(screen.getByText("Jax · 2 skins")).toBeTruthy();
+  });
+
+  it("na skin base, o subtítulo diz que é a base", () => {
+    abrir();
+    expect(screen.getByText("Skin base · 2 skins")).toBeTruthy();
+  });
+
+  it("há um fechar só, e ele fecha", () => {
+    const { onClose } = abrir({ skinInicial: 7 });
+    fireEvent.click(screen.getByRole("button", { name: /Mostrar 2 chromas/ }));
+
+    // Com a lista e os chromas abertos, que antes traziam um "fechar" cada.
+    const fechar = screen.getAllByRole("button", { name: /fechar/i });
+    expect(fechar).toHaveLength(1);
+    fireEvent.click(fechar[0]);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -188,7 +266,7 @@ describe("chromas", () => {
     fireEvent.click(screen.getByRole("button", { name: /Mostrar 2 chromas/ }));
     expect(screen.getAllByRole("article").some((c) => c.dataset.tipo === "chroma")).toBe(true);
 
-    fireEvent.change(seletor(), { target: { value: "0" } });
+    escolher("Jax");
     expect(screen.queryByRole("button", { name: /chroma/ })).toBeNull();
   });
 });

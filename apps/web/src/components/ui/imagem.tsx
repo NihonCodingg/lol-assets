@@ -85,6 +85,9 @@ export function Imagem({
           ref={imagem}
           src={src}
           alt={alt}
+          // `alt` vazio é decisão, não esquecimento: a imagem é decorativa, e
+          // `aria-hidden` diz isso com todas as letras (T-47).
+          aria-hidden={alt === "" ? true : undefined}
           loading={loading}
           decoding={decoding}
           onLoad={() => setEstado("pronta")}
