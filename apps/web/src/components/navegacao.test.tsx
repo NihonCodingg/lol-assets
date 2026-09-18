@@ -371,6 +371,28 @@ describe("densidade da grade (T-40)", () => {
     expect(lista().dataset.densidade).toBe("confortavel");
   });
 
+  /**
+   * T-55: o terceiro passo. O "denso" dava 7 colunas numa tela de 1440 e as
+   * mesmas 2 do confortável num telefone — o controle aparecia e não mudava
+   * nada lá.
+   */
+  it("a compacta é um terceiro passo, e também sobrevive a recarregar", () => {
+    const { unmount } = render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Grade compacta" }));
+    expect(lista().dataset.densidade).toBe("compacta");
+    expect(lista().className).toContain("--spacing-alvo-cartao-compacto");
+    unmount();
+
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    expect(lista().dataset.densidade).toBe("compacta");
+  });
+
+  it("valor estranho no localStorage volta para a densa", () => {
+    window.localStorage.setItem("biblioteca:densidade", "gigante");
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    expect(lista().dataset.densidade).toBe("densa");
+  });
+
   it("sem localStorage — o modo privado lança —, abre densa e nada quebra", () => {
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("SecurityError");

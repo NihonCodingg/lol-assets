@@ -33,6 +33,20 @@ test("alternar a densidade muda o número de colunas, e a escolha sobrevive a re
 });
 
 /**
+ * O terceiro passo (T-55). No telefone, "densa" e "confortável" davam as mesmas
+ * duas colunas: o controle aparecia e não mudava nada.
+ */
+test("no telefone, a compacta dá uma coluna a mais que a densa", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.getByRole("list", { name: "Campeões" })).toBeVisible();
+  const densa = await colunas(page);
+
+  await page.getByRole("button", { name: "Grade compacta" }).click();
+  expect(await colunas(page)).toBeGreaterThan(densa);
+});
+
+/**
  * A galeria das categorias (T-53).
  *
  * Antes, o tile de um ícone de 64 px tinha 176 px de largura porque era o que

@@ -182,8 +182,15 @@ apertados de cartão. `gap` da grade: **6px**. `padding` de seção: **14px**.
 | `busca-max` | 560px | campo de busca do cabeçalho |
 | `paleta-max` | `min(620px, 88%)` | caixa da paleta |
 | `painel` | `min(540px, 74%)` | painel do asset |
+| `alvo-cartao-compacto` | 112px | largura-alvo do cartão (modo compacto, T-55) |
 | `alvo-cartao-denso` | 152px | largura-alvo do cartão (modo denso) |
 | `alvo-cartao-confortavel` | 210px | largura-alvo do cartão (modo confortável) |
+
+> **`alvo-cartao-compacto` entrou no T-55**, e não estava no desenho da v2. O desenho
+> tinha dois passos de densidade; medido na produção, o "denso" dava 7 colunas e 28
+> campeões numa tela de 1440, e no telefone os dois passos davam as mesmas 2 colunas —
+> o controle aparecia e não mudava nada. 112px é a largura em que cabem 3 colunas em
+> 390px de tela e 11 numa de 1440, com a arte ainda reconhecível.
 
 ## Movimento
 

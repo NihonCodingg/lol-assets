@@ -2794,6 +2794,47 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-55 — A densidade que muda alguma coisa, e o telefone
+
+| | |
+|---|---|
+| **Objetivo** | Que o controle de densidade valha também no telefone, e que o topo pare de comer a tela |
+| **Dependências** | T-46, T-49, T-53 |
+| **Estimativa** | ~110 linhas |
+| **Effort** | baixo |
+| **Cobre** | §A.4 do KICKOFF (leve e rápido), T-40 (densidade), T-44 (a faixa do topo no telefone) |
+
+> Medido na produção em 17/09/2026: o passo "denso" dava 7 colunas e 28 campeões numa tela de
+> 1440, e no telefone **os dois passos davam as mesmas 2 colunas** — o controle aparecia e não
+> mudava nada. No telefone, ainda: a contagem e o controle ocupavam uma linha inteira de 44 px
+> antes do primeiro cartão, e dentro de uma categoria havia **dois campos de busca empilhados**.
+
+**Entra**
+- Um terceiro passo, **compacta**, com o token `alvo-cartao-compacto` (112 px) — no TOKENS.md
+  primeiro, com o porquê. Dá 3 colunas no telefone e 11 numa tela de 1440.
+- O controle com alvo de 44 px em tela de toque, e a contagem só a partir de `md`: no telefone o
+  controle divide a linha com as funções em vez de pedir uma linha própria.
+- No telefone, dentro de uma categoria, a busca global sai da tela — a categoria tem o campo dela,
+  e "Voltar aos campeões" traz a global de volta. No computador, os dois continuam.
+- Valor estranho no `localStorage` volta para a densa.
+
+**NÃO entra**
+- Tirar a busca global no computador: lá as duas cabem, e a global é o caminho do ADR 0010.
+- Mudar a densidade padrão: continua a densa.
+
+**Critérios de aceite**
+1. ✅ No telefone, a compacta dá mais colunas que a densa (e2e `densidade.spec.ts`).
+2. ✅ O controle tem alvo de 44 px em tela de toque (e2e `celular.spec.ts`).
+3. ✅ Dentro de uma categoria, no telefone, há um campo de busca só — e ele volta ao sair (e2e).
+4. ✅ A faixa do topo continua abaixo de 200 px, com as categorias numa linha só (e2e do T-49).
+
+**Testes que provam**
+- `navegacao.test.tsx`: a compacta é um terceiro passo e sobrevive a recarregar; valor estranho
+  volta para a densa.
+- `densidade.spec.ts` e `celular.spec.ts`: as colunas no telefone, o alvo de toque e o campo único.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

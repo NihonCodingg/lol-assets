@@ -109,6 +109,36 @@ test("o painel do campeão ocupa a tela toda, com alvos de toque de 44 px", asyn
 });
 
 /**
+ * O T-55: o terceiro passo de densidade, com alvo de toque de verdade — no
+ * telefone, "densa" e "confortável" davam as mesmas duas colunas.
+ */
+test("o controle de densidade é alvo de toque, e tem o terceiro passo", async ({ page }) => {
+  await irParaHome(page);
+  const compacta = page.getByRole("button", { name: "Grade compacta" });
+  await expect(compacta).toBeVisible();
+  const alvo = await compacta.boundingBox();
+  expect(Math.min(alvo!.width, alvo!.height)).toBeGreaterThanOrEqual(44);
+});
+
+/**
+ * O T-55. Dentro de uma categoria havia dois campos empilhados — a busca global
+ * ("Campeão ou skin") e o filtro da categoria ("Nome ou arquivo") —, 56 px do
+ * topo gastos sem dizer qual era qual. No telefone fica o da categoria; um toque
+ * em "Voltar aos campeões" traz a busca global de volta.
+ */
+test("dentro de uma categoria há um campo de busca só", async ({ page }) => {
+  await irParaHome(page);
+  await expect(page.getByRole("combobox")).toBeVisible();
+
+  await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+  await expect(page.getByLabel("Filtrar por texto")).toBeVisible();
+  await expect(page.getByRole("combobox")).toBeHidden();
+
+  await page.getByRole("button", { name: "Voltar aos campeões" }).click();
+  await expect(page.getByRole("combobox")).toBeVisible();
+});
+
+/**
  * O T-53. Sem *hover*, o T-48 deixava a faixa de ações sempre à vista: num tile
  * de ícone de 64 px, "Original", "PNG" e o copiar cobriam a arte inteira o tempo
  * todo. Agora o caminho do toque é tocar na arte e baixar da ampliação.
