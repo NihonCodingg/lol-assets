@@ -822,14 +822,18 @@ function CartaoDaGrade({
       </div>
 
       <div className="flex min-w-0 flex-col gap-0.5 px-3 pt-2.5">
-        <h4 title={rotulo} className="truncate text-13 font-medium text-texto-forte">
-          {rotulo}
-        </h4>
-        <p className="truncate font-mono text-10 uppercase tracking-rotulo text-texto-suave">
-          {rotuloDoTipo(asset.type)}
-        </p>
+        {/* O tipo na mesma linha do nome (T-58): eram três linhas de texto por
+            cartão, e o painel do campeão mostrava uma fileira de cada vez. */}
+        <div className="flex min-w-0 items-baseline gap-2">
+          <h4 title={rotulo} className="truncate text-13 font-medium text-texto-forte">
+            {rotulo}
+          </h4>
+          <p className="flex-none truncate font-mono text-10 uppercase tracking-rotulo text-texto-suave">
+            {rotuloDoTipo(asset.type)}
+          </p>
+        </div>
         {/* RF-09: a ficha aparece antes de qualquer clique de download. */}
-        <p className="truncate font-mono text-11 text-texto-suave">{assetSummary(asset)}</p>
+        <p className="truncate font-mono text-10 text-texto-suave">{assetSummary(asset)}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2.5 pb-3">

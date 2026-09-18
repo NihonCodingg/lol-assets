@@ -34,7 +34,9 @@ export function VitrineDaSkin({ titulo, subtitulo, splash, tile }: VitrineDaSkin
   useEffect(() => setPronta(false), [splash]);
 
   return (
-    <div className="relative aspect-video max-h-[46vh] w-full overflow-hidden bg-campo">
+    // 46vh no telefone, onde a vitrine é a tela; 38 no computador, onde ela
+    // dividia o painel com as artes e não sobrava fileira nenhuma (T-58).
+    <div className="relative aspect-video max-h-[46vh] w-full overflow-hidden bg-campo md:max-h-[38vh]">
       {tile && (
         // eslint-disable-next-line @next/next/no-img-element -- a URL é de terceiro e não há proxy (ADR 0012)
         <img

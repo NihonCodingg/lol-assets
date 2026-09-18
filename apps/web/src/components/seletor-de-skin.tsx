@@ -56,7 +56,7 @@ export function SeletorDeSkin({ nome, skins, valor, onEscolher, assetsBaseUrl }:
           <label
             key={skin.skinId}
             data-skin={skin.skinNum}
-            className="group flex w-18 flex-none cursor-pointer flex-col gap-1.5"
+            className="group flex w-[72px] flex-none cursor-pointer flex-col gap-1.5"
           >
             <input
               type="radio"
@@ -70,7 +70,7 @@ export function SeletorDeSkin({ nome, skins, valor, onEscolher, assetsBaseUrl }:
                 foco precisa aparecer em algum lugar. */}
             <div
               className={cn(
-                "size-18 overflow-hidden rounded-medio border-2 transition-colors duration-150 ease-saida",
+                "size-[72px] overflow-hidden rounded-medio border-2 transition-colors duration-150 ease-saida",
                 "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento",
                 marcada ? "border-acento" : "border-transparent group-hover:border-borda-fraca",
               )}
@@ -81,9 +81,13 @@ export function SeletorDeSkin({ nome, skins, valor, onEscolher, assetsBaseUrl }:
                 <div aria-hidden="true" className="size-full bg-campo" />
               )}
             </div>
+            {/* Numa linha, com o nome inteiro no `title`: em duas, a faixa ficava
+                serrilhada — umas com uma linha, outras com duas — e crescia 14 px
+                por causa do nome mais comprido (T-58). */}
             <span
+              title={skin.names.pt_BR}
               className={cn(
-                "line-clamp-2 text-10 leading-cartao",
+                "truncate text-10 leading-cartao",
                 marcada ? "font-medium text-texto" : "text-texto-suave group-hover:text-texto-medio",
               )}
             >
