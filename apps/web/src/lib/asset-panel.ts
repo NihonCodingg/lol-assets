@@ -301,3 +301,61 @@ export function medidasNaColuna(
 export function larguraDaColuna(largura: number, colunas: number): number {
   return Math.floor((largura - (colunas - 1) * VAO_DA_GALERIA) / colunas);
 }
+
+// --- nomes que se repetem na mesma lista (T-56) ------------------------------------------
+
+/**
+ * O sufixo do arquivo que explica a variante, quando existe um conhecido.
+ *
+ * As wards são o caso grande: 532 arquivos, **todos** em pares — a arte e a
+ * sombra dela, com o mesmo nome. Na tela, metade dos tiles parecia vazia e
+ * repetida. Os feitiços têm o par Jade, do modo Arena.
+ */
+const VARIANTES: ReadonlyArray<readonly [RegExp, string]> = [
+  [/-shadow$/i, "sombra"],
+  [/_jade$/i, "Jade"],
+];
+
+function variante(fileName: string): string | undefined {
+  const semExtensao = fileName.replace(/\.[^.]+$/, "");
+  for (const [padrao, rotulo] of VARIANTES) {
+    if (padrao.test(semExtensao)) return rotulo;
+  }
+  return undefined;
+}
+
+/**
+ * Os rótulos de uma lista, com o que **diferencia** os nomes que se repetem.
+ *
+ * Medido no índice do patch 16.18.1: 532 wards em 266 pares de nome igual, 532
+ * itens em 213 nomes repetidos (o `1004` do Rift e o `771004` do ARAM), 23
+ * feitiços e 30 emotes. Dois tiles com o mesmo nome e artes diferentes é o
+ * produto parecendo quebrado sem estar.
+ *
+ * Só quem repete ganha sufixo — acrescentar "· 1004" em tudo seria ruído em
+ * 26.781 assets que não precisam. O sufixo é a variante conhecida (sombra,
+ * Jade) ou, na falta dela, o `refId`, que é o número que aparece no nome do
+ * arquivo que a pessoa vai salvar.
+ */
+export function rotulosDaLista(
+  assets: readonly Pick<Asset, "id" | "type" | "refId" | "fileName" | "names">[],
+): ReadonlyMap<string, string> {
+  // Por tipo, e não pelo nome solto: no painel do campeão **todos** os assets se
+  // chamam "Jax", e quem os separa é o tipo — "Splash", "Tile quadrado", "Ícone
+  // do campeão". Marcar os dez seria ruído. Os pares que confundem de verdade
+  // são os do mesmo tipo: duas wards, dois itens, dois emotes.
+  const chaveDe = (asset: Pick<Asset, "type" | "names">) => `${asset.type}::${asset.names.pt_BR}`;
+  const quantos = new Map<string, number>();
+  for (const asset of assets) {
+    quantos.set(chaveDe(asset), (quantos.get(chaveDe(asset)) ?? 0) + 1);
+  }
+  const rotulos = new Map<string, string>();
+  for (const asset of assets) {
+    const nome = asset.names.pt_BR;
+    if ((quantos.get(chaveDe(asset)) ?? 0) < 2) continue;
+    const sufixo =
+      variante(asset.fileName) ?? asset.refId ?? asset.fileName.replace(/\.[^.]+$/, "");
+    rotulos.set(asset.id, `${nome} · ${sufixo}`);
+  }
+  return rotulos;
+}

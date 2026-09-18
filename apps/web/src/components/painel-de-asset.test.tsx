@@ -293,6 +293,28 @@ describe("a galeria das categorias", () => {
     expect(png.querySelector("svg")).toBeTruthy();
   });
 
+  /**
+   * T-56: no índice do patch, **todas** as 532 wards vêm em pares de nome igual
+   * — a arte e a sombra dela. Dois tiles com o mesmo nome e artes diferentes é o
+   * produto parecendo quebrado sem estar.
+   */
+  it("nome repetido na lista ganha o que o diferencia", () => {
+    const base = DO_JAX.find((a) => a.type === "square")!;
+    const arte: Asset = { ...base, id: "ward:0", fileName: "Ward_0.png", refId: "0", names: { pt_BR: "Default Ward" } };
+    const sombra: Asset = { ...arte, id: "ward:0s", fileName: "Ward_0-shadow.png" };
+    abrir([arte, sombra]);
+
+    const nomes = cartoes().map((c) => c.querySelector("h3")?.textContent);
+    expect(nomes).toContain("Default Ward · 0");
+    expect(nomes).toContain("Default Ward · sombra");
+  });
+
+  it("nome que não repete continua como está", () => {
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    abrir([square]);
+    expect(cartoes()[0].querySelector("h3")?.textContent).toBe(square.names.pt_BR);
+  });
+
   it("com a ampliação, a prévia vira o botão dela", () => {
     const onAmpliar = vi.fn();
     const square = DO_JAX.find((a) => a.type === "square")!;

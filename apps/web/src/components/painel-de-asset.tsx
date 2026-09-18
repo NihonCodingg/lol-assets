@@ -68,6 +68,7 @@ import {
   medidasNaColuna,
   orderAssets,
   rotuloDoTipo,
+  rotulosDaLista,
   VAO_DA_GALERIA,
   type MedidasDaGaleria,
 } from "@/lib/asset-panel";
@@ -158,6 +159,7 @@ export function PainelDeAsset({
   fim,
 }: PainelDeAssetProps) {
   const ordenados = useMemo(() => orderAssets(assets), [assets]);
+  const rotulos = useMemo(() => rotulosDaLista(ordenados), [ordenados]);
   const grupos = useMemo(() => (grade ? agruparPorFamilia(ordenados) : []), [grade, ordenados]);
   const [estados, setEstados] = useState<Record<string, EstadoDoCartao>>({});
 
@@ -176,6 +178,7 @@ export function PainelDeAsset({
 
   const doCartao = (asset: Asset) => ({
     asset,
+    rotulo: rotulos.get(asset.id) ?? asset.names.pt_BR,
     url: assetUrl(asset, assetsBaseUrl),
     estado: estados[asset.id] ?? "pronto",
     marcar,
@@ -361,6 +364,12 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
 
 interface CartaoProps {
   readonly asset: Asset;
+  /**
+   * O nome na tela. É o do asset, com o que o diferencia quando dois compartilham
+   * o mesmo nome na lista (T-56) — a ward e a sombra dela, o item do Rift e o do
+   * ARAM.
+   */
+  readonly rotulo: string;
   readonly url: string;
   readonly estado: EstadoDoCartao;
   readonly marcar: (id: string, estado: EstadoDoCartao) => void;
@@ -652,6 +661,7 @@ const SO_COM_PONTEIRO =
  */
 const TileDaGaleria = memo(function TileDaGaleria({
   asset,
+  rotulo,
   url,
   estado,
   marcar,
@@ -745,8 +755,8 @@ const TileDaGaleria = memo(function TileDaGaleria({
       </div>
 
       <div className="flex min-w-0 flex-col justify-center px-2 py-1.5">
-        <h3 title={asset.names.pt_BR} className="truncate text-12 leading-4 font-medium text-texto-forte">
-          {asset.names.pt_BR}
+        <h3 title={rotulo} className="truncate text-12 leading-4 font-medium text-texto-forte">
+          {rotulo}
         </h3>
       </div>
 
@@ -764,6 +774,7 @@ const ALTURA_MAXIMA_DA_PREVIA = 256;
 
 function CartaoDaGrade({
   asset,
+  rotulo,
   url,
   estado,
   marcar,
@@ -811,7 +822,9 @@ function CartaoDaGrade({
       </div>
 
       <div className="flex min-w-0 flex-col gap-0.5 px-3 pt-2.5">
-        <h4 className="truncate text-13 font-medium text-texto-forte">{asset.names.pt_BR}</h4>
+        <h4 title={rotulo} className="truncate text-13 font-medium text-texto-forte">
+          {rotulo}
+        </h4>
         <p className="truncate font-mono text-10 uppercase tracking-rotulo text-texto-suave">
           {rotuloDoTipo(asset.type)}
         </p>
