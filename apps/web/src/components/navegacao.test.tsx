@@ -103,6 +103,28 @@ describe("resultados de busca de skin", () => {
     const scroller = buscar("Campeão 42");
     expect(scroller.dataset.virtual).toBe("false");
   });
+
+  /**
+   * T-54: a busca escolhe skin ([ADR 0010]), e o que identifica uma skin é a
+   * arte. A prévia mostra o item em destaque — o mesmo que as setas movem — em
+   * tamanho grande, com a arte que o catálogo já traz (RNF-03: a home não busca
+   * fatia de asset).
+   */
+  it("a prévia mostra o resultado em destaque, com arte e nome", () => {
+    buscar("Campeão 42");
+    const previa = document.querySelector("[data-previa-da-busca]") as HTMLElement;
+    expect(previa).toBeTruthy();
+    expect(previa.textContent).toContain("Campeão 42");
+    // A arte é a do catálogo; no fixture, sem `thumbnailUrl`, sobra a caixa —
+    // que é justamente o que não pode faltar, para a prévia não pular de
+    // tamanho quando a imagem chega.
+    expect(previa.querySelector("img, [aria-hidden='true']")).toBeTruthy();
+  });
+
+  it("sem consulta não há prévia — ela não é um cartão parado na tela", () => {
+    render(<PaletaDeBusca catalog={CATALOGO} onChampion={vi.fn()} onSkin={vi.fn()} />);
+    expect(document.querySelector("[data-previa-da-busca]")).toBeNull();
+  });
 });
 
 // --- os quatro caminhos do ADR 0010 (critério 6) --------------------------------------------
