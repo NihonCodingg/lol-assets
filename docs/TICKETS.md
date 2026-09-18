@@ -2753,6 +2753,47 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-54 — A busca mostra a arte
+
+| | |
+|---|---|
+| **Objetivo** | Que escolher uma skin na busca seja reconhecer a arte, não ler nomes parecidos |
+| **Dependências** | T-46, T-53 |
+| **Estimativa** | ~120 linhas |
+| **Effort** | médio |
+| **Cobre** | §A.4 do KICKOFF (a busca é a home), [ADR 0010](adr/0010-navegacao-por-campeao-busca-por-skin.md) (buscar é no nível da skin), RNF-01 (< 50 ms) e RNF-03 (a home não busca fatia) |
+
+> Medido na produção em 17/09/2026: buscar "K/DA" devolvia 21 resultados em linhas de 548×52 com
+> miniatura de **32×32** — a superfície que a §A.4 chama de porta da frente era a menos visual do
+> produto, e duas skins do mesmo campeão viravam duas linhas de texto quase iguais.
+
+**Entra**
+- Linha de 72 px com arte de 56 px, nome em 14 e o que ele é em 12.
+- A prévia do item em destaque ao lado da lista, a partir de `sm`: a mesma seta que anda na lista
+  troca a arte grande. No telefone ela não aparece — lá a lista é a tela.
+- O `Command` do cmdk passa a ser controlado no valor em destaque, comparando sem diferenciar
+  caixa: o cmdk normaliza o valor do item, e sem isso a prévia ficava parada no primeiro.
+
+**NÃO entra**
+- Ligar o filtro embutido do cmdk: continua desligado, pelo [ADR 0011](adr/0011-virtualizacao-so-onde-se-paga.md).
+- Buscar a splash para a prévia: seria fatia de asset na home, contra o RNF-03. A prévia usa o
+  *tile* do catálogo.
+- Grade de resultados: a lista linear é o que as setas do cmdk navegam, e o orçamento de cliques
+  do RF-15 não muda.
+
+**Critérios de aceite**
+1. ✅ A prévia mostra o item em destaque desde o primeiro resultado, e a seta troca os dois juntos
+   (e2e `fluxo.spec.ts`).
+2. ✅ Num telefone a prévia não aparece (e2e).
+3. ✅ A busca continua respondendo em menos de 50 ms do keystroke ao render (RNF-01, e2e).
+4. ✅ A home continua sem buscar fatia de asset (RNF-03, e2e).
+
+**Testes que provam**
+- `navegacao.test.tsx`: a prévia traz o destaque com arte e nome; sem consulta não há prévia.
+- `fluxo.spec.ts`: a prévia acompanha a seta; some no telefone; os dois orçamentos continuam.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

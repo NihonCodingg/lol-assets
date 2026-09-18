@@ -213,6 +213,42 @@ test.describe("converter para PNG no cliente", () => {
   });
 });
 
+// --- a prévia da busca (T-54) ------------------------------------------------------------
+
+test.describe("a prévia do resultado em destaque", () => {
+  test("a prévia é o item em destaque, e a seta troca os dois juntos", async ({ page }) => {
+    await irParaHome(page);
+    // "x" casa os dois campeões da fixture, Jax e Lux: com um resultado só, a
+    // seta não teria para onde ir.
+    await page.getByRole("combobox").fill("x");
+
+    const previa = page.locator("[data-previa-da-busca]");
+    const emDestaque = page.locator('[cmdk-item][data-selected="true"]');
+    await expect(previa).toBeVisible();
+    // Dois resultados no mínimo, senão a seta não teria para onde ir.
+    const quantos = Number(await page.locator("[data-resultados]").getAttribute("data-resultados"));
+    expect(quantos).toBeGreaterThan(1);
+
+    // O primeiro já vem em destaque: a prévia não espera uma tecla.
+    const primeiraLinha = (t: string) => t.split(String.fromCharCode(10))[0]!.trim();
+    const nomeDoPrimeiro = primeiraLinha(await emDestaque.innerText());
+    await expect(previa).toContainText(nomeDoPrimeiro);
+
+    await page.getByRole("combobox").press("ArrowDown");
+    const nomeDoSegundo = primeiraLinha(await emDestaque.innerText());
+    expect(nomeDoSegundo).not.toBe(nomeDoPrimeiro);
+    await expect(previa).toContainText(nomeDoSegundo);
+  });
+
+  test("num telefone a prévia sai do caminho — a lista é a tela", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await irParaHome(page);
+    await page.getByRole("combobox").fill("jax");
+    await expect(page.locator("[cmdk-item]").first()).toBeVisible();
+    await expect(page.locator("[data-previa-da-busca]")).toBeHidden();
+  });
+});
+
 // --- RNF-01 e RNF-02: os dois números do orçamento ---------------------------------------
 
 test.describe("velocidade", () => {

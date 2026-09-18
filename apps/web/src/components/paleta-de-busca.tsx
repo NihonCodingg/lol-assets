@@ -15,6 +15,15 @@
  * baixo. Cada linha mostra a arte — a da skin, ou a da skin base para campeão —,
  * porque quem edita vídeo reconhece a imagem antes de terminar de ler o nome.
  *
+ * ## A arte ao lado (T-54)
+ *
+ * Buscar escolhe **skin** ([ADR 0010]), e o que identifica uma skin é a arte.
+ * Com miniatura de 32 px, "K/DA" e "K/DA ALL OUT" eram duas linhas de texto
+ * quase iguais. A linha passou a 72 px com arte de 56, e o item em destaque
+ * — o que as setas movem — ganha uma prévia grande ao lado, onde há largura
+ * para ela. A arte é o *tile* que o catálogo já traz: a splash mora na fatia do
+ * campeão, e a home não busca fatia nenhuma (RNF-03).
+ *
  * Escolher um resultado fecha a lista e limpa o campo: quem acabou de abrir o
  * Jax volta do painel com o campo pronto para o próximo nome. `Escape` fecha a
  * lista, e um segundo `Escape` apaga o que foi digitado. Clicar fora fecha.
@@ -38,11 +47,11 @@ import { buildSearchIndex, hitId, search, type SearchHit } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
 /** Altura fixa por item — é o que a virtualização exige para medir. */
-export const ALTURA_DO_ITEM = 52;
+export const ALTURA_DO_ITEM = 72;
 /** Acima disto a lista vira virtual. Abaixo, o custo não se paga (ADR 0011). */
 export const LIMIAR_DE_VIRTUALIZACAO = 60;
 /** Quantas linhas aparecem antes de a lista rolar. */
-const LINHAS_A_VISTA = 8;
+const LINHAS_A_VISTA = 6;
 
 export interface PaletaDeBuscaProps {
   readonly catalog: Catalog;
@@ -60,6 +69,11 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
   );
   const [consulta, setConsulta] = useState("");
   const [aberta, setAberta] = useState(false);
+  /**
+   * O item em destaque, que o cmdk controla pelas setas. É o que a prévia
+   * mostra: a mesma tecla que anda na lista troca a arte grande ao lado.
+   */
+  const [emDestaque, setEmDestaque] = useState("");
   const raiz = useRef<HTMLDivElement>(null);
   const campo = useRef<HTMLInputElement>(null);
 
@@ -115,6 +129,17 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
     onSkin(hit.skin, indice.byKey.get(hit.skin.championKey));
   }
 
+  /**
+   * O cmdk normaliza o valor do item — corta espaço e baixa a caixa —, então o
+   * que volta no `onValueChange` não é o `hitId` escrito: a comparação ignora a
+   * caixa. Sem isto, a prévia ficava parada no primeiro resultado enquanto a
+   * seta andava na lista.
+   */
+  const destacado = useMemo(() => {
+    const alvo = emDestaque.trim().toLowerCase();
+    return resultados.find((hit) => hitId(hit).toLowerCase() === alvo) ?? resultados[0];
+  }, [resultados, emDestaque]);
+
   function arteDe(hit: SearchHit): string | undefined {
     if (hit.kind === "skin") return artePorSkin.get(hit.skin.skinId);
     return artePorSkin.get(hit.champion.baseSkinId) ?? thumbnailSrc(hit.champion, assetsBaseUrl);
@@ -124,6 +149,8 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
     <Command
       ref={raiz}
       shouldFilter={false}
+      value={emDestaque}
+      onValueChange={setEmDestaque}
       label="Buscar campeão ou skin"
       className="relative z-20 flex flex-none items-center border-b border-borda px-3.5 py-2"
     >
@@ -168,15 +195,19 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
         <div
           data-aberta={mostrar}
           className={cn(
-            "absolute inset-x-0 top-full mt-1.5 overflow-hidden rounded-medio border border-borda-forte bg-superficie-alta shadow-[var(--sombra-paleta)]",
+            "absolute top-full right-0 left-0 mt-1.5 overflow-hidden rounded-medio border border-borda-forte bg-superficie-alta shadow-[var(--sombra-paleta)]",
+            // Mais largo que o campo a partir de `sm`, para caber a prévia ao
+            // lado sem espremer a lista. No telefone, a largura do campo.
+            "sm:right-auto sm:w-[min(760px,92vw)]",
             !mostrar && "hidden",
           )}
         >
+          <div className="flex items-stretch">
           <div
             ref={scroller}
             data-virtual={virtual}
             data-resultados={resultados.length}
-            className="overflow-y-auto p-1.5"
+            className="min-w-0 flex-1 overflow-y-auto p-1.5"
             style={{ maxHeight: ALTURA_DO_ITEM * LINHAS_A_VISTA }}
           >
             <Command.List
@@ -222,6 +253,9 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
             </Command.List>
           </div>
 
+            <PreviaDoResultado hit={destacado} arte={destacado && arteDe(destacado)} />
+          </div>
+
           <div className="flex h-paleta-rodape items-center gap-3 border-t border-borda px-3 font-mono text-10 text-texto-suave">
             <span className="tabular-nums">
               {resultados.length} {resultados.length === 1 ? "resultado" : "resultados"}
@@ -246,6 +280,52 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
   );
 }
 
+/**
+ * A prévia do resultado em destaque (T-54).
+ *
+ * A busca é a porta da frente (§A.4) e escolhe **skin** ([ADR 0010]) — e o que
+ * identifica uma skin é a arte, não o nome. Numa miniatura de 32 px, "K/DA" e
+ * "K/DA ALL OUT" eram duas linhas de texto quase iguais; aqui a seta que anda na
+ * lista troca a arte grande ao lado, e a escolha vira reconhecimento.
+ *
+ * A arte é o mesmo *tile* da linha, que o catálogo já traz: a splash mora na
+ * fatia do campeão, e a home não busca fatia nenhuma (RNF-03).
+ *
+ * Some abaixo de `sm`: num telefone, a lista inteira é a tela.
+ */
+function PreviaDoResultado({ hit, arte }: { hit: SearchHit | undefined; arte: string | undefined }) {
+  if (!hit) return null;
+  const nome = hit.kind === "champion" ? hit.champion.names.pt_BR : hit.skin.names.pt_BR;
+  const detalhe =
+    hit.kind === "champion"
+      ? `${hit.champion.skinCount} ${hit.champion.skinCount === 1 ? "skin" : "skins"}`
+      : hit.championName;
+
+  return (
+    <div
+      data-previa-da-busca=""
+      className="hidden w-[248px] flex-none flex-col gap-2 border-l border-borda p-3 sm:flex"
+    >
+      {arte ? (
+        <Imagem
+          src={arte}
+          alt=""
+          classeDaCaixa="aspect-square w-full rounded-medio"
+          className="object-cover"
+        />
+      ) : (
+        <div aria-hidden="true" className="aspect-square w-full rounded-medio bg-campo" />
+      )}
+      {/* Sem repetir o que a linha já diz ao lado: aqui o nome é o título, e o
+          que sobra é de quem a skin é (RF-24) ou quantas o campeão tem. */}
+      <div className="min-w-0">
+        <p className="truncate text-14 font-medium text-texto-forte">{nome}</p>
+        <p className="truncate text-12 text-texto-suave">{detalhe}</p>
+      </div>
+    </div>
+  );
+}
+
 /** Uma linha: a arte, o nome, e o que ele é. */
 function Linha({ hit, arte }: { hit: SearchHit; arte: string | undefined }) {
   const nome = hit.kind === "champion" ? hit.champion.names.pt_BR : hit.skin.names.pt_BR;
@@ -263,15 +343,15 @@ function Linha({ hit, arte }: { hit: SearchHit; arte: string | undefined }) {
           src={arte}
           alt=""
           erroCompacto
-          classeDaCaixa="size-9 flex-none rounded-tecla"
+          classeDaCaixa="size-[56px] flex-none rounded-padrao"
           className="object-cover"
         />
       ) : (
-        <div aria-hidden="true" className="size-9 flex-none rounded-tecla bg-campo" />
+        <div aria-hidden="true" className="size-[56px] flex-none rounded-padrao bg-campo" />
       )}
       <div className="min-w-0 flex-1">
-        <div className="truncate text-13 font-medium text-texto-forte">{nome}</div>
-        <div className="truncate text-11 text-texto-suave">{detalhe}</div>
+        <div className="truncate text-14 font-medium text-texto-forte">{nome}</div>
+        <div className="truncate text-12 text-texto-suave">{detalhe}</div>
       </div>
     </>
   );
