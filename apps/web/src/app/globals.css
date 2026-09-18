@@ -95,6 +95,7 @@
   --spacing-barra-lateral: 208px;
   --spacing-busca-max: 560px;
   /* Largura-alvo do cartão: é ela que decide quantas colunas cabem. */
+  --spacing-alvo-cartao-compacto: 112px;
   --spacing-alvo-cartao-denso: 152px;
   --spacing-alvo-cartao-confortavel: 210px;
 

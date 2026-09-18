@@ -59,9 +59,17 @@ export interface PaletaDeBuscaProps {
   readonly onChampion: (champion: CatalogChampion) => void;
   /** Uma skin escolhida abre o painel do campeão dela, já naquela skin (T-19). */
   readonly onSkin: (skin: CatalogSkin, champion: CatalogChampion | undefined) => void;
+  /** Quem contém decide onde ela cabe — o telefone dentro de uma categoria não tem linha sobrando. */
+  readonly className?: string;
 }
 
-export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: PaletaDeBuscaProps) {
+export function PaletaDeBusca({
+  catalog,
+  assetsBaseUrl,
+  onChampion,
+  onSkin,
+  className,
+}: PaletaDeBuscaProps) {
   const indice = useMemo(() => buildSearchIndex(catalog), [catalog]);
   const artePorSkin = useMemo(
     () => new Map(catalog.skins.map((skin) => [skin.skinId, thumbnailSrc(skin, assetsBaseUrl)])),
@@ -152,7 +160,10 @@ export function PaletaDeBusca({ catalog, assetsBaseUrl, onChampion, onSkin }: Pa
       value={emDestaque}
       onValueChange={setEmDestaque}
       label="Buscar campeão ou skin"
-      className="relative z-20 flex flex-none items-center border-b border-borda px-3.5 py-2"
+      className={cn(
+        "relative z-20 flex flex-none items-center border-b border-borda px-3.5 py-2",
+        className,
+      )}
     >
       <div className="relative w-full max-w-busca-max">
         <Search

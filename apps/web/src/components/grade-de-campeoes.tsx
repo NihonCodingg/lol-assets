@@ -25,7 +25,7 @@
  * existe ou lança — modo privado —, a grade abre densa e nada quebra.
  */
 
-import { Grid2x2, Grid3x3 } from "lucide-react";
+import { Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { CatalogChampion, CatalogSkin } from "@lol-assets/schema";
@@ -37,15 +37,17 @@ import { thumbnailSrc } from "@/lib/asset-file";
 import { filtrarCampeoes, funcoesDe } from "@/lib/categorias";
 import { cn } from "@/lib/utils";
 
-export type Densidade = "densa" | "confortavel";
+export type Densidade = "compacta" | "densa" | "confortavel";
+
+/** O que o `localStorage` pode trazer; qualquer outra coisa vira a densa. */
+const DENSIDADES: readonly Densidade[] = ["compacta", "densa", "confortavel"];
 
 export const CHAVE_DA_DENSIDADE = "biblioteca:densidade";
 
 export function lerDensidade(): Densidade {
   try {
-    return window.localStorage.getItem(CHAVE_DA_DENSIDADE) === "confortavel"
-      ? "confortavel"
-      : "densa";
+    const guardada = window.localStorage.getItem(CHAVE_DA_DENSIDADE) as Densidade | null;
+    return guardada && DENSIDADES.includes(guardada) ? guardada : "densa";
   } catch {
     return "densa";
   }
@@ -61,6 +63,8 @@ function gravarDensidade(densidade: Densidade): void {
 
 /** Largura-alvo, não número de colunas: quem decide quantas cabem é a janela. */
 const COLUNAS: Record<Densidade, string> = {
+  compacta:
+    "grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-compacto),1fr))] gap-x-2 gap-y-3",
   densa:
     "grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-denso),1fr))] gap-x-2.5 gap-y-4",
   confortavel:
@@ -114,7 +118,7 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
       <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10">
         <h2 className="sr-only">Campeões</h2>
         {funcoes.length > 0 && (
-          <fieldset className="flex min-w-0 flex-wrap items-center gap-1.5 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]">
+          <fieldset className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]">
             <legend className="float-left mr-1.5 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
               Função
             </legend>
@@ -139,8 +143,10 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
           </fieldset>
         )}
 
-        <div className="ml-auto flex items-center gap-2.5">
-          <span className="font-mono text-11 tabular-nums text-texto-suave">
+        {/* No telefone, a contagem sai e o controle fica na mesma linha das
+            funções: era uma linha inteira de 44 px antes do primeiro cartão. */}
+        <div className="ml-auto flex flex-none items-center gap-2.5">
+          <span className="hidden font-mono text-11 tabular-nums text-texto-suave md:inline">
             {visiveis.length} de {champions.length} campeões
           </span>
           <div
@@ -149,12 +155,20 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
             className="flex items-center gap-0.5 rounded-padrao border border-borda-forte p-0.5"
           >
             <BotaoIcone
+              rotulo="Grade compacta"
+              dica="Máximo de cartões"
+              aria-pressed={densidade === "compacta"}
+              icone={<LayoutGrid aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+              onClick={() => escolherDensidade("compacta")}
+              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-selecionado aria-pressed:text-texto"
+            />
+            <BotaoIcone
               rotulo="Grade densa"
               dica="Mais cartões por linha"
               aria-pressed={densidade === "densa"}
               icone={<Grid3x3 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
               onClick={() => escolherDensidade("densa")}
-              className="h-controle-sm w-controle-sm aria-pressed:bg-selecionado aria-pressed:text-texto"
+              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-selecionado aria-pressed:text-texto"
             />
             <BotaoIcone
               rotulo="Grade confortável"
@@ -162,7 +176,7 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
               aria-pressed={densidade === "confortavel"}
               icone={<Grid2x2 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
               onClick={() => escolherDensidade("confortavel")}
-              className="h-controle-sm w-controle-sm aria-pressed:bg-selecionado aria-pressed:text-texto"
+              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-selecionado aria-pressed:text-texto"
             />
           </div>
         </div>

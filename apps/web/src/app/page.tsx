@@ -30,6 +30,7 @@ import { Estado } from "@/components/ui/estado";
 import { AssetsClient } from "@/lib/assets-client";
 import { categoriasDisponiveis } from "@/lib/categorias";
 import { siteConfig } from "@/lib/site-config";
+import { cn } from "@/lib/utils";
 
 /** O índice é servido pelo próprio app, de `public/indice` (ADR 0012). */
 const BASE_INDICE = process.env.NEXT_PUBLIC_INDEX_BASE_URL ?? "/indice";
@@ -163,7 +164,12 @@ export default function HomePage() {
       {/* T-31: o único alarme que existe. Sem monitoramento, o site é o detector. */}
       <AvisoDeIndiceVelho manifest={manifest} />
 
+      {/* No telefone, dentro de uma categoria, a busca global sai da tela: a
+          categoria já tem o campo dela ("Nome ou arquivo"), e dois campos
+          empilhados comiam 56 px do topo sem dizer qual era qual. Um toque em
+          "Voltar aos campeões" a traz de volta. No computador, os dois cabem. */}
       <PaletaDeBusca
+        className={cn(aberta !== null && "max-md:hidden")}
         catalog={catalog}
         assetsBaseUrl={BASE_ASSETS}
         onChampion={(champion) => void abrirCampeao(champion)}
