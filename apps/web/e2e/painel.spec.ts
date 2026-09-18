@@ -62,3 +62,24 @@ test("a prévia amplia a arte, e o Escape fecha só a ampliação (T-47b)", asyn
   await expect(ampliacao).toBeHidden();
   await expect(painel).toBeVisible();
 });
+
+/**
+ * O T-58. Medido na produção em 1440×900: a vitrine ocupava 455 px dos 900 do
+ * painel, e sobravam **três** cartões à vista para dez artes — uma fileira.
+ */
+test("no computador, a vitrine divide o painel com as artes", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const painel = await abrirJax(page);
+
+  const vitrine = await painel.locator("div.aspect-video").first().boundingBox();
+  expect(vitrine!.height).toBeLessThanOrEqual(0.42 * 900);
+
+  // E o nome de cada skin na faixa cabe numa linha só, com o inteiro no title.
+  const nome = painel.getByRole("radio", { name: "Jax Deus da Guerra" });
+  await expect(nome).toBeAttached();
+  const linhas = await painel
+    .locator("[data-skin] span")
+    .first()
+    .evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
+  expect(linhas).toBe(1);
+});

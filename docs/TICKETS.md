@@ -2917,6 +2917,40 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-58 — O painel do campeão respira
+
+| | |
+|---|---|
+| **Objetivo** | Que o painel mostre arte e artes ao mesmo tempo, e que o cromo fale mais baixo |
+| **Dependências** | T-47, T-47b, T-53 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | baixo |
+| **Cobre** | §A.4 do KICKOFF (a arte na frente), [ADR 0008](adr/0008-catalogo-de-skins-e-seletor.md) (a skin em destaque) |
+
+> Medido na produção em 1440×900: a vitrine ocupava **455 px dos 900** do painel, e sobravam
+> **três cartões** à vista para dez artes — uma fileira. A faixa de skins tinha tiles de 59 px com
+> o nome em duas linhas, serrilhada, e cada cartão gastava três linhas de texto.
+
+**Entra**
+- A vitrine cede altura no computador (46vh → 38vh); no telefone fica como está, porque lá ela é
+  a tela.
+- Tiles de skin de 72 px, com o nome numa linha e o inteiro no `title`.
+- No cartão, o tipo sobe para a linha do nome, e a ficha passa a falar no mesmo tom do resto do
+  técnico (10 px, mono).
+
+**NÃO entra**
+- Mexer no telefone: lá a vitrine em tela cheia é o que o T-49 desenhou.
+
+**Critérios de aceite**
+1. ✅ Em 1440×900, a vitrine ocupa no máximo 42% da altura do painel.
+2. ✅ O nome da skin na faixa cabe numa linha.
+3. ✅ As setas continuam trocando de skin, e a vitrine acompanha (T-47).
+
+**Testes que provam**
+- `painel.spec.ts`: a altura da vitrine e a linha única do nome, com layout de verdade.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
