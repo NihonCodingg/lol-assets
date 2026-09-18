@@ -338,6 +338,58 @@ describe("a arte do cartão (T-46)", () => {
 // O jsdom não faz layout, então aqui se prova a largura-alvo e a memória. As
 // colunas, contadas de verdade, estão no e2e `densidade.spec.ts`.
 
+/**
+ * O teclado na grade (T-57).
+ *
+ * Eram 173 paradas de Tab, uma por cartão, depois de 20 do cromo. Agora a grade
+ * é **uma** parada, e dentro dela as setas andam. No jsdom não há layout, então
+ * `gridTemplateColumns` vem vazio e "uma linha" é uma coluna: ArrowDown anda um
+ * cartão. Quantas colunas o navegador resolve de verdade está no e2e.
+ */
+describe("o teclado na grade (T-57)", () => {
+  const cartoes = () => screen.getAllByRole("listitem").map((li) => li.querySelector("button")!);
+
+  it("a grade inteira é uma parada de Tab", () => {
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    const naVez = cartoes().filter((b) => b.tabIndex === 0);
+    expect(naVez).toHaveLength(1);
+    expect(naVez[0]).toBe(cartoes()[0]);
+  });
+
+  it("as setas andam, e o Home e o End vão às pontas", () => {
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    const lista = screen.getByRole("list", { name: "Campeões" });
+    cartoes()[0].focus();
+
+    fireEvent.keyDown(lista, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(cartoes()[1]);
+
+    fireEvent.keyDown(lista, { key: "ArrowLeft" });
+    expect(document.activeElement).toBe(cartoes()[0]);
+
+    fireEvent.keyDown(lista, { key: "End" });
+    expect(document.activeElement).toBe(cartoes()[CAMPEOES.length - 1]);
+
+    fireEvent.keyDown(lista, { key: "Home" });
+    expect(document.activeElement).toBe(cartoes()[0]);
+  });
+
+  it("a seta não cai fora da grade nas pontas", () => {
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    const lista = screen.getByRole("list", { name: "Campeões" });
+    cartoes()[0].focus();
+    fireEvent.keyDown(lista, { key: "ArrowLeft" });
+    expect(document.activeElement).toBe(cartoes()[0]);
+  });
+
+  it("clicar num cartão passa a vez do Tab para ele", () => {
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} />);
+    fireEvent.focus(cartoes()[5]);
+    expect(cartoes()[5].tabIndex).toBe(0);
+    expect(cartoes()[0].tabIndex).toBe(-1);
+  });
+});
+
 describe("densidade da grade (T-40)", () => {
   afterEach(() => {
     vi.restoreAllMocks();

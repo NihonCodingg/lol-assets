@@ -26,7 +26,7 @@
  */
 
 import { Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 
 import type { CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
@@ -101,6 +101,57 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
       if (!proximo.delete(tag)) proximo.add(tag);
       return proximo;
     });
+  }
+
+  /**
+   * Foco itinerante (T-57).
+   *
+   * Eram 173 cartões, cada um com o seu Tab: chegar ao último pedia 173 teclas,
+   * e antes deles ainda vinham 20 do cromo. Agora a grade inteira é **uma**
+   * parada de Tab, e dentro dela as setas andam como o olho anda — inclusive
+   * para cima e para baixo, que é o que uma grade tem e uma lista não.
+   *
+   * O índice é da lista visível: filtrar por função encurta a grade, e o foco
+   * volta para o começo em vez de apontar para um cartão que saiu.
+   */
+  const [comFoco, setComFoco] = useState(0);
+  const lista = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    setComFoco(0);
+  }, [marcadas]);
+
+  function focar(indice: number) {
+    const alvo = Math.max(0, Math.min(visiveis.length - 1, indice));
+    setComFoco(alvo);
+    const botao = lista.current?.querySelectorAll("li button")[alvo];
+    if (botao instanceof HTMLElement) botao.focus();
+  }
+
+  function aoTeclar(evento: ReactKeyboardEvent<HTMLUListElement>) {
+    // As colunas são do `auto-fill`: quem sabe quantas couberam é o navegador.
+    const colunas = lista.current
+      ? getComputedStyle(lista.current).gridTemplateColumns.split(" ").length
+      : 1;
+    const passos: Record<string, number> = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: colunas,
+      ArrowUp: -colunas,
+    };
+    const passo = passos[evento.key];
+    if (passo !== undefined) {
+      evento.preventDefault();
+      focar(comFoco + passo);
+      return;
+    }
+    if (evento.key === "Home") {
+      evento.preventDefault();
+      focar(0);
+    } else if (evento.key === "End") {
+      evento.preventDefault();
+      focar(visiveis.length - 1);
+    }
   }
 
   function escolherDensidade(proxima: Densidade) {
@@ -188,15 +239,22 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
         </p>
       ) : (
         <ul
+          ref={lista}
+          id="grade-de-campeoes"
           aria-label="Campeões"
           data-densidade={densidade}
+          onKeyDown={aoTeclar}
           className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
         >
-          {visiveis.map((champion) => (
+          {visiveis.map((champion, indice) => (
             <Cartao
               key={champion.championKey}
               champion={champion}
               arte={arteDe(champion)}
+              // Uma parada de Tab para a grade inteira: o resto se alcança pelas
+              // setas, e clicar num cartão passa a vez para ele.
+              tabIndex={indice === comFoco ? 0 : -1}
+              onFocar={() => setComFoco(indice)}
               onAbrir={onAbrir}
             />
           ))}
@@ -209,16 +267,22 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
 function Cartao({
   champion,
   arte,
+  tabIndex,
+  onFocar,
   onAbrir,
 }: {
   champion: CatalogChampion;
   arte: string | undefined;
+  tabIndex: number;
+  onFocar: () => void;
   onAbrir: (champion: CatalogChampion) => void;
 }) {
   return (
     <li>
       <button
         type="button"
+        tabIndex={tabIndex}
+        onFocus={onFocar}
         onClick={() => onAbrir(champion)}
         className="group block w-full cursor-pointer rounded-medio text-left"
       >

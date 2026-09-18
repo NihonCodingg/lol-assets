@@ -178,10 +178,22 @@ export default function HomePage() {
         onSkin={(skin, champion) => champion && void abrirCampeao(champion, skin.skinNum)}
       />
 
+      {/*
+        Pular o cromo (T-57). Da busca até o primeiro campeão eram 21 paradas de
+        Tab: a barra lateral inteira, as funções e a densidade. O atalho aparece
+        só quando recebe o foco, que é como todo mundo o faz.
+      */}
+      <a
+        href="#conteudo"
+        className="sr-only left-3.5 z-30 rounded-padrao border border-borda-forte bg-superficie px-3 py-2 text-12 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
+      >
+        Ir para o conteúdo
+      </a>
+
       {/* Uma grade por vez, como o design desenha (T-41). "Campeões" é a
           primeira categoria da barra lateral e é onde a home abre (RF-04);
           escolher outra troca o conteúdo em vez de empilhar. */}
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div id="conteudo" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
         {aberta === null ? (
           // A grade rola por dentro deste `div`. A categoria **não** pode rolar
           // aqui: ela tem scroller virtual próprio, e um pai que rola daria a

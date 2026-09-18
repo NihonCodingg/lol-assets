@@ -153,6 +153,57 @@ test.describe("só com teclado", () => {
     await expect(campo).toBeFocused();
     await expect(campo).toHaveValue("");
   });
+
+  /**
+   * T-57. Da busca até o primeiro campeão eram **21 paradas de Tab** — a barra
+   * lateral inteira, as funções e a densidade —, e depois 173, uma por cartão.
+   */
+  test("o atalho encurta o caminho da busca até a grade", async ({ page }) => {
+    await irParaHome(page);
+    await page.getByRole("combobox").focus();
+    await page.keyboard.press("Tab");
+
+    const atalho = page.getByRole("link", { name: "Ir para o conteúdo" });
+    await expect(atalho).toBeFocused();
+    await atalho.press("Enter");
+
+    // Do conteúdo até o primeiro campeão: eram 21 paradas de Tab desde a busca,
+    // a barra lateral inteira no meio. Agora o que sobra é o filtro da própria
+    // grade — as funções e a densidade.
+    const noPrimeiroCartao = () =>
+      page.evaluate(() => {
+        const grade = document.querySelector('[aria-label="Campeões"]');
+        return Boolean(grade && document.activeElement && grade.contains(document.activeElement));
+      });
+
+    let tabs = 0;
+    while (tabs < 12 && !(await noPrimeiroCartao())) {
+      await page.keyboard.press("Tab");
+      tabs += 1;
+    }
+    expect(await noPrimeiroCartao(), "o Tab não chegou à grade").toBe(true);
+    expect(tabs).toBeLessThanOrEqual(12);
+  });
+
+  test("as setas andam na grade, inclusive entre linhas", async ({ page }) => {
+    await irParaHome(page);
+    const cartoes = page.getByRole("list", { name: "Campeões" }).getByRole("button");
+    await cartoes.first().focus();
+
+    const nomeDoFoco = () =>
+      page.evaluate(() => (document.activeElement?.textContent ?? "").trim().slice(0, 24));
+    const primeiro = await nomeDoFoco();
+
+    await page.keyboard.press("ArrowRight");
+    expect(await nomeDoFoco()).not.toBe(primeiro);
+
+    await page.keyboard.press("ArrowLeft");
+    expect(await nomeDoFoco()).toBe(primeiro);
+
+    // A grade inteira é uma parada de Tab: só um cartão tem `tabindex="0"`.
+    const naVez = await cartoes.evaluateAll((botoes) => botoes.filter((b) => b.tabIndex === 0).length);
+    expect(naVez).toBe(1);
+  });
 });
 
 // --- critério 3: `alt` em toda imagem ---------------------------------------------------
