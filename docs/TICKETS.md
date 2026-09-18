@@ -2880,6 +2880,43 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-57 — O teclado na grade
+
+| | |
+|---|---|
+| **Objetivo** | Que dar para chegar a um campeão sem mouse não signifique 194 teclas |
+| **Dependências** | T-28, T-46 |
+| **Estimativa** | ~90 linhas |
+| **Effort** | baixo |
+| **Cobre** | RNF-11 (navegável por teclado), critério de teclado do T-28 |
+
+> Medido na produção em 17/09/2026: **193 focáveis na home**, **21 paradas de Tab** entre a busca
+> e o primeiro campeão — a barra lateral inteira, as funções e a densidade no meio — e, depois
+> disso, uma parada por cartão: 173. A seta não fazia nada na grade.
+
+**Entra**
+- Foco itinerante na grade: a grade inteira é **uma** parada de Tab, e dentro dela as setas andam
+  — inclusive para cima e para baixo, com o número de colunas lido do `auto-fill` do navegador.
+  `Home` e `End` vão às pontas; a seta não cai fora nas bordas.
+- Um atalho "Ir para o conteúdo", visível só no foco, logo depois da busca.
+- Filtrar por função devolve o foco ao começo, em vez de apontar para um cartão que saiu.
+
+**NÃO entra**
+- Setas na galeria virtualizada das categorias: lá o item nem sempre está no DOM, e andar por
+  seta exige rolar o virtualizador junto. Fica anotado em "Ideias não executadas".
+
+**Critérios de aceite**
+1. ✅ A grade tem um `tabindex="0"` só, e clicar num cartão passa a vez para ele.
+2. ✅ As setas andam, `Home` e `End` vão às pontas, e nas bordas o foco fica.
+3. ✅ Da busca, um Tab chega ao atalho; do atalho, no máximo 12 paradas até a grade — eram 21.
+4. ✅ O axe continua sem violação séria nem crítica.
+
+**Testes que provam**
+- `navegacao.test.tsx`: uma parada de Tab, as setas, `Home`/`End`, a borda e o clique.
+- `acessibilidade.spec.ts`: o atalho e as setas com layout de verdade.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
