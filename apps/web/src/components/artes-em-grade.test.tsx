@@ -178,6 +178,22 @@ describe("a ampliação", () => {
     fireEvent.keyDown(window, { key: "Escape" });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  /**
+   * T-53. Em tela de toque a faixa de ações do tile deixou de aparecer sozinha
+   * por cima da arte, e o caminho passou a ser a ampliação: por isso ela precisa
+   * ter a ficha e as duas formas de baixar, e não só a arte grande.
+   */
+  it("traz a ficha e as duas formas de baixar", () => {
+    render(<PainelDoCampeao champion={JAX} skins={SKINS} assets={ARTES} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Ampliar Jax_000_splash_centered.jpg" }));
+
+    const ampliacao = screen.getByRole("dialog", { name: /^Ampliação de Jax/ });
+    expect(within(ampliacao).getByText(/1280×720/)).toBeTruthy();
+    expect(within(ampliacao).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+    expect(within(ampliacao).getByRole("button", { name: "Baixar PNG" })).toBeTruthy();
+    expect(within(ampliacao).getByRole("button", { name: "Copiar link" })).toBeTruthy();
+  });
 });
 
 // --- as miniaturas da bandeja ----------------------------------------------------------------

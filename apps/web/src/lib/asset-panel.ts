@@ -175,25 +175,54 @@ export function agruparPorFamilia(assets: readonly Asset[]): GrupoDeArtes[] {
 
 // --- a galeria das categorias (T-48) ----------------------------------------------------
 
-/** O vão entre os tiles da galeria, nas duas direções, em px. */
-export const VAO_DA_GALERIA = 12;
+/**
+ * O vão entre os tiles da galeria, nas duas direções, em px.
+ *
+ * Eram 12 até o T-53. Painel de mídia — Bridge, Eagle, o painel de assets do
+ * Figma — aperta o vão justamente para a arte encostar na arte: o que separa
+ * dois assets é a imagem mudar, não a calha entre eles.
+ */
+export const VAO_DA_GALERIA = 8;
 
 /**
- * O que o tile tem embaixo da prévia: o nome (20 px), a ficha em duas linhas
- * (32 px), o respiro em volta (18 px) e a borda (2 px). Somado à prévia, é a
- * altura do tile.
+ * O que o tile tem embaixo da prévia: o nome numa linha (18 px) e o respiro em
+ * volta com a borda (22 px). Somado à prévia, é a altura do tile.
+ *
+ * Eram 72 px até o T-53, com a ficha em duas linhas fixas embaixo do nome. A
+ * ficha passou para a faixa que aparece sobre a arte junto das ações — continua
+ * antes de qualquer download (RF-09, [ADR 0001]) e devolve 32 px por tile.
  */
-const TEXTO_DO_TILE = 72;
+const TEXTO_DO_TILE = 40;
 
 /**
- * A largura que as ações do tile pedem: "Original", "PNG" e o copiar, com o
- * respiro. Tile mais estreito que isto quebra os botões em duas linhas.
+ * A largura que as ações pedem quando têm rótulo: "Original", "PNG" e o copiar,
+ * com o respiro. Tile mais estreito que isto quebraria os botões em duas linhas
+ * — abaixo dele as ações viram ícones com dica (`acoesComRotulo`).
  */
-const LARGURA_DAS_ACOES = 176;
+const LARGURA_DAS_ACOES_COM_ROTULO = 176;
+
+/**
+ * A largura que as ações pedem como ícones: três alvos de 28 px, o vão entre
+ * eles e o respiro da faixa.
+ */
+const LARGURA_DAS_ACOES_EM_ICONE = 104;
+
+/**
+ * Onde a arte deixa de mandar na largura do tile.
+ *
+ * Acima disto o tile acompanha a proporção da imagem; abaixo, seria o cromo
+ * decidindo o tamanho da arte — que é o que o T-53 veio desfazer.
+ */
+export const LARGURA_COM_ROTULO = LARGURA_DAS_ACOES_COM_ROTULO;
 
 export interface MedidasDaGaleria {
   /** A largura mínima do tile: é ela que decide quantas colunas cabem. */
   readonly larguraMinima: number;
+  /** Se as ações cabem com rótulo escrito, ou se viram ícones com dica. */
+  readonly acoesComRotulo: boolean;
+  /** Largura ÷ altura mediana da lista: a forma que a prévia tenta ter. */
+  readonly proporcao: number;
+  /** O teto da prévia para esta categoria, antes de caber na coluna. */
   readonly alturaDaPrevia: number;
   /** A mesma na lista inteira: é o que deixa virtualizar por linha sem medir ([ADR 0011]). */
   readonly alturaDoTile: number;
@@ -223,16 +252,21 @@ export function medidasDaGaleria(
   const lados = assets.map((a) => Math.max(a.width, a.height)).sort((x, y) => x - y);
   const proporcoes = assets.map((a) => a.width / a.height).sort((x, y) => x - y);
   const altura = alturaDaPrevia(lados[meio] ?? 0);
+  const proporcao = proporcoes[meio] ?? 1;
+  const pelaArte = Math.ceil(altura * proporcao) + 16;
+  const larguraMinima = Math.max(LARGURA_DAS_ACOES_EM_ICONE, pelaArte);
   return {
-    larguraMinima: Math.max(LARGURA_DAS_ACOES, Math.ceil(altura * (proporcoes[meio] ?? 1)) + 16),
+    larguraMinima,
+    acoesComRotulo: larguraMinima >= LARGURA_DAS_ACOES_COM_ROTULO,
+    proporcao,
     alturaDaPrevia: altura,
     alturaDoTile: altura + TEXTO_DO_TILE,
   };
 }
 
-/** Abaixo desta largura de lista — um telefone —, o tile encolhe para caberem duas colunas. */
+/** Abaixo desta largura de lista — um telefone —, o tile encolhe para caberem mais colunas. */
 const LISTA_ESTREITA = 480;
-const MINIMA_NO_ESTREITO = 160;
+const MINIMA_NO_ESTREITO = 112;
 
 /** Quantas colunas cabem na largura da lista; nunca menos que uma. */
 export function colunasDaGaleria(largura: number, medidas: MedidasDaGaleria): number {
@@ -241,4 +275,29 @@ export function colunasDaGaleria(largura: number, medidas: MedidasDaGaleria): nu
       ? Math.min(MINIMA_NO_ESTREITO, medidas.larguraMinima)
       : medidas.larguraMinima;
   return Math.max(1, Math.floor((largura + VAO_DA_GALERIA) / (minima + VAO_DA_GALERIA)));
+}
+
+/**
+ * A altura da linha depois que as colunas estão decididas (T-53).
+ *
+ * O teto por categoria (`alturaDaPrevia`) diz o quanto a arte **pode** ocupar;
+ * quem manda de fato é a coluna. Sem isto, uma ward de 460×550 num telefone
+ * ficava numa caixa de 232 px de altura mostrando 134 px de arte — 98 px de
+ * vazio por tile, multiplicados por 532 wards.
+ *
+ * A altura continua **uma só para a lista inteira**, que é o que o [ADR 0011]
+ * pede para virtualizar por linha sem medir cada tile.
+ */
+export function medidasNaColuna(
+  medidas: MedidasDaGaleria,
+  larguraDaColuna: number,
+): { readonly alturaDaPrevia: number; readonly alturaDoTile: number } {
+  const cabeNaColuna = Math.round(larguraDaColuna / (medidas.proporcao || 1));
+  const altura = Math.max(64, Math.min(medidas.alturaDaPrevia, cabeNaColuna));
+  return { alturaDaPrevia: altura, alturaDoTile: altura + TEXTO_DO_TILE };
+}
+
+/** A largura de cada coluna, já descontados os vãos. */
+export function larguraDaColuna(largura: number, colunas: number): number {
+  return Math.floor((largura - (colunas - 1) * VAO_DA_GALERIA) / colunas);
 }
