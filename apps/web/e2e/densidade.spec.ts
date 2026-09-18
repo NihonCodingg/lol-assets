@@ -31,3 +31,40 @@ test("alternar a densidade muda o número de colunas, e a escolha sobrevive a re
   await expect(page.getByRole("list", { name: "Campeões" })).toBeVisible();
   expect(await colunas(page)).toBe(confortavel);
 });
+
+/**
+ * A galeria das categorias (T-53).
+ *
+ * Antes, o tile de um ícone de 64 px tinha 176 px de largura porque era o que
+ * "Original", "PNG" e o copiar pediam lado a lado: na produção davam **seis**
+ * colunas em 1.232 px de lista, com a arte ocupando 13% do tile. Com as ações em
+ * ícone, quem manda na largura é a arte.
+ */
+test("a galeria de ícones dá pelo menos nove colunas numa tela de 1440", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+
+  const tiles = page.locator("article");
+  await expect(tiles.first()).toBeVisible();
+  const medidas = await tiles.first().evaluate((tile) => {
+    const r = tile.getBoundingClientRect();
+    const img = tile.querySelector("img");
+    const ri = img?.getBoundingClientRect();
+    return {
+      largura: Math.round(r.width),
+      altura: Math.round(r.height),
+      arte: ri ? Math.round(ri.width * ri.height) : 0,
+      area: Math.round(r.width * r.height),
+    };
+  });
+  const porLinha = await tiles.evaluateAll((lista) => {
+    const topo = Math.round(lista[0]!.getBoundingClientRect().top);
+    return lista.filter((t) => Math.round(t.getBoundingClientRect().top) === topo).length;
+  });
+
+  expect(porLinha).toBeGreaterThanOrEqual(9);
+  expect(medidas.largura).toBeLessThanOrEqual(130);
+  // A arte deixou de ser um selo no meio da caixa: era 13% do tile.
+  expect(medidas.arte / medidas.area).toBeGreaterThan(0.25);
+});

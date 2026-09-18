@@ -2687,6 +2687,72 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+## Onda 8 — a arte na frente
+
+> **Exceção pontual ao modo de manutenção**, autorizada pelo dono em 17/09/2026 e encerrada
+> quando esta onda acabar: o [ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md) volta a valer
+> como está, e nenhuma sessão futura deve tratar esta onda como precedente para abrir trabalho de
+> design por conta própria.
+>
+> A onda saiu de um diagnóstico contra os critérios do próprio projeto — §A.4 do KICKOFF,
+> [ADR 0010](adr/0010-navegacao-por-campeao-busca-por-skin.md),
+> [ADR 0001](adr/0001-formato-de-entrega-dos-assets.md), §B.5.1, densidade, hierarquia, estados,
+> teclado e telas estreitas —, medido na produção. O relatório está em
+> [`docs/sessoes/2026-09-18-o-diagnostico-de-design.md`](sessoes/2026-09-18-o-diagnostico-de-design.md).
+
+### T-53 — A arte na frente: o tile da galeria
+
+| | |
+|---|---|
+| **Objetivo** | Que a galeria de uma categoria pareça painel de mídia, e não ficha técnica com uma miniatura |
+| **Dependências** | T-48, T-49 |
+| **Estimativa** | ~200 linhas |
+| **Effort** | médio |
+| **Cobre** | §A.4 do KICKOFF (leve e rápido), RF-09 e o [ADR 0001](adr/0001-formato-de-entrega-dos-assets.md) (ficha e dois botões antes do download), [ADR 0011](adr/0011-virtualizacao-so-onde-se-paga.md) (altura igual por lista) |
+
+> Medido na produção em 17/09/2026: o tile de um item tinha **190×168** com um ícone de
+> **64×64** — a arte era **13%** do tile, e cabiam 30 tiles na tela para 868 assets. A largura
+> não vinha da arte: vinha de `LARGURA_DAS_ACOES`, os 176 px que "Original", "PNG" e o copiar
+> pediam lado a lado. O cromo decidia o tamanho da arte.
+>
+> No telefone era pior: sem *hover*, o T-48 deixava a faixa de ações sempre à vista, cobrindo o
+> ícone de 64 px o tempo todo.
+
+**Entra**
+- A ficha e as ações na mesma faixa, sobre a arte, no *hover* e no foco — e **não** em tela de
+  toque, onde o caminho passa a ser tocar na arte e baixar da ampliação.
+- A ampliação ganha a ficha e as duas formas de baixar (`AcoesDoAsset`), com alvo de 44 px em
+  tela de toque.
+- Ações em ícone com dica onde o tile é estreito demais para o rótulo escrito; onde a arte é
+  grande — wards, mapas —, os rótulos ficam.
+- A altura da prévia passa a caber na coluna (`medidasNaColuna`), em vez de um teto fixo por
+  categoria: no telefone, a ward deixou de ter 98 px de vazio por tile.
+- Vão da galeria de 12 px para 8 px, e o texto embaixo do tile de 72 px para 40 px.
+
+**NÃO entra**
+- A busca, o teclado na grade, o rótulo das wards e os estados: são os tickets seguintes desta
+  onda.
+- Esconder o PNG atrás de menu: o [ADR 0001](adr/0001-formato-de-entrega-dos-assets.md) pede os
+  dois visíveis, e eles continuam visíveis e do mesmo tamanho.
+
+**Critérios de aceite**
+1. ✅ Numa tela de 1440, a galeria de ícones dá **pelo menos nove colunas**, com o tile em no
+   máximo 130 px e a arte em mais de 25% dele (e2e `densidade.spec.ts`).
+2. ✅ Em tela de toque, a faixa de ações fica com opacidade 0, e a ampliação tem os dois
+   downloads com 44 px (e2e `celular.spec.ts`).
+3. ✅ A ficha continua no tile antes de qualquer download, e os nomes acessíveis continuam
+   "Baixar original", "Baixar PNG" e "Copiar link" (unidade).
+4. ✅ A altura do tile continua **uma só por lista**, que é o que o ADR 0011 pede.
+
+**Testes que provam**
+- `asset-panel-galeria.test.ts`: largura mínima, ações em ícone, altura na coluna e colunas no
+  telefone.
+- `painel-de-asset.test.tsx`: ícone sem perder o nome; a ficha à vista.
+- `artes-em-grade.test.tsx`: a ampliação com ficha e os dois downloads.
+- `densidade.spec.ts` e `celular.spec.ts`: as colunas e a faixa que não cobre a arte.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

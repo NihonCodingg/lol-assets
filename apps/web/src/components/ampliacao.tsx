@@ -13,6 +13,10 @@
  * A arte aparece no tamanho do arquivo, no máximo: um ícone de 64 px continua com
  * 64 px, nítido, em vez de esticado até a tela. Clicar fora da arte fecha.
  *
+ * **As ações moram aqui desde o T-53**: a ficha, os dois downloads e o copiar.
+ * Em tela de toque não há *hover*, e a faixa de ações do tile deixou de aparecer
+ * sozinha por cima da arte — o caminho do toque passou a ser este.
+ *
  * O foco vai para o diálogo ao abrir, e não para o fechar, pelo mesmo motivo do
  * painel: a dica do fechar abriria sozinha por cima da arte.
  */
@@ -23,6 +27,7 @@ import { useRef } from "react";
 
 import type { Asset } from "@lol-assets/schema";
 
+import { AcoesDoAsset } from "@/components/painel-de-asset";
 import { BotaoIcone } from "@/components/ui/botao-icone";
 import { assetSummary } from "@/lib/asset-file";
 import { rotuloDoTipo } from "@/lib/asset-panel";
@@ -31,9 +36,12 @@ export interface AmpliacaoProps {
   readonly asset: Asset;
   readonly url: string;
   readonly onFechar: () => void;
+  /** As duas ações que tocam o mundo entram por injeção, como no painel. */
+  readonly baixar?: (asset: Asset, comoPng: boolean, url: string) => Promise<void>;
+  readonly copiar?: (texto: string) => Promise<void>;
 }
 
-export function Ampliacao({ asset, url, onFechar }: AmpliacaoProps) {
+export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoProps) {
   const conteudo = useRef<HTMLDivElement>(null);
   const nome = `${asset.names.pt_BR} — ${rotuloDoTipo(asset.type)}`;
 
@@ -55,7 +63,9 @@ export function Ampliacao({ asset, url, onFechar }: AmpliacaoProps) {
           onClick={(evento) => {
             if (evento.target === evento.currentTarget) onFechar();
           }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-2 p-6"
+          // Em tela de toque, todo botão daqui tem 44 px, como no painel
+          // (T-49): a ampliação virou caminho de download no T-53.
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-2 p-6 pointer-coarse:[&_button]:min-h-controle-xl pointer-coarse:[&_button]:min-w-controle-xl"
         >
           <Dialog.Title className="sr-only">Ampliação de {nome}</Dialog.Title>
           <BotaoIcone
@@ -74,6 +84,9 @@ export function Ampliacao({ asset, url, onFechar }: AmpliacaoProps) {
           />
           <p className="mt-2 text-13 font-medium text-texto-forte">{nome}</p>
           <p className="font-mono text-11 text-texto-suave">{assetSummary(asset)}</p>
+          {/* Baixar daqui (T-53). Em tela de toque a faixa do tile não aparece,
+              e este é o caminho: tocar na arte, conferir grande, baixar. */}
+          <AcoesDoAsset asset={asset} url={url} baixar={baixar} copiar={copiar} className="mt-1" />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

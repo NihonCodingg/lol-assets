@@ -19,12 +19,13 @@
  * escrito continua dentro do nome — quem comanda por voz diz o que vê.
  */
 
-import { Check, Download, LoaderCircle } from "lucide-react";
+import { Check, Download, FileImage, LoaderCircle } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
 import { Botao } from "./botao";
+import { BotaoIcone } from "./botao-icone";
 
 export type QualDownload = "original" | "png";
 
@@ -39,6 +40,14 @@ export interface ParDeDownloadProps {
   readonly baixado?: QualDownload | null;
   /** Texto curto, nome inteiro: o par dentro do tile da galeria. */
   readonly compacto?: boolean;
+  /**
+   * Só os ícones, com dica (T-53): o par dentro de um tile estreito.
+   *
+   * Os dois continuam **visíveis e do mesmo tamanho**, que é o que o [ADR 0001]
+   * pede — o PNG não vira menu nem some. O que sai é o rótulo escrito, que
+   * passa para a dica e para o nome acessível.
+   */
+  readonly icone?: boolean;
   readonly onOriginal: () => void;
   readonly onPng: () => void;
   readonly className?: string;
@@ -69,11 +78,52 @@ export function ParDeDownload({
   baixando = null,
   baixado = null,
   compacto = false,
+  icone = false,
   onOriginal,
   onPng,
   className,
 }: ParDeDownloadProps) {
   const nomeDoPng = podeConverter ? "Baixar PNG" : "Já é PNG";
+
+  if (icone) {
+    return (
+      <div className={cn("inline-flex items-center gap-1", className)}>
+        <BotaoIcone
+          rotulo="Baixar original"
+          dicaLeve
+          variante="primario"
+          disabled={ocupado}
+          aria-busy={baixando === "original" || undefined}
+          icone={
+            <IconeDoBotao
+              qual="original"
+              baixando={baixando}
+              baixado={baixado}
+              padrao={<Download aria-hidden="true" className="size-3.5" />}
+            />
+          }
+          onClick={onOriginal}
+        />
+        <BotaoIcone
+          rotulo={nomeDoPng}
+          dicaLeve
+          disabled={ocupado || !podeConverter}
+          aria-busy={baixando === "png" || undefined}
+          className="bg-superficie/80"
+          icone={
+            <IconeDoBotao
+              qual="png"
+              baixando={baixando}
+              baixado={baixado}
+              padrao={<FileImage aria-hidden="true" className="size-3.5" />}
+            />
+          }
+          onClick={onPng}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={cn("inline-flex items-center", compacto ? "gap-1" : "gap-1.5", className)}>
       <Botao

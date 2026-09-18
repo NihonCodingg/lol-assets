@@ -17,9 +17,13 @@
  * - **Grade** (`grade`), no painel do campeão (T-47b): cartões agrupados por
  *   família — a arte grande, os retratos, as habilidades —, cada um com a prévia
  *   na proporção real.
- * - **Galeria**, nas categorias (T-48): *tiles* de altura igual, com a prévia, o
- *   nome e a ficha à vista, e as ações por cima da prévia no *hover* e no foco —
- *   sempre à vista em tela de toque, onde não há *hover*.
+ * - **Galeria**, nas categorias (T-48, revista no T-53): *tiles* de altura igual,
+ *   com a arte encostando nas bordas e o nome numa linha embaixo. A ficha e as
+ *   ações vêm juntas, na faixa que aparece sobre a arte no *hover* e no foco —
+ *   e que em tela de toque **não** aparece: lá o caminho é tocar na arte e
+ *   baixar da ampliação, que tem a mesma ficha e os mesmos dois botões. Onde o
+ *   tile é estreito demais para "Original" e "PNG" escritos, os dois viram
+ *   ícone com dica, sem perder o nome acessível.
  *
  * **Galeria grande vira galeria virtual.** Acima de `LIMITE_DE_VIRTUALIZACAO`
  * *tiles* o painel desenha só as linhas que estão na tela ([ADR 0011]): a
@@ -58,8 +62,10 @@ import type { Asset } from "@lol-assets/schema";
 import {
   agruparPorFamilia,
   colunasDaGaleria,
+  larguraDaColuna,
   LIMITE_DE_VIRTUALIZACAO,
   medidasDaGaleria,
+  medidasNaColuna,
   orderAssets,
   rotuloDoTipo,
   VAO_DA_GALERIA,
@@ -269,8 +275,14 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
   const scroller = useRef<HTMLDivElement>(null);
   const lista = useRef<HTMLUListElement>(null);
   const largura = useLargura(lista);
-  const medidas = useMemo(() => medidasDaGaleria(assets), [assets]);
-  const colunas = colunasDaGaleria(largura, medidas);
+  const daLista = useMemo(() => medidasDaGaleria(assets), [assets]);
+  const colunas = colunasDaGaleria(largura, daLista);
+  // A coluna é que decide a altura da linha (T-53): o teto da categoria diz o
+  // quanto a arte pode ocupar, a coluna diz o quanto ela ocupa.
+  const medidas = useMemo(
+    () => ({ ...daLista, ...medidasNaColuna(daLista, larguraDaColuna(largura, colunas)) }),
+    [daLista, largura, colunas],
+  );
   const passo = medidas.alturaDoTile + VAO_DA_GALERIA;
 
   // As linhas, não os tiles: é uma linha que tem altura fixa, e é por linha
@@ -363,6 +375,49 @@ interface CartaoProps {
  * O download de um cartão: o estado dele no painel, e qual dos dois botões gira
  * ou confirma (T-47b). A confirmação volta sozinha em dois segundos.
  */
+/**
+ * As duas formas de baixar e o copiar, num bloco só (T-53).
+ *
+ * Existe para a **ampliação** ter as mesmas ações do tile sem duplicá-las: em
+ * tela de toque a faixa do tile não aparece, e a ampliação é o caminho — tocar
+ * na arte, conferir no tamanho grande, baixar dali. No computador ela também
+ * serve, pelo mesmo motivo de sempre: quem ampliou para conferir o detalhe está
+ * a um clique de querer o arquivo.
+ */
+export function AcoesDoAsset({
+  asset,
+  url,
+  baixar = baixarDeVerdade,
+  copiar = copiarDeVerdade,
+  className,
+}: {
+  readonly asset: Asset;
+  readonly url: string;
+  readonly baixar?: (asset: Asset, comoPng: boolean, url: string) => Promise<void>;
+  readonly copiar?: (texto: string) => Promise<void>;
+  readonly className?: string;
+}) {
+  const semMarcar = useCallback(() => {}, []);
+  const { acionar, andamento, feito } = useDownload(asset, url, semMarcar, baixar);
+  const { copia, copiarUrl } = useCopia(copiar, url);
+  return (
+    <div className={cn("flex items-center gap-1.5", className)}>
+      <ParDeDownload
+        podeConverter={canConvertToPng(asset)}
+        ocupado={andamento !== null}
+        baixando={andamento}
+        baixado={feito}
+        onOriginal={() => void acionar(false)}
+        onPng={() => void acionar(true)}
+      />
+      <BotaoDeCopiar copia={copia} onClick={copiarUrl} />
+      <span role="status" className="sr-only">
+        {anuncioDe(copia, feito)}
+      </span>
+    </div>
+  );
+}
+
 function useDownload(
   asset: Asset,
   url: string,
@@ -577,6 +632,19 @@ const SO_NO_HOVER =
   "opacity-0 transition-opacity duration-150 ease-saida group-hover/tile:opacity-100 group-focus-within/tile:opacity-100 [@media(hover:none)]:opacity-100";
 
 /**
+ * A faixa que cobre a arte — ficha e ações — e que em tela de toque **não**
+ * aparece (T-53).
+ *
+ * Em tela de toque não há *hover*, e o T-48 resolvia isso deixando a faixa
+ * sempre à vista: num tile de ícone de 64 px, os botões cobriam a arte inteira,
+ * o tempo todo. Aqui ela some, e o caminho do toque é tocar na arte: a
+ * ampliação abre com a ficha e os dois downloads. O teclado continua revelando
+ * pelo foco, que é o que mantém a faixa alcançável sem ponteiro.
+ */
+const SO_COM_PONTEIRO =
+  "opacity-0 transition-opacity duration-150 ease-saida group-hover/tile:opacity-100 group-focus-within/tile:opacity-100 [@media(hover:none)]:pointer-events-none [@media(hover:none)]:group-hover/tile:opacity-0";
+
+/**
  * Memorizado: a cada quadro de rolagem a galeria virtual desenha de novo, e sem
  * isto os 60 tiles na tela renderizavam inteiros junto — só para sair iguais.
  * Com ele, rolar monta só as linhas que entram. As props são todas estáveis:
@@ -616,7 +684,9 @@ const TileDaGaleria = memo(function TileDaGaleria({
           asset={asset}
           url={url}
           caixa={{ style: { height: medidas.alturaDaPrevia } }}
-          folga="16px"
+          // O respiro em volta da arte encolhe com o tile (T-53): 16 px num
+          // tile de 112 px eram 29% da largura gastos em borda.
+          folga={medidas.acoesComRotulo ? "12px" : "6px"}
           onAmpliar={onAmpliar}
         />
 
@@ -631,27 +701,36 @@ const TileDaGaleria = memo(function TileDaGaleria({
 
         <div
           className={cn(
-            "absolute inset-x-0 bottom-0 flex items-center gap-1 bg-linear-to-t from-superficie/90 to-transparent p-1.5 pt-5",
-            SO_NO_HOVER,
+            "absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-linear-to-t from-superficie/95 via-superficie/80 to-transparent p-1.5 pt-6",
+            SO_COM_PONTEIRO,
             ativo && "opacity-100",
           )}
         >
-          <ParDeDownload
-            compacto
-            podeConverter={canConvertToPng(asset)}
-            ocupado={estado === "baixando"}
-            baixando={andamento}
-            baixado={feito}
-            onOriginal={() => void acionar(false)}
-            onPng={() => void acionar(true)}
-          />
-          <div className="ml-auto">
-            <BotaoDeCopiar
-              leve
-              copia={copia}
-              onClick={copiarUrl}
-              className="bg-superficie/80 text-texto hover:bg-superficie"
+          {/* RF-09: a ficha aparece antes de qualquer clique de download — e
+              aparece junto das ações, no mesmo gesto que as revela. Em duas
+              linhas, porque inteira ela não cabe num tile estreito. */}
+          <p className="overflow-hidden font-mono text-10 leading-3.5 text-ellipsis whitespace-pre text-texto-suave">
+            {`${asset.width}×${asset.height} · ${asset.format}\n${formatBytes(asset.bytes)} · ${asset.source}`}
+          </p>
+          <div className="flex items-center gap-1">
+            <ParDeDownload
+              compacto={medidas.acoesComRotulo}
+              icone={!medidas.acoesComRotulo}
+              podeConverter={canConvertToPng(asset)}
+              ocupado={estado === "baixando"}
+              baixando={andamento}
+              baixado={feito}
+              onOriginal={() => void acionar(false)}
+              onPng={() => void acionar(true)}
             />
+            <div className="ml-auto">
+              <BotaoDeCopiar
+                leve
+                copia={copia}
+                onClick={copiarUrl}
+                className="bg-superficie/80 text-texto hover:bg-superficie"
+              />
+            </div>
           </div>
         </div>
 
@@ -665,16 +744,10 @@ const TileDaGaleria = memo(function TileDaGaleria({
         )}
       </div>
 
-      <div className="flex min-w-0 flex-col px-2.5 pt-2 pb-2.5">
-        <h3 title={asset.names.pt_BR} className="truncate text-13 leading-5 font-medium text-texto-forte">
+      <div className="flex min-w-0 flex-col justify-center px-2 py-1.5">
+        <h3 title={asset.names.pt_BR} className="truncate text-12 leading-4 font-medium text-texto-forte">
           {asset.names.pt_BR}
         </h3>
-        {/* RF-09: a ficha aparece antes de qualquer clique de download. Em duas
-            linhas, porque inteira ela não cabe num tile: um texto só, com a
-            quebra dentro, para continuar sendo uma ficha e não duas. */}
-        <p className="overflow-hidden font-mono text-11 leading-4 text-ellipsis whitespace-pre text-texto-suave">
-          {`${asset.width}×${asset.height} · ${asset.format}\n${formatBytes(asset.bytes)} · ${asset.source}`}
-        </p>
       </div>
 
       <span role="status" className="sr-only">

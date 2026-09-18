@@ -108,6 +108,32 @@ test("o painel do campeão ocupa a tela toda, com alvos de toque de 44 px", asyn
   expect(zip!.x + zip!.width).toBeLessThanOrEqual(390);
 });
 
+/**
+ * O T-53. Sem *hover*, o T-48 deixava a faixa de ações sempre à vista: num tile
+ * de ícone de 64 px, "Original", "PNG" e o copiar cobriam a arte inteira o tempo
+ * todo. Agora o caminho do toque é tocar na arte e baixar da ampliação.
+ */
+test("na galeria, as ações não ficam por cima da arte", async ({ page }) => {
+  await irParaHome(page);
+  await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+  const tile = page.locator("article").first();
+  await expect(tile).toBeVisible();
+
+  const faixa = tile.getByRole("button", { name: "Baixar original" });
+  const opacidade = await faixa.evaluate((botao) => {
+    const caixa = botao.closest("div.absolute");
+    return caixa ? Number(getComputedStyle(caixa).opacity) : 1;
+  });
+  expect(opacidade, "a faixa de ações estava cobrindo a arte").toBe(0);
+
+  // E o caminho continua existindo, com alvo de toque de verdade.
+  await tile.getByRole("button", { name: /^Ampliar / }).click();
+  const ampliacao = page.getByRole("dialog", { name: /^Ampliação de/ });
+  const baixar = ampliacao.getByRole("button", { name: "Baixar original" });
+  await expect(baixar).toBeVisible();
+  expect((await baixar.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+});
+
 test("a página que não existe também tem os dois avisos", async ({ page }) => {
   await page.goto("/nao-existe");
   await expect(page.getByRole("heading", { name: "Página não encontrada" })).toBeVisible();

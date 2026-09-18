@@ -139,9 +139,13 @@ describe("copiar URL", () => {
     // E o olho vê: a dica abre sozinha. Na galeria ela é a dica leve, em CSS
     // (T-48) — o Radix de cada tile pesava na rolagem —, e por isso não é
     // `role="tooltip"`: quem ouve já ouviu o `status` acima.
-    const dica = cartoes()[0].querySelector("[data-dica]");
-    expect(dica?.getAttribute("data-dica")).toBe("aberta");
-    expect(dica?.textContent).toBe("Link copiado");
+    //
+    // Procurada pelo texto desde o T-53: num tile estreito os dois downloads
+    // também viraram ícone com dica leve, e o primeiro `[data-dica]` do cartão
+    // passou a ser o de "Baixar original". O que este teste afirma é a dica do
+    // copiar — e é ela que ele procura, em vez da primeira que aparecer.
+    const dica = within(cartoes()[0]).getByText("Link copiado", { selector: "[data-dica]" });
+    expect(dica.getAttribute("data-dica")).toBe("aberta");
     // O nome do botão não muda: quem procura "Copiar link" continua achando.
     expect(screen.getByRole("button", { name: "Copiar link" })).toBeTruthy();
   });
@@ -270,6 +274,23 @@ describe("a galeria das categorias", () => {
     const original = screen.getByRole("button", { name: "Baixar original" });
     expect(original.textContent).toBe("Original");
     expect(screen.getByRole("button", { name: "Baixar PNG" }).textContent).toBe("PNG");
+  });
+
+  /**
+   * T-53: num tile estreito — o de um ícone de 64 px — nem "Original" cabe sem
+   * mandar na largura do tile. O rótulo sai da tela e continua no nome
+   * acessível e na dica; os dois botões continuam lado a lado, do mesmo
+   * tamanho, que é o que o [ADR 0001] pede.
+   */
+  it("no tile estreito os dois viram ícone, sem perder o nome", () => {
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    abrir([square]);
+    const original = screen.getByRole("button", { name: "Baixar original" });
+    const png = screen.getByRole("button", { name: /Baixar PNG|Já é PNG/ });
+    expect(original.textContent).toBe("");
+    expect(png.textContent).toBe("");
+    expect(original.querySelector("svg")).toBeTruthy();
+    expect(png.querySelector("svg")).toBeTruthy();
   });
 
   it("com a ampliação, a prévia vira o botão dela", () => {
