@@ -186,6 +186,22 @@ export function NavegacaoPorCategoria({
     return [...marcadas].filter((tag) => chaves.has(grupoDaTag(tag))).length;
   }, [marcadas, maisFiltros]);
 
+  /**
+   * A categoria `item` abre filtrada (§B.1.6), e na produção isso aparecia como
+   * "254 de 868" sem dizer por quê — 71% do catálogo fora da tela sem
+   * explicação. Enquanto ninguém mexeu nos filtros, a barra diz qual é o padrão
+   * e quantos ele esconde.
+   */
+  const padrao = useMemo(
+    () => (aberta ? filtrosPadrao(aberta, grupos) : new Set<string>()),
+    [aberta, grupos],
+  );
+  const noPadrao =
+    padrao.size > 0 &&
+    padrao.size === marcadas.size &&
+    [...padrao].every((tag) => marcadas.has(tag)) &&
+    !consulta.trim();
+
   // Estável, porque vai para cada tile da galeria, que é memorizado.
   const alternarNoLote = useCallback((id: string) => setSelecao((antes) => alternar(antes, id)), []);
 
@@ -201,6 +217,7 @@ export function NavegacaoPorCategoria({
 
   const rotulo = rotuloDaCategoria(aberta);
   const pronta = carga.fase === "pronta";
+
 
   return (
     <section aria-label="Categorias" className="flex min-h-0 flex-1 flex-col">
@@ -278,6 +295,13 @@ export function NavegacaoPorCategoria({
               <p className="ml-auto hidden font-mono text-11 tabular-nums text-texto-suave md:block">
                 {filtrados.length} de {assets.length}
               </p>
+
+              {noPadrao && assets.length > filtrados.length && (
+                <p className="w-full text-11 leading-cartao text-texto-suave">
+                  Esta categoria abre filtrada por {descreverFiltro(marcadas, "", grupos).join(" e ")}
+                  . {assets.length - filtrados.length} ficam de fora até você mostrar tudo.
+                </p>
+              )}
             </>
           )}
         </div>
@@ -306,6 +330,9 @@ export function NavegacaoPorCategoria({
         // área que rola.
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
           {carga.fase === "carregando" && <Carregando rotulo={rotulo} />}
+          {/* Centrado na área que sobra: colado no topo, com 700 px de vazio
+              embaixo, o aviso parecia o começo de uma lista que não veio. */}
+          <div className="flex flex-1 flex-col justify-center">
           {carga.fase === "erro" && (
             <Estado
               role="alert"
@@ -326,6 +353,7 @@ export function NavegacaoPorCategoria({
               }}
             />
           )}
+          </div>
           <AvisosNoFim className="mt-auto" />
         </div>
       )}
@@ -405,16 +433,23 @@ function Carregando({ rotulo }: { rotulo: string }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <p className="px-3.5 py-2 text-12 text-texto-suave">Carregando {rotulo}…</p>
+      {/* A forma do que vem: a arte, e a linha do nome embaixo dela (T-56). Um
+          bloco liso não dizia que ali vinha uma galeria. */}
       <div
         aria-hidden="true"
-        className="grid grid-cols-[repeat(auto-fill,minmax(176px,1fr))] gap-3 px-3.5"
+        className="grid grid-cols-[repeat(auto-fill,minmax(116px,1fr))] gap-2 px-3.5"
       >
-        {Array.from({ length: 18 }, (_, i) => (
+        {Array.from({ length: 40 }, (_, i) => (
           <div
             key={i}
-            className="h-42 animate-pulsar rounded-medio bg-campo"
+            className="flex animate-pulsar flex-col overflow-hidden rounded-medio border border-borda bg-superficie-alta"
             style={{ animationDelay: `${(i % 6) * 0.06}s` }}
-          />
+          >
+            <div className="h-24 bg-campo" />
+            <div className="flex h-10 items-center px-2">
+              <div className="h-2.5 w-3/4 rounded-min bg-campo" />
+            </div>
+          </div>
         ))}
       </div>
     </div>

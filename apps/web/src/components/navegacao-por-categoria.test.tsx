@@ -268,6 +268,26 @@ describe("filtros", () => {
     expect(screen.getByText("2 de 4")).toBeTruthy();
   });
 
+  /**
+   * T-56: na produção isso aparecia como "254 de 868" e dois chips acesos — 71%
+   * do catálogo fora da tela sem uma palavra sobre o porquê.
+   */
+  it("a barra diz que a categoria abriu filtrada, e quantos ficaram de fora", async () => {
+    montar();
+    await abrir("Itens");
+    const frase = screen.getByText(/abre filtrada/);
+    expect(frase.textContent).toContain("Comprável: Sim");
+    expect(frase.textContent).toContain("Mapa: Summoner's Rift");
+    expect(frase.textContent).toContain("2 ficam de fora");
+  });
+
+  it("mexeu num filtro, a frase do padrão sai — já não é o padrão", async () => {
+    montar();
+    await abrir("Itens");
+    fireEvent.click(screen.getByLabelText(/^Sim/));
+    expect(screen.queryByText(/abre filtrada/)).toBeNull();
+  });
+
   it("mostrar tudo desmarca e a lista volta inteira", async () => {
     montar();
     await abrir("Itens");
@@ -555,7 +575,11 @@ describe("a galeria das categorias (T-48)", () => {
     const { container } = montar();
     await abrir("Itens");
     fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
-    expect(screen.getByRole("status").parentElement?.querySelector("[data-avisos='fim']")).not.toBeNull();
+    // O que o T-49 pede é que os avisos fiquem **na mesma área que rola** do
+    // vazio, e não presos no pé da tela. Desde o T-56 o vazio mora num bloco
+    // que o centra na altura, então quem contém os dois é o scroller.
+    const area = screen.getByRole("status").closest(".overflow-y-auto");
+    expect(area?.querySelector("[data-avisos='fim']")).not.toBeNull();
     expect(container.querySelectorAll("[data-avisos='fim']")).toHaveLength(1);
   });
 

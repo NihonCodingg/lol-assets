@@ -2835,6 +2835,51 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-56 — Clareza: nomes repetidos, filtro explicado e estados no lugar
+
+| | |
+|---|---|
+| **Objetivo** | Que a tela pare de parecer quebrada quando não está: nome repetido, filtro invisível, aviso colado no topo |
+| **Dependências** | T-48, T-50, T-53 |
+| **Estimativa** | ~130 linhas |
+| **Effort** | baixo |
+| **Cobre** | RF-09 (a ficha), §B.1.6 (a categoria `item` abre filtrada), critério 4 do T-50 (o vazio que ensina) |
+
+> Medido no índice publicado do patch 16.18.1: **todas as 532 wards** vêm em pares de nome igual —
+> a arte e a sombra dela —, e ainda repetem nome 532 itens (o `1004` do Rift e o `771004` do
+> ARAM), 23 feitiços (o par Jade) e 30 emotes. Na tela, metade dos tiles de ward parecia vazia e
+> repetida. E a categoria `item` abria mostrando "254 de 868" sem dizer por quê.
+
+**Entra**
+- `rotulosDaLista`: quem repete nome **dentro do mesmo tipo** ganha o que o diferencia — a
+  variante conhecida (`sombra`, `Jade`) ou o `refId`, que é o número do arquivo que a pessoa vai
+  salvar. No painel do campeão nada muda: lá todos se chamam "Jax", e quem separa é o tipo.
+- A barra da categoria diz, enquanto ninguém mexeu nos filtros, **por que** ela abriu filtrada e
+  quantos assets ficaram de fora.
+- O esqueleto de carregamento ganha a forma do tile — arte e linha do nome —, em vez de blocos
+  lisos.
+- Erro e vazio ficam no meio da área que sobra, em vez de colados no topo com 700 px de vazio
+  embaixo.
+
+**NÃO entra**
+- Mudar o filtro padrão da categoria `item`: é decisão do dono, e continua como está.
+- Esconder a variante "sombra" das wards: seria funcionalidade nova (filtro), e está anotada em
+  "Ideias não executadas".
+
+**Critérios de aceite**
+1. ✅ Duas wards de mesmo nome aparecem como "Default Ward · 0" e "Default Ward · sombra".
+2. ✅ No painel do campeão, nenhum cartão ganha sufixo.
+3. ✅ A barra diz o filtro padrão e quantos ele esconde; mexer num filtro tira a frase.
+4. ✅ Erro e vazio continuam com os avisos da Riot na mesma área que rola (T-49).
+
+**Testes que provam**
+- `asset-panel-rotulos.test.ts`: ward, Jade, id, nome do arquivo, tipos diferentes, lista vazia.
+- `painel-de-asset.test.tsx`: o tile mostra o rótulo que diferencia; sem repetição, o nome puro.
+- `navegacao-por-categoria.test.tsx`: a frase do filtro padrão aparece e some; os avisos continuam
+  na área que rola.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
