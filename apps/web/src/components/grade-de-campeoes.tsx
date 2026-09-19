@@ -26,7 +26,14 @@
  */
 
 import { Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 
 import type { CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
@@ -61,6 +68,20 @@ function gravarDensidade(densidade: Densidade): void {
   }
 }
 
+/**
+ * O que o navegador pode pular enquanto a linha está fora da tela (T-59).
+ *
+ * Medido na produção: a home pedia **126 imagens** para mostrar 28. O
+ * `loading="lazy"` estava lá, mas a margem do Chrome é generosa e alcançava
+ * quase a grade inteira — 173 cartões em 25 linhas. Com `content-visibility`, a
+ * linha fora da tela não é desenhada, e a imagem dentro dela não é pedida.
+ *
+ * O `contain-intrinsic-size` é o tamanho que a linha "vale" enquanto está
+ * pulada: sem ele, a barra de rolagem mentiria e a grade saltaria ao rolar.
+ */
+const CARTAO_PULAVEL =
+  "[content-visibility:auto] [contain-intrinsic-size:auto_var(--altura-do-cartao)]";
+
 /** Largura-alvo, não número de colunas: quem decide quantas cabem é a janela. */
 const COLUNAS: Record<Densidade, string> = {
   compacta:
@@ -69,6 +90,16 @@ const COLUNAS: Record<Densidade, string> = {
     "grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-denso),1fr))] gap-x-2.5 gap-y-4",
   confortavel:
     "grid-cols-[repeat(auto-fill,minmax(var(--spacing-alvo-cartao-confortavel),1fr))] gap-x-3.5 gap-y-5",
+};
+
+/**
+ * A altura que cada cartão vale enquanto está pulado, por densidade: a arte
+ * quadrada mais o nome e a contagem embaixo. Medida na produção.
+ */
+const ALTURA_ESTIMADA: Record<Densidade, string> = {
+  compacta: "152px",
+  densa: "203px",
+  confortavel: "267px",
 };
 
 export interface GradeDeCampeoesProps {
@@ -244,6 +275,7 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
           aria-label="Campeões"
           data-densidade={densidade}
           onKeyDown={aoTeclar}
+          style={{ "--altura-do-cartao": ALTURA_ESTIMADA[densidade] } as CSSProperties}
           className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
         >
           {visiveis.map((champion, indice) => (
@@ -278,7 +310,7 @@ function Cartao({
   onAbrir: (champion: CatalogChampion) => void;
 }) {
   return (
-    <li>
+    <li className={CARTAO_PULAVEL}>
       <button
         type="button"
         tabIndex={tabIndex}

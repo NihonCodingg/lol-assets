@@ -116,10 +116,16 @@ export default function HomePage() {
         <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
           <Esqueleto className="h-controle-xl w-full max-w-busca-max rounded-medio" />
         </div>
-        <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
-          <Esqueleto className="h-controle-md w-80 max-w-full" />
-        </div>
-        <div className="min-h-0 flex-1 overflow-hidden">
+        {/*
+          A mesma árvore da tela pronta (T-59): a barra de filtro **dentro** do
+          bloco que rola, como o `GradeDeCampeoes` a desenha. Fora dele, ela
+          empurrava o conteúdo 43 px para baixo e devolvia esses 43 px quando o
+          catálogo chegava — parte do salto de 0,16 medido na produção.
+        */}
+        <div data-conteudo="" className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
+            <Esqueleto className="h-controle-md w-80 max-w-full" />
+          </div>
           <EsqueletoDaGrade />
         </div>
         <AvisosNoFim className="flex-none" />
@@ -193,7 +199,12 @@ export default function HomePage() {
       {/* Uma grade por vez, como o design desenha (T-41). "Campeões" é a
           primeira categoria da barra lateral e é onde a home abre (RF-04);
           escolher outra troca o conteúdo em vez de empilhar. */}
-      <div id="conteudo" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
+      <div
+        id="conteudo"
+        data-conteudo=""
+        tabIndex={-1}
+        className="flex min-h-0 flex-1 flex-col outline-none"
+      >
         {aberta === null ? (
           // A grade rola por dentro deste `div`. A categoria **não** pode rolar
           // aqui: ela tem scroller virtual próprio, e um pai que rola daria a

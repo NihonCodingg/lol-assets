@@ -116,13 +116,26 @@ export function Rodape() {
         ref={linha}
         className="flex flex-none items-center gap-0.5 overflow-x-auto px-2 pb-1.5 [scrollbar-width:none] md:contents"
       >
-        {/* Sem provedor — como no teste do T-27, que monta este componente
-            sozinho — a lista vem vazia e a barra desenha só o resto. */}
-        {categorias.length > 0 && (
-          <nav
-            aria-label="Categorias"
-            className="flex flex-none flex-row gap-0.5 md:flex-col md:px-2"
-          >
+        {/*
+          A lista já ocupa o lugar dela antes de o manifesto chegar (T-59).
+          Medido na produção: sem isto, a navegação nascia em `y=59` e pulava
+          para `y=336` quando o catálogo chegava, 1,6 s depois — um salto de
+          layout de **0,16**, que é o pior número da chegada.
+
+          Sem provedor — como no teste do T-27, que monta este componente
+          sozinho — a lista vem vazia e a barra desenha só o resto.
+        */}
+        {/*
+          `md:flex-1`: no computador a lista fica com o espaço que sobra, e o que
+          vem **abaixo** dela — as seções e os avisos — não se mexe quando as
+          categorias chegam. É isso que zera o salto, não o número de linhas
+          reservadas: a lista pode crescer ou encolher à vontade dentro do
+          próprio espaço.
+        */}
+        <nav
+          aria-label="Categorias"
+          className="flex flex-none flex-row gap-0.5 md:flex-1 md:flex-col md:px-2"
+        >
             <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
               Categorias
             </span>
@@ -147,12 +160,15 @@ export function Rodape() {
                 onClick={() => abrir(categoria.category)}
               />
             ))}
-          </nav>
-        )}
+            {/* Só onde a lista está a caminho: na página Sobre, aberta direto,
+                o manifesto nunca é buscado, e um esqueleto pulsaria para
+                sempre. */}
+            {naHome &&
+              categorias.length === 0 &&
+              Array.from({ length: LINHAS_RESERVADAS }, (_, i) => <LugarDeCategoria key={i} />)}
+        </nav>
 
-        {categorias.length > 0 && (
-          <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-borda-forte md:hidden" />
-        )}
+        <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-borda-forte md:hidden" />
 
         <nav
           aria-label="Seções"
@@ -235,6 +251,35 @@ function ItemDeCategoria({
           {total.toLocaleString("pt-BR")}
         </span>
       )}
+    </div>
+  );
+}
+
+// --- o lugar que a lista ocupa antes de existir (T-59) -------------------------------------
+
+/**
+ * Quantas linhas desenhar enquanto o manifesto não chega.
+ *
+ * O número exato não importa — **o layout é que segura o lugar** (ver a nota na
+ * lista). Sete é o que o patch declara hoje, e é o que faz a barra parecer a
+ * barra enquanto ela carrega, em vez de um vazio.
+ */
+const LINHAS_RESERVADAS = 7;
+
+/**
+ * Uma linha da lista antes de ela existir: a altura exata da de verdade.
+ *
+ * 30 px medidos no navegador — `py-1.5` mais a linha de 13 px do rótulo. Com 28
+ * px, as sete linhas somavam 14 px a menos e a barra ainda pulava, agora de
+ * pouco.
+ */
+function LugarDeCategoria() {
+  return (
+    <div
+      aria-hidden="true"
+      className="relative flex h-[30px] flex-none items-center px-2 max-md:h-controle-xl"
+    >
+      <div className="h-4 w-24 animate-pulsar rounded-padrao bg-campo max-md:w-16" />
     </div>
   );
 }

@@ -746,10 +746,20 @@ describe("barra lateral", () => {
     ).toBe("false");
   });
 
-  it("sem provedor, a barra não desenha categoria nenhuma", () => {
-    // É como o teste do T-27 monta o `Rodape`. O aviso legal continua lá.
+  /**
+   * Mudou no T-59: a navegação **existe desde o primeiro quadro**, para segurar
+   * o lugar da lista enquanto o manifesto não chega — sem ela, as seções e os
+   * avisos subiam 277 px e desciam de novo, e era esse o salto de 0,16 medido
+   * na produção. O que continua valendo é o que este teste sempre afirmou:
+   * sem provedor não há **categoria** nenhuma, e o aviso legal fica.
+   */
+  it("sem provedor, a barra guarda o lugar mas não inventa categoria", () => {
     const { container } = render(<Rodape />);
-    expect(screen.queryByRole("navigation", { name: "Categorias" })).toBeNull();
+    const nav = screen.getByRole("navigation", { name: "Categorias" });
+    const botoes = within(nav)
+      .getAllByRole("button")
+      .map((b) => b.textContent);
+    expect(botoes).toEqual(["Campeões"]);
     expect(container.querySelector("[data-aviso='riot']")).not.toBeNull();
   });
 });
