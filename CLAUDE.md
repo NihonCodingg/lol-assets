@@ -4,32 +4,51 @@
 > Se houver conflito, vale o KICKOFF (e, quando existirem, `docs/SPEC.md` e `docs/TICKETS.md`).
 > O **modo de operação** vem depois delas e é o primeiro a ser lido: ele diz o que fazer hoje.
 
-## Modo de operação: manutenção — desde 17/09/2026
+## Modo de operação: duas velocidades — desde 18/09/2026
 
 O projeto está **pronto e no ar**, e o que resta está no [`docs/INVENTARIO.md`](docs/INVENTARIO.md).
-Decisão do dono, registrada no [ADR 0021](docs/adr/0021-o-projeto-entra-em-manutencao.md): **toda
-sessão entra neste modo por padrão, em vez de propor trabalho novo.**
+Desde 18/09 ele tem **dois regimes** ao mesmo tempo
+([ADR 0021](docs/adr/0021-o-projeto-entra-em-manutencao.md), emendado pelo
+[ADR 0022](docs/adr/0022-o-front-end-vira-frente-continua.md)). Com a CI verde, o merge é seu
+([ADR 0020](docs/adr/0020-o-merge-e-do-agente.md)).
 
-**Decida e execute sozinho** (com a CI verde, o merge é seu — [ADR 0020](docs/adr/0020-o-merge-e-do-agente.md)):
+### Back-end, indexação e infraestrutura: manutenção
 
-- a indexação agendada continua rodando; se um patch quebrar algo — uma fonte mudar de caminho,
-  um teste de contrato falhar, uma dimensão inesperada aparecer —, corrija e mergeie;
-- CI vermelha, teste intermitente, dependência quebrada: conserte;
-- se o site sair do ar ou parar de atualizar, investigue e resolva;
-- registre cada correção em `docs/sessoes/`, sem mandar relatório ao dono.
+- A indexação agendada continua rodando; se um patch quebrar algo — uma fonte mudar de caminho,
+  um teste de contrato falhar, uma dimensão inesperada aparecer —, corrija e mergeie.
+- CI vermelha, teste intermitente, dependência quebrada: conserte.
+- Se o site sair do ar ou parar de atualizar, investigue e resolva.
+- **Não abra ticket novo aqui**, não refatore e não "melhore" o que funciona. Oportunidade vira
+  **ideia não executada**, no fim do [`docs/TICKETS.md`](docs/TICKETS.md).
 
-**Não faça:**
+### Interface — UI, UX, acessibilidade e desempenho percebido: frente contínua
 
-- não abra ticket de funcionalidade nova. Oportunidade vira **ideia não executada**, no fim do
-  [`docs/TICKETS.md`](docs/TICKETS.md), e o trabalho segue;
-- não refatore, não reorganize, não "melhore" o que funciona;
-- não mude o que o produto faz ou promete sem perguntar.
+Área de trabalho ativa: **você diagnostica, prioriza, abre o ticket, executa, mergeia e confere
+no ar, sozinho**. Sem lista para aprovar e sem parar entre tickets.
+
+- **Leia a skill `frontend-design` antes de desenhar qualquer coisa de interface.** É leitura
+  obrigatória de todo ticket de UI.
+- **Diagnóstico medido antes**, do site no ar; **antes e depois no relatório**, com o mesmo
+  método; e **atacar a causa** — no T-53, a largura do tile vinha dos botões, não da imagem.
+- **O que define "bom" aqui:** os 2 cliques da §A.4; a arte domina o tile (cromo crescendo é
+  regressão); teclado completo, com foco visível, atalhos e setas onde houver grade; o axe verde
+  e **mais** rigoroso; e desempenho percebido medido — tempo até o primeiro tile pintado, tempo
+  até a prévia abrir, zero salto de layout.
+- **Desempenho é restrição:** nada de animação pesada, biblioteca nova sem justificativa medida
+  ou efeito que custe quadro; a virtualização do [ADR 0011](docs/adr/0011-virtualizacao-so-onde-se-paga.md)
+  é obrigatória. Melhoria visual que custe desempenho **não entra** — e o porquê fica escrito.
+- **Não muda o que o produto faz.** Funcionalidade nova vai para "Ideias não executadas".
+- Tokens do [`docs/design/TOKENS.md`](docs/design/TOKENS.md) são a fonte de verdade: mudou token,
+  muda o TOKENS.md primeiro, com justificativa.
 
 **Escreva ao dono só se:**
 
 - algo quebrar e você não conseguir consertar;
-- uma fonte mudar de um jeito que altere o que o produto entrega;
+- uma fonte mudar de um jeito que altere o que o produto entrega, ou a mudança exigir alterar o
+  que o produto promete;
 - precisar de conta, segredo ou decisão dele.
+
+Relatório: **um por frente concluída**, em `docs/sessoes/`. Nunca por PR.
 
 ## Regras
 
