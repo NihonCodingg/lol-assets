@@ -9,10 +9,11 @@
 > a lista A fechou, a C foi despachada, e o agente conserta o que quebra sem abrir trabalho novo.
 > Oportunidade encontrada no caminho vira ideia anotada no fim do [TICKETS.md](TICKETS.md).
 >
-> **A Onda 8 (18/09) foi uma exceção pontual**, pedida e aprovada pelo dono para melhorar o
-> design, e já encerrada: o relatório está em
-> [2026-09-18-a-onda-8-a-arte-na-frente.md](sessoes/2026-09-18-a-onda-8-a-arte-na-frente.md). Ela
-> não é precedente — o modo de manutenção voltou a valer como está no ADR.
+> **Desde 18/09/2026 há duas velocidades** ([ADR 0022](adr/0022-o-front-end-vira-frente-continua.md)):
+> o back-end continua em manutenção, e a **interface** — UI, UX, acessibilidade e desempenho
+> percebido — virou frente contínua, onde o agente diagnostica, executa e mergeia sozinho, com
+> medição antes e depois. A Onda 8 foi o primeiro lote desse trabalho
+> ([relatório](sessoes/2026-09-18-a-onda-8-a-arte-na-frente.md)).
 >
 > **Desde 17/09/2026 o merge é do agente** ([ADR 0020](adr/0020-o-merge-e-do-agente.md)): com a
 > CI verde, ele mergeia e segue; só para por decisão de produto, contradição com a Spec ou um ADR,

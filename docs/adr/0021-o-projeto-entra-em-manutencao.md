@@ -7,6 +7,11 @@
   lista C foi despachada
 - **Respeita:** o [ADR 0020](0020-o-merge-e-do-agente.md) (o merge é do agente, com a CI verde)
 
+> **Emendado em 18/09/2026 pelo [ADR 0022](0022-o-front-end-vira-frente-continua.md):** o
+> back-end — indexação, contrato, publicação e infraestrutura — continua em manutenção, como está
+> escrito aqui. A **interface** saiu: UI, UX, acessibilidade e desempenho percebido viraram frente
+> contínua, onde o agente propõe e executa sozinho.
+
 ## Contexto
 
 Em 17/09/2026 o projeto ficou pronto: o site cumpre a Spec e está no ar, a Onda 7 do redesenho
