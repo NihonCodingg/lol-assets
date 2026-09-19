@@ -2951,6 +2951,55 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+## Frente de front-end — desde 18/09/2026
+
+> Não é onda com fim: é o regime do [ADR 0022](adr/0022-o-front-end-vira-frente-continua.md). Cada
+> ticket daqui nasce de **medição no site no ar** e volta com o número de depois.
+
+### T-59 — A chegada não salta, e a home pinta antes
+
+| | |
+|---|---|
+| **Objetivo** | Que a primeira tela pare de se mexer sozinha e apareça mais cedo |
+| **Dependências** | T-46, T-55 |
+| **Estimativa** | ~90 linhas |
+| **Effort** | baixo |
+| **Cobre** | §A.4 do KICKOFF (leve e rápido), desempenho percebido do [ADR 0022](adr/0022-o-front-end-vira-frente-continua.md) |
+
+> Medido na produção em 18/09/2026, numa tela de 1440×900: **salto de layout de 0,160**, primeiro
+> tile pintado em **1.567 ms**, LCP em **5.264 ms** e **126 imagens pedidas** para mostrar 28.
+> A causa do salto, achada com o `PerformanceObserver`: a navegação de categorias nascia em
+> `y=59` e pulava para `y=336` quando o catálogo chegava, 1,6 s depois — a lista não existia até
+> o manifesto responder. Junto dela, o esqueleto do carregamento tinha a barra de filtro **fora**
+> do bloco que rola, e a tela pronta a tem dentro: mais 43 px de empurrão.
+
+**Entra**
+- A navegação de categorias existe desde o primeiro quadro, com sete linhas de lugar enquanto a
+  lista não chega — e, no computador, ela **ocupa o espaço que sobra** (`md:flex-1`), de modo que
+  seções e avisos não se mexem quando as categorias entram. É o layout que segura o lugar, não o
+  número de linhas.
+- O esqueleto da chegada passa a ter a **mesma árvore** da tela pronta, com a barra de filtro
+  dentro do bloco que rola.
+- A grade da home ganha `content-visibility: auto` com `contain-intrinsic-size` por densidade: o
+  navegador pula o que está fora da tela, e pede menos imagem.
+
+**NÃO entra**
+- Virtualizar a grade de campeões: são 173 cartões, e o [ADR 0011](adr/0011-virtualizacao-so-onde-se-paga.md)
+  diz que virtualização só entra onde se paga.
+- Esqueleto na página Sobre: lá o manifesto nunca é buscado, e ele pulsaria para sempre.
+
+**Critérios de aceite**
+1. ✅ O salto de layout na chegada fica em **≤ 0,02** (e2e mede com `PerformanceObserver`).
+2. ✅ O topo das seções não se mexe quando as categorias chegam (±2 px).
+3. ✅ O bloco que rola começa na mesma altura no esqueleto e na tela pronta (±2 px).
+4. ✅ Sem provedor, a barra guarda o lugar mas não inventa categoria.
+
+**Testes que provam**
+- `desempenho.spec.ts` (novo): os três números acima, com o manifesto atrasado de propósito.
+- `navegacao-por-categoria.test.tsx`: a barra sem provedor.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
