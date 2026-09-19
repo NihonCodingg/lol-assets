@@ -9,6 +9,11 @@
 > a lista A fechou, a C foi despachada, e o agente conserta o que quebra sem abrir trabalho novo.
 > Oportunidade encontrada no caminho vira ideia anotada no fim do [TICKETS.md](TICKETS.md).
 >
+> **A Onda 8 (18/09) foi uma exceção pontual**, pedida e aprovada pelo dono para melhorar o
+> design, e já encerrada: o relatório está em
+> [2026-09-18-a-onda-8-a-arte-na-frente.md](sessoes/2026-09-18-a-onda-8-a-arte-na-frente.md). Ela
+> não é precedente — o modo de manutenção voltou a valer como está no ADR.
+>
 > **Desde 17/09/2026 o merge é do agente** ([ADR 0020](adr/0020-o-merge-e-do-agente.md)): com a
 > CI verde, ele mergeia e segue; só para por decisão de produto, contradição com a Spec ou um ADR,
 > segredo ou conta do dono, ou CI vermelha que não resolva.
@@ -19,8 +24,8 @@ O site cumpre a Spec e está no ar desde 11/09/2026, usado pelo dono e por amigo
 de 173 campeões, 27.313 assets em oito categorias, download individual e em lote, PNG gerado no
 navegador, os avisos da Riot e custo zero. Desde 17/09/2026 está no ar também o redesenho da
 Onda 7 — o painel do campeão como vitrine, as categorias em galeria, o telefone e o acabamento.
-A conferência contra a URL publicada, já com o redesenho no ar, passa 26 de 26 por HTTP e 9 de 9
-no navegador (17/09/2026).
+A conferência contra a URL publicada passa 26 de 26 por HTTP e 9 de 9 no navegador (18/09/2026,
+depois da Onda 8).
 
 ## A — Essencial
 

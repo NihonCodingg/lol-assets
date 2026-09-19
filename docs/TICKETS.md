@@ -2997,6 +2997,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | 6 | T-32 | — | API opcional |
 | — | ✅ T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**, e registrado no Developer Portal em 17/09/2026 |
 | 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → ✅ T-50 (⏸️ T-50b) | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
+| 8 | ✅ T-53 → ✅ T-54 → ✅ T-55 → ✅ T-56 → ✅ T-57 → ✅ T-58 | sequencial; merge do agente, com a CI verde | **A arte na frente, medida**: exceção pontual ao [ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md), encerrada em 18/09/2026 |
 
 ---
 
@@ -3012,3 +3013,6 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 15/09/2026 | Comparar com o `versions.json` do ddragon | Um aviso quando já existe patch mais novo que o índice (anotada no [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
 | 15/09/2026 | Dependabot | Atualização de segurança das dependências sem ninguém lembrar |
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
+| 18/09/2026 | Setas na galeria virtualizada das categorias | Andar por seta entre 5.042 ícones; hoje o item nem sempre está no DOM, e a seta teria de rolar o virtualizador junto (achado no T-57) |
+| 18/09/2026 | Filtro "esconder sombras" nas wards | As 532 wards são 266 pares arte + sombra; o T-56 as separou pelo nome, mas quem quer só a arte continua rolando o dobro |
+| 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
