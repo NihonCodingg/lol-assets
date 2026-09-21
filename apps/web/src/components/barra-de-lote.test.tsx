@@ -275,6 +275,9 @@ describe("tudo deste campeão", () => {
     render(<PainelDeAsset titulo="Jax" assets={ASSETS} onClose={vi.fn()} />);
     expect(screen.queryByLabelText(/^Selecionar /)).toBeNull();
     // Os botões de download continuam lá: lote é adicional, não substituto.
+    // Desde o T-60 eles entram no DOM quando o tile é apontado — como a pessoa
+    // faz antes de baixar.
+    for (const tile of screen.getAllByRole("article")) fireEvent.mouseEnter(tile);
     expect(screen.getAllByRole("button", { name: "Baixar original" })).toHaveLength(5);
   });
 });

@@ -34,7 +34,20 @@ function abrir(assets: readonly Asset[] = DO_JAX, extra: Partial<Parameters<type
       {...extra}
     />,
   );
+  apontarTodos();
   return { onClose, baixar, copiar };
+}
+
+/**
+ * Aponta cada tile da galeria, como a pessoa faz antes de baixar.
+ *
+ * Desde o T-60 as ações do tile entram no DOM quando ele é apontado ou recebe
+ * foco — antes disso elas já não apareciam na tela (T-53), só existiam. Estes
+ * testes clicavam num botão que ninguém via; agora apontam antes, que é o
+ * caminho de verdade. O que eles afirmam sobre os botões não mudou.
+ */
+function apontarTodos() {
+  for (const tile of screen.queryAllByRole("article")) fireEvent.mouseEnter(tile);
 }
 
 function cartoes(): HTMLElement[] {
@@ -313,6 +326,35 @@ describe("a galeria das categorias", () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     abrir([square]);
     expect(cartoes()[0].querySelector("h3")?.textContent).toBe(square.names.pt_BR);
+  });
+
+  /**
+   * T-60: medido na categoria de 5.042 ícones, 45 nós por tile e 2.423 na
+   * página; com as ações montadas só ao apontar, 939 — e abrir a categoria
+   * caiu de 89 para 78 ms.
+   */
+  it("as ações entram no DOM ao apontar ou focar, e saem ao sair", () => {
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    render(<PainelDeAsset titulo="Jax" assets={[square]} onClose={vi.fn()} onAmpliar={vi.fn()} />);
+    const tile = cartoes()[0];
+    expect(within(tile).queryByRole("button", { name: "Baixar original" })).toBeNull();
+    // A ficha fica: é ela que o RF-09 pede antes do download.
+    expect(within(tile).getByText(/·/)).toBeTruthy();
+
+    fireEvent.mouseEnter(tile);
+    expect(within(tile).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+    fireEvent.mouseLeave(tile);
+    expect(within(tile).queryByRole("button", { name: "Baixar original" })).toBeNull();
+
+    // Pelo teclado: o foco entra pela prévia, que está sempre no DOM.
+    fireEvent.focus(within(tile).getByRole("button", { name: /^Ampliar / }));
+    expect(within(tile).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+  });
+
+  it("sem nada focável antes delas, as ações ficam sempre — o teclado precisa chegar", () => {
+    const square = DO_JAX.find((a) => a.type === "square")!;
+    render(<PainelDeAsset titulo="Jax" assets={[square]} onClose={vi.fn()} />);
+    expect(within(cartoes()[0]).getByRole("button", { name: "Baixar original" })).toBeTruthy();
   });
 
   it("com a ampliação, a prévia vira o botão dela", () => {
