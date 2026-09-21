@@ -36,7 +36,7 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Command } from "cmdk";
 import { Search } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Catalog, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
@@ -65,7 +65,7 @@ export interface PaletaDeBuscaProps {
   readonly onIntencao?: () => void;
 }
 
-export function PaletaDeBusca({
+function Paleta({
   catalog,
   assetsBaseUrl,
   onChampion,
@@ -399,3 +399,6 @@ function Linha({ hit, arte }: { hit: SearchHit; arte: string | undefined }) {
     </>
   );
 }
+
+/** Memorizada pelo mesmo motivo da grade (T-72): a página muda, a busca não. */
+export const PaletaDeBusca = memo(Paleta);

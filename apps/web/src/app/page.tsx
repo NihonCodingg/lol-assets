@@ -13,9 +13,9 @@
  */
 
 import { CloudOff } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { Asset, Catalog, CatalogChampion, IndexManifest } from "@lol-assets/schema";
+import type { Asset, Catalog, CatalogChampion, CatalogSkin, IndexManifest } from "@lol-assets/schema";
 
 import { AvisoDeIndiceVelho } from "@/components/aviso-de-indice-velho";
 import { AvisosNoFim } from "@/components/avisos-da-riot";
@@ -111,17 +111,36 @@ export default function HomePage() {
   const abrirCampeao = useCallback(
     async (champion: CatalogChampion, skinNum?: number) => {
       setAberto({ champion, skinNum });
+      // As artes do campeão anterior ficavam no estado depois de fechar: o
+      // painel da Ahri nascia com as 115 artes do Jax, montadas à toa (T-72).
+      setAssets(null);
       setErroDoPainel(null);
       if (estado.fase !== "pronto") return;
       try {
         // Sob demanda, e memoizada: trocar de campeão não busca de novo.
         const shard = await cliente.loadShard(estado.manifest, "champion");
-        setAssets(shard.assets.filter((a) => a.championKey === champion.championKey));
+        const doCampeao = shard.assets.filter((a) => a.championKey === champion.championKey);
+        // As artes entram numa transição (T-72): o painel pinta primeiro — a
+        // vitrine, o seletor —, e a grade vem logo depois, sem segurar o toque.
+        // Com a fatia já em memória, tudo saía numa tarefa só: 360 ms entre o
+        // toque e a primeira pintura num telefone mediano.
+        startTransition(() => setAssets(doCampeao));
       } catch (erro) {
         setErroDoPainel(erro instanceof Error ? erro.message : String(erro));
       }
     },
     [cliente, estado],
+  );
+  // Estáveis, para a grade e a busca memorizadas não renderizarem à toa (T-72).
+  const abrirPeloCartao = useCallback(
+    (champion: CatalogChampion) => void abrirCampeao(champion),
+    [abrirCampeao],
+  );
+  const abrirPelaSkin = useCallback(
+    (skin: CatalogSkin, champion: CatalogChampion | undefined) => {
+      if (champion) void abrirCampeao(champion, skin.skinNum);
+    },
+    [abrirCampeao],
   );
 
   if (estado.fase === "carregando") {
@@ -197,10 +216,10 @@ export default function HomePage() {
         catalog={catalog}
         assetsBaseUrl={BASE_ASSETS}
         onIntencao={preaquecer}
-        onChampion={(champion) => void abrirCampeao(champion)}
+        onChampion={abrirPeloCartao}
         // O resultado de skin é atalho para dentro do painel, não destino
         // separado: abre o campeão já naquela skin (RF-25).
-        onSkin={(skin, champion) => champion && void abrirCampeao(champion, skin.skinNum)}
+        onSkin={abrirPelaSkin}
       />
 
       {/*
@@ -234,7 +253,7 @@ export default function HomePage() {
               skins={catalog.skins}
               assetsBaseUrl={BASE_ASSETS}
               onIntencao={preaquecer}
-              onAbrir={(champion) => void abrirCampeao(champion)}
+              onAbrir={abrirPeloCartao}
             />
             {/* RF-21 no telefone: o fim da página é o fim da grade (T-49). */}
             <AvisosNoFim />

@@ -27,6 +27,7 @@
 
 import { Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
 import {
+  memo,
   useEffect,
   useMemo,
   useRef,
@@ -112,7 +113,7 @@ export interface GradeDeCampeoesProps {
   readonly onIntencao?: () => void;
 }
 
-export function GradeDeCampeoes({
+function Grade({
   champions,
   skins,
   assetsBaseUrl,
@@ -376,3 +377,11 @@ export function EsqueletoDaGrade({ cartoes = 24 }: { cartoes?: number }) {
     </div>
   );
 }
+
+/**
+ * Memorizada (T-72): a grade é filha da página, e toda mudança de estado da
+ * página — abrir o painel, chegarem as artes, fechar — renderizava de novo os
+ * 173 cartões, que não mudaram. Era metade do tempo entre o toque num campeão e
+ * a primeira pintura, num telefone mediano.
+ */
+export const GradeDeCampeoes = memo(Grade);
