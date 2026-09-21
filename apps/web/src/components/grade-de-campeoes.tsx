@@ -108,9 +108,17 @@ export interface GradeDeCampeoesProps {
   readonly skins?: readonly CatalogSkin[];
   readonly assetsBaseUrl?: string;
   readonly onAbrir: (champion: CatalogChampion) => void;
+  /** Alguém apontou ou focou a grade: é hora de adiantar a fatia (T-61). */
+  readonly onIntencao?: () => void;
 }
 
-export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: GradeDeCampeoesProps) {
+export function GradeDeCampeoes({
+  champions,
+  skins,
+  assetsBaseUrl,
+  onAbrir,
+  onIntencao,
+}: GradeDeCampeoesProps) {
   const funcoes = useMemo(() => funcoesDe(champions), [champions]);
   const [marcadas, setMarcadas] = useState<ReadonlySet<string>>(new Set());
   const visiveis = useMemo(() => filtrarCampeoes(champions, marcadas), [champions, marcadas]);
@@ -275,6 +283,8 @@ export function GradeDeCampeoes({ champions, skins, assetsBaseUrl, onAbrir }: Gr
           aria-label="Campeões"
           data-densidade={densidade}
           onKeyDown={aoTeclar}
+          onPointerEnter={onIntencao}
+          onFocus={onIntencao}
           style={{ "--altura-do-cartao": ALTURA_ESTIMADA[densidade] } as CSSProperties}
           className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
         >

@@ -61,6 +61,8 @@ export interface PaletaDeBuscaProps {
   readonly onSkin: (skin: CatalogSkin, champion: CatalogChampion | undefined) => void;
   /** Quem contém decide onde ela cabe — o telefone dentro de uma categoria não tem linha sobrando. */
   readonly className?: string;
+  /** Alguém começou a digitar: todo resultado leva a um campeão (T-61). */
+  readonly onIntencao?: () => void;
 }
 
 export function PaletaDeBusca({
@@ -69,6 +71,7 @@ export function PaletaDeBusca({
   onChampion,
   onSkin,
   className,
+  onIntencao,
 }: PaletaDeBuscaProps) {
   const indice = useMemo(() => buildSearchIndex(catalog), [catalog]);
   const artePorSkin = useMemo(
@@ -178,6 +181,7 @@ export function PaletaDeBusca({
           onValueChange={(valor) => {
             setConsulta(valor);
             setAberta(true);
+            onIntencao?.();
           }}
           onFocus={() => setAberta(true)}
           onKeyDown={(evento) => {

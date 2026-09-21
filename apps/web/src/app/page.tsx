@@ -13,7 +13,7 @@
  */
 
 import { CloudOff } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Asset, Catalog, CatalogChampion, IndexManifest } from "@lol-assets/schema";
 
@@ -29,6 +29,7 @@ import { Esqueleto } from "@/components/ui/esqueleto";
 import { Estado } from "@/components/ui/estado";
 import { AssetsClient } from "@/lib/assets-client";
 import { categoriasDisponiveis } from "@/lib/categorias";
+import { conexaoDoNavegador, devePreaquecer } from "@/lib/preaquecer";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -89,6 +90,23 @@ export default function HomePage() {
       estado.catalog.champions.length,
     );
   }, [estado, registrar]);
+
+  /**
+   * A fatia de campeão começa a chegar no primeiro sinal de intenção (T-61):
+   * apontar a grade, focar um cartão, digitar na busca. Ela é uma só para os
+   * 173 campeões, e o clique encontra a promessa já em andamento — o
+   * `AssetsClient` guarda a promessa, e esquece a que falhar.
+   */
+  const preaquecido = useRef(false);
+  const preaquecer = useCallback(() => {
+    if (preaquecido.current || estado.fase !== "pronto") return;
+    if (!devePreaquecer(conexaoDoNavegador())) return;
+    preaquecido.current = true;
+    cliente.loadShard(estado.manifest, "champion").catch(() => {
+      // Falhou adiantado: o clique tenta de novo, e mostra o erro se for o caso.
+      preaquecido.current = false;
+    });
+  }, [cliente, estado]);
 
   const abrirCampeao = useCallback(
     async (champion: CatalogChampion, skinNum?: number) => {
@@ -178,6 +196,7 @@ export default function HomePage() {
         className={cn(aberta !== null && "max-md:hidden")}
         catalog={catalog}
         assetsBaseUrl={BASE_ASSETS}
+        onIntencao={preaquecer}
         onChampion={(champion) => void abrirCampeao(champion)}
         // O resultado de skin é atalho para dentro do painel, não destino
         // separado: abre o campeão já naquela skin (RF-25).
@@ -214,6 +233,7 @@ export default function HomePage() {
               champions={catalog.champions}
               skins={catalog.skins}
               assetsBaseUrl={BASE_ASSETS}
+              onIntencao={preaquecer}
               onAbrir={(champion) => void abrirCampeao(champion)}
             />
             {/* RF-21 no telefone: o fim da página é o fim da grade (T-49). */}
