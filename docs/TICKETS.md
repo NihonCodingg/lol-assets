@@ -3403,3 +3403,4 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
 | 18/09/2026 | Filtro "esconder sombras" nas wards | As 532 wards são 266 pares arte + sombra; o T-56 as separou pelo nome, mas quem quer só a arte continua rolando o dobro |
 | 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
+| 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. Exige infraestrutura (fora da frente de interface) |
