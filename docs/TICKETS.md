@@ -3043,6 +3043,46 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-61 — O painel abre rápido já na primeira vez
+
+| | |
+|---|---|
+| **Objetivo** | Que o primeiro campeão aberto não espere a fatia de dados depois do clique |
+| **Dependências** | T-47 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | baixo |
+| **Cobre** | RNF-02 (imagem abre rápido), RNF-03 (a home abre sem fatia), desempenho percebido do [ADR 0022](adr/0022-o-front-end-vira-frente-continua.md) |
+
+> Medido na produção em 18/09/2026: com o cache em dia, trocar de skin leva **47 ms** e não pisca
+> — o que demorava era **a primeira abertura**. A fatia `champion` tem **1,3 MB comprimida** (12,7
+> MB aberta, dentro do orçamento do RNF-03) e só começava a chegar **depois** do clique: mediana de
+> **816 ms** do clique até a primeira arte do painel, em cinco visitas de cache frio.
+
+**Entra**
+- A fatia começa a chegar **no primeiro sinal de intenção**: apontar a grade, focar um cartão,
+  digitar na busca. Ela é uma só para os 173 campeões, e o clique encontra a promessa já em
+  andamento — o `AssetsClient` guarda a promessa, e esquece a que falhar.
+- Com economia de dados ligada, ou em 2G, a fatia espera o clique, como antes (`devePreaquecer`).
+
+**NÃO entra**
+- Buscar a fatia ao abrir a home: o RNF-03 diz que a abertura não carrega fatia nenhuma, e continua
+  não carregando — o e2e do RNF-03 segue verde.
+- Fatiar a `champion` por campeão: é trabalho do indexador, que está em manutenção, e é o T-39 da
+  lista B, com gatilho próprio.
+
+**Critérios de aceite**
+1. ✅ Abrir a home não pede a fatia; apontar a grade pede; o clique não pede de novo (e2e).
+2. ✅ Focar um cartão e digitar na busca também avisam a intenção; só montar a grade, não.
+3. ✅ Economia de dados e 2G não adiantam nada.
+4. ✅ Medido no preview da Vercel, mesma rede e mesmo método: ver o relatório da frente.
+
+**Testes que provam**
+- `preaquecer.test.ts`: a política de conexão.
+- `navegacao.test.tsx`: grade e busca avisando a intenção, e a home que não avisa sozinha.
+- `desempenho.spec.ts`: a fatia pedida ao apontar, uma vez só, e nunca ao abrir.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

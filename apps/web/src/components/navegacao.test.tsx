@@ -346,6 +346,41 @@ describe("a arte do cartão (T-46)", () => {
  * `gridTemplateColumns` vem vazio e "uma linha" é uma coluna: ArrowDown anda um
  * cartão. Quantas colunas o navegador resolve de verdade está no e2e.
  */
+/**
+ * T-61: a fatia de campeão começa a chegar no primeiro sinal de intenção. Quem
+ * decide se adianta de fato é a página; a grade e a busca só avisam.
+ */
+describe("a intenção de abrir um campeão (T-61)", () => {
+  it("apontar a grade avisa", () => {
+    const onIntencao = vi.fn();
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
+    fireEvent.pointerEnter(screen.getByRole("list", { name: "Campeões" }));
+    expect(onIntencao).toHaveBeenCalled();
+  });
+
+  it("focar um cartão avisa — quem usa teclado também ganha", () => {
+    const onIntencao = vi.fn();
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
+    fireEvent.focus(screen.getAllByRole("listitem")[0].querySelector("button")!);
+    expect(onIntencao).toHaveBeenCalled();
+  });
+
+  it("digitar na busca avisa", () => {
+    const onIntencao = vi.fn();
+    render(
+      <PaletaDeBusca catalog={CATALOGO} onChampion={vi.fn()} onSkin={vi.fn()} onIntencao={onIntencao} />,
+    );
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "ca" } });
+    expect(onIntencao).toHaveBeenCalled();
+  });
+
+  it("só montar a grade não avisa nada — a home abre sem fatia (RNF-03)", () => {
+    const onIntencao = vi.fn();
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
+    expect(onIntencao).not.toHaveBeenCalled();
+  });
+});
+
 describe("o teclado na grade (T-57)", () => {
   const cartoes = () => screen.getAllByRole("listitem").map((li) => li.querySelector("button")!);
 

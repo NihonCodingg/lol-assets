@@ -97,3 +97,28 @@ test("o esqueleto tem a mesma árvore da tela pronta", async ({ page }) => {
   expect(topoDoEsqueleto).not.toBeNull();
   expect(Math.abs((topoDoConteudo ?? 0) - (topoDoEsqueleto ?? 0))).toBeLessThanOrEqual(2);
 });
+
+/**
+ * T-61. A fatia de campeão (1,3 MB comprimida) chegava só depois do clique, e o
+ * painel abria vazio esperando por ela — mediana de 816 ms do clique até a arte,
+ * medida na produção. Agora ela vem no primeiro sinal de intenção.
+ */
+test("apontar a grade adianta a fatia de campeão; só abrir a home, não", async ({ page }) => {
+  const pedidas: string[] = [];
+  page.on("request", (requisicao) => pedidas.push(requisicao.url()));
+
+  await page.goto("/");
+  await expect(page.getByRole("list", { name: "Campeões" })).toBeVisible();
+  await page.waitForTimeout(500);
+  // RNF-03: abrir a home não busca fatia nenhuma.
+  expect(pedidas.some((url) => url.includes("index-champion"))).toBe(false);
+
+  await page.getByRole("list", { name: "Campeões" }).hover();
+  await expect.poll(() => pedidas.some((url) => url.includes("index-champion"))).toBe(true);
+
+  // E o clique usa a mesma fatia: nenhum segundo pedido.
+  await page.getByRole("list", { name: "Campeões" }).getByRole("button").first().click();
+  await page.waitForTimeout(500);
+  expect(pedidas.filter((url) => url.includes("index-champion"))).toHaveLength(1);
+});
+
