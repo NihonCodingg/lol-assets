@@ -221,7 +221,7 @@ export function NavegacaoPorCategoria({
 
 
   return (
-    <section aria-label="Categorias" className="flex min-h-0 flex-1 flex-col">
+    <section aria-label="Categorias" className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
       <div className="flex-none border-b border-borda bg-fundo-barra">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2">
           <Botao
@@ -340,7 +340,7 @@ export function NavegacaoPorCategoria({
       {(carga.fase !== "pronta" || filtrados.length === 0) && (
         // Carregando, erro e vazio: o que houver, e os avisos embaixo, na mesma
         // área que rola.
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto baixa:overflow-visible">
           {carga.fase === "carregando" && <Carregando rotulo={rotulo} />}
           {/* Centrado na área que sobra: colado no topo, com 700 px de vazio
               embaixo, o aviso parecia o começo de uma lista que não veio. */}
@@ -444,7 +444,7 @@ function GrupoDeChips({
 /** A forma da galeria enquanto a fatia não chega, e a frase para quem não vê. */
 function Carregando({ rotulo }: { rotulo: string }) {
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden baixa:min-h-dvh">
       <p className="px-3.5 py-2 text-12 text-texto-suave">Carregando {rotulo}…</p>
       {/* A forma do que vem: a arte, e a linha do nome embaixo dela (T-56). Um
           bloco liso não dizia que ali vinha uma galeria. */}

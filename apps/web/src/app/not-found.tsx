@@ -12,7 +12,7 @@ import { AvisosNoFim } from "@/components/avisos-da-riot";
 
 export default function NaoEncontrada() {
   return (
-    <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <main className="flex min-h-0 flex-1 flex-col overflow-y-auto baixa:overflow-visible">
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-3.5 py-16 text-center">
         <h1 className="text-19 font-semibold tracking-titulo">Página não encontrada</h1>
         <p className="text-13 text-texto-suave">O endereço não leva a nada por aqui.</p>

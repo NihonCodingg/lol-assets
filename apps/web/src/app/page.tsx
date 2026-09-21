@@ -140,7 +140,7 @@ export default function HomePage() {
           empurrava o conteúdo 43 px para baixo e devolvia esses 43 px quando o
           catálogo chegava — parte do salto de 0,16 medido na produção.
         */}
-        <div data-conteudo="" className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div data-conteudo="" className="flex min-h-0 flex-1 flex-col overflow-hidden baixa:overflow-visible">
           <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
             <Esqueleto className="h-controle-md w-80 max-w-full" />
           </div>
@@ -152,7 +152,7 @@ export default function HomePage() {
   }
   if (estado.fase === "erro") {
     return (
-      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto baixa:overflow-visible">
         <h1 className="sr-only">{siteConfig.displayName}</h1>
         <Estado
           role="alert"
@@ -180,7 +180,7 @@ export default function HomePage() {
 
   const { catalog, manifest } = estado;
   return (
-    <main className="flex min-h-0 flex-1 flex-col">
+    <main className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
       {/* O `h1` é o nome do produto e existe para leitor de tela e para o SEO;
           na tela ele já está na barra lateral, em cima do quadrado do acento. */}
       <h1 className="sr-only">{siteConfig.displayName}</h1>
@@ -222,13 +222,13 @@ export default function HomePage() {
         id="conteudo"
         data-conteudo=""
         tabIndex={-1}
-        className="flex min-h-0 flex-1 flex-col outline-none"
+        className="flex min-h-0 flex-1 flex-col outline-none baixa:min-h-auto"
       >
         {aberta === null ? (
           // A grade rola por dentro deste `div`. A categoria **não** pode rolar
           // aqui: ela tem scroller virtual próprio, e um pai que rola daria a
           // ele altura zero — a lista viria vazia, sem erro nenhum.
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="min-h-0 flex-1 overflow-y-auto baixa:flex-none baixa:overflow-visible">
             <GradeDeCampeoes
               champions={catalog.champions}
               skins={catalog.skins}

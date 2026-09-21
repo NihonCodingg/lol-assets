@@ -26,7 +26,7 @@ export default function SobrePage() {
   const creditos = creditosVisiveis(siteConfig.wikiConsentGranted);
 
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto px-3.5 py-6">
+    <main className="min-h-0 flex-1 overflow-y-auto px-3.5 py-6 baixa:overflow-visible">
       <div className="mx-auto flex max-w-busca-max flex-col gap-6">
       <h1 className="text-19 font-semibold tracking-titulo">Sobre</h1>
 

@@ -545,3 +545,53 @@ test.describe("avisos da Riot em tela baixa", () => {
     expect(barraRola).toBe(false);
   });
 });
+
+/**
+ * T-67: reflow (WCAG 1.4.10). Zoom de 400% é uma tela de 320×256 px CSS; zoom
+ * de 200%, de 640×450 — e o telefone deitado, de 844×390.
+ *
+ * A casca rola por dentro e tem altura fixa. Medido na produção em 21/09/2026:
+ * a 320×225 o cromo tomava a tela inteira, a galeria de Itens tinha **0 px** e
+ * o aviso do filtro padrão ficava por cima da linha do patch. Em tela baixa a
+ * janela volta a rolar, e a galeria virtual ganha a altura da tela.
+ */
+for (const [nome, viewport] of [
+  ["zoom de 400%", { width: 320, height: 256 }],
+  ["zoom de 200%", { width: 640, height: 450 }],
+  ["telefone deitado", { width: 844, height: 390 }],
+] as const) {
+  test.describe(`tela baixa: ${nome}`, () => {
+    test.use({ viewport });
+
+    test("a arte aparece, e nada fica por cima de nada", async ({ page }) => {
+      await page.goto("/");
+      const grade = page.getByRole("list", { name: "Campeões" });
+      await expect(grade).toBeVisible();
+      // Nada vaza na horizontal.
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
+
+      // Rolando a janela, o primeiro cartão chega à tela.
+      await grade.getByRole("button").first().scrollIntoViewIfNeeded();
+      await expect(grade.getByRole("button").first()).toBeInViewport();
+
+      await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+      const galeria = page.locator("[data-virtual='sim']");
+      await expect(galeria.locator("article").first()).toBeAttached();
+      // A galeria virtual tem a altura da tela — era 0 a 320×225.
+      expect(await galeria.evaluate((el) => Math.round(el.getBoundingClientRect().height))).toBe(
+        viewport.height,
+      );
+      await galeria.scrollIntoViewIfNeeded();
+      await expect(galeria.locator("article").first()).toBeInViewport();
+
+      // O aviso do filtro padrão e a linha do patch não se sobrepõem.
+      const [aviso, patch] = await Promise.all([
+        page.getByText(/abre filtrada/).boundingBox(),
+        page.getByText(/^Patch /).boundingBox(),
+      ]);
+      const sobrepostos =
+        aviso!.y + aviso!.height > patch!.y + 1 && patch!.y + patch!.height > aviso!.y + 1;
+      expect(sobrepostos).toBe(false);
+    });
+  });
+}

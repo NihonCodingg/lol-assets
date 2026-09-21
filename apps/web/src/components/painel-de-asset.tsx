@@ -192,7 +192,7 @@ export function PainelDeAsset({
   });
 
   return (
-    <section aria-label={titulo} className="flex min-h-0 flex-1 flex-col">
+    <section aria-label={titulo} className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
       <div className="flex flex-none flex-wrap items-center gap-x-2 gap-y-1 px-3.5 py-2">
         <h2 className="truncate text-12 font-medium text-texto-forte">{titulo}</h2>
         <span className="font-mono text-11 text-texto-suave">
@@ -389,7 +389,8 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
 
   if (!virtual) {
     return (
-      <div className={classeDoScroller}>
+      // Em tela baixa, a galeria pequena rola junto com a página (T-67).
+      <div className={cn(classeDoScroller, "baixa:flex-none baixa:overflow-visible")}>
         <ul
           ref={lista}
           {...teclado}
@@ -415,7 +416,14 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
     // `flex-1 min-h-0` em vez de uma altura fixa: a altura vem do pai, que é a
     // coluna do painel. Uma `70vh` cravada aqui ignoraria a bandeja do lote e a
     // barra de filtros que dividem a mesma tela.
-    <div ref={scroller} data-virtual="sim" className={cn(classeDoScroller, "contain-strict")}>
+    // Em tela baixa a página rola, e a galeria virtual precisa de altura
+    // própria: a da tela inteira, que é o que ela ocupa quando se chega nela
+    // (T-67). Sem isto, `flex-1` numa coluna sem altura dava 0 px.
+    <div
+      ref={scroller}
+      data-virtual="sim"
+      className={cn(classeDoScroller, "contain-strict baixa:h-dvh baixa:flex-none")}
+    >
       <ul
         ref={lista}
         {...teclado}
