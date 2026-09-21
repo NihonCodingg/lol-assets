@@ -3392,7 +3392,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 | **Dependências** | T-54, T-64 |
 | **Estimativa** | ~120 linhas |
 | **Effort** | médio |
-| **Cobre** | RF-01, a meta da §A.7 e a emenda do [ADR 0009](adr/0009-apelidos-de-busca-em-json-estatico.md) |
+| **Cobre** | RF-01, a meta da §A.7 e a emenda do [ADR 0009](adr/0009-apelidos-de-busca-mantidos-a-mao.md) |
 
 > Rodada 5 da frente, diagnóstico de 21/09/2026 na produção. Foram 50 consultas que um editor
 > digita de verdade: nomes, apóstrofos, apelidos, linhas de skin, pt-BR e inglês. 41 acertaram em
