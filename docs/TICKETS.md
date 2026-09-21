@@ -3475,6 +3475,42 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-71 — Fechar uma camada devolve o foco a quem a abriu
+
+| | |
+|---|---|
+| **Objetivo** | Que quem usa teclado não volte ao topo da página toda vez que fecha o painel ou a ampliação |
+| **Dependências** | T-30, T-47, T-70 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | baixo |
+| **Cobre** | RNF-11 e WCAG 2.4.3 (ordem do foco) |
+
+> Rodada 7 da frente, diagnóstico de 21/09/2026 na produção, a 1440×900 com teclado. Foram 10
+> caminhos de abrir e fechar: o cartão, a busca e o botão de ampliar, fechando com Esc, com o ×,
+> com Voltar e com "Voltar aos campeões". Em **9 de 10**, o foco caía no `body` (ou no contêiner
+> do painel), e quem usa teclado voltava ao topo e perdia o lugar na grade.
+>
+> A causa: o painel e a ampliação são `Dialog` do Radix sem `Dialog.Trigger`, porque abrem por
+> estado. No modo modal, o Radix devolve o foco ao gatilho ao fechar, e sem gatilho não devolvia
+> a ninguém.
+
+**Entra**
+- Os dois diálogos guardam quem tinha o foco quando abriram e devolvem o foco a ele ao fechar, por
+  qualquer caminho. Se esse elemento saiu do DOM (um tile da galeria virtual que rolou), o foco vai
+  para o conteúdo.
+- "Voltar aos campeões" leva o foco para a grade que entra no lugar, o mesmo alvo do "Ir para o
+  conteúdo", porque o botão some junto com a categoria.
+
+**Critérios de aceite**
+1. ✅ Dos 10 caminhos, de **1 para 10** que devolvem o foco ao lugar certo: o cartão, a busca, o
+   botão de ampliar ou o conteúdo.
+
+**Testes que provam**
+- `acessibilidade.spec.ts`, "o foco volta ao lugar": painel pelo cartão, ampliação na galeria,
+  painel pela busca e "Voltar aos campeões". Os 4 falham sem a correção.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

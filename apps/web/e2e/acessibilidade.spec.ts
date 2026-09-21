@@ -621,3 +621,51 @@ test.describe("busca com erro de dedo", () => {
     await expect(page.getByRole("option")).toHaveCount(0);
   });
 });
+
+/**
+ * T-71: fechar uma camada devolve o foco a quem a abriu. Medido na produção em
+ * 21/09/2026: em 9 de 10 caminhos o foco caía no `body`, e quem usa teclado
+ * voltava ao topo da página — o painel e a ampliação são diálogos do Radix sem
+ * `Dialog.Trigger`, e o Radix devolve o foco ao gatilho.
+ */
+test.describe("o foco volta ao lugar", () => {
+  test("Esc no painel devolve o foco ao cartão que o abriu", async ({ page }) => {
+    await irParaHome(page);
+    const cartao = page.getByRole("list", { name: "Campeões" }).getByRole("button", { name: /^Jax\b/ });
+    await cartao.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Painel de Jax" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(cartao).toBeFocused();
+  });
+
+  test("fechar a ampliação devolve o foco ao botão de ampliar", async ({ page }) => {
+    await irParaHome(page);
+    await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+    const ampliar = page.locator("[data-virtual='sim'] article").first().getByRole("button", { name: /^Ampliar / });
+    await ampliar.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: /^Ampliação de/ })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(ampliar).toBeFocused();
+  });
+
+  test("abrir pela busca e fechar devolve o foco à busca", async ({ page }) => {
+    await irParaHome(page);
+    await page.keyboard.type("jax");
+    await expect(page.getByRole("option").first()).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Painel de Jax" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("combobox")).toBeFocused();
+  });
+
+  test("Voltar aos campeões leva o foco para os campeões, não para o topo", async ({ page }) => {
+    await irParaHome(page);
+    await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+    const voltar = page.getByRole("button", { name: "Voltar aos campeões" });
+    await voltar.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#conteudo")).toBeFocused();
+  });
+});

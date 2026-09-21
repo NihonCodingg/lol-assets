@@ -31,6 +31,7 @@ import { AcoesDoAsset } from "@/components/painel-de-asset";
 import { BotaoIcone } from "@/components/ui/botao-icone";
 import { assetSummary } from "@/lib/asset-file";
 import { rotuloDoTipo } from "@/lib/asset-panel";
+import { useFocoDeVolta } from "@/lib/foco";
 import { useFecharComVoltar } from "@/lib/voltar";
 
 export interface AmpliacaoProps {
@@ -46,6 +47,7 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
   const conteudo = useRef<HTMLDivElement>(null);
   // Voltar fecha a ampliação, não o site (T-70).
   useFecharComVoltar(true, onFechar);
+  const foco = useFocoDeVolta();
   const nome = `${asset.names.pt_BR} — ${rotuloDoTipo(asset.type)}`;
 
   return (
@@ -59,8 +61,11 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
           aria-describedby={undefined}
           onOpenAutoFocus={(evento) => {
             evento.preventDefault();
+            foco.guardar();
             conteudo.current?.focus();
           }}
+          // Ao fechar, o foco volta ao botão de ampliar que abriu (T-71).
+          onCloseAutoFocus={foco.devolver}
           onEscapeKeyDown={(evento) => evento.preventDefault()}
           // O conteúdo cobre a tela; clicar no vazio em volta da arte fecha.
           onClick={(evento) => {

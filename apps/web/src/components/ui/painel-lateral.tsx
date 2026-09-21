@@ -16,6 +16,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRef, type ReactNode } from "react";
 
+import { useFocoDeVolta } from "@/lib/foco";
 import { cn } from "@/lib/utils";
 
 export interface PainelLateralProps {
@@ -48,6 +49,7 @@ export function PainelLateral({
   fecharPorFora = true,
 }: PainelLateralProps) {
   const conteudo = useRef<HTMLDivElement>(null);
+  const foco = useFocoDeVolta();
   return (
     <Dialog.Root open={aberto} onOpenChange={(proximo) => !proximo && onFechar()}>
       <Dialog.Portal>
@@ -67,8 +69,11 @@ export function PainelLateral({
           // primeiro Tab chega no fechar do mesmo jeito.
           onOpenAutoFocus={(evento) => {
             evento.preventDefault();
+            foco.guardar();
             conteudo.current?.focus();
           }}
+          // Ao fechar, o foco volta a quem abriu — o cartão, a busca (T-71).
+          onCloseAutoFocus={foco.devolver}
           onEscapeKeyDown={(evento) => !fecharPorEsc && evento.preventDefault()}
           onPointerDownOutside={(evento) => !fecharPorFora && evento.preventDefault()}
           onInteractOutside={(evento) => !fecharPorFora && evento.preventDefault()}
