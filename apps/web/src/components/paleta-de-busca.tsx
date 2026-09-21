@@ -43,7 +43,7 @@ import type { Catalog, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 import { Tecla } from "@/components/ui/campo";
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
-import { buildSearchIndex, hitId, search, type SearchHit } from "@/lib/search";
+import { buildSearchIndex, hitId, parecidos, search, type SearchHit } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
 /** Altura fixa por item — é o que a virtualização exige para medir. */
@@ -89,10 +89,18 @@ export function PaletaDeBusca({
   const campo = useRef<HTMLInputElement>(null);
 
   // Sem teto: quem segura a lista é a virtualização, não um corte arbitrário.
-  const resultados = useMemo(
+  const exatos = useMemo(
     () => search(indice, consulta, Number.POSITIVE_INFINITY),
     [indice, consulta],
   );
+  // Nada achado: os campeões a um erro de dedo de distância (T-69). Só entram
+  // quando a busca de verdade volta vazia — o ranking não muda.
+  const sugeridos = useMemo(
+    () => (exatos.length === 0 ? parecidos(indice, consulta) : []),
+    [indice, consulta, exatos],
+  );
+  const soParecidos = exatos.length === 0 && sugeridos.length > 0;
+  const resultados = soParecidos ? sugeridos : exatos;
   const mostrar = aberta && consulta.trim().length > 0;
   const vazia = consulta.trim().length > 0 && resultados.length === 0;
   const scroller = useRef<HTMLDivElement>(null);
@@ -238,9 +246,14 @@ export function PaletaDeBusca({
                 </p>
               </div>
             )}
+            {soParecidos && (
+              <p role="status" className="px-2 pt-1 pb-1.5 text-12 text-texto-suave">
+                Nada para “{consulta.trim()}”. Parecido:
+              </p>
+            )}
             <Command.List
               // O padrão do cmdk é "Suggestions", em inglês.
-              label="Resultados da busca"
+              label={soParecidos ? "Campeões parecidos" : "Resultados da busca"}
               hidden={vazia}
               style={
                 virtual
@@ -281,7 +294,14 @@ export function PaletaDeBusca({
 
           <div className="flex h-paleta-rodape items-center gap-3 border-t border-borda px-3 font-mono text-10 text-texto-suave">
             <span className="tabular-nums">
-              {resultados.length} {resultados.length === 1 ? "resultado" : "resultados"}
+              {resultados.length}{" "}
+              {soParecidos
+                ? resultados.length === 1
+                  ? "parecido"
+                  : "parecidos"
+                : resultados.length === 1
+                  ? "resultado"
+                  : "resultados"}
             </span>
             <span className="ml-auto hidden items-center gap-1 sm:flex">
               <Tecla>↑</Tecla>

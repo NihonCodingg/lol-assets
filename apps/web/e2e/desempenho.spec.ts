@@ -61,6 +61,11 @@ test("as categorias chegam sem empurrar o que está embaixo delas", async ({ pag
     });
 
   await expect.poll(topoDasSecoes).not.toBeNull();
+  // Só mede depois do CSS: o teste começa no `commit`, e com a máquina
+  // carregada (a suíte inteira em paralelo) a primeira leitura saía do layout
+  // sem estilo — as seções a 77 px, numa tela que o navegador nunca pinta. O
+  // salto que se vê é o do `__saltos`, que o navegador mede, logo abaixo.
+  await page.waitForFunction(() => getComputedStyle(document.body).display === "grid");
   const antes = await topoDasSecoes();
 
   await expect(page.getByRole("list", { name: "Campeões" })).toBeVisible();

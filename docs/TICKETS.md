@@ -3384,6 +3384,58 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-69 — Erro de dedo na busca: o vazio oferece o campeão parecido
+
+| | |
+|---|---|
+| **Objetivo** | Que um erro de digitação no nome do campeão não termine em "nada encontrado" |
+| **Dependências** | T-54, T-64 |
+| **Estimativa** | ~120 linhas |
+| **Effort** | médio |
+| **Cobre** | RF-01, a meta da §A.7 e a emenda do [ADR 0009](adr/0009-apelidos-de-busca-em-json-estatico.md) |
+
+> Rodada 5 da frente, diagnóstico de 21/09/2026 na produção. Foram 50 consultas que um editor
+> digita de verdade: nomes, apóstrofos, apelidos, linhas de skin, pt-BR e inglês. 41 acertaram em
+> primeiro. Das que não acertaram, os **zeros resultados** eram erros de dedo: "yasou", "yaso",
+> "kattarina", "ezrael" e "serafine". O ADR 0009 põe o ranking em normalização mais apelidos, e
+> manda cadastrar apelido à mão. Erro de dedo não é apelido, e não tem fim.
+
+**Entra**
+- Só quando a busca de verdade não acha nada, o vazio diz "Nada para “yasou”. Parecido:" e lista
+  até três campeões como opções. Seta e Enter abrem, como qualquer resultado.
+- A regra: distância de edição com transposição, até 1 erro em consulta de até 5 letras, até 2
+  acima disso e nada abaixo de 4 letras. Só nomes, ids e apelidos dos campeões.
+- O ranking não muda: nenhuma consulta que já achava alguma coisa muda de resultado. A emenda
+  está no ADR 0009.
+
+**NÃO entra**
+- Tolerância a erro nos nomes de skin. As skins moram no painel do campeão (ADR 0010), e o
+  campeão certo já leva a elas.
+- Nomes em inglês ("star guardian", "blood moon"). O índice só tem pt-BR, e trazer o inglês é
+  trabalho do indexador, que está em manutenção.
+
+**Critérios de aceite**
+1. ✅ As 5 consultas com erro de dedo acham o campeão certo em primeiro.
+2. ✅ Consultas que já achavam continuam com o mesmo resultado.
+3. ✅ A pior sugestão, contra 173 nomes, custa menos de 5 ms (o RNF-01 pede menos de 50 ms por
+   tecla).
+4. ✅ O axe continua limpo no estado com sugestão.
+
+**Testes que provam**
+- `search.test.ts`:
+  - a distância, com a transposição;
+  - os 5 erros de dedo;
+  - consulta curta e sem semelhança não sugerem;
+  - o ranking de 6 consultas conhecidas não muda;
+  - o custo.
+- `acessibilidade.spec.ts`: "jaxx" oferece o Jax, Enter abre o painel, e o axe fica limpo.
+- `desempenho.spec.ts` mudou de propósito. Com a suíte inteira em paralelo, a primeira medida às
+  vezes saía antes do CSS carregar, uma tela que o navegador nunca pinta, e o teste falhava 1 em
+  cada 2 rodadas. Agora ele espera o CSS. A verificação de salto do próprio navegador (CLS)
+  continua igual.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
