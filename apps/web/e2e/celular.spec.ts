@@ -149,12 +149,10 @@ test("na galeria, as ações não ficam por cima da arte", async ({ page }) => {
   const tile = page.locator("article").first();
   await expect(tile).toBeVisible();
 
-  const faixa = tile.getByRole("button", { name: "Baixar original" });
-  const opacidade = await faixa.evaluate((botao) => {
-    const caixa = botao.closest("div.absolute");
-    return caixa ? Number(getComputedStyle(caixa).opacity) : 1;
-  });
-  expect(opacidade, "a faixa de ações estava cobrindo a arte").toBe(0);
+  // Desde o T-60 as ações nem entram no DOM sem apontar — e no toque não há o
+  // que apontar. Mais forte que a opacidade 0 que este teste pedia no T-53: não
+  // há botão nenhum por cima da arte.
+  await expect(tile.getByRole("button", { name: "Baixar original" })).toHaveCount(0);
 
   // E o caminho continua existindo, com alvo de toque de verdade.
   await tile.getByRole("button", { name: /^Ampliar / }).click();

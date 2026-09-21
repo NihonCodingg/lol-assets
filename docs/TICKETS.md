@@ -3000,6 +3000,49 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-60 — A galeria monta só o que se vê
+
+| | |
+|---|---|
+| **Objetivo** | Que abrir uma categoria grande custe menos, sem nada mudar na tela |
+| **Dependências** | T-53 |
+| **Estimativa** | ~50 linhas |
+| **Effort** | baixo |
+| **Cobre** | [ADR 0011](adr/0011-virtualizacao-so-onde-se-paga.md) (virtualização), desempenho percebido do [ADR 0022](adr/0022-o-front-end-vira-frente-continua.md) |
+
+> **O ticket começou com a premissa errada, e a medição mostrou.** O diagnóstico da frente mediu
+> a rolagem da galeria com p95 de 23 ms e metade dos quadros acima de 16,7 ms, e o ticket nasceu
+> para "levar a rolagem a 60 fps". A medição seguinte achou o erro: o laço de medida espera um
+> `requestAnimationFrame` por passo, então **nunca** mede menos que 16,7 ms — a rolagem já estava
+> a 60 fps, fria ou quente (16,7 ms de mediana com e sem imagem em cache). O que o número
+> mostrava era o ritmo da tela, não engasgo.
+>
+> O que a medição achou de verdade, na categoria de 5.042 ícones: **45 nós por tile**, 49 tiles
+> montados — 30 deles fora da tela, pelo excedente de três linhas do virtualizador — e **2.423
+> nós** na página. Dois terços de cada tile eram as ações, que ninguém vê até apontar.
+
+**Entra**
+- As ações do tile — os dois downloads, o copiar e as três dicas — entram no DOM quando o tile é
+  apontado ou recebe foco. A ficha fica sempre (RF-09). Sem ampliação nem caixa de seleção, o
+  tile não teria nada focável antes das ações, e aí elas ficam sempre, para o teclado chegar.
+- O excedente do virtualizador cai de três linhas para uma.
+
+**NÃO entra**
+- Mexer na rolagem em si: medida de novo, ela já estava a 60 fps.
+
+**Critérios de aceite**
+1. ✅ Abrir a categoria de 5.042 ícones: de **89 para 78 ms** até o primeiro tile, de **2.423 para
+   939 nós** (mediana de três voltas no build de produção, mesma máquina).
+2. ✅ Rolando **420 px por quadro** — três linhas —, nenhum quadro com buraco na tela.
+3. ✅ As ações entram ao apontar ou focar e saem ao sair; o teclado continua chegando nelas.
+4. ✅ No toque, nenhum botão por cima da arte (nem no DOM).
+
+**Testes que provam**
+- `painel-de-asset.test.tsx`: as ações ao apontar, ao focar e ao sair; sem porta de foco, sempre.
+- `celular.spec.ts`: nenhum botão de baixar no tile, e a ampliação continua baixando.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

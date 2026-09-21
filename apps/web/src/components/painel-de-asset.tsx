@@ -294,7 +294,10 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
     count: virtual ? Math.ceil(assets.length / colunas) : 0,
     getScrollElement: () => scroller.current,
     estimateSize: () => passo,
-    overscan: 3,
+    // Uma linha fora da tela de cada lado (T-60). Eram três: numa galeria de
+    // dez colunas, isso montava **30 tiles** que ninguém veria, e montar tile é
+    // o que custa quadro na rolagem.
+    overscan: 1,
     paddingEnd: 24 - VAO_DA_GALERIA,
   });
 
@@ -678,11 +681,35 @@ const TileDaGaleria = memo(function TileDaGaleria({
   // Enquanto alguma coisa acontece no tile, as ações não somem debaixo do mouse.
   const ativo = estado !== "pronto" || andamento !== null || feito !== null || copia !== "parado";
 
+  /**
+   * As ações entram no DOM quando o tile é apontado ou recebe foco (T-60).
+   *
+   * Medido no build de produção, na categoria de 5.042 ícones: **45 nós por
+   * tile**, 49 tiles na tela, 2.472 nós na página — e montar tile é o que custa
+   * quadro na rolagem. Os dois downloads, o copiar e as três dicas são dois
+   * terços desses nós, e ninguém os vê até apontar.
+   *
+   * O foco chega pelo botão de ampliar, que continua sempre no DOM: entrou o
+   * foco no tile, as ações existem, e o Tab seguinte cai nelas. A faixa e a
+   * ficha ficam — é a ficha que o RF-09 pede antes do download.
+   */
+  const [revelado, setRevelado] = useState(false);
+  // Sem ampliação nem caixa de seleção, o tile não teria nada focável antes das
+  // ações — e o teclado nunca chegaria nelas. Aí elas ficam sempre no DOM.
+  const temPortaDeFoco = Boolean(onAmpliar || onAlternar);
+  const mostrarAcoes = revelado || ativo || !temPortaDeFoco;
+
   return (
     <article
       aria-label={asset.fileName}
       data-tipo={asset.type}
       data-estado={estado}
+      onMouseEnter={() => setRevelado(true)}
+      onMouseLeave={() => setRevelado(false)}
+      onFocusCapture={() => setRevelado(true)}
+      onBlurCapture={(evento) => {
+        if (!evento.currentTarget.contains(evento.relatedTarget)) setRevelado(false);
+      }}
       className={cn(
         "group/tile flex h-full flex-col overflow-hidden rounded-medio border bg-superficie-alta",
         "transition-colors duration-150 ease-saida",
@@ -722,25 +749,29 @@ const TileDaGaleria = memo(function TileDaGaleria({
           <p className="overflow-hidden font-mono text-10 leading-3.5 text-ellipsis whitespace-pre text-texto-suave">
             {`${asset.width}×${asset.height} · ${asset.format}\n${formatBytes(asset.bytes)} · ${asset.source}`}
           </p>
-          <div className="flex items-center gap-1">
-            <ParDeDownload
-              compacto={medidas.acoesComRotulo}
-              icone={!medidas.acoesComRotulo}
-              podeConverter={canConvertToPng(asset)}
-              ocupado={estado === "baixando"}
-              baixando={andamento}
-              baixado={feito}
-              onOriginal={() => void acionar(false)}
-              onPng={() => void acionar(true)}
-            />
-            <div className="ml-auto">
-              <BotaoDeCopiar
-                leve
-                copia={copia}
-                onClick={copiarUrl}
-                className="bg-superficie/80 text-texto hover:bg-superficie"
-              />
-            </div>
+          <div className="flex min-h-controle-md items-center gap-1">
+            {mostrarAcoes && (
+              <>
+                <ParDeDownload
+                  compacto={medidas.acoesComRotulo}
+                  icone={!medidas.acoesComRotulo}
+                  podeConverter={canConvertToPng(asset)}
+                  ocupado={estado === "baixando"}
+                  baixando={andamento}
+                  baixado={feito}
+                  onOriginal={() => void acionar(false)}
+                  onPng={() => void acionar(true)}
+                />
+                <div className="ml-auto">
+                  <BotaoDeCopiar
+                    leve
+                    copia={copia}
+                    onClick={copiarUrl}
+                    className="bg-superficie/80 text-texto hover:bg-superficie"
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
 
