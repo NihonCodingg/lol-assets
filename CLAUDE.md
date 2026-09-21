@@ -48,7 +48,13 @@ no ar, sozinho**. Sem lista para aprovar e sem parar entre tickets.
   que o produto promete;
 - precisar de conta, segredo ou decisão dele.
 
-Relatório: **um por frente concluída**, em `docs/sessoes/`. Nunca por PR.
+Relatório: **um por rodada**, em `docs/sessoes/`. Nunca por PR.
+
+**Nesta frente, o relatório vai para o repositório, não para o chat** (pedido do dono em
+21/09/2026). O registro é o arquivo em `docs/sessoes/`. Não escreva ao dono entre as rodadas: ao
+fim de tudo, uma mensagem só, de no máximo 5 linhas, com quantas rodadas houve, a mudança mais
+importante e o que depende dele. A frente para quando um diagnóstico completo não achar nada cujo
+ganho medido justifique o custo.
 
 ## Regras
 
