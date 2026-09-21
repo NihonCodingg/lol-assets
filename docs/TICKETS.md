@@ -3511,6 +3511,53 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-72 — O toque num campeão responde antes: o painel pinta primeiro, as artes logo depois
+
+| | |
+|---|---|
+| **Objetivo** | Que tocar num campeão pinte o painel em menos de 200 ms num telefone mediano (INP "bom") |
+| **Dependências** | T-47, T-61 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | médio |
+| **Cobre** | Desempenho percebido: o tempo até a prévia abrir |
+
+> Rodada 8 da frente, diagnóstico de 21/09/2026 na produção. A medida foi o INP (Event Timing
+> API), com a CPU 4× mais lenta, que é um telefone mediano. Tocar num campeão: **328 ms** com a
+> fatia ainda por baixar e **416 ms** com ela já em memória. Acima de 200 ms, o Google classifica
+> como "precisa melhorar". O handler do toque levava 2 a 7 ms. O que segurava a pintura:
+>
+> - com a fatia em memória, a promessa resolve na mesma tarefa do toque, e o painel **inteiro**,
+>   com todas as artes, era montado antes de pintar;
+> - a grade de campeões não era memorizada, e o `onAbrir` era uma função nova a cada render. Toda
+>   mudança de estado da página renderizava de novo os 173 cartões;
+> - um defeito escondido: as artes do campeão anterior ficavam no estado depois de fechar, e o
+>   painel da Lux nascia montando as artes do Jax.
+
+**Entra**
+- As artes entram numa transição (`startTransition`): o painel pinta primeiro (vitrine e seletor),
+  e a grade vem logo depois.
+- A grade e a busca são memorizadas, e os handlers que recebem ficam estáveis (`useCallback`).
+- Ao abrir um campeão, as artes do anterior saem do estado.
+
+**NÃO entra**
+- Dividir a fatia de campeões (1,3 MB comprimido, 13 MB de JSON, os 173 campeões num arquivo só)
+  em uma por campeão. É o que resolveria os 11,5 s em 3G, mas é trabalho do indexador, que está em
+  manutenção. Fica anotado em "Ideias não executadas".
+- Interpretar o JSON num worker: medido, o `JSON.parse` dos 13 MB leva 75–112 ms com a CPU 4×
+  mais lenta e não é o gargalo.
+
+**Critérios de aceite** (build local, CPU 4× mais lenta, mediana de 7)
+1. ✅ INP com a fatia em memória: **360 → 120 ms**.
+2. ✅ INP com a fatia ainda por baixar: 216 → 208 ms. O que sobra é montar o diálogo e pintá-lo.
+3. ✅ Tempo até a primeira arte, com a fatia em memória: 760 → 638 ms.
+4. ✅ Nenhum quadro do painel de um campeão mostra arte de outro.
+
+**Testes que provam**
+- `painel.spec.ts`: abrir a Lux depois do Jax, vigiando cada mutação do DOM. Sem a correção, o
+  painel da Lux chega a ter 6 artes do Jax.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -3577,3 +3624,4 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
 | 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. Exige infraestrutura (fora da frente de interface) |
 | 21/09/2026 | Link direto para um campeão ou uma categoria | Um endereço que abre o painel do Jax ou a categoria Itens, para mandar a alguém ou salvar nos favoritos. O T-70 fez o Voltar fechar camadas sem mudar a URL; o endereço próprio seria função nova |
+| 21/09/2026 | Uma fatia de campeão por campeão (indexador) | Hoje abrir um campeão baixa os 173: 1,3 MB comprimido e 13 MB de JSON, 11,5 s em 3G até a primeira arte (medido no T-72). Um arquivo por campeão teria cerca de 75 KB. É trabalho do indexador, que está em manutenção |

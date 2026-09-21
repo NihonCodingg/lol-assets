@@ -83,3 +83,32 @@ test("no computador, a vitrine divide o painel com as artes", async ({ page }) =
     .evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
   expect(linhas).toBe(1);
 });
+
+/**
+ * T-72: as artes do campeão anterior ficavam no estado depois de fechar. O
+ * painel da Lux nascia com as artes do Jax — montadas à toa, e, com as artes
+ * entrando numa transição, visíveis por um instante. Nenhum quadro do painel
+ * da Lux pode ter arte do Jax.
+ */
+test("abrir outro campeão nunca mostra, nem por um quadro, as artes do anterior", async ({ page }) => {
+  await page.goto("/");
+  const grade = page.getByRole("list", { name: "Campeões" });
+  await grade.getByRole("button", { name: /^Jax/ }).click();
+  await expect(page.getByRole("dialog", { name: "Painel de Jax" }).locator("article").first()).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  // Vigia cada mutação do DOM a partir daqui.
+  await page.evaluate(() => {
+    (window as unknown as { __vazou: string[] }).__vazou = [];
+    new MutationObserver(() => {
+      const painel = document.querySelector('[role="dialog"][aria-label="Painel de Lux"]');
+      if (!painel) return;
+      for (const a of painel.querySelectorAll("article[aria-label^='Jax']")) {
+        (window as unknown as { __vazou: string[] }).__vazou.push(a.getAttribute("aria-label") ?? "");
+      }
+    }).observe(document.body, { subtree: true, childList: true });
+  });
+  await grade.getByRole("button", { name: /^Lux/ }).click();
+  await expect(page.getByRole("dialog", { name: "Painel de Lux" }).locator("article").first()).toBeVisible();
+  expect(await page.evaluate(() => (window as unknown as { __vazou: string[] }).__vazou)).toEqual([]);
+});
