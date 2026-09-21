@@ -21,7 +21,7 @@
  * cortado da tela.
  */
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { Asset } from "@lol-assets/schema";
 
@@ -33,6 +33,22 @@ import { montarZip, ZipCanceladoError, type Falha, type Progresso } from "@/lib/
 
 /** Quantas miniaturas a bandeja mostra antes de dizer "+N". */
 const MINIATURAS = 5;
+
+/**
+ * O que o leitor de tela ouve enquanto o zip monta (T-68): o começo e cada
+ * quarto do caminho. Antes a região viva era a linha inteira do progresso — com
+ * o botão dentro —, e cada arquivo virava um anúncio: "3 de 10 Cancelar", "4 de
+ * 10 Cancelar"… Com 5.042 ícones, cinco mil anúncios. O texto depende só do
+ * quarto em que se está, e por isso só muda quatro vezes.
+ */
+export function anuncioDoProgresso(feitos: number, total: number): string {
+  const quarto = total > 0 ? Math.floor((feitos / total) * 4) : 0;
+  if (quarto <= 0) return `Montando o zip com ${total} ${total === 1 ? "arquivo" : "arquivos"}.`;
+  if (quarto === 1) return "Um quarto do zip pronto.";
+  if (quarto === 2) return "Metade do zip pronta.";
+  if (quarto === 3) return "Três quartos do zip prontos.";
+  return "Zip quase pronto.";
+}
 
 export interface BarraDeLoteProps {
   /** Os assets **selecionados**, já resolvidos. */
@@ -62,10 +78,31 @@ export function BarraDeLote({
 }: BarraDeLoteProps) {
   const [estado, setEstado] = useState<Estado>({ fase: "parado" });
   const cancelamento = useRef<AbortController | null>(null);
+  const botaoDoZip = useRef<HTMLButtonElement>(null);
+  const botaoCancelar = useRef<HTMLButtonElement>(null);
+  /**
+   * O foco acompanha o zip (T-68). O botão que se apertou fica desabilitado
+   * enquanto monta, e o navegador joga o foco de um botão desabilitado no
+   * `body`: quem usa teclado perdia o lugar e voltava ao topo da página. Agora o
+   * foco vai para o Cancelar, que é a única coisa a fazer enquanto monta, e
+   * volta para o botão do zip quando acaba — só se estava na bandeja.
+   */
+  const focoNaBandeja = useRef(false);
+  const montandoAgora = estado.fase === "montando";
+  useEffect(() => {
+    if (!focoNaBandeja.current) return;
+    if (montandoAgora) botaoCancelar.current?.focus();
+    else {
+      botaoDoZip.current?.focus();
+      focoNaBandeja.current = false;
+    }
+  }, [montandoAgora]);
 
   const baixar = useCallback(async () => {
     const controle = new AbortController();
     cancelamento.current = controle;
+    const ativo = document.activeElement;
+    focoNaBandeja.current = ativo === botaoDoZip.current;
     setEstado({ fase: "montando", progresso: { feitos: 0, total: assets.length, falhas: 0 } });
     try {
       const resultado = await montar(assets, assetsBaseUrl, {
@@ -124,6 +161,7 @@ export function BarraDeLote({
             Limpar seleção
           </Botao>
           <Botao
+            ref={botaoDoZip}
             variante="primario"
             onClick={() => void baixar()}
             disabled={montando}
@@ -142,7 +180,12 @@ export function BarraDeLote({
       )}
 
       {montando && (
-        <div role="status" className="flex items-center gap-2.5">
+        <p role="status" className="sr-only">
+          {anuncioDoProgresso(estado.progresso.feitos, estado.progresso.total)}
+        </p>
+      )}
+      {montando && (
+        <div className="flex items-center gap-2.5">
           <progress
             value={estado.progresso.feitos}
             max={estado.progresso.total}
@@ -151,7 +194,12 @@ export function BarraDeLote({
           <p className="flex-none font-mono text-11 text-texto-suave">
             {estado.progresso.feitos} de {estado.progresso.total}
           </p>
-          <Botao variante="fantasma" tamanho="md" onClick={() => cancelamento.current?.abort()}>
+          <Botao
+            ref={botaoCancelar}
+            variante="fantasma"
+            tamanho="md"
+            onClick={() => cancelamento.current?.abort()}
+          >
             Cancelar
           </Botao>
         </div>

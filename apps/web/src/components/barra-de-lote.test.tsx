@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import JSZip from "jszip";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -7,7 +7,7 @@ import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 import { LIMITE_DE_ARQUIVOS } from "@/lib/selecao";
 import { montarZip } from "@/lib/zip";
 
-import { BarraDeLote } from "./barra-de-lote";
+import { anuncioDoProgresso, BarraDeLote } from "./barra-de-lote";
 import { PainelDeAsset } from "./painel-de-asset";
 import { PainelDoCampeao } from "./painel-do-campeao";
 
@@ -196,11 +196,67 @@ describe("progresso durante a montagem", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     avisar?.({ feitos: 2, total: 3, falhas: 0 });
-    await waitFor(() => expect(screen.getByRole("status").textContent).toContain("2 de 3"));
-
-    const barra = within(screen.getByRole("status")).getByRole("progressbar");
+    // À vista, o número e a barra. Desde o T-68 eles ficam fora da região viva:
+    // dentro dela, cada arquivo virava um anúncio, com o "Cancelar" colado.
+    await waitFor(() => expect(screen.getByText("2 de 3")).toBeTruthy());
+    const barra = screen.getByRole("progressbar");
     expect(barra.getAttribute("value")).toBe("2");
     expect(barra.getAttribute("max")).toBe("3");
+    expect(screen.getByRole("status").textContent).toBe("Metade do zip pronta.");
+  });
+
+  it("o leitor de tela ouve o começo e cada quarto, não cada arquivo (T-68)", () => {
+    const anuncios = new Set<string>();
+    for (let feitos = 0; feitos < 5042; feitos += 1) anuncios.add(anuncioDoProgresso(feitos, 5042));
+    expect([...anuncios]).toEqual([
+      "Montando o zip com 5042 arquivos.",
+      "Um quarto do zip pronto.",
+      "Metade do zip pronta.",
+      "Três quartos do zip prontos.",
+    ]);
+    expect(anuncioDoProgresso(0, 1)).toBe("Montando o zip com 1 arquivo.");
+  });
+
+  it("o foco vai para o Cancelar enquanto monta, e volta ao botão do zip no fim (T-68)", async () => {
+    let terminar: (() => void) | undefined;
+    render(
+      <BarraDeLote
+        assets={[asset("a"), asset("b")]}
+        onLimpar={() => {}}
+        montar={() =>
+          new Promise((resolve) => {
+            terminar = () => resolve({ blob: new Blob(["x"]), arquivos: 2, falhas: [] });
+          })
+        }
+        salvar={() => {}}
+      />,
+    );
+    const zip = screen.getByRole("button", { name: /Baixar 2 como zip/ });
+    zip.focus();
+    fireEvent.click(zip);
+
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Cancelar" })));
+    terminar?.();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Baixar 2 como zip/ })));
+  });
+
+  it("quem clicou com o mouse, com o foco fora da bandeja, não tem o foco puxado (T-68)", async () => {
+    render(
+      <>
+        <input aria-label="fora" />
+        <BarraDeLote
+          assets={[asset("a")]}
+          onLimpar={() => {}}
+          montar={() => new Promise(() => {})}
+          salvar={() => {}}
+        />
+      </>,
+    );
+    const fora = screen.getByLabelText("fora");
+    fora.focus();
+    fireEvent.click(screen.getByRole("button", { name: /Baixar 1 como zip/ }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Cancelar" })).toBeTruthy());
+    expect(document.activeElement).toBe(fora);
   });
 });
 
