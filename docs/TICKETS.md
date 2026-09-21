@@ -3165,6 +3165,52 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-64 — O axe mais rigoroso, e o que ele achou
+
+| | |
+|---|---|
+| **Objetivo** | O axe cobrir todos os estados da tela, com a régua mais dura, e ficar verde |
+| **Dependências** | T-28 |
+| **Estimativa** | ~120 linhas |
+| **Effort** | médio |
+| **Cobre** | RNF-11 e o critério da frente: "o axe continua verde e fica mais rigoroso" |
+
+> Até aqui o axe rodava em 5 telas: home, painel, categoria, Sobre e home no telefone. Só violação
+> séria ou crítica falhava, e só do WCAG 2.1.
+>
+> O diagnóstico usou a régua mais dura: todos os impactos, WCAG 2.2 AA e as boas práticas do axe.
+> Rodou em **13 estados**, a 1440×900 e a 390×844: busca com resultados, busca sem resultado,
+> painel, painel com lote, ampliação, categoria, categoria com seleção, categoria sem resultado,
+> Sobre e 404, entre outros.
+>
+> Achou **uma** violação, crítica, nos dois tamanhos de tela: na busca sem resultado, a lista de
+> opções (`role="listbox"`) ficava sem nenhuma opção dentro (`aria-required-children`). O leitor
+> de tela também não ouvia o "Nada para…", porque o `Command.Empty` do cmdk é
+> `role="presentation"`. A lista ainda tinha o nome padrão do cmdk, em inglês: "Suggestions".
+
+**Entra**
+- O vazio da busca sai da lista e vira um `role="status"`. A lista vazia fica `hidden` e ganha o
+  nome "Resultados da busca".
+- Toda violação falha, de qualquer impacto, com WCAG 2.2 AA e as boas práticas.
+- Novos testes do axe: busca com resultado e sem resultado, lote e ampliação no painel, categoria
+  com seleção e filtro sem resultado, 404, e painel e categoria no telefone.
+
+**NÃO entra**
+- O contraste sobre a arte. O axe marca como "incompleto" o texto sobre gradiente e sobre imagem
+  (a faixa do tile, a ampliação), porque não consegue calcular. A faixa tem fundo de superfície a
+  95% atrás do texto, e o contraste dos tokens contra a superfície está calculado no
+  [TOKENS.md](design/TOKENS.md). Os tokens não mudaram.
+
+**Critérios de aceite**
+1. ✅ Zero violações, de qualquer impacto, nos 13 estados, no computador e no telefone.
+2. ✅ O teste novo da busca vazia falha com o código antigo e passa com o novo.
+
+**Testes que provam**
+- `acessibilidade.spec.ts`: o bloco "axe", com a régua nova e os estados novos, e o axe em tela
+  estreita no painel e na categoria.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

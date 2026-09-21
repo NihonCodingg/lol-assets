@@ -16,23 +16,29 @@ import { expect, test } from "./base";
  * chegue já sob ela.
  */
 
-/** Sério e crítico falham; moderado e leve viram aviso no relatório. */
-const GRAVES = ["critical", "serious"];
+/**
+ * Toda violação falha, de qualquer impacto, e o WCAG 2.2 e as boas práticas do
+ * axe entram junto (T-64).
+ *
+ * Até o T-64 só sério e crítico falhavam, e só do WCAG 2.1. Medido em 18/09/2026
+ * em 13 estados da tela, no computador e no telefone: a régua mais dura achava
+ * **uma** violação — crítica, e numa tela que nenhum teste abria (a busca sem
+ * resultado). Com o resto limpo, apertar custa nada e segura o que vier.
+ */
+const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
-async function violacoesGraves(page: Page) {
-  const resultado = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-    .analyze();
+async function violacoesDoAxe(page: Page) {
+  const resultado = await new AxeBuilder({ page }).withTags(TAGS).analyze();
 
   // Sem isto, um axe que não rodou (seletor errado, página em branco, script que
   // não injetou) devolveria zero violações e o teste passaria feliz provando
   // nada. Uma página com conteúdo sempre tem dezenas de regras aprovadas.
   expect(resultado.passes.length, "o axe não analisou nada").toBeGreaterThan(5);
 
-  return resultado.violations.filter((v) => GRAVES.includes(v.impact ?? ""));
+  return resultado.violations;
 }
 
-function resumir(violacoes: Awaited<ReturnType<typeof violacoesGraves>>): string {
+function resumir(violacoes: Awaited<ReturnType<typeof violacoesDoAxe>>): string {
   return violacoes
     .map((v) => `${v.impact}/${v.id}: ${v.help} (${v.nodes.length}x)\n  ${v.nodes[0]?.html ?? ""}`)
     .join("\n");
@@ -336,22 +342,22 @@ test.describe("foco visível", () => {
 // --- critério 2: o axe -------------------------------------------------------------------
 
 test.describe("axe", () => {
-  test("a home não tem violação séria nem crítica", async ({ page }) => {
+  test("a home não tem violação", async ({ page }) => {
     await irParaHome(page);
-    const violacoes = await violacoesGraves(page);
+    const violacoes = await violacoesDoAxe(page);
     expect(resumir(violacoes)).toBe("");
   });
 
-  test("o painel do campeão não tem violação séria nem crítica", async ({ page }) => {
+  test("o painel do campeão não tem violação", async ({ page }) => {
     await irParaHome(page);
     await page.click('button:has-text("Jax")');
     await expect(page.getByRole("region", { name: "Painel de Jax" })).toBeVisible();
 
-    const violacoes = await violacoesGraves(page);
+    const violacoes = await violacoesDoAxe(page);
     expect(resumir(violacoes)).toBe("");
   });
 
-  test("a navegação por categoria não tem violação séria nem crítica", async ({ page }) => {
+  test("a navegação por categoria não tem violação", async ({ page }) => {
     await irParaHome(page);
     await page
       .getByRole("navigation", { name: "Categorias" })
@@ -366,16 +372,65 @@ test.describe("axe", () => {
     await expect(page.getByRole("group", { name: "Classe" })).toBeVisible();
     await page.locator("[data-virtual='sim'] article").first().hover();
 
-    const violacoes = await violacoesGraves(page);
+    const violacoes = await violacoesDoAxe(page);
     expect(resumir(violacoes)).toBe("");
   });
 
-  test("a página Sobre não tem violação séria nem crítica", async ({ page }) => {
+  test("a página Sobre não tem violação", async ({ page }) => {
     await page.goto("/sobre");
     await expect(page.getByRole("heading", { name: "Sobre", level: 1 })).toBeVisible();
 
-    const violacoes = await violacoesGraves(page);
+    const violacoes = await violacoesDoAxe(page);
     expect(resumir(violacoes)).toBe("");
+  });
+
+  // --- T-64: os estados que nenhum teste do axe abria ---------------------------------
+
+  test("a busca aberta, com resultados e sem nenhum, não tem violação", async ({ page }) => {
+    await irParaHome(page);
+    const campo = page.getByRole("combobox");
+    await campo.fill("ja");
+    await expect(page.getByRole("option").first()).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+
+    // Era aqui a violação crítica que a régua mais dura achou: a lista de
+    // opções sem opção nenhuma dentro.
+    await campo.fill("zzzz");
+    await expect(page.getByRole("status").filter({ hasText: "Nada para" })).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+  });
+
+  test("o lote e a ampliação no painel não têm violação", async ({ page }) => {
+    await irParaHome(page);
+    await page.click('button:has-text("Jax")');
+    const painel = page.getByRole("region", { name: "Painel de Jax" });
+    await painel.getByRole("button", { name: /^Tudo de Jax/ }).click();
+    await expect(painel.getByRole("button", { name: /como zip/ })).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+
+    await painel.getByRole("button", { name: /^Ampliar / }).first().click();
+    await expect(page.getByRole("dialog", { name: /^Ampliação de/ })).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+  });
+
+  test("a categoria com seleção e o filtro sem resultado não têm violação", async ({ page }) => {
+    await irParaHome(page);
+    await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+    const tile = page.locator("[data-virtual='sim'] article").first();
+    await tile.getByRole("checkbox").focus();
+    await page.keyboard.press("Space");
+    await expect(tile.getByRole("checkbox")).toBeChecked();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+
+    await page.getByLabel("Filtrar por texto").fill("zzzz");
+    await expect(page.getByText("Nenhum asset com esses filtros")).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+  });
+
+  test("a página que não existe não tem violação", async ({ page }) => {
+    await page.goto("/nao-existe");
+    await expect(page.getByRole("heading", { name: "Página não encontrada" })).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
   });
 });
 
@@ -447,7 +502,17 @@ test.describe("tela estreita", () => {
 
   test("o axe não reclama em tela estreita", async ({ page }) => {
     await irParaHome(page);
-    expect(resumir(await violacoesGraves(page))).toBe("");
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+
+    // T-64: no telefone, o painel em tela cheia e a categoria têm outro layout.
+    await page.getByRole("list", { name: "Campeões" }).getByRole("button", { name: /^Jax\b/ }).click();
+    await expect(page.getByRole("region", { name: "Painel de Jax" }).locator("article").first()).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+    await page.keyboard.press("Escape");
+
+    await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+    await expect(page.locator("[data-virtual='sim'] article").first()).toBeVisible();
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
   });
 });
 

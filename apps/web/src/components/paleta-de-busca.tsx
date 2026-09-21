@@ -94,6 +94,7 @@ export function PaletaDeBusca({
     [indice, consulta],
   );
   const mostrar = aberta && consulta.trim().length > 0;
+  const vazia = consulta.trim().length > 0 && resultados.length === 0;
   const scroller = useRef<HTMLDivElement>(null);
   const virtual = resultados.length > LIMIAR_DE_VIRTUALIZACAO;
   const virtualizador = useVirtualizer({
@@ -225,21 +226,28 @@ export function PaletaDeBusca({
             className="min-w-0 flex-1 overflow-y-auto p-1.5"
             style={{ maxHeight: ALTURA_DO_ITEM * LINHAS_A_VISTA }}
           >
+            {/* O vazio fica fora da lista (T-64). Dentro dela, o `listbox`
+                ficava sem nenhuma opção — violação crítica do axe
+                (`aria-required-children`) —, e o leitor de tela não ouvia o
+                "nada para": o `Command.Empty` é `role="presentation"`. */}
+            {vazia && (
+              <div role="status" className="px-3 py-6 text-center">
+                <p className="text-13 text-texto-forte">Nada para “{consulta.trim()}”.</p>
+                <p className="mt-1 text-12 text-texto-suave">
+                  Tente o nome do campeão, um apelido como mf ou j4, ou o nome da skin.
+                </p>
+              </div>
+            )}
             <Command.List
+              // O padrão do cmdk é "Suggestions", em inglês.
+              label="Resultados da busca"
+              hidden={vazia}
               style={
                 virtual
                   ? { height: virtualizador.getTotalSize(), position: "relative" }
                   : undefined
               }
             >
-              {consulta.trim() && resultados.length === 0 && (
-                <Command.Empty className="px-3 py-6 text-center">
-                  <p className="text-13 text-texto-forte">Nada para “{consulta.trim()}”.</p>
-                  <p className="mt-1 text-12 text-texto-suave">
-                    Tente o nome do campeão, um apelido como mf ou j4, ou o nome da skin.
-                  </p>
-                </Command.Empty>
-              )}
               {janela.map(({ indice: posicao, inicio }) => {
                 const hit = resultados[posicao];
                 return (
