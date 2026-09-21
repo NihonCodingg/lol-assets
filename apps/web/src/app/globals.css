@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/*
+ * Tela baixa (T-67): até 500 px de altura — zoom de 200% num monitor 1080p,
+ * zoom de 400%, telefone deitado. Ali a casca de altura fixa não tem o que
+ * ceder: o cromo tomava a tela inteira e a arte ficava com 0 px. Nessas telas a
+ * página volta a rolar inteira. Ver docs/design/TOKENS.md.
+ */
+@custom-variant baixa (@media (max-height: 500px));
+
 /**
  * O tema, traduzido de `docs/design/TOKENS.md` — e **só** dele.
  *

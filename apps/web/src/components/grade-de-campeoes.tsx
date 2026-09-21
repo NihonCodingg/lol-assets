@@ -205,7 +205,7 @@ export function GradeDeCampeoes({
           no meio da rolagem não obriga a voltar lá em cima. No telefone, não
           fica presa, e as funções vão numa linha só que rola de lado: em três
           linhas quebradas, elas tomavam 150 px antes do primeiro cartão (T-49). */}
-      <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10">
+      <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10 baixa:md:static">
         <h2 className="sr-only">Campeões</h2>
         {funcoes.length > 0 && (
           <fieldset

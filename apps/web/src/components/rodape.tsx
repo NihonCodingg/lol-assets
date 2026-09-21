@@ -101,7 +101,7 @@ export function Rodape() {
     // categorias, dentro do espaço dela. Com a barra inteira rolando, numa tela
     // de 1024×640 os avisos da Riot saíam da tela — e a política pede que eles
     // estejam "readily visible".
-    <aside className="flex min-h-0 flex-col border-b border-borda bg-superficie md:overflow-hidden md:border-b-0 md:border-r">
+    <aside className="flex min-h-0 flex-col border-b border-borda bg-superficie md:overflow-hidden md:border-b-0 md:border-r baixa:md:overflow-visible">
       {/* A marca leva para a home. Com "Início" fora (T-46), é o caminho de
           volta de quem está na página Sobre. */}
       <Link
@@ -143,7 +143,7 @@ export function Rodape() {
         */}
         <nav
           aria-label="Categorias"
-          className="flex flex-none flex-row gap-0.5 md:min-h-0 md:flex-1 md:flex-col md:overflow-y-auto md:px-2"
+          className="flex flex-none flex-row gap-0.5 md:min-h-0 md:flex-1 md:flex-col md:overflow-y-auto md:px-2 baixa:md:flex-none baixa:md:overflow-visible"
         >
             <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
               Categorias

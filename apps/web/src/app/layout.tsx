@@ -27,6 +27,11 @@ export const metadata: Metadata = {
  * `h-screen` com `overflow-hidden`: as duas colunas rolam por dentro, não a
  * janela. É o que faz a barra lateral ficar parada enquanto 5.042 ícones passam
  * ao lado.
+ *
+ * **Menos em tela baixa (T-67).** Até 500 px de altura — zoom de 200% ou 400%,
+ * telefone deitado —, a casca fixa não tinha o que ceder: o cromo ocupava a
+ * tela inteira e a arte ficava com 0 px. Ali (`baixa:`) a janela volta a rolar,
+ * o cromo sobe e sai de cena, e a galeria virtual ganha a altura da tela.
  */
 export default function RootLayout({
   children,
@@ -41,7 +46,7 @@ export default function RootLayout({
           implícita cresce até caber o conteúdo, e a linha de categorias que
           rola de lado (T-49) tem 668 px — a página inteira ficava com 668, e o
           telefone a mostrava reduzida. */}
-      <body className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr] overflow-hidden bg-fundo text-texto md:grid-cols-[var(--spacing-barra-lateral)_minmax(0,1fr)] md:grid-rows-1">
+      <body className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr] overflow-hidden bg-fundo text-texto md:grid-cols-[var(--spacing-barra-lateral)_minmax(0,1fr)] md:grid-rows-1 baixa:h-auto baixa:min-h-screen baixa:overflow-visible">
         {/* O provedor envolve os dois porque a barra lateral tem os botões de
             categoria e a página tem o conteúdo — e layout não recebe prop de
             página. Ver `navegacao-context.tsx`. */}

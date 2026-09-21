@@ -192,6 +192,19 @@ apertados de cartão. `gap` da grade: **6px**. `padding` de seção: **14px**.
 > o controle aparecia e não mudava nada. 112px é a largura em que cabem 3 colunas em
 > 390px de tela e 11 numa de 1440, com a arte ainda reconhecível.
 
+## Altura de tela
+
+| Variante | Condição | O que muda |
+|---|---|---|
+| `baixa:` | `max-height: 500px` | a janela volta a rolar inteira; a galeria virtual ganha a altura da tela |
+
+> **Entrou no T-67.** A casca tem altura fixa e rola por dentro: a barra lateral fica
+> parada enquanto a galeria passa. Medido na produção em 21/09/2026: com zoom de 400%
+> (320×225 px úteis), o cromo ocupava a tela inteira e a galeria de Itens tinha **0 px**;
+> com 200% (640×450), 174 px de 450. 500px cobre o zoom de 200% num monitor 1080p (cerca
+> de 475px úteis) e todo telefone deitado, e deixa de fora o menor telefone em pé
+> (568px), onde a casca ainda funciona: a galeria fica com metade da tela.
+
 ## Movimento
 
 Uma animação só no arquivo inteiro:

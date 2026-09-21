@@ -3293,6 +3293,52 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-67 — Em tela baixa, a página rola inteira e a arte volta a aparecer
+
+| | |
+|---|---|
+| **Objetivo** | Que zoom de 200–400% e telefone deitado mostrem a arte, sem texto por cima de texto |
+| **Dependências** | T-49, T-59, T-62 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | médio |
+| **Cobre** | RNF-11, WCAG 1.4.10 (reflow) e 1.4.4 (texto a 200%) |
+
+> Rodada 3 da frente, diagnóstico de 21/09/2026 na produção. A casca do site tem altura fixa (`body`
+> com `h-screen overflow-hidden`) e rola por dentro. Numa tela baixa ela não tinha o que ceder:
+>
+> | Tela | Galeria de Itens | Problema |
+> |---|---|---|
+> | Zoom de 400% (320×225) | **0 px** | a arte não aparecia; o aviso do filtro padrão ficava por cima da linha do patch |
+> | Zoom de 200% (640×450) | 174 px de 450 | o cromo ficava com 61% da tela |
+> | Telefone deitado (844×390) | 140 px de 390 | idem |
+>
+> Nada vazava na horizontal em nenhum dos casos, nem a 320 px de largura.
+
+**Entra**
+- Uma variante `baixa:` (`max-height: 500px`), registrada no [TOKENS.md](design/TOKENS.md). Ali:
+  - a janela volta a rolar;
+  - a barra lateral e as colunas deixam de rolar por dentro;
+  - a barra de filtro da grade deixa de ficar presa no topo;
+  - os blocos deixam de encolher abaixo do próprio conteúdo.
+- A galeria virtual ganha a altura da tela inteira (`h-dvh`), que é o que ela ocupa quando se
+  chega nela. Ela continua com o próprio scroller, como o ADR 0011 pede.
+
+**NÃO entra**
+- Nenhuma mudança em tela com mais de 500 px de altura. O computador e o telefone em pé medem o
+  mesmo antes e depois.
+
+**Critérios de aceite**
+1. ✅ Galeria de Itens: **0 → 225 px** (400%), **174 → 450 px** (200%), **140 → 390 px**
+   (telefone deitado). É a tela inteira nos três casos.
+2. ✅ O aviso do filtro padrão não fica mais por cima da linha do patch.
+3. ✅ A 1440×900 e a 320×568, a galeria e a home ficam como estavam (708 px e 278 px de galeria).
+
+**Testes que provam**
+- `acessibilidade.spec.ts`: "tela baixa", nos três tamanhos. A arte chega à tela, a galeria tem
+  a altura da tela e nada se sobrepõe. Os três falham sem a correção.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
