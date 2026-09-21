@@ -58,3 +58,20 @@ const twMerge = extendTailwindMerge({
 export function cn(...classes: ClassValue[]): string {
   return twMerge(clsx(classes));
 }
+
+/**
+ * Alvo de toque de 44 px num controle que, à vista, tem menos (T-66).
+ *
+ * Os chips de filtro e os botões da barra têm 28 px: crescer de verdade custaria
+ * 16 px de cromo em cada linha, acima da arte. Em tela de toque, uma área
+ * invisível de 44 px de altura, centrada no controle, recebe o dedo; o desenho
+ * não muda. É o mesmo truque da caixa do lote (T-49).
+ *
+ * Quem contém numa linha que rola de lado precisa de `ROLA_SEM_CORTAR_O_TOQUE`:
+ * `overflow-x: auto` corta também na vertical, e a área sairia cortada.
+ */
+export const ALVO_DE_TOQUE =
+  "relative pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:top-1/2 pointer-coarse:before:h-controle-xl pointer-coarse:before:-translate-y-1/2 pointer-coarse:before:content-['']";
+
+/** Oito pixels de respiro por dentro, devolvidos por fora: o layout não muda. */
+export const ROLA_SEM_CORTAR_O_TOQUE = "max-md:-my-2 max-md:py-2";

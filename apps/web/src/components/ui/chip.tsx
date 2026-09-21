@@ -12,7 +12,7 @@
  */
 import type { ReactNode } from "react";
 
-import { cn } from "@/lib/utils";
+import { ALVO_DE_TOQUE, cn } from "@/lib/utils";
 
 export interface ChipProps {
   readonly marcado: boolean;
@@ -24,7 +24,8 @@ export function Chip({ marcado, onAlternar, children }: ChipProps) {
   return (
     <label
       className={cn(
-        "relative inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-padrao border px-2.5 text-12",
+        ALVO_DE_TOQUE,
+        "inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-padrao border px-2.5 text-12",
         "transition-colors duration-150 ease-saida",
         "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
         marcado

@@ -42,7 +42,7 @@ import { Chip } from "@/components/ui/chip";
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
 import { filtrarCampeoes, funcoesDe } from "@/lib/categorias";
-import { cn } from "@/lib/utils";
+import { cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
 export type Densidade = "compacta" | "densa" | "confortavel";
 
@@ -208,7 +208,12 @@ export function GradeDeCampeoes({
       <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10">
         <h2 className="sr-only">Campeões</h2>
         {funcoes.length > 0 && (
-          <fieldset className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]">
+          <fieldset
+            className={cn(
+              "flex min-w-0 flex-1 flex-wrap items-center gap-1.5 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]",
+              ROLA_SEM_CORTAR_O_TOQUE,
+            )}
+          >
             <legend className="float-left mr-1.5 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
               Função
             </legend>

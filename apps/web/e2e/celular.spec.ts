@@ -162,6 +162,48 @@ test("na galeria, as ações não ficam por cima da arte", async ({ page }) => {
   expect((await baixar.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 });
 
+/**
+ * T-66. Os chips de filtro e os botões da barra têm 28 px à vista; o dedo
+ * precisa de 44. Um toque 20 px acima ou abaixo do centro ainda tem que cair
+ * no controle — inclusive nas linhas que rolam de lado, que cortariam a área.
+ */
+async function alvosQueNaoPegam(page: Page, seletor: string) {
+  return page.locator(seletor).evaluateAll((alvos) =>
+    alvos.flatMap((alvo) => {
+      const r = alvo.getBoundingClientRect();
+      // Só o que está inteiro à vista — na tela e dentro da linha que rola de
+      // lado, se houver uma. O resto a pessoa rola até ver.
+      let rolante = alvo.parentElement;
+      while (rolante && getComputedStyle(rolante).overflowX === "visible") rolante = rolante.parentElement;
+      const caixa = rolante?.getBoundingClientRect() ?? { left: 0, right: innerWidth };
+      const esquerda = Math.max(0, caixa.left);
+      const direita = Math.min(innerWidth, caixa.right);
+      if (r.width === 0 || r.left < esquerda || r.right > direita) return [];
+      const x = r.left + r.width / 2;
+      const centro = r.top + r.height / 2;
+      return [centro - 20, centro + 20].flatMap((y) => {
+        const achado = document.elementFromPoint(x, y);
+        return achado && alvo.contains(achado) ? [] : [`${alvo.textContent?.trim()} em y=${Math.round(y)}`];
+      });
+    }),
+  );
+}
+
+test("os chips e os botões dos filtros têm 44 px de toque, sem crescer à vista", async ({ page }) => {
+  await irParaHome(page);
+  const chips = "fieldset label";
+  expect(await alvosQueNaoPegam(page, chips)).toEqual([]);
+  // À vista continuam com 28 px: a linha não empurra a grade para baixo.
+  expect((await page.locator(chips).first().boundingBox())!.height).toBe(28);
+
+  await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+  await expect(page.locator("[data-virtual='sim'] article").first()).toBeVisible();
+  expect(await alvosQueNaoPegam(page, "fieldset label")).toEqual([]);
+  for (const nome of ["Mais filtros", "Mostrar tudo", "Selecionar os"]) {
+    expect(await alvosQueNaoPegam(page, `button:has-text("${nome}")`), nome).toEqual([]);
+  }
+});
+
 test("a página que não existe também tem os dois avisos", async ({ page }) => {
   await page.goto("/nao-existe");
   await expect(page.getByRole("heading", { name: "Página não encontrada" })).toBeVisible();

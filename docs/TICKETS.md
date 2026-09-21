@@ -3255,6 +3255,44 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-66 — Alvo de toque de 44 px nos filtros, sem crescer à vista
+
+| | |
+|---|---|
+| **Objetivo** | Chips de filtro e botões da barra com 44 px de toque no telefone, sem o cromo crescer |
+| **Dependências** | T-49, T-55 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | baixo |
+| **Cobre** | O critério de toque do T-49 (44 px) e o da frente: cromo crescendo é regressão |
+
+> Rodada 2 da frente, diagnóstico de 21/09/2026 na produção, a 390×844 com toque. Os chips de
+> função da home, os chips de filtro da categoria, "Mais filtros", "Mostrar tudo" e "Selecionar os
+> N filtrados" têm **28 px** de altura. A marca no topo tem 42 px. O resto já tinha 44 px desde o
+> T-49. Aumentar de verdade custaria 16 px por linha acima da arte.
+
+**Entra**
+- Em tela de toque, uma área invisível de 44 px de altura, centrada no controle, recebe o dedo.
+  É o mesmo truque da caixa do lote (T-49). O desenho não muda.
+- As linhas que rolam de lado ganham 8 px de respiro por dentro, devolvidos por fora. Sem isso, o
+  `overflow-x: auto` cortaria a área de toque na vertical. O layout não se mexe.
+- Com mouse, nada muda.
+
+**NÃO entra**
+- Chips com 44 px à vista: é o cromo que a frente proíbe crescer.
+
+**Critérios de aceite**
+1. ✅ Um toque 20 px acima ou abaixo do centro de cada chip e botão inteiro à vista cai nele, na
+   home e na categoria.
+2. ✅ À vista, os chips continuam com 28 px.
+3. ✅ O primeiro cartão da home e o primeiro tile de Itens ficam onde estavam no telefone (antes:
+   226 px e 264 px do topo).
+
+**Testes que provam**
+- `celular.spec.ts`: os toques acima e abaixo do centro. O teste falha sem a correção nos chips
+  "Lutador" e "Mago".
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
