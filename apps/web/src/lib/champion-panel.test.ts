@@ -6,6 +6,7 @@ import {
   baseSkin,
   championAssets,
   chromasOf,
+  nomeSemOCampeao,
   panelAssets,
   skinAssets,
   skinsOf,
@@ -175,5 +176,25 @@ describe("lista de skins do painel", () => {
 
   it("campeão sem skin nenhuma não quebra", () => {
     expect(baseSkin([], JAX)).toBeUndefined();
+  });
+});
+
+describe("nomeSemOCampeao (T-65)", () => {
+  it("tira o nome do campeão da frente", () => {
+    expect(nomeSemOCampeao("Jax Cripta de Magma de Prestígio", "Jax")).toBe("Cripta de Magma de Prestígio");
+  });
+
+  it("não mexe quando o campeão não abre o nome, nem em palavra que só começa igual", () => {
+    expect(nomeSemOCampeao("PAX Jax", "Jax")).toBe("PAX Jax");
+    expect(nomeSemOCampeao("SKT T1 Jax", "Jax")).toBe("SKT T1 Jax");
+    expect(nomeSemOCampeao("Jaximus", "Jax")).toBe("Jaximus");
+  });
+
+  it("a skin base continua com o nome do campeão", () => {
+    expect(nomeSemOCampeao("Jax", "Jax")).toBe("Jax");
+  });
+
+  it("campeão de nome composto", () => {
+    expect(nomeSemOCampeao("Miss Fortune Arma Secreta", "Miss Fortune")).toBe("Arma Secreta");
   });
 });

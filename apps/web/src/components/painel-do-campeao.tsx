@@ -182,6 +182,7 @@ export function PainelDoCampeao({
 
           <SeletorDeSkin
             nome={`skin-${champion.championKey}`}
+            campeao={champion.names.pt_BR}
             skins={doCampeao}
             valor={skinNum}
             onEscolher={setSkinNum}

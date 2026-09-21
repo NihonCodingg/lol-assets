@@ -145,6 +145,17 @@ describe("seletor de skin", () => {
     expect(radios.map((r) => r.closest("label")?.textContent)).toEqual(["Jax", "Nemesis Jax"]);
   });
 
+  it("a legenda não repete o campeão, e o rádio continua com o nome inteiro (T-65)", () => {
+    const [base, outra] = SKINS.filter((s) => s.championKey === JAX.championKey);
+    const deusDaGuerra = { ...outra!, names: { ...outra!.names, pt_BR: "Jax Deus da Guerra" } };
+    abrir({ skins: [base!, deusDaGuerra] });
+
+    const radio = screen.getByRole("radio", { name: "Jax Deus da Guerra" });
+    expect(radio.closest("label")?.textContent).toBe("Deus da Guerra");
+    // A base se chama só "Jax": fica "Jax".
+    expect(screen.getByRole("radio", { name: "Jax" }).closest("label")?.textContent).toBe("Jax");
+  });
+
   it("não lista skin de outro campeão", () => {
     abrir();
     expect(within(seletor()).queryByText("Lux")).toBeNull();

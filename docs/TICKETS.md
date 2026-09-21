@@ -3211,6 +3211,50 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-65 — O seletor de skins sem o campeão repetido na legenda
+
+| | |
+|---|---|
+| **Objetivo** | Que a legenda de cada skin mostre o que a diferencia, sem repetir o nome do campeão |
+| **Dependências** | T-47, T-58 |
+| **Estimativa** | ~40 linhas |
+| **Effort** | baixo |
+| **Cobre** | ADR 0008 ("nome de campeão repetido exige cuidado de layout no card") |
+
+> Rodada 2 da frente, diagnóstico de 21/09/2026 na produção. No painel do Jax, 4 legendas do
+> seletor terminavam em reticências, como "Jax Cripta de Magma de…". Medi todas as 2.121 skins do
+> catálogo com a fonte real da legenda (Inter Tight, 10 px, no peso da skin marcada, que é o pior
+> caso): **1.488 (70%)** não cabiam nos 72 px. A causa era o nome do campeão na frente de cada
+> uma, repetido dentro de um painel que já é daquele campeão.
+
+**Entra**
+- A legenda tira o nome do campeão só quando ele abre o nome da skin, seguido de espaço. "PAX
+  Jax", "SKT T1 Jax" e "Jaximus" ficam como estão. A skin base, que se chama só "Jax", continua
+  "Jax".
+- O rádio ganha o nome inteiro como nome acessível. O leitor de tela não vê o painel em volta e
+  continua ouvindo "Jax Deus da Guerra".
+
+**NÃO entra**
+- Legenda em duas linhas: o T-58 a descartou porque a faixa crescia 14 px e ficava serrilhada.
+- Tile mais largo: seriam menos skins à vista.
+- As 761 legendas que ainda não cabem continuam com o nome inteiro no `title`, e o nome aparece
+  inteiro no título da vitrine assim que a skin é escolhida.
+
+**Critérios de aceite**
+1. ✅ Legendas cortadas no catálogo inteiro: de **1.488 (70%)** para **761 (36%)**, medido com a
+   fonte real.
+2. ✅ A faixa do seletor não cresce nenhum pixel.
+3. ✅ O nome acessível do rádio não muda: os testes que o procuram por "Jax Deus da Guerra"
+   continuam passando.
+
+**Testes que provam**
+- `champion-panel.test.ts`: o prefixo sai só quando é o campeão seguido de espaço, a base fica, e
+  funciona com nome composto.
+- `painel-do-campeao.test.tsx`: a legenda diz "Deus da Guerra" e o rádio se chama "Jax Deus da
+  Guerra".
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
