@@ -97,7 +97,11 @@ export function Rodape() {
   }, [aberta, categorias]);
 
   return (
-    <aside className="flex min-h-0 flex-col border-b border-borda bg-superficie md:overflow-y-auto md:border-b-0 md:border-r">
+    // No computador a barra **não rola** (T-62): quem rola é só a lista de
+    // categorias, dentro do espaço dela. Com a barra inteira rolando, numa tela
+    // de 1024×640 os avisos da Riot saíam da tela — e a política pede que eles
+    // estejam "readily visible".
+    <aside className="flex min-h-0 flex-col border-b border-borda bg-superficie md:overflow-hidden md:border-b-0 md:border-r">
       {/* A marca leva para a home. Com "Início" fora (T-46), é o caminho de
           volta de quem está na página Sobre. */}
       <Link
@@ -134,7 +138,7 @@ export function Rodape() {
         */}
         <nav
           aria-label="Categorias"
-          className="flex flex-none flex-row gap-0.5 md:flex-1 md:flex-col md:px-2"
+          className="flex flex-none flex-row gap-0.5 md:min-h-0 md:flex-1 md:flex-col md:overflow-y-auto md:px-2"
         >
             <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
               Categorias
@@ -190,6 +194,9 @@ export function Rodape() {
 
       {/* RF-21: os dois textos da Riot, inteiros, no pé da coluna — no
           computador. No telefone eles estão no fim de cada página. */}
+      {/* Preso ao pé da coluna e sem encolher: em qualquer altura de tela, os
+          dois avisos inteiros à vista (RF-21). Quem cede espaço é a lista de
+          categorias, que rola; nunca a área da arte, que fica na outra coluna. */}
       <footer className="hidden flex-none px-3.5 md:mt-auto md:block md:border-t md:border-borda md:pt-3 md:pb-3.5">
         <AvisosDaRiot />
       </footer>

@@ -403,3 +403,33 @@ test.describe("tela estreita", () => {
     expect(resumir(await violacoesGraves(page))).toBe("");
   });
 });
+
+/**
+ * T-62: os avisos da Riot "readily visible" em qualquer altura de tela.
+ *
+ * Numa tela de 1024×640 a barra lateral inteira rolava, e os dois avisos
+ * ficavam abaixo da dobra — medido na produção em 18/09/2026. Agora quem rola é
+ * só a lista de categorias, e os avisos ficam presos ao pé da coluna.
+ */
+test.describe("avisos da Riot em tela baixa", () => {
+  test.use({ viewport: { width: 1024, height: 640 } });
+
+  test("os dois avisos ficam inteiros na tela, sem rolar nada", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("list", { name: "Campeões" })).toBeVisible();
+
+    for (const qual of ["riot", "jibber-jabber"]) {
+      const aviso = page.locator(`aside [data-aviso='${qual}']`);
+      await expect(aviso).toBeVisible();
+      const caixa = await aviso.boundingBox();
+      expect(caixa!.y, `o aviso ${qual} começa fora da tela`).toBeGreaterThanOrEqual(0);
+      expect(caixa!.y + caixa!.height, `o aviso ${qual} acaba fora da tela`).toBeLessThanOrEqual(640);
+    }
+
+    // A barra em si não rola: se precisar, rola a lista de categorias.
+    const barraRola = await page
+      .locator("aside")
+      .evaluate((el) => el.scrollHeight > el.clientHeight + 1);
+    expect(barraRola).toBe(false);
+  });
+});
