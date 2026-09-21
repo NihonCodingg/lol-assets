@@ -62,6 +62,7 @@ import {
   type GrupoDeFiltro,
 } from "@/lib/categorias";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
+import { focarConteudo } from "@/lib/foco";
 import { useFecharComVoltar } from "@/lib/voltar";
 import { ALVO_DE_TOQUE, cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
@@ -232,7 +233,12 @@ export function NavegacaoPorCategoria({
             variante="fantasma"
             tamanho="md"
             className="-ml-1.5 px-1.5 max-md:min-h-controle-xl"
-            onClick={onFechar}
+            onClick={() => {
+              onFechar();
+              // O botão some com a categoria: o foco vai para os campeões que
+              // entram no lugar, e não para o topo da página (T-71).
+              requestAnimationFrame(focarConteudo);
+            }}
           >
             <ArrowLeft aria-hidden="true" strokeWidth={1.75} className="size-4" />
             Voltar aos campeões
