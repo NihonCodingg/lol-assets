@@ -3083,6 +3083,46 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-62 — Os avisos da Riot à vista em qualquer tela
+
+| | |
+|---|---|
+| **Objetivo** | Que os dois avisos fiquem "readily visible" em toda altura de tela, sem tirar espaço da arte |
+| **Dependências** | T-49, T-59 |
+| **Estimativa** | ~10 linhas |
+| **Effort** | baixo |
+| **Cobre** | RF-21 e a política da Riot ([LANCAMENTO.md](LANCAMENTO.md)), §B.5.1 do KICKOFF |
+
+> Pedido do dono em 18/09/2026: resolver o aviso legal da barra lateral mantendo-o "readily
+> visible", como a política exige, sem ocupar o espaço da arte — e parar para perguntar só se a
+> única saída fosse reduzir a visibilidade. Não foi.
+>
+> Medido na produção: os dois avisos ocupam **235 px** de altura, porque a coluna de 208 px quebra
+> os dois textos em ~22 linhas curtas. De 1280×720 para cima eles cabem inteiros; em **1024×640**
+> a barra lateral inteira rolava e os avisos saíam da tela. A causa não era o texto, era **quem
+> rolava**: a barra toda, levando o pé junto.
+
+**Entra**
+- No computador a barra lateral não rola mais: quem rola é **só a lista de categorias**, dentro do
+  espaço dela. Os avisos ficam presos ao pé da coluna e nunca encolhem.
+- No telefone nada muda: os avisos continuam no fim da página, que é o que o T-49 decidiu.
+
+**NÃO entra**
+- Mover os avisos para uma faixa sobre a área da arte: tiraria altura da grade em toda tela, e o
+  dono pediu o contrário.
+- Diminuir, esconder atrás de botão ou apagar o texto: a política pede o texto inteiro e à vista.
+
+**Critérios de aceite**
+1. ✅ Em 1024×640, 1280×720, 1366×768, 1440×900 e 1920×1080, os dois avisos inteiros na tela,
+   sem rolar nada.
+2. ✅ A barra lateral não rola; a área da arte não perde nenhum pixel.
+3. ✅ O texto continua literal, com `lang="en"` e o mesmo contraste (7,7:1).
+
+**Testes que provam**
+- `acessibilidade.spec.ts`: em 1024×640, os dois avisos dentro da tela e a barra sem rolar.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
