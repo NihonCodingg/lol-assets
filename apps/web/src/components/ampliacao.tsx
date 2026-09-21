@@ -31,6 +31,7 @@ import { AcoesDoAsset } from "@/components/painel-de-asset";
 import { BotaoIcone } from "@/components/ui/botao-icone";
 import { assetSummary } from "@/lib/asset-file";
 import { rotuloDoTipo } from "@/lib/asset-panel";
+import { useFecharComVoltar } from "@/lib/voltar";
 
 export interface AmpliacaoProps {
   readonly asset: Asset;
@@ -43,6 +44,8 @@ export interface AmpliacaoProps {
 
 export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoProps) {
   const conteudo = useRef<HTMLDivElement>(null);
+  // Voltar fecha a ampliação, não o site (T-70).
+  useFecharComVoltar(true, onFechar);
   const nome = `${asset.names.pt_BR} — ${rotuloDoTipo(asset.type)}`;
 
   return (
