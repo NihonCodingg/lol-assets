@@ -365,6 +365,57 @@ describe("a galeria das categorias", () => {
     expect(onAmpliar).toHaveBeenCalledWith(square);
   });
 
+  describe("teclado: uma parada de Tab, e as setas entre os tiles (T-63)", () => {
+    function ampliar(): HTMLElement[] {
+      return screen.getAllByRole("button", { name: /^Ampliar / });
+    }
+
+    it("só um tile fica na ordem do Tab — a prévia e a caixa dele", () => {
+      abrir(DO_JAX, { onAmpliar: vi.fn(), onAlternar: vi.fn(), selecao: new Set() });
+      expect(ampliar().map((b) => b.tabIndex)).toEqual(ampliar().map((_, i) => (i === 0 ? 0 : -1)));
+      const caixas = screen.getAllByRole("checkbox");
+      expect(caixas.filter((c) => c.tabIndex === 0)).toHaveLength(1);
+    });
+
+    it("as setas, o Home e o End levam o foco, e a vez vai junto", () => {
+      abrir(DO_JAX, { onAmpliar: vi.fn() });
+      const [primeiro] = ampliar();
+      primeiro!.focus();
+
+      // No jsdom não há largura: a galeria tem uma coluna, e ↓ anda um.
+      fireEvent.keyDown(primeiro!, { key: "ArrowDown" });
+      expect(document.activeElement).toBe(ampliar()[1]);
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowRight" });
+      expect(document.activeElement).toBe(ampliar()[2]);
+
+      fireEvent.keyDown(document.activeElement!, { key: "End" });
+      expect(document.activeElement).toBe(ampliar().at(-1));
+      expect(ampliar().at(-1)!.tabIndex).toBe(0);
+      expect(ampliar()[0]!.tabIndex).toBe(-1);
+
+      fireEvent.keyDown(document.activeElement!, { key: "Home" });
+      expect(document.activeElement).toBe(ampliar()[0]);
+      // Na borda, a seta não sai da lista.
+      fireEvent.keyDown(document.activeElement!, { key: "ArrowUp" });
+      expect(document.activeElement).toBe(ampliar()[0]);
+    });
+
+    it("clicar num tile passa a vez para ele", () => {
+      abrir(DO_JAX, { onAmpliar: vi.fn() });
+      fireEvent.focus(ampliar()[2]!);
+      expect(ampliar()[2]!.tabIndex).toBe(0);
+      expect(ampliar()[0]!.tabIndex).toBe(-1);
+    });
+
+    it("sem ampliação, é a caixa do lote que recebe as setas", () => {
+      abrir(DO_JAX, { onAlternar: vi.fn(), selecao: new Set() });
+      const caixas = screen.getAllByRole("checkbox");
+      caixas[0]!.focus();
+      fireEvent.keyDown(caixas[0]!, { key: "ArrowDown" });
+      expect(document.activeElement).toBe(screen.getAllByRole("checkbox")[1]);
+    });
+  });
+
   it("as ações da lista vão ao lado do título", () => {
     abrir(DO_JAX, { acoes: <button type="button">Selecionar os 3 filtrados</button> });
     expect(screen.getByRole("button", { name: "Selecionar os 3 filtrados" })).toBeTruthy();

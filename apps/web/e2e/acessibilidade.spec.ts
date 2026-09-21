@@ -204,6 +204,53 @@ test.describe("só com teclado", () => {
     const naVez = await cartoes.evaluateAll((botoes) => botoes.filter((b) => b.tabIndex === 0).length);
     expect(naVez).toBe(1);
   });
+
+  /**
+   * T-63. A galeria das categorias tinha duas paradas de Tab por tile: na de
+   * Itens, a virtual, sair dela pelo teclado era Tab milhares de vezes.
+   */
+  test("as setas andam na galeria virtual, e o End chega ao último tile", async ({ page }) => {
+    await irParaHome(page);
+    await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
+    const scroller = page.locator("[data-virtual='sim']");
+    const ampliar = scroller.getByRole("button", { name: /^Ampliar / });
+    await expect(ampliar.first()).toBeVisible();
+    await ampliar.first().focus();
+
+    const noFoco = () =>
+      page.evaluate(() => {
+        const item = document.activeElement?.closest("li");
+        const caixa = document.activeElement?.getBoundingClientRect();
+        return {
+          posicao: Number(item?.getAttribute("aria-posinset")),
+          total: Number(item?.getAttribute("aria-setsize")),
+          x: Math.round(caixa?.x ?? -1),
+          y: Math.round(caixa?.y ?? -1),
+        };
+      });
+
+    const antes = await noFoco();
+    expect(antes.posicao).toBe(1);
+    await page.keyboard.press("ArrowRight");
+    expect((await noFoco()).posicao).toBe(2);
+    await page.keyboard.press("ArrowLeft");
+
+    // ↓ vai ao tile de baixo: a mesma coluna, a linha seguinte.
+    await page.keyboard.press("ArrowDown");
+    const embaixo = await noFoco();
+    expect(embaixo.posicao).toBeGreaterThan(2);
+    expect(embaixo.x).toBe(antes.x);
+    expect(embaixo.y).toBeGreaterThan(antes.y);
+
+    // O último tile não está montado: o End rola até ele, e o foco chega.
+    await page.keyboard.press("End");
+    await expect.poll(async () => (await noFoco()).posicao).toBe(antes.total);
+    await expect(page.locator(":focus")).toBeInViewport();
+
+    // Uma parada de Tab só, e é a do tile com o foco.
+    const naVez = await ampliar.evaluateAll((botoes) => botoes.filter((b) => b.tabIndex === 0).length);
+    expect(naVez).toBe(1);
+  });
 });
 
 // --- critério 3: `alt` em toda imagem ---------------------------------------------------

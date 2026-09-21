@@ -50,6 +50,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type FocusEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -232,8 +234,13 @@ export function PainelDeAsset({
           virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
           modoSelecao={(selecao?.size ?? 0) > 0}
           fim={fim}
-          tile={(asset, medidas, modoSelecao) => (
-            <TileDaGaleria {...doCartao(asset)} medidas={medidas} modoSelecao={modoSelecao} />
+          tile={(asset, medidas, modoSelecao, naVez) => (
+            <TileDaGaleria
+              {...doCartao(asset)}
+              medidas={medidas}
+              modoSelecao={modoSelecao}
+              naVez={naVez}
+            />
           )}
         />
       )}
@@ -270,7 +277,13 @@ interface GaleriaProps {
   readonly virtual: boolean;
   /** Com alguma coisa selecionada, as caixas ficam à vista em todos os tiles. */
   readonly modoSelecao: boolean;
-  readonly tile: (asset: Asset, medidas: MedidasDaGaleria, modoSelecao: boolean) => ReactNode;
+  /** `naVez`: é este tile que está na ordem do Tab (T-63). */
+  readonly tile: (
+    asset: Asset,
+    medidas: MedidasDaGaleria,
+    modoSelecao: boolean,
+    naVez: boolean,
+  ) => ReactNode;
   readonly fim?: ReactNode;
 }
 
@@ -301,6 +314,73 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
     paddingEnd: 24 - VAO_DA_GALERIA,
   });
 
+  /**
+   * Uma parada de Tab para a galeria inteira, e as setas andam entre os tiles
+   * (T-63) — o mesmo da grade de campeões (T-57). Eram **duas paradas por tile**
+   * (ampliar e a caixa do lote): na categoria de 5.042 ícones, passar da galeria
+   * para o que vem depois dela era Tab dez mil vezes.
+   *
+   * A vez é um índice na lista, não um elemento: na galeria virtual o tile pode
+   * nem estar montado. Se não está — rolou para longe —, a vez fica com o
+   * primeiro que está, e o Tab nunca pula a galeria inteira.
+   */
+  const [vez, setVez] = useState(0);
+  const pedido = useRef<number | null>(null);
+  const itens = linhas.getVirtualItems();
+  const montados = virtual
+    ? { de: (itens[0]?.index ?? 0) * colunas, ate: ((itens.at(-1)?.index ?? -1) + 1) * colunas }
+    : { de: 0, ate: assets.length };
+  const naLista = Math.min(vez, Math.max(assets.length - 1, 0));
+  const comAVez = naLista >= montados.de && naLista < montados.ate ? naLista : montados.de;
+
+  // O foco vai para o tile pedido assim que ele estiver montado — na virtual,
+  // um salto do Home ao End precisa de uma rolagem e de uma renderização antes.
+  useEffect(() => {
+    if (pedido.current === null) return;
+    const porta = lista.current?.querySelector<HTMLElement>(
+      `[data-indice="${pedido.current}"] [data-porta]`,
+    );
+    if (!porta) return;
+    pedido.current = null;
+    porta.focus();
+  });
+
+  function focar(indice: number) {
+    const alvo = Math.max(0, Math.min(indice, assets.length - 1));
+    pedido.current = alvo;
+    setVez(alvo);
+    if (virtual) linhas.scrollToIndex(Math.floor(alvo / colunas));
+  }
+
+  function aoFocar(evento: FocusEvent<HTMLUListElement>) {
+    // Clicar ou chegar pelo Tab num tile passa a vez para ele.
+    const item = (evento.target as HTMLElement).closest<HTMLElement>("[data-indice]");
+    if (item) setVez(Number(item.dataset.indice));
+  }
+
+  function aoTeclar(evento: ReactKeyboardEvent<HTMLUListElement>) {
+    if (evento.altKey || evento.ctrlKey || evento.metaKey) return;
+    const passos: Record<string, number> = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: colunas,
+      ArrowUp: -colunas,
+    };
+    const passo = passos[evento.key];
+    if (passo !== undefined) {
+      evento.preventDefault();
+      focar(comAVez + passo);
+    } else if (evento.key === "Home") {
+      evento.preventDefault();
+      focar(0);
+    } else if (evento.key === "End") {
+      evento.preventDefault();
+      focar(assets.length - 1);
+    }
+  }
+
+  const teclado = { onKeyDown: aoTeclar, onFocus: aoFocar };
+
   // `scrollbar-gutter: stable`: a barra de rolagem que aparece ou some não muda
   // a largura, e as colunas não ficam trocando de número na borda.
   // Só a partir de `md`: no telefone a barra de rolagem flutua por cima, e a
@@ -312,6 +392,7 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
       <div className={classeDoScroller}>
         <ul
           ref={lista}
+          {...teclado}
           className="mx-3.5 mb-6 grid"
           style={{
             gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
@@ -319,8 +400,10 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
             gap: VAO_DA_GALERIA,
           }}
         >
-          {assets.map((asset) => (
-            <li key={asset.id}>{tile(asset, medidas, modoSelecao)}</li>
+          {assets.map((asset, indice) => (
+            <li key={asset.id} data-indice={indice}>
+              {tile(asset, medidas, modoSelecao, indice === comAVez)}
+            </li>
           ))}
         </ul>
         {fim}
@@ -333,12 +416,18 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
     // coluna do painel. Uma `70vh` cravada aqui ignoraria a bandeja do lote e a
     // barra de filtros que dividem a mesma tela.
     <div ref={scroller} data-virtual="sim" className={cn(classeDoScroller, "contain-strict")}>
-      <ul ref={lista} className="relative mx-3.5" style={{ height: linhas.getTotalSize() }}>
-        {linhas.getVirtualItems().flatMap((linha) => {
+      <ul
+        ref={lista}
+        {...teclado}
+        className="relative mx-3.5"
+        style={{ height: linhas.getTotalSize() }}
+      >
+        {itens.flatMap((linha) => {
           const inicio = linha.index * colunas;
           return assets.slice(inicio, inicio + colunas).map((asset, coluna) => (
             <li
               key={asset.id}
+              data-indice={inicio + coluna}
               // A lista tem 5.042 itens e desenha 40: sem isto, o leitor de tela
               // anunciaria "item 3 de 40".
               aria-setsize={assets.length}
@@ -353,7 +442,7 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
                 transform: `translateY(${linha.start}px)`,
               }}
             >
-              {tile(asset, medidas, modoSelecao)}
+              {tile(asset, medidas, modoSelecao, inicio + coluna === comAVez)}
             </li>
           ));
         })}
@@ -547,11 +636,16 @@ function CaixaDeSelecao({
   selecionado,
   onAlternar,
   className,
+  tabIndex,
+  porta,
 }: {
   asset: Asset;
   selecionado?: boolean;
   onAlternar: (id: string) => void;
   className?: string;
+  tabIndex?: number;
+  /** É por ela que o foco entra no tile, quando não há ampliação (T-63). */
+  porta?: boolean;
 }) {
   return (
     <label
@@ -570,6 +664,8 @@ function CaixaDeSelecao({
         type="checkbox"
         className="sr-only"
         aria-label={`Selecionar ${asset.fileName}`}
+        tabIndex={tabIndex}
+        data-porta={porta || undefined}
         checked={selecionado ?? false}
         onChange={() => onAlternar(asset.id)}
       />
@@ -589,6 +685,7 @@ function Previa({
   caixa,
   folga,
   onAmpliar,
+  tabIndex,
 }: {
   asset: Asset;
   url: string;
@@ -596,6 +693,7 @@ function Previa({
   /** O respiro entre a imagem e a borda da caixa. */
   folga?: string;
   onAmpliar?: (asset: Asset) => void;
+  tabIndex?: number;
 }) {
   const limite = folga ? `100% - ${folga}` : "100%";
   const imagem = (
@@ -620,6 +718,8 @@ function Previa({
       type="button"
       onClick={() => onAmpliar(asset)}
       aria-label={`Ampliar ${asset.fileName}`}
+      tabIndex={tabIndex}
+      data-porta
       className="group/previa relative block w-full cursor-zoom-in"
     >
       {imagem}
@@ -675,7 +775,13 @@ const TileDaGaleria = memo(function TileDaGaleria({
   onAmpliar,
   medidas,
   modoSelecao,
-}: CartaoProps & { readonly medidas: MedidasDaGaleria; readonly modoSelecao: boolean }) {
+  naVez = true,
+}: CartaoProps & {
+  readonly medidas: MedidasDaGaleria;
+  readonly modoSelecao: boolean;
+  /** Fora da vez, o tile sai da ordem do Tab: as setas é que chegam nele (T-63). */
+  readonly naVez?: boolean;
+}) {
   const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
   const { copia, copiarUrl } = useCopia(copiar, url);
   // Enquanto alguma coisa acontece no tile, as ações não somem debaixo do mouse.
@@ -698,6 +804,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
   // ações — e o teclado nunca chegaria nelas. Aí elas ficam sempre no DOM.
   const temPortaDeFoco = Boolean(onAmpliar || onAlternar);
   const mostrarAcoes = revelado || ativo || !temPortaDeFoco;
+  const tabIndex = naVez ? 0 : -1;
 
   return (
     <article
@@ -725,6 +832,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
           // tile de 112 px eram 29% da largura gastos em borda.
           folga={medidas.acoesComRotulo ? "12px" : "6px"}
           onAmpliar={onAmpliar}
+          tabIndex={tabIndex}
         />
 
         {onAlternar && (
@@ -732,6 +840,8 @@ const TileDaGaleria = memo(function TileDaGaleria({
             asset={asset}
             selecionado={selecionado}
             onAlternar={onAlternar}
+            tabIndex={tabIndex}
+            porta={!onAmpliar}
             className={cn("absolute top-2 left-2", SO_NO_HOVER, (selecionado || modoSelecao) && "opacity-100")}
           />
         )}

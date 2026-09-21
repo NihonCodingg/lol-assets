@@ -2903,7 +2903,7 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 **NÃO entra**
 - Setas na galeria virtualizada das categorias: lá o item nem sempre está no DOM, e andar por
-  seta exige rolar o virtualizador junto. Fica anotado em "Ideias não executadas".
+  seta exige rolar o virtualizador junto. Fica anotado em "Ideias não executadas" — feito no T-63.
 
 **Critérios de aceite**
 1. ✅ A grade tem um `tabindex="0"` só, e clicar num cartão passa a vez para ele.
@@ -3123,6 +3123,48 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-63 — Setas na galeria das categorias
+
+| | |
+|---|---|
+| **Objetivo** | A galeria das categorias ser uma parada de Tab só, com as setas andando entre os tiles |
+| **Dependências** | T-57, T-60 |
+| **Estimativa** | ~120 linhas |
+| **Effort** | médio |
+| **Cobre** | RNF-11 e o critério da frente: teclado completo, "setas onde houver grade" |
+
+> Estava em "Ideias não executadas" desde o T-57. A frente de front-end (ADR 0022) pede setas em
+> toda grade, e esta era a que faltava.
+>
+> Medido na produção, em Itens a 1440×900: **120 paradas de Tab** montadas na galeria (a prévia e a
+> caixa do lote de cada tile), e **mais de 400 Tabs** para sair dela — a lista virtual monta mais
+> tiles conforme o foco desce, e o fim nunca chega.
+
+**Entra**
+- Só o tile com a vez fica na ordem do Tab: a prévia e a caixa dele. Os outros, `tabindex="-1"`.
+- `←` `→` andam um tile; `↑` `↓`, uma linha; `Home` e `End` vão às pontas. Na borda, o foco fica.
+- A vez é um índice, não um elemento: na galeria virtual, a seta rola o virtualizador até a linha
+  e foca o tile quando ele monta. Se o tile com a vez saiu de cena pela rolagem, a vez passa ao
+  primeiro montado — o Tab nunca pula a galeria inteira.
+- Clicar ou chegar pelo Tab num tile passa a vez para ele.
+
+**NÃO entra**
+- Mudar o que o tile faz: as ações continuam aparecendo no foco (T-60), e o Tab dentro do tile
+  continua chegando nelas.
+
+**Critérios de aceite**
+1. ✅ Um `tabindex="0"` só na galeria, virtual ou não.
+2. ✅ As setas andam, `↓` cai na mesma coluna, e o `End` chega ao último tile da lista virtual.
+3. ✅ Em Itens, do primeiro tile até sair da galeria: de **mais de 400 Tabs** para **4**.
+
+**Testes que provam**
+- `painel-de-asset.test.tsx`: a parada única, as setas, o `Home`/`End`, a vez que muda no clique e
+  a caixa do lote como porta quando não há ampliação.
+- `acessibilidade.spec.ts`: na galeria virtual de Itens, `→`, `↓` na mesma coluna e o `End` até o
+  último tile, que não estava montado.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -3185,6 +3227,5 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 15/09/2026 | Comparar com o `versions.json` do ddragon | Um aviso quando já existe patch mais novo que o índice (anotada no [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
 | 15/09/2026 | Dependabot | Atualização de segurança das dependências sem ninguém lembrar |
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
-| 18/09/2026 | Setas na galeria virtualizada das categorias | Andar por seta entre 5.042 ícones; hoje o item nem sempre está no DOM, e a seta teria de rolar o virtualizador junto (achado no T-57) |
 | 18/09/2026 | Filtro "esconder sombras" nas wards | As 532 wards são 266 pares arte + sombra; o T-56 as separou pelo nome, mas quem quer só a arte continua rolando o dobro |
 | 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
