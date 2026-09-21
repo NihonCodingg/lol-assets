@@ -15,7 +15,7 @@
  * O tamanho é altura, porque é assim que o design pensa: `28 · 30 · 32`, mais o
  * `24` e o `26` dos botões-ícone. Ver a tabela "Altura de controle" no TOKENS.
  */
-import type { ButtonHTMLAttributes } from "react";
+import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,9 @@ const TAMANHO: Record<TamanhoDoBotao, string> = {
   lg: "h-controle-lg px-2.5 text-12",
 };
 
-export interface BotaoProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+// `ComponentProps` e não `ButtonHTMLAttributes`: traz o `ref`, que no React 19 é
+// prop comum — a bandeja do lote precisa dele para levar o foco (T-68).
+export interface BotaoProps extends ComponentProps<"button"> {
   readonly variante?: VarianteDoBotao;
   readonly tamanho?: TamanhoDoBotao;
 }

@@ -3339,6 +3339,51 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-68 — O zip não tira o foco de quem usa teclado nem enche o leitor de tela
+
+| | |
+|---|---|
+| **Objetivo** | Que montar o zip pelo teclado mantenha o lugar da pessoa, e que o leitor de tela ouça o progresso sem ruído |
+| **Dependências** | T-47b, T-64 |
+| **Estimativa** | ~80 linhas |
+| **Effort** | médio |
+| **Cobre** | RF-17, RNF-11, WCAG 2.4.3 (ordem do foco) e 4.1.3 (mensagens de status) |
+
+> Rodada 4 da frente, diagnóstico de 21/09/2026 na produção. A rodada mediu o retorno de cada
+> ação de uma sessão real. Download, PNG e copiar estavam bons: ✓ no botão por 2 s, o arquivo
+> chegando em 60–120 ms e o anúncio "Arquivo baixado" ou "Link copiado". O zip, com Enter no
+> botão, não estava:
+>
+> - o botão fica desabilitado enquanto monta, e o navegador joga o foco no `body`. No fim, o foco
+>   pulava para o painel. Quem usa teclado perdia o lugar;
+> - a região viva era a linha inteira do progresso, com o botão Cancelar dentro. Cada arquivo
+>   virava um anúncio: "0 de 10Cancelar", "1 de 10Cancelar"… **N + 1 anúncios** num zip de N
+>   arquivos. Com 5.042 ícones, cinco mil.
+
+**Entra**
+- Enter no "Baixar N como zip" leva o foco para o Cancelar, que é a única coisa a fazer enquanto
+  monta. No fim, ou se a pessoa cancelar, o foco volta ao botão do zip. Quem clicou com o mouse
+  com o foco em outro lugar não tem o foco puxado.
+- O progresso à vista ("3 de 10" e a barra) sai da região viva. O leitor de tela ouve o começo,
+  cada quarto do caminho e o fim: **no máximo 6 anúncios**, qualquer que seja o tamanho do zip.
+- O `Botao` passa a aceitar `ref` (no React 19, `ref` é prop comum).
+
+**Critérios de aceite**
+1. ✅ Foco durante a montagem: de `body` para **Cancelar**. No fim: do painel para o **botão do
+   zip**.
+2. ✅ Anúncios num zip de 10: de 10 (9 com "Cancelar") para 6 (nenhum com "Cancelar").
+3. ✅ O que se vê não muda.
+
+**Testes que provam**
+- `barra-de-lote.test.tsx`:
+  - só 4 anúncios distintos ao longo de 5.042 arquivos;
+  - o foco no Cancelar e de volta no botão do zip;
+  - o foco não é puxado de quem estava fora da bandeja.
+- Um teste existente mudou de propósito: ele procurava o "2 de 3" dentro da região viva, que era
+  o defeito. Agora confere o "2 de 3" e a barra à vista, e o anúncio "Metade do zip pronta.".
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
