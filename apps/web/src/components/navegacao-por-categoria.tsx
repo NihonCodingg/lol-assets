@@ -62,6 +62,7 @@ import {
   type GrupoDeFiltro,
 } from "@/lib/categorias";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
+import { ALVO_DE_TOQUE, cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
 export interface NavegacaoPorCategoriaProps {
   /**
@@ -255,7 +256,12 @@ export function NavegacaoPorCategoria({
               {/* No telefone, uma linha que rola de lado; no computador este
                   `div` some (`contents`) e os filtros quebram na barra. */}
               {(naBarra.length > 0 || maisFiltros.length > 0 || marcadas.size > 0) && (
-                <div className="flex items-center gap-x-3 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none] md:contents">
+                <div
+                  className={cn(
+                    "flex items-center gap-x-3 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none] md:contents",
+                    ROLA_SEM_CORTAR_O_TOQUE,
+                  )}
+                >
                   {naBarra.map((grupo) => (
                     <GrupoDeChips
                       key={grupo.chave}
@@ -271,6 +277,7 @@ export function NavegacaoPorCategoria({
                       tamanho="md"
                       aria-expanded={maisFiltrosAbertos}
                       aria-controls={ID_DE_MAIS_FILTROS}
+                      className={ALVO_DE_TOQUE}
                       onClick={() => setMaisFiltrosAbertos((aberto) => !aberto)}
                     >
                       <SlidersHorizontal aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
@@ -285,7 +292,12 @@ export function NavegacaoPorCategoria({
 
                   {/* §B.1.6: a categoria `item` abre filtrada, e isto é a saída. */}
                   {marcadas.size > 0 && (
-                    <Botao variante="fantasma" tamanho="md" onClick={() => setMarcadas(new Set())}>
+                    <Botao
+                      variante="fantasma"
+                      tamanho="md"
+                      className={ALVO_DE_TOQUE}
+                      onClick={() => setMarcadas(new Set())}
+                    >
                       Mostrar tudo
                     </Botao>
                   )}
@@ -374,6 +386,7 @@ export function NavegacaoPorCategoria({
               <Botao
                 variante="fantasma"
                 tamanho="md"
+                className={ALVO_DE_TOQUE}
                 onClick={() => setSelecao(tudoDo(filtrados, true))}
               >
                 <ListChecks aria-hidden="true" strokeWidth={1.75} className="size-3.5" />

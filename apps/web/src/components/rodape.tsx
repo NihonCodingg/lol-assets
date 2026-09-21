@@ -56,7 +56,7 @@ import { useEffect, useRef } from "react";
 import { AvisosDaRiot } from "@/components/avisos-da-riot";
 import { useNavegacao } from "@/components/navegacao-context";
 import { siteConfig } from "@/lib/site-config";
-import { cn } from "@/lib/utils";
+import { ALVO_DE_TOQUE, cn } from "@/lib/utils";
 
 /** Um desenho por categoria, do mesmo conjunto ([ADR 0017]). Categoria nova cai em `Shapes`. */
 const ICONE_DA_CATEGORIA: Readonly<Record<string, LucideIcon>> = {
@@ -106,7 +106,12 @@ export function Rodape() {
           volta de quem está na página Sobre. */}
       <Link
         href="/"
-        className="flex h-12 flex-none items-center gap-2 self-start rounded-padrao px-3.5 md:h-cabecalho md:self-auto"
+        // 42 px à vista no telefone, 44 de toque (T-66): crescer a faixa do topo
+        // por 2 px empurraria a arte inteira para baixo.
+        className={cn(
+          "flex h-12 flex-none items-center gap-2 self-start rounded-padrao px-3.5 md:h-cabecalho md:self-auto",
+          ALVO_DE_TOQUE,
+        )}
       >
         <div className="size-5 flex-none rounded-marca bg-acento" aria-hidden="true" />
         <span className="text-13 font-semibold tracking-marca text-texto-forte">
