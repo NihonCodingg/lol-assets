@@ -248,6 +248,9 @@ test("baixar do cdragon traz o arquivo da fonte, com o formato e as dimensões d
   const esperado = await registro(page, "emote", arquivo);
   expect(esperado.source).toBe("cdragon");
 
+  // Desde o T-60 as ações do tile entram no DOM quando ele é apontado, como a
+  // pessoa faz antes de baixar. Sem apontar, o botão não existe.
+  await cartao.hover();
   const { nome, dados } = await baixar(page, cartao.getByRole("button", { name: "Baixar original" }));
   expect(nome).toBe(arquivo);
   await conferirArquivo(page, dados, esperado);
