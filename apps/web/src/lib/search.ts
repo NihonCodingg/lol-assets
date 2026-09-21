@@ -177,6 +177,69 @@ export function search(index: SearchIndex, rawQuery: string, limit = 50): Search
     .slice(0, limit);
 }
 
+/**
+ * Distância de edição entre duas palavras, contando a troca de duas letras
+ * vizinhas como um erro só ("yasou" → "yasuo"). Para no `teto`: acima dele, o
+ * número exato não interessa, e sair cedo é o que mantém isto barato.
+ */
+export function distancia(a: string, b: string, teto: number): number {
+  if (Math.abs(a.length - b.length) > teto) return teto + 1;
+  let anterior2: number[] = [];
+  let anterior = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i += 1) {
+    const atual = [i];
+    let menorDaLinha = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const custo = a[i - 1] === b[j - 1] ? 0 : 1;
+      let d = Math.min(anterior[j]! + 1, atual[j - 1]! + 1, anterior[j - 1]! + custo);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d = Math.min(d, anterior2[j - 2]! + 1);
+      }
+      atual.push(d);
+      menorDaLinha = Math.min(menorDaLinha, d);
+    }
+    if (menorDaLinha > teto) return teto + 1;
+    anterior2 = anterior;
+    anterior = atual;
+  }
+  return anterior[b.length]!;
+}
+
+/**
+ * Os campeões parecidos com o que se digitou, para quando a busca não acha
+ * **nada** (T-69).
+ *
+ * Não é busca difusa — o [ADR 0009] continua valendo: o ranking é normalização
+ * mais apelidos, e isto não entra nele. É o vazio que ensina: "yasou",
+ * "kattarina", "ezrael" são erro de dedo, não apelido, e davam zero resultados.
+ * Só nomes, ids e apelidos dos campeões (173, é o nível de navegação do [ADR
+ * 0010]); até 1 erro em consulta de até 5 letras, até 2 acima disso. Abaixo de
+ * 4 letras, nada: com 3, quase tudo fica a um erro de alguma coisa.
+ */
+export function parecidos(index: SearchIndex, rawQuery: string, max = 3): ChampionHit[] {
+  const query = normalize(rawQuery);
+  if (query.length < 4) return [];
+  const teto = query.length <= 5 ? 1 : 2;
+
+  const porId = new Map<string, number>();
+  for (const [apelido, id] of Object.entries(index.aliases)) {
+    const d = distancia(query, apelido, teto);
+    if (d <= teto) porId.set(id, Math.min(porId.get(id) ?? d, d));
+  }
+
+  const achados: { champion: CatalogChampion; d: number }[] = [];
+  for (const entry of index.champions) {
+    let d = porId.get(entry.champion.championId) ?? teto + 1;
+    for (const needle of entry.needles) d = Math.min(d, distancia(query, needle, teto));
+    if (d <= teto) achados.push({ champion: entry.champion, d });
+  }
+
+  return achados
+    .sort((a, b) => a.d - b.d || a.champion.names.pt_BR.localeCompare(b.champion.names.pt_BR))
+    .slice(0, max)
+    .map(({ champion }) => ({ kind: "champion", score: SCORE.none, champion }));
+}
+
 /** Empate de pontuação favorece campeão: é o nível de navegação (ADR 0010). */
 function ordemEstavel(hit: SearchHit): number {
   return hit.kind === "champion" ? 0 : 1;

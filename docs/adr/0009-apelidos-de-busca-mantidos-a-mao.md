@@ -44,3 +44,19 @@ site de uso pessoal com 173 campeões, isso é complexidade sem retorno.
   buscar, e o teste de contrato do indexador usa para validar. Não é dado de aplicação.
 - Apelidos de **skin** (não de campeão) ficam fora por enquanto. Se aparecerem, o campo
   `aliases[]` de cada asset no índice já existe para isso.
+
+## Emenda — 21/09/2026 (T-69): o vazio sugere o parecido
+
+A decisão continua: o **ranking** é normalização mais apelidos, sem busca difusa. O que o T-69
+acrescenta fica **fora** do ranking, no vazio.
+
+Medido na produção com 50 consultas realistas, erros de dedo como "yasou", "yaso", "kattarina",
+"ezrael" e "serafine" davam **zero resultados**. Isso não é apelido, e a tabela manual não daria
+conta de todos. Só quando a busca de verdade não acha nada, o vazio oferece até três campeões
+parecidos, como opções que o Enter abre:
+
+- distância de edição com transposição;
+- até 1 erro em consulta de até 5 letras, até 2 acima disso, nada abaixo de 4 letras;
+- só nomes, ids e apelidos dos 173 campeões, que é o nível de navegação do ADR 0010.
+
+Nenhuma consulta que já achava alguma coisa muda de resultado.

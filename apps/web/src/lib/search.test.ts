@@ -3,7 +3,16 @@ import { describe, expect, it } from "vitest";
 import { championAliases } from "@lol-assets/schema/aliases";
 import type { Catalog, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
-import { buildSearchIndex, hitId, normalize, rotulo, search, type SearchHit } from "./search";
+import {
+  buildSearchIndex,
+  distancia,
+  hitId,
+  normalize,
+  parecidos,
+  rotulo,
+  search,
+  type SearchHit,
+} from "./search";
 
 /**
  * O catálogo dos testes é sintético de propósito: a fixture do contrato tem três
@@ -264,5 +273,73 @@ describe("escala real: 173 campeões e 2.118 skins", () => {
     const decorrido = (performance.now() - inicio) / consultas.length;
 
     expect(decorrido).toBeLessThan(50);
+  });
+});
+
+// --- T-69: o vazio oferece o campeão parecido ------------------------------------------
+
+describe("distancia", () => {
+  it("conta a troca de duas letras vizinhas como um erro só", () => {
+    expect(distancia("yasou", "yasuo", 2)).toBe(1);
+    expect(distancia("ezrael", "ezreal", 2)).toBe(1);
+  });
+
+  it("letra a mais, a menos e trocada", () => {
+    expect(distancia("kattarina", "katarina", 2)).toBe(1);
+    expect(distancia("yaso", "yasuo", 2)).toBe(1);
+    expect(distancia("serafine", "seraphine", 2)).toBe(2);
+  });
+
+  it("para no teto, sem calcular o resto", () => {
+    expect(distancia("jax", "evelynn", 1)).toBe(2);
+  });
+});
+
+describe("parecidos (T-69)", () => {
+  const comErros = buildSearchIndex({
+    ...CATALOGO,
+    champions: [
+      ...CATALOGO.champions,
+      campeao(157, "Yasuo", "Yasuo"),
+      campeao(55, "Katarina", "Katarina"),
+      campeao(81, "Ezreal", "Ezreal"),
+      campeao(147, "Seraphine", "Seraphine"),
+    ],
+  });
+
+  it.each([
+    ["yasou", "Yasuo"],
+    ["yaso", "Yasuo"],
+    ["kattarina", "Katarina"],
+    ["ezrael", "Ezreal"],
+    ["serafine", "Seraphine"],
+  ])("%s → %s", (consulta, esperado) => {
+    // A busca de verdade não acha nada — é esse o caso.
+    expect(search(comErros, consulta)).toEqual([]);
+    expect(parecidos(comErros, consulta)[0]?.champion.names.pt_BR).toBe(esperado);
+  });
+
+  it("consulta curta não sugere: com 3 letras quase tudo fica a um erro de algo", () => {
+    expect(parecidos(comErros, "jxa")).toEqual([]);
+  });
+
+  it("o que não se parece com nada continua sem sugestão", () => {
+    expect(parecidos(comErros, "zzzzqq")).toEqual([]);
+  });
+
+  it("o ranking não muda: quem já acha continua achando igual", () => {
+    for (const consulta of ["jax", "kaisa", "mf", "k/da", "prestigio", "deus da guerra"]) {
+      expect(search(comErros, consulta).map(hitId)).toEqual(search(indice, consulta).map(hitId));
+    }
+  });
+
+  it("custa pouco: a pior consulta, contra 173 nomes, fica abaixo de 5 ms", () => {
+    const muitos = buildSearchIndex({
+      ...CATALOGO,
+      champions: Array.from({ length: 173 }, (_, i) => campeao(1000 + i, `Campeao${i}`, `Campeão Número ${i}`)),
+    });
+    const inicio = performance.now();
+    for (let i = 0; i < 20; i += 1) parecidos(muitos, "campeaonumeroxyz");
+    expect((performance.now() - inicio) / 20).toBeLessThan(5);
   });
 });

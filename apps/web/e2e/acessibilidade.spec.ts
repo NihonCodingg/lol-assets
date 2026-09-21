@@ -595,3 +595,29 @@ for (const [nome, viewport] of [
     });
   });
 }
+
+/**
+ * T-69: erro de dedo. Medido na produção em 21/09/2026: "yasou", "yaso",
+ * "kattarina", "ezrael" e "serafine" davam zero resultados. O vazio agora
+ * oferece o campeão parecido, como opção de verdade: Enter abre.
+ */
+test.describe("busca com erro de dedo", () => {
+  test("o vazio oferece o parecido, e Enter abre o campeão", async ({ page }) => {
+    await irParaHome(page);
+    await page.keyboard.type("jaxx");
+    await expect(page.getByRole("status").filter({ hasText: "Parecido" })).toBeVisible();
+    await expect(page.getByRole("listbox", { name: "Campeões parecidos" })).toBeVisible();
+    await expect(page.getByRole("option").first()).toContainText("Jax");
+    expect(resumir(await violacoesDoAxe(page))).toBe("");
+
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("region", { name: "Painel de Jax" })).toBeVisible();
+  });
+
+  test("o que não se parece com nada continua dizendo que não achou", async ({ page }) => {
+    await irParaHome(page);
+    await page.keyboard.type("zzzzqq");
+    await expect(page.getByRole("status").filter({ hasText: "Nada para" })).toBeVisible();
+    await expect(page.getByRole("option")).toHaveCount(0);
+  });
+});
