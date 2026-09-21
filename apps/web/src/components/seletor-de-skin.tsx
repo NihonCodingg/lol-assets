@@ -20,18 +20,28 @@ import type { CatalogSkin } from "@lol-assets/schema";
 
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
+import { nomeSemOCampeao } from "@/lib/champion-panel";
 import { cn } from "@/lib/utils";
 
 export interface SeletorDeSkinProps {
   /** Nome do grupo de rádios — um por campeão, para as setas não pularem de grupo. */
   readonly nome: string;
+  /** O nome do campeão, que sai da frente de cada legenda (T-65). */
+  readonly campeao: string;
   readonly skins: readonly CatalogSkin[];
   readonly valor: number;
   readonly onEscolher: (skinNum: number) => void;
   readonly assetsBaseUrl?: string;
 }
 
-export function SeletorDeSkin({ nome, skins, valor, onEscolher, assetsBaseUrl }: SeletorDeSkinProps) {
+export function SeletorDeSkin({
+  nome,
+  campeao,
+  skins,
+  valor,
+  onEscolher,
+  assetsBaseUrl,
+}: SeletorDeSkinProps) {
   const faixa = useRef<HTMLDivElement>(null);
 
   // A skin escolhida — pela busca, pelo clique ou pelas setas — entra na parte
@@ -64,6 +74,9 @@ export function SeletorDeSkin({ nome, skins, valor, onEscolher, assetsBaseUrl }:
               value={skin.skinNum}
               checked={marcada}
               onChange={() => onEscolher(skin.skinNum)}
+              // O nome inteiro, com o campeão: a legenda encurta, o leitor de
+              // tela não precisa — ele não vê o painel em volta.
+              aria-label={skin.names.pt_BR}
               className="peer sr-only"
             />
             {/* O anel do foco mora na caixa da arte: o rádio é invisível, e o
@@ -83,15 +96,18 @@ export function SeletorDeSkin({ nome, skins, valor, onEscolher, assetsBaseUrl }:
             </div>
             {/* Numa linha, com o nome inteiro no `title`: em duas, a faixa ficava
                 serrilhada — umas com uma linha, outras com duas — e crescia 14 px
-                por causa do nome mais comprido (T-58). */}
+                por causa do nome mais comprido (T-58). Sem o nome do campeão na
+                frente (T-65): dentro do painel do Jax, o "Jax" de cada legenda
+                era o que empurrava o resto para as reticências. */}
             <span
+              aria-hidden="true"
               title={skin.names.pt_BR}
               className={cn(
                 "truncate text-10 leading-cartao",
                 marcada ? "font-medium text-texto" : "text-texto-suave group-hover:text-texto-medio",
               )}
             >
-              {skin.names.pt_BR}
+              {nomeSemOCampeao(skin.names.pt_BR, campeao)}
             </span>
           </label>
         );

@@ -59,3 +59,18 @@ export function baseSkin(
   const dele = skinsOf(catalogSkins, champion);
   return dele.find((skin) => skin.isBase) ?? dele[0];
 }
+
+/**
+ * O nome da skin sem o do campeão na frente, para a legenda do seletor (T-65).
+ *
+ * Dentro do painel do Jax, "Jax" em cada legenda de 72 px é o que cortava o nome:
+ * "Jax Cripta de Magma de…". Só sai o prefixo exato seguido de espaço — "PAX
+ * Jax", "SKT T1 Jax" e "Jaximus" ficam como estão —, e a skin base, que se chama
+ * só "Jax", continua "Jax". O nome inteiro segue no nome acessível do rádio.
+ */
+export function nomeSemOCampeao(nomeDaSkin: string, nomeDoCampeao: string): string {
+  const prefixo = `${nomeDoCampeao} `;
+  if (!nomeDaSkin.startsWith(prefixo)) return nomeDaSkin;
+  const resto = nomeDaSkin.slice(prefixo.length).trim();
+  return resto || nomeDaSkin;
+}
