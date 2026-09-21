@@ -3436,6 +3436,45 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-70 — O botão Voltar fecha a camada de cima, em vez de sair do site
+
+| | |
+|---|---|
+| **Objetivo** | Que Voltar (botão, gesto do telefone, Alt+←) feche o painel, a categoria ou a ampliação |
+| **Dependências** | T-47, T-48, T-49 |
+| **Estimativa** | ~100 linhas |
+| **Effort** | médio |
+| **Cobre** | RF-15 (os cliques até o arquivo), T-49 (o painel em tela cheia no telefone) |
+
+> Rodada 6 da frente, diagnóstico de 21/09/2026 na produção, a 390×844 com toque. O painel do
+> campeão, a categoria e a ampliação abrem por cima da tela sem mudar a URL. Com qualquer um deles
+> aberto, **Voltar levava para fora do site**, nos três casos. No telefone o painel ocupa a tela
+> inteira, e Voltar é o gesto de fechá-lo.
+
+**Entra**
+- Cada camada aberta empilha uma entrada no histórico, na **mesma URL**. Voltar fecha a camada
+  de cima. Com a ampliação aberta no painel, o primeiro Voltar fecha a ampliação e o segundo, o
+  painel.
+- Fechar pelo × ou pelo Esc consome a entrada, para que o Voltar seguinte saia do site em vez de
+  ficar mudo.
+- Trocar de uma categoria para outra não empilha: é a mesma camada.
+
+**NÃO entra**
+- Um endereço por campeão ou por categoria (link direto): seria funcionalidade nova, e a URL
+  continua a mesma. Fica anotado em "Ideias não executadas".
+
+**Critérios de aceite**
+1. ✅ Voltar com o painel, a categoria ou a ampliação aberta: de **fora do site** para **fecha a
+   camada e fica no site**, nos três casos.
+2. ✅ Depois de fechar pelo × ou pelo Esc, um Voltar só sai do site.
+3. ✅ A URL não muda ao abrir nada.
+
+**Testes que provam**
+- `voltar.spec.ts` (novo, no telefone): painel, ampliação dentro do painel, categoria, × e Esc.
+  Os três casos de Voltar falham sem a correção.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -3501,3 +3540,4 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 18/09/2026 | Filtro "esconder sombras" nas wards | As 532 wards são 266 pares arte + sombra; o T-56 as separou pelo nome, mas quem quer só a arte continua rolando o dobro |
 | 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
 | 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. Exige infraestrutura (fora da frente de interface) |
+| 21/09/2026 | Link direto para um campeão ou uma categoria | Um endereço que abre o painel do Jax ou a categoria Itens, para mandar a alguém ou salvar nos favoritos. O T-70 fez o Voltar fechar camadas sem mudar a URL; o endereço próprio seria função nova |

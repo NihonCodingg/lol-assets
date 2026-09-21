@@ -62,6 +62,7 @@ import {
   type GrupoDeFiltro,
 } from "@/lib/categorias";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
+import { useFecharComVoltar } from "@/lib/voltar";
 import { ALVO_DE_TOQUE, cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
 export interface NavegacaoPorCategoriaProps {
@@ -103,6 +104,9 @@ export function NavegacaoPorCategoria({
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
   const [maisFiltrosAbertos, setMaisFiltrosAbertos] = useState(false);
   const [ampliado, setAmpliado] = useState<Asset | null>(null);
+  // Voltar sai da categoria e volta aos campeões, não sai do site (T-70). Trocar
+  // de uma categoria para outra não empilha: é a mesma camada.
+  useFecharComVoltar(aberta !== null, onFechar);
   // Muda a cada "Tentar de novo": é o que faz o efeito de carga rodar outra vez.
   // O `AssetsClient` esquece a promessa que falhou, então a nova vai à rede.
   const [tentativa, setTentativa] = useState(0);

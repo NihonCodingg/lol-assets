@@ -56,6 +56,7 @@ import { VitrineDaSkin } from "@/components/vitrine-da-skin";
 import { assetUrl, thumbnailSrc } from "@/lib/asset-file";
 import { baseSkin, chromasOf, panelAssets, skinsOf } from "@/lib/champion-panel";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
+import { useFecharComVoltar } from "@/lib/voltar";
 
 export interface PainelDoCampeaoProps {
   readonly champion: CatalogChampion;
@@ -89,6 +90,8 @@ export function PainelDoCampeao({
   const [chromasAbertos, setChromasAbertos] = useState(false);
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
   const [ampliado, setAmpliado] = useState<Asset | null>(null);
+  // Voltar fecha o painel, não o site: no telefone ele ocupa a tela inteira (T-70).
+  useFecharComVoltar(true, onClose);
 
   /**
    * `Escape` mora aqui, e não nos painéis de dentro, por dois motivos.
