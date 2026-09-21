@@ -3041,6 +3041,8 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - `painel-de-asset.test.tsx`: as ações ao apontar, ao focar e ao sair; sem porta de foco, sempre.
 - `celular.spec.ts`: nenhum botão de baixar no tile, e a ampliação continua baixando.
 
+---
+
 ### T-61 — O painel abre rápido já na primeira vez
 
 | | |
