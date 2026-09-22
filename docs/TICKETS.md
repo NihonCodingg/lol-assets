@@ -3413,6 +3413,8 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
   campeão certo já leva a elas.
 - Nomes em inglês ("star guardian", "blood moon"). O índice só tem pt-BR, e trazer o inglês é
   trabalho do indexador, que está em manutenção.
+  **Correção de 22/09/2026 (T-74):** errado. O índice já trazia `en_US` em 100% dos campeões e
+  das skins, e essas buscas já funcionavam. O erro foi de leitura do resultado.
 
 **Critérios de aceite**
 1. ✅ As 5 consultas com erro de dedo acham o campeão certo em primeiro.
@@ -3603,9 +3605,14 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
   workflow de indexação rodado no branch do PR.
 
 **Critérios de aceite**
-1. Abrir um campeão baixa só a fatia dele, medido em 3G contra os 13,4 s e 18,4 s de antes.
-2. O catálogo continua abaixo de 150 KB comprimido (RNF-03).
-3. As conferências no ar passam, com as 173 fatias imutáveis.
+1. ✅ Abrir um campeão baixa só a fatia dele. Medido na produção em 3G, do toque até a primeira
+   arte, mediana de 3 com cache frio: Ahri **13,4 → 3,7 s**, Jax **18,4 → 5,9 s**. O índice
+   baixado por abertura caiu de **1.288 KB** para **13 KB** (Ahri) e **8 KB** (Jax).
+2. ✅ O catálogo continua abaixo do limite: 62 KB comprimido na produção (era 58 KB), contra os
+   150 KB do RNF-03.
+3. ✅ As conferências no ar passam, com as 173 fatias imutáveis. Isso exigiu ampliar a regra de
+   cabeçalhos, que só casava `index-{categoria}-{hash}`; o teste que confere `public/indice`
+   contra a regra pegou.
 
 **Testes que provam**
 - Schema:
@@ -3620,6 +3627,46 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
   - `loadChampion` busca só a fatia do campeão;
   - a intenção é por campeão, e o ponteiro que só passa não baixa nada;
   - no e2e, parar o ponteiro no Jax baixa só a fatia do Jax.
+
+---
+
+### T-74 — Os nomes em inglês: conferidos, e com guarda
+
+| | |
+|---|---|
+| **Objetivo** | Que campeões e skins sejam encontráveis pelo nome em inglês, com a exibição em pt-BR |
+| **Dependências** | T-69, T-73 |
+| **Estimativa** | ~80 linhas (testes e registros) |
+| **Effort** | baixo |
+| **Cobre** | RF-01, RF-24 |
+
+> O pedido do dono partiu de uma afirmação minha, feita na rodada 5 da frente de front-end: que
+> o índice só tinha pt-BR e que "star guardian" ou "blood moon" davam zero resultados. **Estava
+> errada.** Conferido em 22/09/2026 no índice publicado: `names.en_US` presente em **173 de 173
+> campeões e 2.121 de 2.121 skins**, e a busca do front já procurava por ele desde o T-10
+> (`needlesOf` junta os dois nomes). Na mesma lista da rodada 5, com 20 consultas em inglês a
+> mais, a busca acertou todas as 20: "god staff jax" acha "Jax Cajado Divino", "angler jax" acha
+> "Jax Pescador". Os "erros" da lista eram meus: "fisherman jax" não é o nome da skin, e "pool
+> party" e "winterblessed" acharam as skins certas ("Curtindo o Verão", "Bênção do Inverno").
+>
+> Faltava uma guarda: a fixture do tarball usa o mesmo nome nos dois idiomas, e nenhum teste
+> percebia se o inglês deixasse de ser lido.
+
+**Entra**
+- Um teste no indexador com nomes diferentes nos dois idiomas: a skin leva "God Staff Jax" ao
+  lado de "Jax Deus da Guerra", o campeão leva o título em inglês, e todo campeão e toda skin
+  têm `en_US`.
+- Um teste na busca com os nomes reais: "god staff jax" acha "Jax Cajado Divino", e o rótulo
+  continua em pt-BR.
+- A correção, datada, nos registros que traziam a afirmação errada: o T-69, os relatórios da
+  quinta e da nona rodada, e a tabela de ideias.
+
+**NÃO entra**
+- Nenhuma mudança no indexador nem na busca: os dois já faziam o pedido.
+
+**Critérios de aceite**
+1. ✅ 20 de 20 consultas em inglês acham a skin certa, medido na produção.
+2. ✅ O teste do indexador falha se o `en_US` deixar de ser lido.
 
 ---
 
@@ -3687,7 +3734,5 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
 | 18/09/2026 | Filtro "esconder sombras" nas wards | As 532 wards são 266 pares arte + sombra; o T-56 as separou pelo nome, mas quem quer só a arte continua rolando o dobro |
 | 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
-| 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. Exige infraestrutura (fora da frente de interface) |
+| 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. **Fica de fora por decisão do dono (22/09/2026):** exige um serviço de imagens, e o projeto tem custo zero pelo [ADR 0012](adr/0012-onde-guardar-os-assets.md) |
 | 21/09/2026 | Link direto para um campeão ou uma categoria | Um endereço que abre o painel do Jax ou a categoria Itens, para mandar a alguém ou salvar nos favoritos. O T-70 fez o Voltar fechar camadas sem mudar a URL; o endereço próprio seria função nova |
-| 21/09/2026 | Uma fatia de campeão por campeão (indexador) | Hoje abrir um campeão baixa os 173: 1,3 MB comprimido e 13 MB de JSON, 11,5 s em 3G até a primeira arte (medido no T-72). Um arquivo por campeão teria cerca de 75 KB. É trabalho do indexador, que está em manutenção |
-| 21/09/2026 | Nomes em inglês no índice (indexador) | Buscas como "star guardian", "blood moon" e "spirit blossom" dão zero resultados: o índice só tem o nome em pt-BR (medido no T-69). Trazer o `en_US` das fontes deixaria a busca achar pelos dois nomes, sem mudar o front |
