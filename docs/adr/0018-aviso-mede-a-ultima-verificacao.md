@@ -188,3 +188,23 @@ publicar, o aviso acende em três dias e está certo em acender.
   que chega ao site sem commit foi descartado acima, e o plano C do
   [ADR 0014](0014-onde-vive-o-indice-gerado.md) também precisaria de um commit no `main` para
   disparar o deploy.
+
+## Emenda — 22/09/2026 (T-77): o aviso de patch mais novo entra, ao lado deste
+
+O dono abriu o escopo da ideia anotada em "Outra pergunta". Ela entra **ao lado** desta decisão,
+e não no lugar dela: o aviso de índice velho continua medindo a última verificação. O de patch
+novo mede outra coisa, se a Riot já publicou um patch que o índice ainda não tem.
+
+As três objeções anotadas acima foram tratadas assim:
+
+- **Uma requisição ao ddragon em toda visita.** A resposta do `versions.json` (5 KB, com CORS
+  aberto) fica guardada 6 horas no navegador, o intervalo da indexação agendada. Ela é pedida
+  depois de a página assentar, fora do caminho da chegada.
+- **Acenderia a cada patch nas horas normais.** Sim, e o texto diz isso: "a atualização
+  automática traz o patch novo em algumas horas". É informação, não alarme (`role="status"`).
+  Dá para dispensar, e a dispensa vale até o próximo patch.
+- **Mede outra coisa.** Por isso são dois avisos. Com o índice velho aceso, o de patch novo fica
+  quieto: o velho já diz que o conteúdo pode não ser o mais recente.
+
+O aviso é fixo no canto, e não uma faixa no topo. Ele chega depois da página, e uma faixa
+empurraria a grade: o salto de layout da chegada é zero desde o T-59.

@@ -18,6 +18,7 @@ import { startTransition, useCallback, useEffect, useMemo, useState } from "reac
 import type { Asset, Catalog, CatalogChampion, CatalogSkin, IndexManifest } from "@lol-assets/schema";
 
 import { AvisoDeIndiceVelho } from "@/components/aviso-de-indice-velho";
+import { AvisoDePatchNovo } from "@/components/aviso-de-patch-novo";
 import { AvisosNoFim } from "@/components/avisos-da-riot";
 import { EsqueletoDaGrade, GradeDeCampeoes } from "@/components/grade-de-campeoes";
 import { useNavegacao } from "@/components/navegacao-context";
@@ -205,6 +206,7 @@ export default function HomePage() {
 
       {/* T-31: o único alarme que existe. Sem monitoramento, o site é o detector. */}
       <AvisoDeIndiceVelho manifest={manifest} />
+      <AvisoDePatchNovo manifest={manifest} />
 
       {/* No telefone, dentro de uma categoria, a busca global sai da tela: a
           categoria já tem o campo dela ("Nome ou arquivo"), e dois campos
