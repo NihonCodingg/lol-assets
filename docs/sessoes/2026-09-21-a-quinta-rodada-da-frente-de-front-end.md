@@ -62,6 +62,11 @@ vazia.
 
 - **Nomes em inglês** ("star guardian", "blood moon", "spirit blossom"). O índice só tem o nome
   em pt-BR. Trazer o inglês é trabalho do indexador, que está em manutenção.
+  > **Correção de 22/09/2026 ([T-74](2026-09-22-a-excecao-do-indexador.md)):** isto estava
+  > errado. O índice publicado já trazia `names.en_US` em 100% dos campeões e das skins, e a
+  > busca já procurava por ele. Nesta mesma rodada, "star guardian", "blood moon", "spirit
+  > blossom", "prestige" e "project" acharam a skin certa — nenhuma delas aparece na lista de
+  > falhas acima. A leitura do resultado é que estava errada, não a busca.
 - **Erro de dedo em nome de skin.** As skins moram no painel do campeão (ADR 0010).
 
 ## Achado de processo

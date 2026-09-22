@@ -65,3 +65,7 @@ Tudo exige mexer no indexador ou na infraestrutura, que estão em manutenção. 
 - **Imagens no tamanho da tela.** A home baixa cerca de 1,1 MB de imagem para a primeira tela;
   poderia ser menos da metade.
 - **Nomes em inglês no índice.** Buscas como "star guardian" e "blood moon" dão zero.
+
+  > **Correção de 22/09/2026 ([T-74](2026-09-22-a-excecao-do-indexador.md)):** errado. O
+  > índice já tinha o inglês, e essas buscas já funcionavam. Veja a correção no relatório da
+  > quinta rodada.
