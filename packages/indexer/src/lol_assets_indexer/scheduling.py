@@ -47,7 +47,8 @@ logger = logging.getLogger(__name__)
 #: 2. T-21 — etiquetas de filtro nas categorias não-campeão.
 #: 3. T-22 — emotes e ward skins pelo cdragon, e a fusão das duas fontes.
 #: 4. T-73 — uma fatia por campeão, apontada pelo catálogo (ADR 0023, contrato 2.0.0).
-GERACAO_DO_INDEXADOR = 4
+#: 5. T-76 — o arquivo de marcação (`_fpo`) sai do índice.
+GERACAO_DO_INDEXADOR = 5
 
 #: De quanto em quanto tempo, no máximo, uma execução sem patch novo carimba o
 #: manifesto (ADR 0018).

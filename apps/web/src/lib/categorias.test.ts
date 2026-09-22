@@ -5,7 +5,6 @@ import type { Asset, CatalogChampion } from "@lol-assets/schema";
 import {
   categoriasDisponiveis,
   descreverFiltro,
-  ehMarcacao,
   etiquetasDe,
   filtrar,
   filtrarCampeoes,
@@ -348,7 +347,7 @@ describe("funções do campeão", () => {
   });
 });
 
-// --- T-48: sinônimos, marcação e a barra de filtros -----------------------------------
+// --- T-48: sinônimos e a barra de filtros --------------------------------------------
 
 describe("duas etiquetas da Riot para a mesma coisa", () => {
   // No índice real: 99 itens com `SpellBlock`, 33 com `MagicResist`, 23 com as duas.
@@ -373,22 +372,6 @@ describe("duas etiquetas da Riot para a mesma coisa", () => {
   it("asset sem sinônimo devolve as próprias etiquetas", () => {
     const tags = ["compravel", "mapa:sr"];
     expect(etiquetasDe({ tags })).toBe(tags);
-  });
-});
-
-describe("marcação não é arte", () => {
-  it("o `_fpo` do índice é marcação", () => {
-    expect(
-      ehMarcacao({
-        sourceUrl:
-          "https://raw.communitydragon.org/latest/game/assets/loadouts/summoneremotes/emote_fpo_inventory.png",
-      }),
-    ).toBe(true);
-  });
-
-  it("`fpo` dentro de outra palavra não é", () => {
-    expect(ehMarcacao({ sourceUrl: "https://exemplo.invalido/pasta_fpo/campfpont.png" })).toBe(false);
-    expect(ehMarcacao({ sourceUrl: "https://exemplo.invalido/icone-1.png" })).toBe(false);
   });
 });
 

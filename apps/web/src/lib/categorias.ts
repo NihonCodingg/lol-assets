@@ -84,19 +84,6 @@ export function categoriasDisponiveis(
   });
 }
 
-/**
- * Arquivo de marcação, não arte (T-48).
- *
- * `fpo` é *for placement only*: o quadrado que ocupa o lugar enquanto a arte não
- * chega. O índice tem um — `emote_fpo_inventory.png`, publicado como "Emote 0" —,
- * e na galeria ele era um emote igual aos outros. Sai da tela aqui; tirá-lo do
- * índice é trabalho do indexador.
- */
-export function ehMarcacao(asset: Pick<Asset, "sourceUrl">): boolean {
-  const arquivo = asset.sourceUrl.slice(asset.sourceUrl.lastIndexOf("/") + 1);
-  return /(?:^|[_-])fpo(?:[_.-]|$)/i.test(arquivo);
-}
-
 // --- grupos de filtro ------------------------------------------------------------------
 
 export interface Opcao {

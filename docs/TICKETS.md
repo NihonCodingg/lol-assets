@@ -3711,13 +3711,47 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 - Mudar o indexador: o dado para separar já estava no índice.
 
 **Critérios de aceite**
-1. Com "Arte" marcado, a galeria de wards mostra só as 266 artes e cai para cerca de metade das
-   telas, medido na produção.
-2. Sem marcar nada, a galeria continua com as 532.
+1. ✅ Com "Arte" marcado, a galeria de wards mostra só as 266 artes: de **41,1 para 20,7 telas**
+   de rolagem, e nenhuma sombra na primeira tela (eram 10 de 20). Medido na produção.
+2. ✅ Sem marcar nada, a galeria continua com as 532.
 
 **Testes que provam**
 - `categorias.test.ts`: o grupo Imagem com as contagens, "Arte" esconde as sombras, a categoria
   abre sem filtro, e asset que não é ward não ganha a etiqueta.
+
+---
+
+### T-76 — O arquivo de marcação (`_fpo`) sai do índice
+
+| | |
+|---|---|
+| **Objetivo** | Que o "Emote 0" — um quadrado de marcação — não esteja no índice, e não só fora da tela |
+| **Dependências** | T-22, T-48 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | baixo |
+| **Cobre** | RF-07 (o que o índice promete é arte) |
+
+> Medido no índice publicado em 22/09/2026: **1** arquivo de marcação em todas as categorias, o
+> `emote_icon:0` (`emote_fpo_inventory.png`). Desde o T-48 o front o escondia da galeria, mas ele
+> continuava na fatia de emotes (2.358 assets), na API e em qualquer outro consumidor do índice.
+
+**Entra**
+- Os catálogos simples do cdragon (emotes e wards) descartam arquivo cujo nome tem `fpo` como
+  palavra — o mesmo padrão que o front usava. Ele é mapeável, então não vira "não mapeável":
+  fica anotado à parte (`placeholders`).
+- A geração do indexador sobe para 5: a próxima execução reindexa. O índice novo é gerado pelo
+  workflow no branch do PR, como no T-73.
+- O filtro do front (`ehMarcacao`, do T-48) sai. Ele era o remendo até o indexador limpar o
+  dado, e duas fontes de verdade para a mesma regra são uma a mais.
+
+**Critérios de aceite**
+1. ✅ Nenhum arquivo de marcação no índice: de **1** para **0**, e a fatia de emotes de 2.358 para
+   **2.357** (conferido no índice gerado pelo workflow no branch, geração 5).
+2. ✅ A galeria de emotes continua sem o "Emote 0", agora sem filtro no front.
+
+**Testes que provam**
+- `test_cdragon.py`: o `_fpo` fica fora dos emotes e das wards, anotado à parte; `fpo` dentro de
+  outra palavra não é marcação.
 
 ---
 
@@ -3779,10 +3813,8 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 
 | Data | Ideia | O que entregaria |
 |---|---|---|
-| 15/09/2026 | Tirar o `_fpo` do índice, no indexador | O "Emote 0" — um quadrado de marcação — sai também do índice; na tela já saiu no T-48 |
 | 15/09/2026 | Comparar com o `versions.json` do ddragon | Um aviso quando já existe patch mais novo que o índice (anotada no [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
 | 15/09/2026 | Dependabot | Atualização de segurança das dependências sem ninguém lembrar |
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
-| 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
 | 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. **Fica de fora por decisão do dono (22/09/2026):** exige um serviço de imagens, e o projeto tem custo zero pelo [ADR 0012](adr/0012-onde-guardar-os-assets.md) |
 | 21/09/2026 | Link direto para um campeão ou uma categoria | Um endereço que abre o painel do Jax ou a categoria Itens, para mandar a alguém ou salvar nos favoritos. O T-70 fez o Voltar fechar camadas sem mudar a URL; o endereço próprio seria função nova |

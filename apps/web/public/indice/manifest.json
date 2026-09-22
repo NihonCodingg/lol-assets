@@ -1,9 +1,9 @@
 {
   "schemaVersion": "2.0.0",
-  "generatedAt": "2026-09-22T14:19:43Z",
+  "generatedAt": "2026-09-22T17:21:56Z",
   "currentVersion": "16.18.1",
   "generation": {
-    "indexer": 4,
+    "indexer": 5,
     "categories": [
       "champion",
       "emote",
@@ -18,66 +18,66 @@
   "versions": [
     {
       "gameVersion": "16.18.1",
-      "indexedAt": "2026-09-22T14:19:43Z",
+      "indexedAt": "2026-09-22T17:21:56Z",
       "assetsCopied": false,
       "catalog": {
-        "url": "catalog-1dc45c79a4ff.json",
+        "url": "catalog-0fc9472ea30e.json",
         "champions": 173,
         "skins": 2121,
         "bytes": 802337,
-        "sha256": "1dc45c79a4ff36327c16fa5c536ea2b1e115e83f793ead7995162606a5d81306"
+        "sha256": "0fc9472ea30e60d2bae4393980ef8aa6de6eba58e1241e84fd6386a8f65de85b"
       },
-      "totalAssets": 27313,
-      "totalBytes": 2436474699,
+      "totalAssets": 27312,
+      "totalBytes": 2167703210,
       "shards": [
         {
           "category": "item",
-          "url": "index-item-f1521f5d2d35.json",
+          "url": "index-item-8217869f527b.json",
           "assets": 868,
           "bytes": 625623,
-          "sha256": "f1521f5d2d35fd8ab62ae0eb8f2100d32cdf76c53b23c84f083ecc976316402a"
+          "sha256": "8217869f527b0d86a3fba7c49fc8ced77273a89642498f939c86883c17ee6b38"
         },
         {
           "category": "summoner_spell",
-          "url": "index-summoner_spell-97f724f7e784.json",
+          "url": "index-summoner_spell-366383ee010a.json",
           "assets": 34,
           "bytes": 21724,
-          "sha256": "97f724f7e784d26564fc78d38dceec21dda00e30336978736e764f13e0e5f9aa"
+          "sha256": "366383ee010a5dcfa029c5332c12e52b0cbaaf92764c77ed93c5b580f6274b7e"
         },
         {
           "category": "profile_icon",
-          "url": "index-profile_icon-11d3caf07b4e.json",
+          "url": "index-profile_icon-523b545b1729.json",
           "assets": 5042,
           "bytes": 2728556,
-          "sha256": "11d3caf07b4e573bd2ade83775e5e8281f55d6c672275244494a376cff924bf1"
+          "sha256": "523b545b17290593eeb42a7ae17ba905adfe2b1724c358aafb09379743de7309"
         },
         {
           "category": "rune",
-          "url": "index-rune-8e96d0c5e68b.json",
+          "url": "index-rune-1e9c3eb9125e.json",
           "assets": 77,
           "bytes": 50795,
-          "sha256": "8e96d0c5e68bf8fdb59c430c3de0f9b6c0b9b471ccede16eea09ea95c52d9804"
+          "sha256": "1e9c3eb9125e00f1b4783e71970dff67a237eb255f72523deb62b257f3be46e0"
         },
         {
           "category": "map",
-          "url": "index-map-378e8d81318e.json",
+          "url": "index-map-dd4b7918084b.json",
           "assets": 5,
           "bytes": 2941,
-          "sha256": "378e8d81318e46171e0459ea79203c6b1acfac2147edef551c1fc5b735bc37ab"
+          "sha256": "dd4b7918084b51d897ec565cb2e2e6a454298837eaa43e979dfb2fc1e8082912"
         },
         {
           "category": "emote",
-          "url": "index-emote-c90831865bfb.json",
-          "assets": 2358,
-          "bytes": 1495996,
-          "sha256": "c90831865bfb079bbe7c397c1873784dcee8581be81b1149fcee2b49c6a7a61d"
+          "url": "index-emote-8096c406bc19.json",
+          "assets": 2357,
+          "bytes": 1495249,
+          "sha256": "8096c406bc19fc3b23b508034421f92541cdd48bdf20c134adae1f6746605351"
         },
         {
           "category": "ward",
-          "url": "index-ward-cc3fcacc9b01.json",
+          "url": "index-ward-a6ded5273b87.json",
           "assets": 532,
-          "bytes": 323604,
-          "sha256": "cc3fcacc9b0119f6dc8a637695a1b933e842117634f9c1a89c76517e1fd8db84"
+          "bytes": 323563,
+          "sha256": "a6ded5273b87294d45483311536458ff32ede50aa0fcca68b9cdcdfdd022d3c0"
         }
       ]
     }

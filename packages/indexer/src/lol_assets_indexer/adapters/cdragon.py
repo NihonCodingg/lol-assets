@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 from collections.abc import Collection
 from dataclasses import dataclass, field
 from typing import Any
@@ -345,6 +346,21 @@ def _tem_arquivo(declarado: str) -> bool:
     return bool(resto) and "." in resto.rsplit("/", 1)[-1]
 
 
+#: `fpo` é *for placement only*: o quadrado que ocupa o lugar enquanto a arte
+#: não chega. O nome do arquivo diz — `emote_fpo_inventory.png` —, e é o mesmo
+#: padrão que o front usava para escondê-lo da tela desde o T-48.
+_MARCACAO = re.compile(r"(?:^|[_-])fpo(?:[_.-]|$)", re.IGNORECASE)
+
+
+def _eh_marcacao(declarado: str) -> bool:
+    """Arquivo de marcação, não arte (T-76).
+
+    O cdragon declara um: o "Emote 0", um quadrado cinza com "FPO" escrito. Ele
+    entrava no índice como emote igual aos outros, e no zip e na API também.
+    """
+    return bool(_MARCACAO.search(declarado.rsplit("/", 1)[-1]))
+
+
 @dataclass
 class SimpleCatalog:
     """Uma categoria que é uma lista só, sem campeão no meio."""
@@ -352,6 +368,9 @@ class SimpleCatalog:
     category: AssetCategory
     assets: list[DeclaredAsset] = field(default_factory=list)
     unmappable: dict[str, str] = field(default_factory=dict)
+    #: `caminho no JSON -> valor declarado` dos arquivos de marcação (T-76):
+    #: mapeáveis, mas não são arte, e ficam fora do índice.
+    placeholders: dict[str, str] = field(default_factory=dict)
 
 
 def declared_emotes(documento: list[dict[str, Any]]) -> SimpleCatalog:
@@ -363,6 +382,9 @@ def declared_emotes(documento: list[dict[str, Any]]) -> SimpleCatalog:
             continue
         if not caminho.startswith(ASSET_PREFIX) or not _tem_arquivo(caminho):
             catalogo.unmappable[chave] = caminho
+            continue
+        if _eh_marcacao(caminho):
+            catalogo.placeholders[chave] = caminho
             continue
         catalogo.assets.append(
             DeclaredAsset(
@@ -391,6 +413,9 @@ def declared_wards(documento: list[dict[str, Any]]) -> SimpleCatalog:
                 continue
             if not caminho.startswith(ASSET_PREFIX) or not _tem_arquivo(caminho):
                 catalogo.unmappable[chave] = caminho
+                continue
+            if _eh_marcacao(caminho):
+                catalogo.placeholders[chave] = caminho
                 continue
             catalogo.assets.append(
                 DeclaredAsset(
