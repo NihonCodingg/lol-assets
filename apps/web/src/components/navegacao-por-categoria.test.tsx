@@ -482,24 +482,6 @@ describe("a galeria das categorias (T-48)", () => {
     );
   }
 
-  it("o arquivo de marcação não aparece, nem na conta", async () => {
-    palco({
-      emote: fatia("emote", [
-        asset("emote_icon:0", {
-          type: "emote_icon",
-          category: "emote",
-          sourceUrl: "https://exemplo.invalido/summoneremotes/emote_fpo_inventory.png",
-          fileName: "Emote_0.png",
-        }),
-        asset("emote_icon:1", { type: "emote_icon", category: "emote" }),
-        asset("emote_icon:2", { type: "emote_icon", category: "emote" }),
-      ]),
-    });
-    await abrir("Emotes");
-    expect(screen.getByText("2 de 2")).toBeTruthy();
-    expect(screen.queryByLabelText("Emote_0.png")).toBeNull();
-  });
-
   it("grupo grande fica atrás de 'Mais filtros', que diz quantos estão marcados lá dentro", async () => {
     const classes = ["boots", "armor", "damage", "health", "mana", "consumable", "vision"];
     palco({

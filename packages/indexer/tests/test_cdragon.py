@@ -362,6 +362,29 @@ def test_cada_ward_tem_duas_imagens() -> None:
     assert [d.ref for d in catalogo.assets] == ["0", "0-shadow", "7"]
 
 
+def test_o_arquivo_de_marcacao_fica_fora_do_indice() -> None:
+    """T-76: o "Emote 0" é um quadrado de marcação (`_fpo`), não arte."""
+    from lol_assets_indexer.adapters.cdragon import declared_emotes, declared_wards
+
+    fpo = f"{ASSET_PREFIX}ASSETS/Loadouts/SummonerEmotes/emote_fpo_inventory.png"
+    emotes = declared_emotes([{"id": 0, "name": "", "inventoryIcon": fpo}, *EMOTES])
+    assert [d.ref for d in emotes.assets] == ["2"]
+    assert emotes.placeholders == {"[0].inventoryIcon": fpo}
+    assert "[0].inventoryIcon" not in emotes.unmappable, "é mapeável; só não é arte"
+
+    wards = declared_wards([{"id": 9, "name": "x", "wardImagePath": fpo.replace("emote", "ward")}])
+    assert wards.assets == []
+    assert list(wards.placeholders) == ["[0].wardImagePath"]
+
+
+def test_palavra_que_so_contem_fpo_nao_e_marcacao() -> None:
+    from lol_assets_indexer.adapters.cdragon import _eh_marcacao
+
+    assert not _eh_marcacao(f"{ASSET_PREFIX}x/emote_topfpower.png")
+    assert _eh_marcacao(f"{ASSET_PREFIX}x/FPO.png")
+    assert _eh_marcacao(f"{ASSET_PREFIX}x/ward-fpo-1.png")
+
+
 def test_a_categoria_dos_dois_catalogos_e_a_certa() -> None:
     from lol_assets_indexer.adapters.cdragon import declared_emotes, declared_wards
 

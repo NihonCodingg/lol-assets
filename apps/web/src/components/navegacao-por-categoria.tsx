@@ -51,7 +51,6 @@ import { Estado } from "@/components/ui/estado";
 import { assetUrl } from "@/lib/asset-file";
 import {
   descreverFiltro,
-  ehMarcacao,
   filtrar,
   filtrosPadrao,
   grupoDaTag,
@@ -138,8 +137,9 @@ export function NavegacaoPorCategoria({
       try {
         const shard = await carregar(aberta);
         if (cancelado) return;
-        // Marcação não é arte: sai antes de contar, filtrar ou selecionar.
-        const assets = shard.assets.filter((asset) => !ehMarcacao(asset));
+        // O arquivo de marcação (`_fpo`) saía aqui desde o T-48; desde o T-76 o
+        // indexador não o põe mais no índice.
+        const assets = shard.assets;
         // O filtro padrão depende das etiquetas que a fatia traz (§B.1.6 do
         // KICKOFF), então só dá para calculá-lo depois de ela chegar.
         setMarcadas(filtrosPadrao(aberta, gruposDeFiltro(assets)));
