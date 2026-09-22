@@ -7,6 +7,11 @@
   lista C foi despachada
 - **Respeita:** o [ADR 0020](0020-o-merge-e-do-agente.md) (o merge é do agente, com a CI verde)
 
+> **Exceção de 22/09/2026, encerrada:** o dono tirou o indexador da manutenção só para duas
+> mudanças — a fatia por campeão ([ADR 0023](0023-uma-fatia-por-campeao.md), T-73) e a conferência
+> dos nomes em inglês (T-74). As duas estão no ar, e o indexador voltou à manutenção como está
+> escrito aqui. **Não é precedente.**
+
 > **Emendado em 18/09/2026 pelo [ADR 0022](0022-o-front-end-vira-frente-continua.md):** o
 > back-end — indexação, contrato, publicação e infraestrutura — continua em manutenção, como está
 > escrito aqui. A **interface** saiu: UI, UX, acessibilidade e desempenho percebido viraram frente

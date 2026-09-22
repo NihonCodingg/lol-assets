@@ -20,6 +20,9 @@ Desde 18/09 ele tem **dois regimes** ao mesmo tempo
 - Se o site sair do ar ou parar de atualizar, investigue e resolva.
 - **Não abra ticket novo aqui**, não refatore e não "melhore" o que funciona. Oportunidade vira
   **ideia não executada**, no fim do [`docs/TICKETS.md`](docs/TICKETS.md).
+- Em 22/09/2026 o dono abriu uma **exceção única** para o T-73 (fatia por campeão, ADR 0023) e o
+  T-74 (nomes em inglês). Ela está encerrada e **não é precedente**: outra mudança aqui precisa
+  de outra autorização dele.
 
 ### Interface — UI, UX, acessibilidade e desempenho percebido: frente contínua
 

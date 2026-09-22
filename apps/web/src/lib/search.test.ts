@@ -343,3 +343,31 @@ describe("parecidos (T-69)", () => {
     expect((performance.now() - inicio) / 20).toBeLessThan(5);
   });
 });
+
+// --- T-74: o nome em inglês entra na busca, a exibição continua em pt-BR ------------------
+
+describe("busca pelo nome em inglês (T-74)", () => {
+  // Os nomes reais do patch 16.18.1: em pt-BR e em inglês, a skin não tem uma
+  // palavra em comum além do campeão.
+  const comIngles = buildSearchIndex({
+    ...CATALOGO,
+    champions: [...CATALOGO.champions, { ...campeao(157, "Yasuo", "Yasuo"), names: { pt_BR: "Yasuo", en_US: "Yasuo" } }],
+    skins: [
+      ...CATALOGO.skins,
+      { ...skin(24, 10, "Jax Cajado Divino"), names: { pt_BR: "Jax Cajado Divino", en_US: "God Staff Jax" } },
+      { ...skin(157, 35, "Yasuo Florescer Espiritual"), names: { pt_BR: "Yasuo Florescer Espiritual", en_US: "Spirit Blossom Yasuo" } },
+    ],
+  });
+
+  it("'god staff jax' acha a skin que em português se chama Cajado Divino", () => {
+    const [primeiro] = search(comIngles, "god staff jax");
+    expect(primeiro?.kind).toBe("skin");
+    expect(rotulo(primeiro!)).toBe("Jax Cajado Divino");
+  });
+
+  it("o nome de uma linha em inglês acha a skin, e o rótulo continua em pt-BR", () => {
+    const rotulos = search(comIngles, "spirit blossom").map(rotulo);
+    expect(rotulos).toContain("Yasuo Florescer Espiritual");
+    expect(rotulos.some((r) => r.includes("Spirit"))).toBe(false);
+  });
+});
