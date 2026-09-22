@@ -311,10 +311,15 @@ def test_o_front_nao_chama_a_api() -> None:
     forma de ser burlada sem querer. Uma varredura de texto por `/health`,
     `/versions`, `/index/` e `localhost:8000` no código do front pega o caso
     real — alguém colando um `fetch` porque foi mais fácil.
+
+    `/versions.json` fica de fora desde o T-77: é a lista de patches do ddragon,
+    lida direto da fonte para avisar que saiu patch novo. A rota da API é
+    `/versions`, sem extensão, e continua proibida.
     """
     raiz = Path(__file__).resolve().parents[3] / "apps" / "web" / "src"
     suspeitos = re.compile(
-        r"""localhost:8000|127\.0\.0\.1:8000|/versions\b|["'`]/zip\b|API_BASE|NEXT_PUBLIC_API""",
+        r"""localhost:8000|127\.0\.0\.1:8000|/versions\b(?!\.json)|["'`]/zip\b|API_BASE"""
+        r"""|NEXT_PUBLIC_API""",
     )
 
     achados = [
