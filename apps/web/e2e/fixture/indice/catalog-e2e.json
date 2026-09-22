@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "2.0.0",
   "gameVersion": "16.18.1",
   "generatedAt": "2026-09-09T00:00:00Z",
   "champions": [
@@ -17,7 +17,12 @@
       ],
       "skinCount": 2,
       "baseSkinId": 24000,
-      "thumbnailUrl": "http://127.0.0.1:4321/imagens/Jax_square.png"
+      "thumbnailUrl": "http://127.0.0.1:4321/imagens/Jax_square.png",
+      "shard": {
+        "url": "index-champion-24-e2e.json",
+        "assets": 9,
+        "bytes": 5818
+      }
     },
     {
       "championKey": 99,
@@ -34,7 +39,12 @@
       ],
       "skinCount": 1,
       "baseSkinId": 99000,
-      "thumbnailUrl": "http://127.0.0.1:4321/imagens/Lux_square.png"
+      "thumbnailUrl": "http://127.0.0.1:4321/imagens/Lux_square.png",
+      "shard": {
+        "url": "index-champion-99-e2e.json",
+        "assets": 4,
+        "bytes": 2615
+      }
     }
   ],
   "skins": [

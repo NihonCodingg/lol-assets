@@ -1,7 +1,8 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "2.0.0",
   "gameVersion": "16.18.1",
   "category": "champion",
+  "championKey": 24,
   "generatedAt": "2026-09-09T00:00:00Z",
   "assets": [
     {
@@ -198,91 +199,6 @@
       "skinId": 24007,
       "skinNum": 7,
       "isBaseSkin": false
-    },
-    {
-      "id": "square:99",
-      "type": "square",
-      "category": "champion",
-      "names": {
-        "pt_BR": "Lux"
-      },
-      "source": "ddragon",
-      "sourceUrl": "http://127.0.0.1:4321/imagens/Lux_square.png",
-      "fileName": "Lux_square.png",
-      "width": 128,
-      "height": 128,
-      "format": "png",
-      "hasAlpha": true,
-      "bytes": 1698,
-      "sha256": "359958792a752b69fac0534c067d07afd533cd87a780bcb1fdca633a39ee302b",
-      "championKey": 99,
-      "championId": "Lux"
-    },
-    {
-      "id": "splash_centered:99000",
-      "type": "splash_centered",
-      "category": "champion",
-      "names": {
-        "pt_BR": "Lux"
-      },
-      "source": "ddragon",
-      "sourceUrl": "http://127.0.0.1:4321/imagens/Lux_000_splash_centered.jpg",
-      "fileName": "Lux_000_splash_centered.jpg",
-      "width": 1280,
-      "height": 720,
-      "format": "jpeg",
-      "hasAlpha": false,
-      "bytes": 29798,
-      "sha256": "cfe787904d69a35d94517e68a4f5ac2996f310df9e84d65f274b19cfa36da337",
-      "championKey": 99,
-      "championId": "Lux",
-      "skinId": 99000,
-      "skinNum": 0,
-      "isBaseSkin": true
-    },
-    {
-      "id": "splash_wide:99000",
-      "type": "splash_wide",
-      "category": "champion",
-      "names": {
-        "pt_BR": "Lux"
-      },
-      "source": "ddragon",
-      "sourceUrl": "http://127.0.0.1:4321/imagens/Lux_000_splash_wide.jpg",
-      "fileName": "Lux_000_splash_wide.jpg",
-      "width": 1215,
-      "height": 717,
-      "format": "jpeg",
-      "hasAlpha": false,
-      "bytes": 30202,
-      "sha256": "6299ad9331f5a96d16f0b882ec89d5535e5786bb1de6e77f8d1150abc73f1d92",
-      "championKey": 99,
-      "championId": "Lux",
-      "skinId": 99000,
-      "skinNum": 0,
-      "isBaseSkin": true
-    },
-    {
-      "id": "tile:99000",
-      "type": "tile",
-      "category": "champion",
-      "names": {
-        "pt_BR": "Lux"
-      },
-      "source": "ddragon",
-      "sourceUrl": "http://127.0.0.1:4321/imagens/Lux_000_tile.jpg",
-      "fileName": "Lux_000_tile.jpg",
-      "width": 380,
-      "height": 380,
-      "format": "jpeg",
-      "hasAlpha": false,
-      "bytes": 8994,
-      "sha256": "5937d5185e2c473f9f4e00ace53a9a7e8fddbcf5626ef8e01565633d4fddb3df",
-      "championKey": 99,
-      "championId": "Lux",
-      "skinId": 99000,
-      "skinNum": 0,
-      "isBaseSkin": true
     }
   ]
 }

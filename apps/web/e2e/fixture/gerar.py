@@ -251,8 +251,32 @@ def main() -> None:
         itens.append(registro)
 
     por_id = {a["id"]: a for a in assets}
+
+    # Contrato 2.0.0 (ADR 0023): uma fatia por campeão, escrita antes do catálogo
+    # porque é ele quem aponta para cada uma.
+    fatias: dict[int, dict[str, object]] = {}
+    for c in CAMPEOES:
+        dele = [a for a in assets if a["championKey"] == c.key]
+        nome = f"index-champion-{c.key}-e2e.json"
+        (INDICE / nome).write_text(
+            json.dumps(
+                {
+                    "schemaVersion": "2.0.0",
+                    "gameVersion": VERSAO,
+                    "category": "champion",
+                    "championKey": c.key,
+                    "generatedAt": "2026-09-09T00:00:00Z",
+                    "assets": dele,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        fatias[c.key] = {"url": nome, "assets": len(dele), "bytes": (INDICE / nome).stat().st_size}
+
     catalogo = {
-        "schemaVersion": "1.2.0",
+        "schemaVersion": "2.0.0",
         "gameVersion": VERSAO,
         "generatedAt": "2026-09-09T00:00:00Z",
         "champions": [
@@ -265,6 +289,7 @@ def main() -> None:
                 "skinCount": sum(1 for s in SKINS if s.key == c.key),
                 "baseSkinId": c.key * 1000,
                 "thumbnailUrl": por_id[f"square:{c.key}"]["sourceUrl"],
+                "shard": fatias[c.key],
             }
             for c in CAMPEOES
         ],
@@ -281,24 +306,13 @@ def main() -> None:
         ],
     }
 
-    fatia = {
-        "schemaVersion": "1.2.0",
-        "gameVersion": VERSAO,
-        "category": "champion",
-        "generatedAt": "2026-09-09T00:00:00Z",
-        "assets": assets,
-    }
-
     (INDICE / "catalog-e2e.json").write_text(
         json.dumps(catalogo, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    (INDICE / "index-champion-e2e.json").write_text(
-        json.dumps(fatia, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     (INDICE / "index-item-e2e.json").write_text(
         json.dumps(
             {
-                "schemaVersion": "1.2.0",
+                "schemaVersion": "2.0.0",
                 "gameVersion": VERSAO,
                 "category": "item",
                 "generatedAt": "2026-09-09T00:00:00Z",
@@ -311,11 +325,11 @@ def main() -> None:
     )
 
     manifesto = {
-        "schemaVersion": "1.2.0",
+        "schemaVersion": "2.0.0",
         # Recente de propósito: o aviso do T-31 não pode aparecer e atrapalhar.
         "generatedAt": "2026-09-09T00:00:00Z",
         "currentVersion": VERSAO,
-        "generation": {"indexer": 3, "categories": ["champion", "item"]},
+        "generation": {"indexer": 4, "categories": ["champion", "item"]},
         "versions": [
             {
                 "gameVersion": VERSAO,
@@ -330,12 +344,6 @@ def main() -> None:
                 "totalAssets": len(assets) + len(itens),
                 "totalBytes": sum(cast("int", a["bytes"]) for a in [*assets, *itens]),
                 "shards": [
-                    {
-                        "category": "champion",
-                        "url": "index-champion-e2e.json",
-                        "assets": len(assets),
-                        "bytes": (INDICE / "index-champion-e2e.json").stat().st_size,
-                    },
                     {
                         "category": "item",
                         "url": "index-item-e2e.json",

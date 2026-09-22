@@ -84,7 +84,7 @@
           "minimum": 0
         },
         "shards": {
-          "description": "Uma entrada por categoria presente nesta versão.",
+          "description": "Uma entrada por categoria presente nesta versão, menos `champion`: desde o contrato 2.0.0 (ADR 0023) cada campeão tem a sua fatia, e quem aponta para ela é o catálogo (champions[].shard).",
           "type": "array",
           "minItems": 1,
           "items": {

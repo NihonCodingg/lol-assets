@@ -10,6 +10,7 @@ import {
 } from "./assets-client";
 
 const BASE = "https://assets.exemplo.invalido/lol";
+const JAX = examples.catalog.champions.find((c) => c.championKey === 24)!;
 
 function servidorDaFixture() {
   const manifesto = examples.manifest;
@@ -19,7 +20,11 @@ function servidorDaFixture() {
     [versao.catalog.url]: examples.catalog,
   };
   for (const shard of versao.shards) {
-    corpos[shard.url] = examples.shards[shard.category as "champion" | "item" | "rune"];
+    corpos[shard.url] = examples.shards[shard.category as "item" | "rune"];
+  }
+  // Desde o contrato 2.0.0, a fatia de cada campeão é o catálogo quem aponta (ADR 0023).
+  for (const campeao of examples.catalog.champions) {
+    if (campeao.shard) corpos[campeao.shard.url] = examples.championShards[campeao.championKey];
   }
 
   const chamadas: string[] = [];
@@ -50,10 +55,10 @@ describe("AssetsClient", () => {
   it("busca a fatia só quando pedida, e uma vez só", async () => {
     const { fetchImpl, chamadas } = servidorDaFixture();
     const cliente = new AssetsClient(BASE, fetchImpl);
-    const manifesto = await cliente.loadManifest();
+    await cliente.loadManifest();
 
-    const primeira = await cliente.loadShard(manifesto, "champion");
-    const segunda = await cliente.loadShard(manifesto, "champion");
+    const primeira = await cliente.loadChampion(JAX);
+    const segunda = await cliente.loadChampion(JAX);
 
     expect(primeira).toBe(segunda);
     expect(chamadas.filter((url) => url.includes("index-champion"))).toHaveLength(1);
@@ -64,7 +69,7 @@ describe("AssetsClient", () => {
     const cliente = new AssetsClient(BASE, fetchImpl);
     const manifesto = await cliente.loadManifest();
     await cliente.loadCatalog(manifesto);
-    await cliente.loadShard(manifesto, "champion");
+    await cliente.loadChampion(JAX);
 
     for (const url of chamadas) {
       expect(url.startsWith(BASE)).toBe(true);
@@ -76,6 +81,26 @@ describe("AssetsClient", () => {
   it("erro de rede vira erro com a URL e o status", async () => {
     const cliente = new AssetsClient(BASE, async () => new Response("x", { status: 503 }));
     await expect(cliente.loadManifest()).rejects.toBeInstanceOf(AssetsFetchError);
+  });
+
+  it("abrir um campeão busca só a fatia dele (ADR 0023)", async () => {
+    const { fetchImpl, chamadas } = servidorDaFixture();
+    const cliente = new AssetsClient(BASE, fetchImpl);
+    const manifesto = await cliente.loadManifest();
+    await cliente.loadCatalog(manifesto);
+
+    const fatia = await cliente.loadChampion(JAX);
+
+    expect(fatia.assets.length).toBeGreaterThan(0);
+    expect(fatia.assets.every((a) => a.championKey === 24)).toBe(true);
+    const deFatia = chamadas.filter((url) => url.includes("index-"));
+    expect(deFatia).toEqual([`${BASE}/${JAX.shard!.url}`]);
+  });
+
+  it("campeão sem fatia no catálogo falha explicando", async () => {
+    const cliente = new AssetsClient(BASE, servidorDaFixture().fetchImpl);
+    const semFatia = { ...JAX, shard: undefined };
+    await expect(cliente.loadChampion(semFatia)).rejects.toThrow(/Jax/);
   });
 
   it("categoria ausente na versão atual falha explicando", async () => {
@@ -106,13 +131,13 @@ describe("AssetsClient na internet de verdade", () => {
       return fetchImpl(url);
     });
     const cliente = new AssetsClient(BASE, instavel);
-    const manifesto = await cliente.loadManifest();
+    await cliente.loadManifest();
 
-    await expect(cliente.loadShard(manifesto, "champion")).rejects.toBeInstanceOf(
+    await expect(cliente.loadChampion(JAX)).rejects.toBeInstanceOf(
       AssetsFetchError,
     );
     // Sem isto, a categoria ficaria quebrada até recarregar a página inteira.
-    const segunda = await cliente.loadShard(manifesto, "champion");
+    const segunda = await cliente.loadChampion(JAX);
     expect(segunda.assets.length).toBeGreaterThan(0);
     expect(chamadas.filter((url) => url.includes("index-champion"))).toHaveLength(1);
   });
@@ -120,11 +145,11 @@ describe("AssetsClient na internet de verdade", () => {
   it("depois de um sucesso, continua buscando uma vez só", async () => {
     const { fetchImpl, chamadas } = servidorDaFixture();
     const cliente = new AssetsClient(BASE, fetchImpl);
-    const manifesto = await cliente.loadManifest();
+    await cliente.loadManifest();
 
-    await cliente.loadShard(manifesto, "champion");
-    await cliente.loadShard(manifesto, "champion");
-    await cliente.loadShard(manifesto, "champion");
+    await cliente.loadChampion(JAX);
+    await cliente.loadChampion(JAX);
+    await cliente.loadChampion(JAX);
     expect(chamadas.filter((url) => url.includes("index-champion"))).toHaveLength(1);
   });
 
@@ -135,9 +160,9 @@ describe("AssetsClient na internet de verdade", () => {
       url.includes("index-") ? new Response("sumiu", { status: 404 }) : fetchImpl(url),
     );
     const cliente = new AssetsClient(BASE, depoisDoDeploy);
-    const manifesto = await cliente.loadManifest();
+    await cliente.loadManifest();
 
-    const erro = await cliente.loadShard(manifesto, "champion").catch((e: unknown) => e);
+    const erro = await cliente.loadChampion(JAX).catch((e: unknown) => e);
     expect(erro).toBeInstanceOf(IndiceDesatualizadoError);
     expect(String((erro as Error).message)).toMatch(/recarregue a página/);
   });
@@ -154,8 +179,8 @@ describe("AssetsClient na internet de verdade", () => {
     const cliente = new AssetsClient(BASE, async (url: string) =>
       url.includes("index-") ? new Response("x", { status: 503 }) : fetchImpl(url),
     );
-    const manifesto = await cliente.loadManifest();
-    const erro = await cliente.loadShard(manifesto, "champion").catch((e: unknown) => e);
+    await cliente.loadManifest();
+    const erro = await cliente.loadChampion(JAX).catch((e: unknown) => e);
     expect(erro).toBeInstanceOf(AssetsFetchError);
     expect((erro as AssetsFetchError).status).toBe(503);
   });

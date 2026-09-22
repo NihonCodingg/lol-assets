@@ -4,8 +4,11 @@
  * `manifest.json` → catálogo (sempre) → fatia de assets (**sob demanda**, na
  * primeira vez que um painel abre). A home desenha 173 cartões sem baixar um
  * único registro de asset, que é o que sustenta o RNF-03.
+ *
+ * Desde o contrato 2.0.0 cada campeão tem a sua fatia, e quem diz onde ela está
+ * é o catálogo (ADR 0023): abrir o Jax busca só o Jax.
  */
-import type { Catalog, IndexManifest, IndexShard } from "@lol-assets/schema";
+import type { Catalog, CatalogChampion, IndexManifest, IndexShard } from "@lol-assets/schema";
 
 export type FetchLike = (input: string) => Promise<Response>;
 
@@ -44,7 +47,10 @@ export class IndiceDesatualizadoError extends AssetsFetchError {
 export class AssetsClient {
   #baseUrl: string;
   #fetch: FetchLike;
-  /** Memoiza por categoria: a fatia é buscada uma vez por sessão, não por abertura. */
+  /**
+   * Memoiza por fatia — a categoria, ou `champion:{chave}` para a de um campeão:
+   * a fatia é buscada uma vez por sessão, não por abertura.
+   */
   #shards = new Map<string, Promise<IndexShard>>();
 
   constructor(baseUrl: string, fetchImpl?: FetchLike) {
@@ -74,13 +80,34 @@ export class AssetsClient {
     if (!shard) {
       return Promise.reject(new Error(`a versão atual não tem a fatia ${category}`));
     }
-    const promessa = this.#json<IndexShard>(shard.url);
-    this.#shards.set(category, promessa);
+    return this.#memorizar(category, shard.url);
+  }
+
+  /**
+   * A fatia de um campeão, onde o catálogo diz que ela está (ADR 0023). Sob
+   * demanda e memorizada, como as outras: trocar de campeão e voltar não busca
+   * de novo.
+   */
+  async loadChampion(champion: CatalogChampion): Promise<IndexShard> {
+    const chave = `champion:${champion.championKey}`;
+    const existente = this.#shards.get(chave);
+    if (existente) return existente;
+    if (!champion.shard) {
+      return Promise.reject(
+        new Error(`o catálogo não diz onde estão as artes de ${champion.names.pt_BR}`),
+      );
+    }
+    return this.#memorizar(chave, champion.shard.url);
+  }
+
+  #memorizar(chave: string, url: string): Promise<IndexShard> {
+    const promessa = this.#json<IndexShard>(url);
+    this.#shards.set(chave, promessa);
     // Só o sucesso fica memorizado (T-43). Na internet a rede do visitante
     // oscila, e uma falha guardada aqui deixaria a categoria quebrada até
     // recarregar a página inteira — coisa que no `localhost` nunca aparece.
     promessa.catch(() => {
-      if (this.#shards.get(category) === promessa) this.#shards.delete(category);
+      if (this.#shards.get(chave) === promessa) this.#shards.delete(chave);
     });
     return promessa;
   }

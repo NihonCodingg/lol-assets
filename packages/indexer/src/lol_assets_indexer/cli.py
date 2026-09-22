@@ -54,6 +54,7 @@ from lol_assets_indexer.publish.storage import (
     MANIFEST_KEY,
     LocalObjectStore,
     Publisher,
+    champion_shard_ref,
     prepare_catalog,
     prepare_manifest,
     prepare_shard,
@@ -341,13 +342,30 @@ async def _run(
             if assets:
                 por_categoria[categoria] = assets
     execucao.por_categoria = {str(c): a for c, a in por_categoria.items()}
-    catalog = project_catalog(
-        game_version=scan.game_version,
-        generated_at=generated_at,
-        snapshots=build_champion_snapshots(scan),
-        assets_by_champion=_por_campeao(por_categoria.get("champion", [])),
-    )
-    shards = [
+    snapshots = list(build_champion_snapshots(scan))
+    assets_por_campeao = _por_campeao(por_categoria.get("champion", []))
+
+    # ADR 0023: uma fatia por campeão, e o catálogo aponta para cada uma. As
+    # fatias vêm antes do catálogo porque o nome delas tem o hash do conteúdo, e
+    # o catálogo carrega o nome.
+    fora_do_catalogo = sorted(set(assets_por_campeao) - {s.key for s in snapshots})
+    if fora_do_catalogo:
+        logger.warning(
+            "assets de campeão que não está no catálogo ficam sem fatia",
+            extra={"campeoes": fora_do_catalogo},
+        )
+    fatias_de_campeao = [
+        IndexShard(
+            schema_version=SCHEMA_VERSION,
+            game_version=scan.game_version,
+            category="champion",
+            champion_key=snapshot.key,
+            generated_at=generated_at,
+            assets=assets_por_campeao.get(snapshot.key, []),
+        )
+        for snapshot in snapshots
+    ]
+    shards = fatias_de_campeao + [
         IndexShard(
             schema_version=SCHEMA_VERSION,
             game_version=scan.game_version,
@@ -356,7 +374,20 @@ async def _run(
             assets=assets,
         )
         for categoria, assets in por_categoria.items()
+        if categoria != "champion"
     ]
+    fatias = [prepare_shard(shard) for shard in shards]
+    catalog = project_catalog(
+        game_version=scan.game_version,
+        generated_at=generated_at,
+        snapshots=snapshots,
+        champion_shards={
+            shard.champion_key: champion_shard_ref(ref)
+            for shard, (ref, _) in zip(shards, fatias, strict=True)
+            if shard.champion_key is not None
+        },
+        assets_by_champion=assets_por_campeao,
+    )
 
     execucao.champions = len(catalog.champions)
     execucao.skins = len(catalog.skins)
@@ -367,7 +398,6 @@ async def _run(
     # É isso que faz o estouro de orçamento abortar sem deixar índice pela metade.
     verify_catalog(catalog)
     catalog_ref, catalog_payload = prepare_catalog(catalog)
-    fatias = [prepare_shard(shard) for shard in shards]
     # Uma versão só, sempre (ADR 0013). A anterior sai do manifesto aqui e some do
     # destino na varredura, depois — nunca antes.
     manifest = IndexManifest(
@@ -387,7 +417,13 @@ async def _run(
                 catalog=catalog_ref,
                 total_assets=total_assets,
                 total_bytes=total_bytes,
-                shards=[ref for ref, _ in fatias],
+                # A fatia de campeão não entra aqui desde o contrato 2.0.0: quem
+                # aponta para ela é o catálogo (ADR 0023).
+                shards=[
+                    ref
+                    for shard, (ref, _) in zip(shards, fatias, strict=True)
+                    if shard.champion_key is None
+                ],
             )
         ],
     )
@@ -397,7 +433,12 @@ async def _run(
         BudgetReport(
             catalog=measure("catalog", catalog_payload),
             shards=tuple(
-                measure(shard.category, payload)
+                measure(
+                    shard.category
+                    if shard.champion_key is None
+                    else f"{shard.category}:{shard.champion_key}",
+                    payload,
+                )
                 for shard, (_, payload) in zip(shards, fatias, strict=True)
             ),
             manifest=measure("manifest", manifest_payload),
@@ -410,7 +451,8 @@ async def _run(
         extra={
             "assets": total_assets,
             "bytes": total_bytes,
-            "categorias": len(shards),
+            "categorias": len(por_categoria),
+            "fatias": len(shards),
             "campeoes": len(catalog.champions),
             "skins": len(catalog.skins),
             "descartadas": scan.skipped,
@@ -424,7 +466,7 @@ async def _run(
         "assets": total_assets,
         "champions": len(catalog.champions),
         "skins": len(catalog.skins),
-        "categories": len(shards),
+        "categories": len(por_categoria),
         "gameVersion": scan.game_version,
         "indexBytes": report.total_raw,
         "destination": "nada escrito (--dry-run)" if dry_run else str(output),
@@ -434,9 +476,11 @@ async def _run(
         return resumo
 
     publisher = Publisher(LocalObjectStore(root=output))
-    publisher.publish_catalog(catalog, (catalog_ref, catalog_payload))
+    # Fatias → catálogo → manifesto: o catálogo aponta para as fatias de campeão
+    # (ADR 0023), e o `Publisher` recusa a ordem errada.
     for shard, preparada in zip(shards, fatias, strict=True):
         publisher.publish_shard(shard, preparada)
+    publisher.publish_catalog(catalog, (catalog_ref, catalog_payload))
     publisher.publish_manifest(manifest, manifest_payload)
 
     # Só depois do manifesto novo estar escrito — a trava que o ADR 0007 pede para

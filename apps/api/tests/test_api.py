@@ -56,20 +56,67 @@ def indice_em_disco(tmp_path: Path) -> Path:
     destino = tmp_path / "indice"
     destino.mkdir()
 
-    fatia = {
+    # Contrato 2.0.0 (ADR 0023): uma fatia por campeão, e o catálogo aponta
+    # para cada uma. O manifesto não lista `champion`.
+    for chave, arquivo in ((24, "Jax.png"), (99, "Lux.png")):
+        fatia = {
+            "schemaVersion": SCHEMA_VERSION,
+            "gameVersion": VERSAO,
+            "category": "champion",
+            "championKey": chave,
+            "generatedAt": "2026-09-09T00:00:00Z",
+            "assets": [_asset(f"square:{chave}", arquivo, chave)],
+        }
+        (destino / f"index-champion-{chave}-a.json").write_text(json.dumps(fatia), encoding="utf-8")
+
+    def campeao(chave: int, nome: str) -> dict[str, object]:
+        return {
+            "championKey": chave,
+            "championId": nome,
+            "names": {"pt_BR": nome},
+            "skinCount": 1,
+            "baseSkinId": chave * 1000,
+            "shard": {"url": f"index-champion-{chave}-a.json", "assets": 1, "bytes": 10},
+        }
+
+    catalogo = {
         "schemaVersion": SCHEMA_VERSION,
         "gameVersion": VERSAO,
-        "category": "champion",
         "generatedAt": "2026-09-09T00:00:00Z",
-        "assets": [_asset("square:24", "Jax.png", 24), _asset("square:99", "Lux.png", 99)],
+        "champions": [campeao(24, "Jax"), campeao(99, "Lux")],
+        "skins": [
+            {
+                "skinId": 24000,
+                "skinNum": 0,
+                "championKey": 24,
+                "names": {"pt_BR": "Jax"},
+                "isBase": True,
+            },
+            {
+                "skinId": 99000,
+                "skinNum": 0,
+                "championKey": 99,
+                "names": {"pt_BR": "Lux"},
+                "isBase": True,
+            },
+        ],
     }
-    (destino / "index-champion-a.json").write_text(json.dumps(fatia), encoding="utf-8")
+    (destino / "catalog-a.json").write_text(json.dumps(catalogo), encoding="utf-8")
+
+    fatia_de_item = {
+        "schemaVersion": SCHEMA_VERSION,
+        "gameVersion": VERSAO,
+        "category": "item",
+        "generatedAt": "2026-09-09T00:00:00Z",
+        "assets": [],
+    }
+    (destino / "index-item-a.json").write_text(json.dumps(fatia_de_item), encoding="utf-8")
 
     manifesto = {
         "schemaVersion": SCHEMA_VERSION,
         "generatedAt": "2026-09-09T00:00:00Z",
         "currentVersion": VERSAO,
-        "generation": {"indexer": 3, "categories": ["champion"]},
+        "generation": {"indexer": 4, "categories": ["champion", "item"]},
         "versions": [
             {
                 "gameVersion": VERSAO,
@@ -77,12 +124,7 @@ def indice_em_disco(tmp_path: Path) -> Path:
                 "assetsCopied": False,
                 "catalog": {"url": "catalog-a.json", "champions": 2, "skins": 2, "bytes": 10},
                 "shards": [
-                    {
-                        "category": "champion",
-                        "url": "index-champion-a.json",
-                        "assets": 2,
-                        "bytes": 10,
-                    }
+                    {"category": "item", "url": "index-item-a.json", "assets": 0, "bytes": 10}
                 ],
             }
         ],
@@ -164,7 +206,7 @@ def test_versao_inexistente_e_404(cliente: TestClient) -> None:
 def test_a_fatia_e_lida_uma_vez_so(cliente: TestClient, indice_em_disco: Path) -> None:
     """Cache: reler 19 MB de JSON por requisição seria absurdo."""
     cliente.get(f"/index/{VERSAO}/champion")
-    (indice_em_disco / "index-champion-a.json").unlink()
+    (indice_em_disco / "index-champion-24-a.json").unlink()
 
     # Sem cache, isto seria 503. Com cache, o conteúdo continua servido.
     assert cliente.get(f"/index/{VERSAO}/champion").status_code == 200
@@ -181,7 +223,7 @@ def test_manifesto_novo_invalida_as_fatias(cliente: TestClient, indice_em_disco:
     # `mtime` no passado: escrever no mesmo segundo pode não mudar o carimbo, e
     # aí o teste passaria ou falharia conforme o relógio.
     os.utime(caminho, (0, 0))
-    (indice_em_disco / "index-champion-a.json").unlink()
+    (indice_em_disco / "index-champion-24-a.json").unlink()
 
     assert cliente.get(f"/index/{VERSAO}/champion").status_code == 503
 

@@ -30,7 +30,13 @@ from lol_assets_schema.validators import (
 from pydantic import BaseModel
 from pydantic import ValidationError as PydanticValidationError
 
-FIXTURES_DE_FATIA = ["index-champion.json", "index-item.json", "index-rune.json"]
+FIXTURES_DE_FATIA = [
+    "index-champion-20.json",
+    "index-champion-24.json",
+    "index-champion-99.json",
+    "index-item.json",
+    "index-rune.json",
+]
 
 
 def carregar(nome: str) -> Any:
@@ -89,7 +95,7 @@ def test_fixture_de_manifesto_valida() -> None:
 
 def test_fixture_tem_os_numeros_medidos_nos_spikes() -> None:
     """A fixture é retrato do patch 16.17.1, não invenção."""
-    por_tipo = {a["type"]: a for a in carregar("index-champion.json")["assets"]}
+    por_tipo = {a["type"]: a for a in carregar("index-champion-24.json")["assets"]}
     assert (por_tipo["square"]["width"], por_tipo["square"]["height"]) == (128, 128)
     assert (por_tipo["splash_centered"]["width"], por_tipo["splash_centered"]["height"]) == (
         1280,

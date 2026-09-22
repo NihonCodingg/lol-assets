@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "2.0.0",
   "generatedAt": "2026-09-09T00:00:00Z",
   "currentVersion": "16.18.1",
   "generation": {
-    "indexer": 3,
+    "indexer": 4,
     "categories": [
       "champion",
       "item"
@@ -18,17 +18,11 @@
         "url": "catalog-e2e.json",
         "champions": 2,
         "skins": 3,
-        "bytes": 1588
+        "bytes": 1826
       },
       "totalAssets": 233,
       "totalBytes": 247808,
       "shards": [
-        {
-          "category": "champion",
-          "url": "index-champion-e2e.json",
-          "assets": 13,
-          "bytes": 8239
-        },
         {
           "category": "item",
           "url": "index-item-e2e.json",

@@ -4,7 +4,7 @@
  * O JSON Schema em `schemas/` é a fonte de verdade; os tipos abaixo são
  * escritos à mão por enquanto e passam a ser gerados no ticket da etapa 6.
  */
-export const SCHEMA_VERSION = "1.3.0";
+export const SCHEMA_VERSION = "2.0.0";
 
 export type AssetCategory =
   | "champion"
@@ -98,6 +98,13 @@ export interface Asset {
  * Catálogo — as duas projeções que o front carrega antes de qualquer asset.
  * Navegação opera em `champions` (173); busca opera em `skins` (2.149). Ver ADR 0010.
  */
+/** Onde está a fatia de um campeão (ADR 0023, contrato 2.0.0). */
+export interface ChampionShardRef {
+  url: string;
+  assets: number;
+  bytes: number;
+}
+
 export interface CatalogChampion {
   championKey: number;
   championId: string;
@@ -111,6 +118,11 @@ export interface CatalogChampion {
   baseSkinId: number;
   thumbnailKey?: string;
   thumbnailUrl?: string;
+  /**
+   * A fatia com os assets deste campeão (ADR 0023). Obrigatória no contrato;
+   * opcional no tipo para que os testes do front montem campeões sem índice.
+   */
+  shard?: ChampionShardRef;
 }
 
 export interface CatalogSkin {
@@ -139,6 +151,8 @@ export interface IndexShard {
   schemaVersion: string;
   gameVersion: string;
   category: AssetCategory;
+  /** Só nas fatias de campeão (ADR 0023): de quem é a fatia. */
+  championKey?: number;
   generatedAt: string;
   assetsBaseUrl?: string;
   assets: Asset[];

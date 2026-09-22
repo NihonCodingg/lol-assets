@@ -6,9 +6,9 @@ com Pillow. O `sourceUrl` de cada registro diz exatamente de onde veio.
 
 | Arquivo | Conteúdo |
 |---|---|
-| `manifest.json` | Uma versão, apontando para o catálogo e para as três fatias |
-| `catalog.json` | 3 campeões (Jax, Lux, Nunu) e todas as skins deles — os dois níveis do [ADR 0010](../../../docs/adr/0010-navegacao-por-campeao-busca-por-skin.md) |
-| `index-champion.json` | Assets de campeão: `square`, `splash_centered`, `splash_wide`, `loading`, `tile` |
+| `manifest.json` | Uma versão, apontando para o catálogo e para as fatias de item e runa |
+| `catalog.json` | 3 campeões (Jax, Lux, Nunu), cada um apontando para a sua fatia, e todas as skins deles — os dois níveis do [ADR 0010](../../../docs/adr/0010-navegacao-por-campeao-busca-por-skin.md) |
+| `index-champion-{24,99,20}.json` | Uma fatia por campeão (ADR 0023): `square`, `splash_centered`, `splash_wide`, `loading`, `tile` de Jax, Lux e Nunu, cada uma com o `championKey` do dono |
 | `index-item.json` | Um ícone de item — PNG **sem** alfa |
 | `index-rune.json` | Um ícone de runa — PNG **com** alfa |
 

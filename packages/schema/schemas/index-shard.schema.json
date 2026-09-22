@@ -26,6 +26,11 @@
     "category": {
       "$ref": "#/$defs/category"
     },
+    "championKey": {
+      "description": "Só nas fatias de campeão (ADR 0023, contrato 2.0.0): de quem é esta fatia. Todo asset dela tem este championKey.",
+      "type": "integer",
+      "minimum": 1
+    },
     "generatedAt": {
       "type": "string",
       "format": "date-time"

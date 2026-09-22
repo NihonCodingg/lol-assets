@@ -13,7 +13,7 @@
  */
 
 import { CloudOff } from "lucide-react";
-import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Asset, Catalog, CatalogChampion, CatalogSkin, IndexManifest } from "@lol-assets/schema";
 
@@ -92,21 +92,20 @@ export default function HomePage() {
   }, [estado, registrar]);
 
   /**
-   * A fatia de campeão começa a chegar no primeiro sinal de intenção (T-61):
-   * apontar a grade, focar um cartão, digitar na busca. Ela é uma só para os
-   * 173 campeões, e o clique encontra a promessa já em andamento — o
-   * `AssetsClient` guarda a promessa, e esquece a que falhar.
+   * A fatia de um campeão começa a chegar no sinal de intenção por ele (T-61):
+   * o ponteiro que para no cartão, o foco, o toque, o resultado em destaque na
+   * busca. Desde o ADR 0023 cada campeão tem a sua, e o clique encontra a
+   * promessa já em andamento — o `AssetsClient` guarda a promessa, e esquece a
+   * que falhar (o clique tenta de novo, e mostra o erro se for o caso).
    */
-  const preaquecido = useRef(false);
-  const preaquecer = useCallback(() => {
-    if (preaquecido.current || estado.fase !== "pronto") return;
-    if (!devePreaquecer(conexaoDoNavegador())) return;
-    preaquecido.current = true;
-    cliente.loadShard(estado.manifest, "champion").catch(() => {
-      // Falhou adiantado: o clique tenta de novo, e mostra o erro se for o caso.
-      preaquecido.current = false;
-    });
-  }, [cliente, estado]);
+  const preaquecer = useCallback(
+    (champion: CatalogChampion) => {
+      if (estado.fase !== "pronto") return;
+      if (!devePreaquecer(conexaoDoNavegador())) return;
+      cliente.loadChampion(champion).catch(() => {});
+    },
+    [cliente, estado],
+  );
 
   const abrirCampeao = useCallback(
     async (champion: CatalogChampion, skinNum?: number) => {
@@ -117,9 +116,9 @@ export default function HomePage() {
       setErroDoPainel(null);
       if (estado.fase !== "pronto") return;
       try {
-        // Sob demanda, e memoizada: trocar de campeão não busca de novo.
-        const shard = await cliente.loadShard(estado.manifest, "champion");
-        const doCampeao = shard.assets.filter((a) => a.championKey === champion.championKey);
+        // Só a fatia deste campeão (ADR 0023), sob demanda e memorizada.
+        const shard = await cliente.loadChampion(champion);
+        const doCampeao = shard.assets;
         // As artes entram numa transição (T-72): o painel pinta primeiro — a
         // vitrine, o seletor —, e a grade vem logo depois, sem segurar o toque.
         // Com a fatia já em memória, tudo saía numa tarefa só: 360 ms entre o

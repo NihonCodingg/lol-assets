@@ -139,9 +139,19 @@ class IndexShard(_Base):
     schema_version: Version
     game_version: Version
     category: AssetCategory
+    #: Só nas fatias de campeão (ADR 0023): de quem é a fatia.
+    champion_key: int | None = Field(default=None, ge=1)
     generated_at: str
     assets_base_url: str | None = None
     assets: list[Asset]
+
+
+class ChampionShardRef(_Base):
+    """Onde está a fatia de um campeão (ADR 0023). Sem `sha256`: pesa no catálogo."""
+
+    url: str
+    assets: int = Field(ge=0)
+    bytes: int = Field(ge=0)
 
 
 class CatalogChampion(_Base):
@@ -159,6 +169,9 @@ class CatalogChampion(_Base):
     base_skin_id: int = Field(ge=1)
     thumbnail_key: str | None = None
     thumbnail_url: str | None = None
+    #: A fatia com os assets deste campeão (ADR 0023). É o catálogo que diz onde
+    #: ela está: abrir um painel busca só ela.
+    shard: ChampionShardRef
 
 
 class CatalogSkin(_Base):

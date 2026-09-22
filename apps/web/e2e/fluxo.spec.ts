@@ -59,9 +59,13 @@ interface AssetDaFixture {
   skinNum?: number;
 }
 
+/** Os assets de campeão da fixture, pelas fatias que o catálogo aponta (ADR 0023). */
 async function assetsDaFixture(): Promise<AssetDaFixture[]> {
-  const fatia = await indice<{ assets: AssetDaFixture[] }>("index-champion-e2e.json");
-  return fatia.assets;
+  const catalogo = await indice<{ champions: { shard: { url: string } }[] }>("catalog-e2e.json");
+  const fatias = await Promise.all(
+    catalogo.champions.map((c) => indice<{ assets: AssetDaFixture[] }>(c.shard.url)),
+  );
+  return fatias.flatMap((f) => f.assets);
 }
 
 /** Dimensões de um PNG, direto do IHDR. Sem dependência para ler 8 bytes. */

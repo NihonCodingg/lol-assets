@@ -43,6 +43,7 @@ import { Chip } from "@/components/ui/chip";
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
 import { filtrarCampeoes, funcoesDe } from "@/lib/categorias";
+import { ESPERA_DA_INTENCAO_MS } from "@/lib/preaquecer";
 import { cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
 export type Densidade = "compacta" | "densa" | "confortavel";
@@ -109,8 +110,11 @@ export interface GradeDeCampeoesProps {
   readonly skins?: readonly CatalogSkin[];
   readonly assetsBaseUrl?: string;
   readonly onAbrir: (champion: CatalogChampion) => void;
-  /** Alguém apontou ou focou a grade: é hora de adiantar a fatia (T-61). */
-  readonly onIntencao?: () => void;
+  /**
+   * Alguém mostrou intenção por um campeão: é hora de adiantar a fatia dele
+   * (T-61, ADR 0023) — o ponteiro que para no cartão, o foco, o toque.
+   */
+  readonly onIntencao?: (champion: CatalogChampion) => void;
 }
 
 function Grade({
@@ -289,8 +293,6 @@ function Grade({
           aria-label="Campeões"
           data-densidade={densidade}
           onKeyDown={aoTeclar}
-          onPointerEnter={onIntencao}
-          onFocus={onIntencao}
           style={{ "--altura-do-cartao": ALTURA_ESTIMADA[densidade] } as CSSProperties}
           className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
         >
@@ -304,6 +306,7 @@ function Grade({
               tabIndex={indice === comFoco ? 0 : -1}
               onFocar={() => setComFoco(indice)}
               onAbrir={onAbrir}
+              onIntencao={onIntencao}
             />
           ))}
         </ul>
@@ -318,19 +321,41 @@ function Cartao({
   tabIndex,
   onFocar,
   onAbrir,
+  onIntencao,
 }: {
   champion: CatalogChampion;
   arte: string | undefined;
   tabIndex: number;
   onFocar: () => void;
   onAbrir: (champion: CatalogChampion) => void;
+  onIntencao?: (champion: CatalogChampion) => void;
 }) {
+  // O ponteiro que só passa por cima não é intenção: atravessar a grade até o
+  // Jax passaria por vinte cartões, e seriam vinte fatias baixadas à toa. Conta
+  // o ponteiro que para (T-73).
+  const espera = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const avisar = () => onIntencao?.(champion);
+  const pararDeEsperar = () => {
+    if (espera.current) clearTimeout(espera.current);
+    espera.current = null;
+  };
+  useEffect(() => pararDeEsperar, []);
+
   return (
     <li className={CARTAO_PULAVEL}>
       <button
         type="button"
         tabIndex={tabIndex}
-        onFocus={onFocar}
+        onFocus={() => {
+          onFocar();
+          avisar();
+        }}
+        onPointerEnter={() => {
+          pararDeEsperar();
+          espera.current = setTimeout(avisar, ESPERA_DA_INTENCAO_MS);
+        }}
+        onPointerLeave={pararDeEsperar}
+        onPointerDown={avisar}
         onClick={() => onAbrir(champion)}
         className="group block w-full cursor-pointer rounded-medio text-left"
       >

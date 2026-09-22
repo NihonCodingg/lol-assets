@@ -94,13 +94,31 @@ if (manifesto.ok) {
     `${publicado.currentVersion} × ${estado?.gameVersion}`,
   );
 
-  // HEAD: o que interessa são os cabeçalhos, e a fatia de campeão tem 13 MB.
+  // HEAD: o que interessa são os cabeçalhos.
   for (const documento of [versao.catalog, ...versao.shards]) {
     const resposta = await buscar(`/indice/${documento.url}`, "HEAD");
     conferir(
       resposta.ok && imutavel(resposta),
       `${documento.url} é imutável`,
       `HTTP ${resposta.status}, ${resposta.headers.get("cache-control")}`,
+    );
+  }
+
+  // Desde o contrato 2.0.0 cada campeão tem a sua fatia, e quem aponta para ela
+  // é o catálogo (ADR 0023). Uma a uma, em fila: são 173, e o site é nosso, mas a
+  // etiqueta de rede vale igual.
+  const catalogo = await buscar(`/indice/${versao.catalog.url}`);
+  if (catalogo.ok) {
+    const { champions } = await catalogo.json();
+    const quebradas = [];
+    for (const campeao of champions) {
+      const resposta = await buscar(`/indice/${campeao.shard?.url}`, "HEAD");
+      if (!resposta.ok || !imutavel(resposta)) quebradas.push(`${campeao.championId} (HTTP ${resposta.status})`);
+    }
+    conferir(
+      quebradas.length === 0,
+      `as ${champions.length} fatias de campeão existem e são imutáveis`,
+      quebradas.slice(0, 5).join(", "),
     );
   }
 

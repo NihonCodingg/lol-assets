@@ -44,6 +44,7 @@ def test_shard_valida_um_asset_de_exemplo() -> None:
         "schemaVersion": SCHEMA_VERSION,
         "gameVersion": "16.17.1",
         "category": "champion",
+        "championKey": 24,
         "generatedAt": "2026-09-03T12:00:00Z",
         "assetsBaseUrl": "https://assets.example/lol",
         "assets": [
@@ -122,6 +123,7 @@ def test_catalog_valida_navegacao_e_busca() -> None:
                 "chromaCount": 31,
                 "baseSkinId": 24000,
                 "thumbnailKey": "16.17.1/champion/Jax_square.png",
+                "shard": {"url": "index-champion-24-abc123.json", "assets": 115, "bytes": 80000},
             }
         ],
         "skins": [
@@ -185,3 +187,34 @@ def test_manifesto_exige_catalogo_em_cada_versao() -> None:
         "bytes": 340000,
     }
     validador.validate(manifesto)
+
+
+def test_catalog_2_0_exige_a_fatia_de_cada_campeao() -> None:
+    """ADR 0023: o catálogo é quem aponta para a fatia de cada campeão."""
+    validador = Draft202012Validator(json.loads(CATALOG_SCHEMA.read_text(encoding="utf-8")))
+    campeao = {
+        "championKey": 24,
+        "championId": "Jax",
+        "names": {"pt_BR": "Jax"},
+        "skinCount": 1,
+        "baseSkinId": 24000,
+    }
+    catalogo = {
+        "schemaVersion": SCHEMA_VERSION,
+        "gameVersion": "16.17.1",
+        "generatedAt": "2026-09-03T12:00:00Z",
+        "champions": [campeao],
+        "skins": [],
+    }
+    assert not validador.is_valid(catalogo), "campeão sem fatia deveria falhar"
+
+    campeao["shard"] = {
+        "url": "index-champion-24-abc.json",
+        "assets": 1,
+        "bytes": 10,
+        "sha256": "0" * 64,
+    }
+    assert not validador.is_valid(catalogo), "a referência não leva sha256: pesa no catálogo"
+
+    campeao["shard"] = {"url": "index-champion-24-abc.json", "assets": 1, "bytes": 10}
+    validador.validate(catalogo)

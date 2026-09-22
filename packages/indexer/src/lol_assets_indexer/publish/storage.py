@@ -18,7 +18,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 
-from lol_assets_schema.models import Catalog, CatalogRef, IndexManifest, IndexShard, ShardRef
+from lol_assets_schema.models import (
+    Catalog,
+    CatalogRef,
+    ChampionShardRef,
+    IndexManifest,
+    IndexShard,
+    ShardRef,
+)
 from lol_assets_schema.validators import validate_catalog, validate_manifest, validate_shard
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -131,20 +138,33 @@ def prepare_catalog(catalog: Catalog) -> tuple[CatalogRef, bytes]:
 
 
 def prepare_shard(shard: IndexShard) -> tuple[ShardRef, bytes]:
-    """O mesmo, para uma fatia."""
+    """O mesmo, para uma fatia.
+
+    A fatia de um campeão leva a chave dele no nome — `index-champion-24-{hash}`
+    (ADR 0023) —, para que as 173 sejam legíveis no diretório e para que a
+    varredura de órfãos continue casando pelo prefixo `index-`.
+    """
     documento = shard.model_dump(by_alias=True, exclude_none=True, mode="json")
     validate_shard(documento)
     payload = canonical_json(documento)
+    prefixo = f"index-{shard.category}"
+    if shard.champion_key is not None:
+        prefixo = f"{prefixo}-{shard.champion_key}"
     return (
         ShardRef(
             category=shard.category,
-            url=hashed_name(f"index-{shard.category}", payload),
+            url=hashed_name(prefixo, payload),
             assets=len(shard.assets),
             bytes=len(payload),
             sha256=hashlib.sha256(payload).hexdigest(),
         ),
         payload,
     )
+
+
+def champion_shard_ref(ref: ShardRef) -> ChampionShardRef:
+    """O que o catálogo guarda de uma fatia de campeão: sem `sha256` (ADR 0023)."""
+    return ChampionShardRef(url=ref.url, assets=ref.assets, bytes=ref.bytes)
 
 
 def prepare_manifest(manifest: IndexManifest) -> bytes:
@@ -175,7 +195,23 @@ class Publisher:
     # --- índice ---------------------------------------------------------------
 
     def publish_catalog(self, catalog: Catalog, prepared: Prepared | None = None) -> CatalogRef:
-        """A projeção de navegação e busca (ADR 0010)."""
+        """A projeção de navegação e busca (ADR 0010).
+
+        Recusa se alguma fatia de campeão que ele aponta ainda não subiu (ADR
+        0023): o catálogo é quem diz onde está a fatia de cada campeão, e um
+        catálogo publicado antes delas mandaria o front buscar arquivo que não
+        existe.
+        """
+        faltando = sorted(
+            campeao.shard.url
+            for campeao in catalog.champions
+            if campeao.shard.url not in self._published
+        )
+        if faltando:
+            raise PublicationError(
+                f"o catálogo aponta para {len(faltando)} fatia(s) de campeão que não foram "
+                f"publicadas; a primeira é {faltando[0]!r}. Publique as fatias antes do catálogo."
+            )
         ref, payload = prepared or prepare_catalog(catalog)
         self._put(ref.url, payload, CACHE_IMMUTABLE)
         assert isinstance(ref, CatalogRef)

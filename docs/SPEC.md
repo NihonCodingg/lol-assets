@@ -253,7 +253,7 @@ sequenceDiagram
     U->>W: digita "mf" ou "kda"
     W->>W: busca no cliente (< 50 ms, sem rede)
     U->>W: clica no campeão (ou num resultado de skin)
-    W->>R: GET index-champion-{hash}.json (sob demanda, uma vez)
+    W->>R: GET index-champion-{championKey}-{hash}.json (só a deste campeão, uma vez — ADR 0023)
     W->>U: painel do campeão, com o seletor de skin
     W->>F: GET dos assets pela sourceUrl (CORS aberto em todos os tipos)
     W->>U: mostra formato, resolução, tamanho, fonte
@@ -299,7 +299,7 @@ Versão do contrato: **1.3.0**. Mudança exige ADR e nova versão — o `1.1.0` 
 |---|---|
 | `index-manifest.schema.json` | O `manifest.json` — único arquivo de nome fixo do índice |
 | `catalog.schema.json` | **Projeção de navegação (173 campeões) e de busca (2.118 skins)**, sem nenhum asset. É o único documento pesado da abertura ([ADR 0010](adr/0010-navegacao-por-campeao-busca-por-skin.md)) |
-| `index-shard.schema.json` | Uma fatia de **assets** por categoria e versão, com `$defs.asset`. Carregada sob demanda |
+| `index-shard.schema.json` | Uma fatia de **assets** por categoria e versão — por **campeão**, na categoria `champion` ([ADR 0023](adr/0023-uma-fatia-por-campeao.md)) —, com `$defs.asset`. Carregada sob demanda |
 | `data/champion-aliases.json` | Apelidos de busca, mantidos à mão ([ADR 0009](adr/0009-apelidos-de-busca-mantidos-a-mao.md)) |
 
 O registro de asset carrega `id`, `type` (nome canônico), `category`, as chaves de
@@ -329,8 +329,10 @@ Três camadas, carregadas nesta ordem:
    URL de origem. É o que permite desenhar a home e ter busca funcionando **antes** de
    qualquer asset ser baixado.
 3. **`index-{categoria}-{hash}.json`** — os assets, uma fatia por categoria, com hash no
-   nome. Carregadas **sob demanda**: a de `champion` na primeira vez que um painel abre, as
-   demais ao entrar na categoria.
+   nome. Carregadas **sob demanda**, ao entrar na categoria. **`champion` é a exceção**
+   ([ADR 0023](adr/0023-uma-fatia-por-campeao.md), contrato 2.0.0): uma fatia **por
+   campeão**, `index-champion-{championKey}-{hash}.json`, e quem aponta para ela é o
+   catálogo (`champions[].shard`), não o manifesto. Abrir o painel do Jax busca só a do Jax.
 
 A home não carrega fatia de asset nenhuma. Isso é o que sustenta o RNF-03.
 
@@ -541,3 +543,4 @@ jeito de o site apodrecer.
 | [0018](adr/0018-aviso-mede-a-ultima-verificacao.md) aviso mede a última verificação | §5.3, §6, §11, RNF-06 — emenda o item 4 da §11 |
 | [0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md) o `sha256` do cdragon não confere o download | RF-10, RNF-13, §6, riscos — emenda o critério do RF-10 e o RNF-13 |
 | [0009](adr/0009-apelidos-de-busca-mantidos-a-mao.md) apelidos | RF-03, §6, §10 |
+| [0023](adr/0023-uma-fatia-por-campeao.md) uma fatia por campeão | §5.4, §6, §6.1, RNF-03 — contrato 2.0.0 |

@@ -59,6 +59,19 @@ def ler(destino: Path, nome: str) -> Any:
     return json.loads((destino / nome).read_text(encoding="utf-8"))
 
 
+def catalogo_de(destino: Path) -> Any:
+    return ler(destino, ler(destino, "manifest.json")["versions"][0]["catalog"]["url"])
+
+
+def assets_de_campeao(destino: Path) -> list[Any]:
+    """Todos os assets de campeão, pelas fatias que o catálogo aponta (ADR 0023)."""
+    return [
+        asset
+        for campeao in catalogo_de(destino)["champions"]
+        for asset in ler(destino, campeao["shard"]["url"])["assets"]
+    ]
+
+
 def documentos_de_indice(destino: Path) -> set[str]:
     """O que o índice escreveu. `status.json` não conta — é relatório, não índice.
 
@@ -97,8 +110,36 @@ def test_uma_fatia_por_categoria(tarball_local: Path, destino: Path) -> None:
     indexar(tarball_local, destino)
     versao = ler(destino, "manifest.json")["versions"][0]
 
-    assert {fatia["category"] for fatia in versao["shards"]} == CATEGORIAS
-    assert versao["totalAssets"] == sum(fatia["assets"] for fatia in versao["shards"])
+    # Desde o contrato 2.0.0 a fatia de campeão não está no manifesto: quem aponta
+    # para a de cada campeão é o catálogo (ADR 0023).
+    assert {fatia["category"] for fatia in versao["shards"]} == CATEGORIAS - {"champion"}
+    assert versao["totalAssets"] == sum(fatia["assets"] for fatia in versao["shards"]) + len(
+        assets_de_campeao(destino)
+    )
+
+
+def test_uma_fatia_por_campeao(tarball_local: Path, destino: Path) -> None:
+    """ADR 0023: abrir um campeão busca só a fatia dele."""
+    import hashlib
+
+    indexar(tarball_local, destino)
+    campeoes = catalogo_de(destino)["champions"]
+    assert campeoes
+
+    for campeao in campeoes:
+        ref = campeao["shard"]
+        chave = campeao["championKey"]
+        assert "sha256" not in ref, "a referência no catálogo não leva sha256"
+        bruto = (destino / ref["url"]).read_bytes()
+        assert ref["bytes"] == len(bruto)
+        # A chave e o hash do conteúdo no nome: cache imutável e legível no disco.
+        assert ref["url"] == f"index-champion-{chave}-{hashlib.sha256(bruto).hexdigest()[:12]}.json"
+        fatia = json.loads(bruto)
+        validate_shard(fatia)
+        assert fatia["category"] == "champion"
+        assert fatia["championKey"] == campeao["championKey"]
+        assert ref["assets"] == len(fatia["assets"])
+        assert all(a["championKey"] == campeao["championKey"] for a in fatia["assets"])
 
 
 def test_nao_escreve_imagem_nenhuma(tarball_local: Path, destino: Path) -> None:
@@ -443,6 +484,9 @@ def test_a_versao_anterior_some_do_destino(depois_de_dois_patches: Path) -> None
     versao = manifesto["versions"][0]
     referenciados = {"manifest.json", versao["catalog"]["url"]}
     referenciados.update(fatia["url"] for fatia in versao["shards"])
+    referenciados.update(
+        c["shard"]["url"] for c in catalogo_de(depois_de_dois_patches)["champions"]
+    )
 
     no_disco = documentos_de_indice(depois_de_dois_patches)
     assert no_disco == referenciados, no_disco - referenciados
@@ -889,9 +933,7 @@ def test_o_cdragon_acrescenta_chroma_que_o_ddragon_nao_tem(
     _rotas_do_cdragon()
     assert indexar_com_cdragon(tarball_local, destino).exit_code == 0
 
-    versao = ler(destino, "manifest.json")["versions"][0]
-    fatia = next(f for f in versao["shards"] if f["category"] == "champion")
-    tipos = {a["type"] for a in ler(destino, fatia["url"])["assets"]}
+    tipos = {a["type"] for a in assets_de_campeao(destino)}
 
     assert "chroma" in tipos
     assert "loading_vintage" in tipos
@@ -902,9 +944,7 @@ def test_o_chroma_do_indice_carrega_o_parent_skin_num(tarball_local: Path, desti
     _rotas_do_cdragon()
     indexar_com_cdragon(tarball_local, destino)
 
-    versao = ler(destino, "manifest.json")["versions"][0]
-    fatia = next(f for f in versao["shards"] if f["category"] == "champion")
-    chromas = [a for a in ler(destino, fatia["url"])["assets"] if a["type"] == "chroma"]
+    chromas = [a for a in assets_de_campeao(destino) if a["type"] == "chroma"]
 
     assert chromas
     assert all("parentSkinNum" in c for c in chromas)
@@ -916,9 +956,7 @@ def test_o_ddragon_continua_ganhando_o_empate(tarball_local: Path, destino: Path
     _rotas_do_cdragon()
     indexar_com_cdragon(tarball_local, destino)
 
-    versao = ler(destino, "manifest.json")["versions"][0]
-    fatia = next(f for f in versao["shards"] if f["category"] == "champion")
-    assets = ler(destino, fatia["url"])["assets"]
+    assets = assets_de_campeao(destino)
 
     # A skin 24000 existe nas duas fontes: é a única disputa de verdade aqui.
     disputada = [a for a in assets if a["type"] == "splash_centered" and a["skinId"] == 24000]

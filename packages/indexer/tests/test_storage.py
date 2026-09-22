@@ -46,7 +46,13 @@ def catalogo() -> Catalog:
 def fatias() -> list[IndexShard]:
     return [
         IndexShard.model_validate(carregar(nome))
-        for nome in ("index-champion.json", "index-item.json", "index-rune.json")
+        for nome in (
+            "index-champion-20.json",
+            "index-champion-24.json",
+            "index-champion-99.json",
+            "index-item.json",
+            "index-rune.json",
+        )
     ]
 
 
@@ -60,15 +66,24 @@ def manifesto(catalog_url: str, shard_urls: dict[str, str]) -> IndexManifest:
 
 
 def publicar_tudo(publisher: Publisher) -> IndexManifest:
-    """A ordem correta: assets, catálogo, fatias e só então o manifesto."""
+    """A ordem correta: assets, fatias, catálogo e só então o manifesto (ADR 0023)."""
     urls: dict[str, str] = {}
+    de_campeao: dict[int, str] = {}
     for shard in fatias():
         for asset in shard.assets:
             assert asset.storage_key
             publisher.publish_asset(asset.storage_key, b"bytes-de-origem-" + asset.id.encode())
-    ref_catalogo = publisher.publish_catalog(catalogo())
     for shard in fatias():
-        urls[shard.category] = publisher.publish_shard(shard).url
+        url = publisher.publish_shard(shard).url
+        if shard.champion_key is None:
+            urls[shard.category] = url
+        else:
+            de_campeao[shard.champion_key] = url
+    # O catálogo aponta para as fatias com o nome que elas ganharam ao subir.
+    catalog = catalogo()
+    for campeao in catalog.champions:
+        campeao.shard.url = de_campeao[campeao.champion_key]
+    ref_catalogo = publisher.publish_catalog(catalog)
     documento = manifesto(ref_catalogo.url, urls)
     publisher.publish_manifest(documento)
     return documento
@@ -123,6 +138,22 @@ def test_manifesto_antes_das_fatias_falha() -> None:
 
     with pytest.raises(PublicationError, match="não pode subir antes"):
         publisher.publish_manifest(documento)
+
+
+def test_catalogo_antes_das_fatias_de_campeao_falha(tmp_path: Path) -> None:
+    """ADR 0023: o catálogo aponta para as fatias; elas sobem antes dele."""
+    publisher = Publisher(LocalObjectStore(root=tmp_path))
+    with pytest.raises(PublicationError, match=r"fatia\(s\) de campeão que não foram publicadas"):
+        publisher.publish_catalog(catalogo())
+
+
+def test_a_fatia_de_campeao_leva_a_chave_no_nome(tmp_path: Path) -> None:
+    publisher = Publisher(LocalObjectStore(root=tmp_path))
+    jax = next(f for f in fatias() if f.champion_key == 24)
+    for asset in jax.assets:
+        assert asset.storage_key
+        publisher.publish_asset(asset.storage_key, b"x")
+    assert publisher.publish_shard(jax).url.startswith("index-champion-24-")
 
 
 def test_fatia_com_asset_nao_publicado_falha(tmp_path: Path) -> None:
