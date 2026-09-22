@@ -104,26 +104,34 @@ test("o esqueleto tem a mesma árvore da tela pronta", async ({ page }) => {
 });
 
 /**
- * T-61. A fatia de campeão (1,3 MB comprimida) chegava só depois do clique, e o
- * painel abria vazio esperando por ela — mediana de 816 ms do clique até a arte,
- * medida na produção. Agora ela vem no primeiro sinal de intenção.
+ * T-61. A fatia de campeão chegava só depois do clique, e o painel abria vazio
+ * esperando por ela — mediana de 816 ms do clique até a arte, medida na
+ * produção. Agora ela vem no primeiro sinal de intenção. Desde o T-73 (ADR 0023)
+ * cada campeão tem a sua fatia, e a intenção é por um campeão: o ponteiro que
+ * para no cartão dele.
  */
-test("apontar a grade adianta a fatia de campeão; só abrir a home, não", async ({ page }) => {
+test("parar o ponteiro num cartão adianta a fatia daquele campeão; só abrir a home, não", async ({
+  page,
+}) => {
   const pedidas: string[] = [];
   page.on("request", (requisicao) => pedidas.push(requisicao.url()));
+  const deCampeao = () => pedidas.filter((url) => url.includes("index-champion"));
 
   await page.goto("/");
-  await expect(page.getByRole("list", { name: "Campeões" })).toBeVisible();
+  const grade = page.getByRole("list", { name: "Campeões" });
+  await expect(grade).toBeVisible();
   await page.waitForTimeout(500);
   // RNF-03: abrir a home não busca fatia nenhuma.
-  expect(pedidas.some((url) => url.includes("index-champion"))).toBe(false);
+  expect(deCampeao()).toEqual([]);
 
-  await page.getByRole("list", { name: "Campeões" }).hover();
-  await expect.poll(() => pedidas.some((url) => url.includes("index-champion"))).toBe(true);
+  const jax = grade.getByRole("button", { name: /^Jax/ });
+  await jax.hover();
+  await expect.poll(deCampeao).toHaveLength(1);
+  expect(deCampeao()[0]).toContain("index-champion-24-");
 
-  // E o clique usa a mesma fatia: nenhum segundo pedido.
-  await page.getByRole("list", { name: "Campeões" }).getByRole("button").first().click();
-  await page.waitForTimeout(500);
-  expect(pedidas.filter((url) => url.includes("index-champion"))).toHaveLength(1);
+  // E o clique usa a mesma fatia: nenhum segundo pedido, e nada da Lux.
+  await jax.click();
+  await expect(page.getByRole("dialog", { name: "Painel de Jax" }).locator("article").first()).toBeVisible();
+  expect(deCampeao()).toHaveLength(1);
 });
 

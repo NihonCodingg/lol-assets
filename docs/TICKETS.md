@@ -3558,6 +3558,71 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+## Exceção ao modo de manutenção — 22/09/2026
+
+> O dono autorizou, só para duas ideias da lista de "Ideias não executadas", tirar o indexador da
+> manutenção do [ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md): a fatia de campeões por
+> campeão e os nomes em inglês. **Não é precedente.** Terminadas as duas, o indexador volta à
+> manutenção como está no ADR 0021.
+
+### T-73 — Uma fatia por campeão
+
+| | |
+|---|---|
+| **Objetivo** | Que abrir um campeão baixe só a fatia dele, e não a dos 173 |
+| **Dependências** | T-10, T-61, T-72 |
+| **Estimativa** | ~600 linhas (contrato, indexador, API, front, fixtures) |
+| **Effort** | alto |
+| **Cobre** | RNF-03, a §6.1 da Spec e o [ADR 0023](adr/0023-uma-fatia-por-campeao.md) — contrato 2.0.0 |
+
+> Medido na produção em 22/09/2026, em 3G (1,6 Mbps, 150 ms), no telefone, com cache frio: do
+> toque até a primeira arte do painel, **13,4 s** para a Ahri e **18,4 s** para o Jax, com
+> **1.288 KB** de índice baixados a cada abertura. A fatia `champion` era uma só: 13 MB de JSON
+> e 18.397 assets, dos quais o Jax usa 115.
+
+**Entra**
+- O contrato 2.0.0 do ADR 0023:
+  - a categoria `champion` vira `index-champion-{championKey}-{hash}.json`, uma por campeão, com
+    `championKey` na fatia;
+  - o catálogo aponta para a fatia de cada campeão (`champions[].shard`, sem `sha256`);
+  - o manifesto deixa de listar `champion`.
+- O indexador:
+  - prepara as fatias antes do catálogo e publica na ordem fatias → catálogo → manifesto;
+  - o `Publisher` recusa catálogo que aponte para fatia não publicada;
+  - a geração do indexador sobe para 4.
+- O front:
+  - o `AssetsClient.loadChampion` busca só a fatia do campeão, pelo catálogo;
+  - o adiantamento do T-61 passa a ser por campeão, com a intenção de um campeão só: o ponteiro que
+    para 150 ms no cartão, o foco, o toque, ou o resultado em destaque na busca. Atravessar a grade
+    não baixa vinte fatias.
+- A API junta as fatias de campeão pelo catálogo. O `conferir-publicacao` confere as 173 fatias.
+- As fixtures do contrato e do e2e no formato 2.0.0.
+
+**NÃO entra**
+- Compatibilidade com o 1.x. Front e índice entram no mesmo merge: o índice novo é gerado pelo
+  workflow de indexação rodado no branch do PR.
+
+**Critérios de aceite**
+1. Abrir um campeão baixa só a fatia dele, medido em 3G contra os 13,4 s e 18,4 s de antes.
+2. O catálogo continua abaixo de 150 KB comprimido (RNF-03).
+3. As conferências no ar passam, com as 173 fatias imutáveis.
+
+**Testes que provam**
+- Schema:
+  - catálogo sem `shard` é recusado, e com `sha256` na referência também;
+  - a fixture tem uma fatia por campeão, e cada fatia só tem assets do dono.
+- Indexador:
+  - uma fatia por campeão, com o nome e o hash certos;
+  - campeão sem fatia é recusado;
+  - catálogo antes das fatias é recusado;
+  - a varredura de órfãos conta as fatias de campeão.
+- Front:
+  - `loadChampion` busca só a fatia do campeão;
+  - a intenção é por campeão, e o ponteiro que só passa não baixa nada;
+  - no e2e, parar o ponteiro no Jax baixa só a fatia do Jax.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

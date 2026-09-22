@@ -43,6 +43,7 @@ import type { Catalog, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 import { Tecla } from "@/components/ui/campo";
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
+import { ESPERA_DA_INTENCAO_MS } from "@/lib/preaquecer";
 import { buildSearchIndex, hitId, parecidos, search, type SearchHit } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
@@ -61,8 +62,11 @@ export interface PaletaDeBuscaProps {
   readonly onSkin: (skin: CatalogSkin, champion: CatalogChampion | undefined) => void;
   /** Quem contém decide onde ela cabe — o telefone dentro de uma categoria não tem linha sobrando. */
   readonly className?: string;
-  /** Alguém começou a digitar: todo resultado leva a um campeão (T-61). */
-  readonly onIntencao?: () => void;
+  /**
+   * O resultado em destaque parou num campeão: é hora de adiantar a fatia dele
+   * (T-61, ADR 0023). Todo resultado leva a um campeão — o de skin, ao dono.
+   */
+  readonly onIntencao?: (champion: CatalogChampion) => void;
 }
 
 function Paleta({
@@ -160,6 +164,20 @@ function Paleta({
     return resultados.find((hit) => hitId(hit).toLowerCase() === alvo) ?? resultados[0];
   }, [resultados, emDestaque]);
 
+  // O destaque que para por um instante é intenção; o que passa digitando, não
+  // — cada letra muda o primeiro resultado (T-73).
+  const campeaoEmDestaque =
+    mostrar && destacado
+      ? destacado.kind === "champion"
+        ? destacado.champion
+        : indice.byKey.get(destacado.skin.championKey)
+      : undefined;
+  useEffect(() => {
+    if (!campeaoEmDestaque || !onIntencao) return;
+    const espera = setTimeout(() => onIntencao(campeaoEmDestaque), ESPERA_DA_INTENCAO_MS);
+    return () => clearTimeout(espera);
+  }, [campeaoEmDestaque, onIntencao]);
+
   function arteDe(hit: SearchHit): string | undefined {
     if (hit.kind === "skin") return artePorSkin.get(hit.skin.skinId);
     return artePorSkin.get(hit.champion.baseSkinId) ?? thumbnailSrc(hit.champion, assetsBaseUrl);
@@ -190,7 +208,6 @@ function Paleta({
           onValueChange={(valor) => {
             setConsulta(valor);
             setAberta(true);
-            onIntencao?.();
           }}
           onFocus={() => setAberta(true)}
           onKeyDown={(evento) => {

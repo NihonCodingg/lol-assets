@@ -120,7 +120,7 @@ test.describe("só com teclado", () => {
     // deixaria `Escape` sem efeito exatamente durante a espera — que é quando
     // alguém mais desiste.
     await irParaHome(page);
-    await page.route("**/index-champion-e2e.json", async (rota) => {
+    await page.route("**/index-champion-*-e2e.json", async (rota) => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       await rota.continue();
     });

@@ -1,10 +1,9 @@
 {
-  "schemaVersion": "1.3.0",
-  "generatedAt": "2026-09-15T00:42:56Z",
-  "checkedAt": "2026-09-22T00:08:03Z",
+  "schemaVersion": "2.0.0",
+  "generatedAt": "2026-09-22T14:19:43Z",
   "currentVersion": "16.18.1",
   "generation": {
-    "indexer": 3,
+    "indexer": 4,
     "categories": [
       "champion",
       "emote",
@@ -19,73 +18,66 @@
   "versions": [
     {
       "gameVersion": "16.18.1",
-      "indexedAt": "2026-09-15T00:42:56Z",
+      "indexedAt": "2026-09-22T14:19:43Z",
       "assetsCopied": false,
       "catalog": {
-        "url": "catalog-98e444acc49f.json",
+        "url": "catalog-1dc45c79a4ff.json",
         "champions": 173,
         "skins": 2121,
-        "bytes": 780498,
-        "sha256": "98e444acc49fc91a4b6e9afecef79d6e4791b09952ba98af54df5e3dfbc9368b"
+        "bytes": 802337,
+        "sha256": "1dc45c79a4ff36327c16fa5c536ea2b1e115e83f793ead7995162606a5d81306"
       },
       "totalAssets": 27313,
-      "totalBytes": 2250648066,
+      "totalBytes": 2436474699,
       "shards": [
         {
-          "category": "champion",
-          "url": "index-champion-c6f9a208261b.json",
-          "assets": 18397,
-          "bytes": 13022189,
-          "sha256": "c6f9a208261bbf4234750a584dc14063f6cae7948207d9152dc84942e12566f6"
-        },
-        {
           "category": "item",
-          "url": "index-item-0c744ecea513.json",
+          "url": "index-item-f1521f5d2d35.json",
           "assets": 868,
           "bytes": 625623,
-          "sha256": "0c744ecea513a3e385fb1fe77a16bfc5aaf983f1542f84c7d9a8c14682969271"
+          "sha256": "f1521f5d2d35fd8ab62ae0eb8f2100d32cdf76c53b23c84f083ecc976316402a"
         },
         {
           "category": "summoner_spell",
-          "url": "index-summoner_spell-986e89bbb955.json",
+          "url": "index-summoner_spell-97f724f7e784.json",
           "assets": 34,
           "bytes": 21724,
-          "sha256": "986e89bbb955fc7f95d0c2be2d0c7bf7541971f58577b0a58aa5e9f3bb156524"
+          "sha256": "97f724f7e784d26564fc78d38dceec21dda00e30336978736e764f13e0e5f9aa"
         },
         {
           "category": "profile_icon",
-          "url": "index-profile_icon-0c7ed22c33f8.json",
+          "url": "index-profile_icon-11d3caf07b4e.json",
           "assets": 5042,
           "bytes": 2728556,
-          "sha256": "0c7ed22c33f81c396f22cc48b33b520415b802f6e3af25ece5177391771aaf96"
+          "sha256": "11d3caf07b4e573bd2ade83775e5e8281f55d6c672275244494a376cff924bf1"
         },
         {
           "category": "rune",
-          "url": "index-rune-34f68b7d3359.json",
+          "url": "index-rune-8e96d0c5e68b.json",
           "assets": 77,
           "bytes": 50795,
-          "sha256": "34f68b7d335938ac9d865f3c0dda16f9afca46950955c6e372812ff0db7e2b0e"
+          "sha256": "8e96d0c5e68bf8fdb59c430c3de0f9b6c0b9b471ccede16eea09ea95c52d9804"
         },
         {
           "category": "map",
-          "url": "index-map-0ed283231ced.json",
+          "url": "index-map-378e8d81318e.json",
           "assets": 5,
           "bytes": 2941,
-          "sha256": "0ed283231ced6e5e39b42773144ab641181c228fa78365250fe97ab58a1bf5cc"
+          "sha256": "378e8d81318e46171e0459ea79203c6b1acfac2147edef551c1fc5b735bc37ab"
         },
         {
           "category": "emote",
-          "url": "index-emote-18a65970300d.json",
+          "url": "index-emote-c90831865bfb.json",
           "assets": 2358,
-          "bytes": 1496001,
-          "sha256": "18a65970300d86310a805fa482d15f7f2912775e72c854e31b3644a2e572b3fa"
+          "bytes": 1495996,
+          "sha256": "c90831865bfb079bbe7c397c1873784dcee8581be81b1149fcee2b49c6a7a61d"
         },
         {
           "category": "ward",
-          "url": "index-ward-288c9801aae3.json",
+          "url": "index-ward-cc3fcacc9b01.json",
           "assets": 532,
-          "bytes": 323581,
-          "sha256": "288c9801aae32c2d4b8aa1a949e154f3af9d09163f23ba3b6a6d75094c771f96"
+          "bytes": 323604,
+          "sha256": "cc3fcacc9b0119f6dc8a637695a1b933e842117634f9c1a89c76517e1fd8db84"
         }
       ]
     }

@@ -11,7 +11,13 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 
-from lol_assets_schema.models import Asset, Catalog, CatalogChampion, CatalogSkin
+from lol_assets_schema.models import (
+    Asset,
+    Catalog,
+    CatalogChampion,
+    CatalogSkin,
+    ChampionShardRef,
+)
 
 from lol_assets_indexer.adapters.ddragon import ChampionSnapshot
 from lol_assets_indexer.naming import skin_id
@@ -22,11 +28,20 @@ def project_catalog(
     game_version: str,
     generated_at: str,
     snapshots: Iterable[ChampionSnapshot],
+    champion_shards: Mapping[int, ChampionShardRef],
     assets_by_champion: Mapping[int, list[Asset]] | None = None,
     assets_base_url: str | None = None,
 ) -> Catalog:
-    """Monta o catálogo a partir das fichas dos campeões."""
+    """Monta o catálogo a partir das fichas dos campeões.
+
+    `champion_shards` é onde está a fatia de cada campeão (ADR 0023). Ela é
+    preparada antes: o nome dela tem o hash do conteúdo, e o catálogo carrega o
+    nome.
+    """
     assets_by_champion = assets_by_champion or {}
+    sem_fatia = sorted(s.key for s in snapshots if s.key not in champion_shards)
+    if sem_fatia:
+        raise CatalogShapeError(f"campeões sem fatia (ADR 0023): {sem_fatia}")
     champions: list[CatalogChampion] = []
     skins: list[CatalogSkin] = []
 
@@ -48,6 +63,7 @@ def project_catalog(
                 base_skin_id=skin_id(snapshot.key, 0),
                 thumbnail_key=square_key,
                 thumbnail_url=square_url,
+                shard=champion_shards[snapshot.key],
             )
         )
         for skin in snapshot.skins:

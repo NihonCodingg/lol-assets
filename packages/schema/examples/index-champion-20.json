@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "2.0.0",
+  "gameVersion": "16.17.1",
+  "category": "champion",
+  "championKey": 20,
+  "generatedAt": "2026-09-04T00:00:00Z",
+  "assetsBaseUrl": "https://assets.exemplo.invalido/lol",
+  "assets": [
+    {
+      "id": "square:20",
+      "type": "square",
+      "category": "champion",
+      "championKey": 20,
+      "championId": "Nunu",
+      "names": {
+        "pt_BR": "Nunu e Willump",
+        "en_US": "Nunu & Willump"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Nunu.png",
+      "storageKey": "16.17.1/champion/Nunu_square.png",
+      "fileName": "Nunu_square.png",
+      "width": 128,
+      "height": 128,
+      "format": "png",
+      "hasAlpha": false,
+      "bytes": 27502,
+      "sha256": "dab4f686598e93d0d430db32d824a98f34b5a0055331a654c84ea3759fe6ed6a"
+    },
+    {
+      "id": "splash_centered:20000",
+      "type": "splash_centered",
+      "category": "champion",
+      "championKey": 20,
+      "championId": "Nunu",
+      "skinId": 20000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Nunu e Willump"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/centered/Nunu_0.jpg",
+      "storageKey": "16.17.1/champion/Nunu_000_splash_centered.jpg",
+      "fileName": "Nunu_000_splash_centered.jpg",
+      "width": 1280,
+      "height": 720,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 102782,
+      "sha256": "d265b4afaf91f7389ed09b861d717992c598f6ef99dae7f93ad5ea5e1f27729f"
+    },
+    {
+      "id": "splash_wide:20000",
+      "type": "splash_wide",
+      "category": "champion",
+      "championKey": 20,
+      "championId": "Nunu",
+      "skinId": 20000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Nunu e Willump"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nunu_0.jpg",
+      "storageKey": "16.17.1/champion/Nunu_000_splash_wide.jpg",
+      "fileName": "Nunu_000_splash_wide.jpg",
+      "width": 1215,
+      "height": 717,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 159472,
+      "sha256": "762f6d410132317c0c285bcf2a0db07c643db8bb34e0e54e70c220d9253f2171"
+    },
+    {
+      "id": "loading:20000",
+      "type": "loading",
+      "category": "champion",
+      "championKey": 20,
+      "championId": "Nunu",
+      "skinId": 20000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Nunu e Willump"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nunu_0.jpg",
+      "storageKey": "16.17.1/champion/Nunu_000_loading.jpg",
+      "fileName": "Nunu_000_loading.jpg",
+      "width": 308,
+      "height": 560,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 44510,
+      "sha256": "e69ad942c045bdb2c3dfb27b6b32acd1bd8633107874c26c3d16e0d1c9e39618"
+    },
+    {
+      "id": "tile:20000",
+      "type": "tile",
+      "category": "champion",
+      "championKey": 20,
+      "championId": "Nunu",
+      "skinId": 20000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Nunu e Willump"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Nunu_0.jpg",
+      "storageKey": "16.17.1/champion/Nunu_000_tile.jpg",
+      "fileName": "Nunu_000_tile.jpg",
+      "width": 380,
+      "height": 380,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 42339,
+      "sha256": "4d2ac42934effde32e0e9e43431490ca1473d9f37b973b7a94c6cd110ad6f491"
+    }
+  ]
+}

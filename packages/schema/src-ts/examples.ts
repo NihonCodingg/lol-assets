@@ -7,7 +7,9 @@
  * de existir um bucket.
  */
 import catalogJson from "../examples/catalog.json";
-import indexChampionJson from "../examples/index-champion.json";
+import indexChampion20Json from "../examples/index-champion-20.json";
+import indexChampion24Json from "../examples/index-champion-24.json";
+import indexChampion99Json from "../examples/index-champion-99.json";
 import indexItemJson from "../examples/index-item.json";
 import indexRuneJson from "../examples/index-rune.json";
 import manifestJson from "../examples/manifest.json";
@@ -19,7 +21,14 @@ import type { Catalog, IndexManifest, IndexShard } from "./index";
 // `test_fixture_de_catalogo_valida` e companhia.
 export const exampleManifest = manifestJson as unknown as IndexManifest;
 export const exampleCatalog = catalogJson as unknown as Catalog;
-export const exampleChampionShard = indexChampionJson as unknown as IndexShard;
+/** A fatia do Jax. Desde o contrato 2.0.0 cada campeão tem a sua (ADR 0023). */
+export const exampleChampionShard = indexChampion24Json as unknown as IndexShard;
+/** As três fatias de campeão da fixture, por `championKey`. */
+export const exampleChampionShards: Readonly<Record<number, IndexShard>> = {
+  20: indexChampion20Json as unknown as IndexShard,
+  24: exampleChampionShard,
+  99: indexChampion99Json as unknown as IndexShard,
+};
 export const exampleItemShard = indexItemJson as unknown as IndexShard;
 export const exampleRuneShard = indexRuneJson as unknown as IndexShard;
 
@@ -31,4 +40,5 @@ export const examples = {
     item: exampleItemShard,
     rune: exampleRuneShard,
   },
+  championShards: exampleChampionShards,
 } as const;

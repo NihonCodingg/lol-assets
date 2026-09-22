@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "2.0.0",
+  "gameVersion": "16.17.1",
+  "category": "champion",
+  "championKey": 99,
+  "generatedAt": "2026-09-04T00:00:00Z",
+  "assetsBaseUrl": "https://assets.exemplo.invalido/lol",
+  "assets": [
+    {
+      "id": "square:99",
+      "type": "square",
+      "category": "champion",
+      "championKey": 99,
+      "championId": "Lux",
+      "names": {
+        "pt_BR": "Lux",
+        "en_US": "Lux"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Lux.png",
+      "storageKey": "16.17.1/champion/Lux_square.png",
+      "fileName": "Lux_square.png",
+      "width": 128,
+      "height": 128,
+      "format": "png",
+      "hasAlpha": false,
+      "bytes": 29188,
+      "sha256": "64639bea2aa7d622dd07287de7a7820950e567f0993c7dcc422e1e699fd743fd"
+    },
+    {
+      "id": "splash_centered:99000",
+      "type": "splash_centered",
+      "category": "champion",
+      "championKey": 99,
+      "championId": "Lux",
+      "skinId": 99000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Lux"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/centered/Lux_0.jpg",
+      "storageKey": "16.17.1/champion/Lux_000_splash_centered.jpg",
+      "fileName": "Lux_000_splash_centered.jpg",
+      "width": 1280,
+      "height": 720,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 133709,
+      "sha256": "3a80478279ccb552df5e2bcd034fdfd9b397f5261f8ecfa030b47615c7717466"
+    },
+    {
+      "id": "splash_wide:99000",
+      "type": "splash_wide",
+      "category": "champion",
+      "championKey": 99,
+      "championId": "Lux",
+      "skinId": 99000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Lux"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lux_0.jpg",
+      "storageKey": "16.17.1/champion/Lux_000_splash_wide.jpg",
+      "fileName": "Lux_000_splash_wide.jpg",
+      "width": 1215,
+      "height": 717,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 196519,
+      "sha256": "d148fbcd3985d2f46f928a6ec65cca3c4f3d088692926cb5004352de73636e2e"
+    },
+    {
+      "id": "loading:99000",
+      "type": "loading",
+      "category": "champion",
+      "championKey": 99,
+      "championId": "Lux",
+      "skinId": 99000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Lux"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lux_0.jpg",
+      "storageKey": "16.17.1/champion/Lux_000_loading.jpg",
+      "fileName": "Lux_000_loading.jpg",
+      "width": 308,
+      "height": 560,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 59727,
+      "sha256": "182677d4716d3659197a3a1d7dfb406b11bb2dbb4dde50eed467934a276fc3d8"
+    },
+    {
+      "id": "tile:99000",
+      "type": "tile",
+      "category": "champion",
+      "championKey": 99,
+      "championId": "Lux",
+      "skinId": 99000,
+      "skinNum": 0,
+      "isBaseSkin": true,
+      "names": {
+        "pt_BR": "Lux"
+      },
+      "source": "ddragon",
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Lux_0.jpg",
+      "storageKey": "16.17.1/champion/Lux_000_tile.jpg",
+      "fileName": "Lux_000_tile.jpg",
+      "width": 380,
+      "height": 380,
+      "format": "jpeg",
+      "hasAlpha": false,
+      "bytes": 50220,
+      "sha256": "3796e583841e3a6b604d8dc5f8aa98f5e85410ead2834e432d005138ca5513d9"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "2.0.0",
   "gameVersion": "16.17.1",
   "generatedAt": "2026-09-04T00:00:00Z",
   "assetsBaseUrl": "https://assets.exemplo.invalido/lol",
@@ -21,7 +21,12 @@
       "skinCount": 18,
       "chromaCount": 26,
       "baseSkinId": 24000,
-      "thumbnailKey": "16.17.1/champion/Jax_square.png"
+      "thumbnailKey": "16.17.1/champion/Jax_square.png",
+      "shard": {
+        "url": "index-champion-24.json",
+        "assets": 9,
+        "bytes": 6402
+      }
     },
     {
       "championKey": 99,
@@ -41,7 +46,12 @@
       "skinCount": 23,
       "chromaCount": 59,
       "baseSkinId": 99000,
-      "thumbnailKey": "16.17.1/champion/Lux_square.png"
+      "thumbnailKey": "16.17.1/champion/Lux_square.png",
+      "shard": {
+        "url": "index-champion-99.json",
+        "assets": 5,
+        "bytes": 3613
+      }
     },
     {
       "championKey": 20,
@@ -61,7 +71,12 @@
       "skinCount": 13,
       "chromaCount": 41,
       "baseSkinId": 20000,
-      "thumbnailKey": "16.17.1/champion/Nunu_square.png"
+      "thumbnailKey": "16.17.1/champion/Nunu_square.png",
+      "shard": {
+        "url": "index-champion-20.json",
+        "assets": 5,
+        "bytes": 3699
+      }
     }
   ],
   "skins": [

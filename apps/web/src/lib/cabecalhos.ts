@@ -35,8 +35,11 @@ export const SEM_INDEXACAO = "noindex, nofollow";
  * Exportado cru porque o teste o confere contra os arquivos de `public/indice`:
  * se o indexador passar a escrever outro formato de nome, o teste acusa antes de
  * um arquivo novo cair no cache padrão sem ninguém ver.
+ *
+ * A fatia de um campeão leva a chave dele antes do hash — `index-champion-24-{hash}`
+ * (ADR 0023) —, e é por isso que há um número opcional no meio.
  */
-export const NOME_COM_HASH = "(?:catalog|index-[a-z_]+)-[0-9a-f]+\\.json";
+export const NOME_COM_HASH = "(?:catalog|index-[a-z_]+(?:-[0-9]+)?)-[0-9a-f]+\\.json";
 export const NOME_FIXO = "(?:manifest|status)\\.json";
 
 export interface Cabecalho {

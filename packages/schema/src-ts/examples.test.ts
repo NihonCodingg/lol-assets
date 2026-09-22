@@ -10,7 +10,9 @@ describe("fixture do contrato", () => {
     expect(versao.catalog.url).toBe("catalog.json");
     expect(versao.catalog.champions).toBe(examples.catalog.champions.length);
     expect(versao.catalog.skins).toBe(examples.catalog.skins.length);
-    expect(versao.shards.map((s) => s.category).sort()).toEqual(["champion", "item", "rune"]);
+    // Desde o contrato 2.0.0 o manifesto não lista `champion`: quem aponta para
+    // a fatia de cada campeão é o catálogo (ADR 0023).
+    expect(versao.shards.map((s) => s.category).sort()).toEqual(["item", "rune"]);
   });
 
   it("todo documento declara a versão do contrato em uso", () => {
@@ -58,6 +60,16 @@ describe("fixture do contrato", () => {
 
     for (const asset of examples.shards.champion.assets) {
       if (asset.hasAlpha) expect(asset.format).toBe("png");
+    }
+  });
+
+  it("cada campeão aponta para a sua fatia, e ela só tem assets dele (ADR 0023)", () => {
+    for (const campeao of examples.catalog.champions) {
+      const fatia = examples.championShards[campeao.championKey];
+      expect(campeao.shard?.url).toBe(`index-champion-${campeao.championKey}.json`);
+      expect(fatia.championKey).toBe(campeao.championKey);
+      expect(fatia.assets).toHaveLength(campeao.shard?.assets ?? -1);
+      expect(fatia.assets.every((a) => a.championKey === campeao.championKey)).toBe(true);
     }
   });
 

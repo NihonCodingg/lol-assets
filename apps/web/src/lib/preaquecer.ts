@@ -32,3 +32,11 @@ export function conexaoDoNavegador(): InformacaoDeConexao | undefined {
   if (typeof navigator === "undefined") return undefined;
   return (navigator as Navigator & { connection?: InformacaoDeConexao }).connection;
 }
+
+/**
+ * Quanto o ponteiro precisa parar num cartão, ou o destaque num resultado, para
+ * contar como intenção (T-73). Desde o ADR 0023 cada campeão tem a sua fatia, e
+ * atravessar a grade até o Jax passaria por vinte cartões: sem espera, seriam
+ * vinte fatias baixadas à toa.
+ */
+export const ESPERA_DA_INTENCAO_MS = 150;

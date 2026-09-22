@@ -85,8 +85,19 @@ async function registro(page: Page, categoria: string, arquivo: string): Promise
       const versao = manifesto.versions.find(
         (v: { gameVersion: string }) => v.gameVersion === manifesto.currentVersion,
       );
-      const fatia = versao.shards.find((s: { category: string }) => s.category === categoria);
-      const { assets } = await (await fetch(`/indice/${fatia.url}`)).json();
+      // Desde o contrato 2.0.0 a fatia de um campeão vem do catálogo (ADR 0023): o
+      // arquivo "Jax_square.png" está na fatia do campeão "Jax".
+      let url: string;
+      if (categoria === "champion") {
+        const catalogo = await (await fetch(`/indice/${versao.catalog.url}`)).json();
+        const campeao = catalogo.champions.find(
+          (c: { championId: string }) => c.championId === arquivo.split("_")[0],
+        );
+        url = campeao.shard.url;
+      } else {
+        url = versao.shards.find((s: { category: string }) => s.category === categoria).url;
+      }
+      const { assets } = await (await fetch(`/indice/${url}`)).json();
       const asset = assets.find((a: { fileName: string }) => a.fileName === arquivo);
       return asset
         ? {

@@ -6,6 +6,7 @@ import type { Asset, Catalog, CatalogChampion, CatalogSkin } from "@lol-assets/s
 import { GradeDeCampeoes } from "./grade-de-campeoes";
 import { PainelDoCampeao } from "./painel-do-campeao";
 import { PaletaDeBusca } from "./paleta-de-busca";
+import { ESPERA_DA_INTENCAO_MS } from "@/lib/preaquecer";
 
 /**
  * Os quatro caminhos do [ADR 0010], contados em cliques, e a escala em que a
@@ -350,28 +351,67 @@ describe("a arte do cartão (T-46)", () => {
  * T-61: a fatia de campeão começa a chegar no primeiro sinal de intenção. Quem
  * decide se adianta de fato é a página; a grade e a busca só avisam.
  */
-describe("a intenção de abrir um campeão (T-61)", () => {
-  it("apontar a grade avisa", () => {
-    const onIntencao = vi.fn();
-    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
-    fireEvent.pointerEnter(screen.getByRole("list", { name: "Campeões" }));
-    expect(onIntencao).toHaveBeenCalled();
+describe("a intenção de abrir um campeão (T-61, por campeão desde o T-73)", () => {
+  // Desde o ADR 0023 cada campeão tem a sua fatia: a intenção diz **qual**.
+  const cartoes = () => screen.getAllByRole("listitem").map((li) => li.querySelector("button")!);
+
+  it("o ponteiro que para num cartão avisa, com o campeão dele", () => {
+    vi.useFakeTimers();
+    try {
+      const onIntencao = vi.fn();
+      render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
+      fireEvent.pointerEnter(cartoes()[2]);
+      vi.advanceTimersByTime(ESPERA_DA_INTENCAO_MS);
+      expect(onIntencao).toHaveBeenCalledTimes(1);
+      expect(onIntencao.mock.calls[0][0].championKey).toBe(CAMPEOES[2].championKey);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it("focar um cartão avisa — quem usa teclado também ganha", () => {
-    const onIntencao = vi.fn();
-    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
-    fireEvent.focus(screen.getAllByRole("listitem")[0].querySelector("button")!);
-    expect(onIntencao).toHaveBeenCalled();
+  it("o ponteiro que só passa por cima não avisa: atravessar a grade não baixa vinte fatias", () => {
+    vi.useFakeTimers();
+    try {
+      const onIntencao = vi.fn();
+      render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
+      for (const cartao of cartoes().slice(0, 20)) {
+        fireEvent.pointerEnter(cartao);
+        vi.advanceTimersByTime(ESPERA_DA_INTENCAO_MS / 3);
+        fireEvent.pointerLeave(cartao);
+      }
+      vi.advanceTimersByTime(ESPERA_DA_INTENCAO_MS * 2);
+      expect(onIntencao).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it("digitar na busca avisa", () => {
+  it("focar ou tocar um cartão avisa na hora — quem usa teclado também ganha", () => {
     const onIntencao = vi.fn();
-    render(
-      <PaletaDeBusca catalog={CATALOGO} onChampion={vi.fn()} onSkin={vi.fn()} onIntencao={onIntencao} />,
-    );
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "ca" } });
-    expect(onIntencao).toHaveBeenCalled();
+    render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={vi.fn()} onIntencao={onIntencao} />);
+    fireEvent.focus(cartoes()[0]);
+    fireEvent.pointerDown(cartoes()[1]);
+    expect(onIntencao.mock.calls.map((c) => c[0].championKey)).toEqual([
+      CAMPEOES[0].championKey,
+      CAMPEOES[1].championKey,
+    ]);
+  });
+
+  it("o resultado em destaque na busca avisa, depois de parar por um instante", () => {
+    vi.useFakeTimers();
+    try {
+      const onIntencao = vi.fn();
+      render(
+        <PaletaDeBusca catalog={CATALOGO} onChampion={vi.fn()} onSkin={vi.fn()} onIntencao={onIntencao} />,
+      );
+      fireEvent.change(screen.getByRole("combobox"), { target: { value: "Campeão 42" } });
+      expect(onIntencao).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(ESPERA_DA_INTENCAO_MS);
+      expect(onIntencao).toHaveBeenCalled();
+      expect(onIntencao.mock.calls.at(-1)?.[0].championKey).toBe(42);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("só montar a grade não avisa nada — a home abre sem fatia (RNF-03)", () => {

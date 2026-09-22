@@ -39,7 +39,7 @@
     "champion": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["championKey", "championId", "names", "skinCount", "baseSkinId"],
+      "required": ["championKey", "championId", "names", "skinCount", "baseSkinId", "shard"],
       "properties": {
         "championKey": { "type": "integer", "minimum": 1 },
         "championId": {
@@ -78,7 +78,24 @@
           "description": "Alternativa a thumbnailKey em versões sem assets copiados: URL na fonte.",
           "type": "string",
           "format": "uri"
+        },
+        "shard": {
+          "description": "A fatia com os assets deste campeão (ADR 0023, contrato 2.0.0). Abrir o painel de um campeão busca só ela. Sem sha256 de propósito: o catálogo é o documento pesado da abertura, e o hash curto já está no nome do arquivo.",
+          "$ref": "#/$defs/championShard"
         }
+      }
+    },
+    "championShard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "assets", "bytes"],
+      "properties": {
+        "url": {
+          "description": "index-champion-{championKey}-{hash}.json, com hash para cache imutável.",
+          "type": "string"
+        },
+        "assets": { "type": "integer", "minimum": 0 },
+        "bytes": { "type": "integer", "minimum": 0 }
       }
     },
     "skin": {

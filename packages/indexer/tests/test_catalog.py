@@ -11,13 +11,28 @@ from __future__ import annotations
 import pytest
 from lol_assets_indexer.adapters.ddragon import ChampionSnapshot, SkinSnapshot
 from lol_assets_indexer.catalog import CatalogShapeError, project_catalog, verify_catalog
-from lol_assets_schema.models import Catalog, CatalogChampion, CatalogSkin, LocalizedName
+from lol_assets_schema.models import (
+    Catalog,
+    CatalogChampion,
+    CatalogSkin,
+    ChampionShardRef,
+    LocalizedName,
+)
 
 VERSAO = "16.17.1"
 
 
 def nome(texto: str) -> LocalizedName:
     return LocalizedName(pt_BR=texto, en_US=texto)
+
+
+def fatia(chave: int) -> ChampionShardRef:
+    """Onde estaria a fatia do campeão (ADR 0023)."""
+    return ChampionShardRef(url=f"index-champion-{chave}-abc.json", assets=0, bytes=0)
+
+
+def fatias_de(snapshots: list[ChampionSnapshot]) -> dict[int, ChampionShardRef]:
+    return {s.key: fatia(s.key) for s in snapshots}
 
 
 def campeao(chave: int, champion_id: str, skin_count: int = 2) -> CatalogChampion:
@@ -27,6 +42,7 @@ def campeao(chave: int, champion_id: str, skin_count: int = 2) -> CatalogChampio
         names=nome(champion_id),
         skin_count=skin_count,
         base_skin_id=chave * 1000,
+        shard=fatia(chave),
     )
 
 
@@ -72,7 +88,8 @@ def test_o_catalogo_projetado_do_tarball_e_consistente(scan) -> None:  # type: i
         project_catalog(
             game_version=VERSAO,
             generated_at="2026-09-07T00:00:00Z",
-            snapshots=build_champion_snapshots(scan),
+            snapshots=(fichas := list(build_champion_snapshots(scan))),
+            champion_shards=fatias_de(fichas),
         )
     )
 
@@ -135,7 +152,8 @@ def test_chroma_nao_entra_em_nenhum_dos_dois_niveis(scan) -> None:  # type: igno
     projetado = project_catalog(
         game_version=VERSAO,
         generated_at="2026-09-07T00:00:00Z",
-        snapshots=build_champion_snapshots(scan),
+        snapshots=(fichas := list(build_champion_snapshots(scan))),
+        champion_shards=fatias_de(fichas),
     )
     jax = next(c for c in projetado.champions if c.champion_key == 24)
     assert jax.skin_count == 2
@@ -161,8 +179,55 @@ def test_o_contador_de_skins_e_o_de_chromas_sao_independentes() -> None:
                 chroma_count=7,
             )
         ],
+        champion_shards={24: fatia(24)},
     )
     verify_catalog(projetado)
     assert projetado.champions[0].skin_count == 2
     assert projetado.champions[0].chroma_count == 7
     assert len(projetado.skins) == 2
+
+
+# --- a fatia de cada campeão (ADR 0023) -----------------------------------------------
+
+
+def test_cada_campeao_aponta_para_a_sua_fatia() -> None:
+    fichas = [
+        ChampionSnapshot(
+            key=24,
+            champion_id="Jax",
+            names=nome("Jax"),
+            title=nome("o Grão-Mestre das Armas"),
+            tags=[],
+            skins=[SkinSnapshot(num=0, names=nome("Jax"), chroma_count=0)],
+            chroma_count=0,
+        )
+    ]
+    projetado = project_catalog(
+        game_version=VERSAO,
+        generated_at="2026-09-07T00:00:00Z",
+        snapshots=fichas,
+        champion_shards=fatias_de(fichas),
+    )
+    assert projetado.champions[0].shard.url == "index-champion-24-abc.json"
+
+
+def test_campeao_sem_fatia_e_recusado() -> None:
+    """Sem fatia, o painel dele não teria de onde buscar as artes."""
+    fichas = [
+        ChampionSnapshot(
+            key=24,
+            champion_id="Jax",
+            names=nome("Jax"),
+            title=nome("o Grão-Mestre das Armas"),
+            tags=[],
+            skins=[SkinSnapshot(num=0, names=nome("Jax"), chroma_count=0)],
+            chroma_count=0,
+        )
+    ]
+    with pytest.raises(CatalogShapeError, match="campeões sem fatia"):
+        project_catalog(
+            game_version=VERSAO,
+            generated_at="2026-09-07T00:00:00Z",
+            snapshots=fichas,
+            champion_shards={},
+        )
