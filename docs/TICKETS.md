@@ -3670,6 +3670,57 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+## Escopo das ideias sem custo — desde 22/09/2026
+
+> O dono abriu escopo de produto para as ideias de "Ideias não executadas" que não exigem custo
+> nem consentimento externo: setas na galeria virtualizada, filtro das sombras das wards, `_fpo`
+> fora do índice e aviso de patch mais novo que o índice. Imagens no tamanho da tela (custo,
+> ADR 0012) e arte da wiki (consentimento) ficam fora. **Terminadas as quatro, o projeto volta à
+> manutenção**, sem escopo novo por conta própria.
+>
+> As setas na galeria virtualizada já estavam feitas: entraram no **T-63** (21/09), e a linha
+> saiu da tabela de ideias naquele PR. Conferido no ar em 22/09, na galeria de 5.042 ícones: →
+> vai ao 2, ↓ desce uma linha, `End` chega ao 5.042 e `Home` volta ao 1; atravessar a galeria
+> custa 4 Tabs.
+
+### T-75 — Um filtro para esconder as sombras das wards
+
+| | |
+|---|---|
+| **Objetivo** | Que quem quer só a arte das wards não role o dobro |
+| **Dependências** | T-48, T-56 |
+| **Estimativa** | ~60 linhas |
+| **Effort** | baixo |
+| **Cobre** | RF-08 (filtros por categoria) |
+
+> Medido na produção em 22/09/2026, a 1440×900: a galeria de wards tem 532 tiles e **41 telas**
+> de rolagem, e em cada tela metade é sombra (10 de 20 tiles na primeira). São 266 pares: cada skin
+> de ward tem a arte e a sombra que ela projeta no chão, com o mesmo nome. Não havia filtro: as
+> wards não têm etiqueta nenhuma no índice.
+
+**Entra**
+- O front deriva uma etiqueta para cada ward, pelo `refId` que o indexador já grava (`1` para a
+  arte, `1-shadow` para a sombra). A barra ganha o grupo **Imagem**, com os chips **Arte** e
+  **Sombra** e as contagens. Marcar "Arte" esconde as sombras.
+- O mecanismo é o de todos os filtros: OU dentro do grupo, E entre grupos, com a descrição no
+  estado vazio.
+
+**NÃO entra**
+- Abrir a categoria já filtrada: nada some sem a pessoa pedir. O item abre filtrado por decisão
+  da Spec (§B.1.6); a ward não tem decisão parecida.
+- Mudar o indexador: o dado para separar já estava no índice.
+
+**Critérios de aceite**
+1. Com "Arte" marcado, a galeria de wards mostra só as 266 artes e cai para cerca de metade das
+   telas, medido na produção.
+2. Sem marcar nada, a galeria continua com as 532.
+
+**Testes que provam**
+- `categorias.test.ts`: o grupo Imagem com as contagens, "Arte" esconde as sombras, a categoria
+  abre sem filtro, e asset que não é ward não ganha a etiqueta.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -3732,7 +3783,6 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 | 15/09/2026 | Comparar com o `versions.json` do ddragon | Um aviso quando já existe patch mais novo que o índice (anotada no [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
 | 15/09/2026 | Dependabot | Atualização de segurança das dependências sem ninguém lembrar |
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
-| 18/09/2026 | Filtro "esconder sombras" nas wards | As 532 wards são 266 pares arte + sombra; o T-56 as separou pelo nome, mas quem quer só a arte continua rolando o dobro |
 | 18/09/2026 | Tirar o `_fpo` também do índice | Já estava na lista C; o T-48 o escondeu na tela, o indexador continua trazendo |
 | 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. **Fica de fora por decisão do dono (22/09/2026):** exige um serviço de imagens, e o projeto tem custo zero pelo [ADR 0012](adr/0012-onde-guardar-os-assets.md) |
 | 21/09/2026 | Link direto para um campeão ou uma categoria | Um endereço que abre o painel do Jax ou a categoria Itens, para mandar a alguém ou salvar nos favoritos. O T-70 fez o Voltar fechar camadas sem mudar a URL; o endereço próprio seria função nova |

@@ -411,3 +411,34 @@ describe("a barra de filtros", () => {
     expect(maisFiltros.map((g) => g.chave)).toEqual(["classe"]);
   });
 });
+
+// --- T-75: a ward é arte ou sombra --------------------------------------------------------
+
+describe("arte e sombra das wards (T-75)", () => {
+  // Como o índice grava: a arte com `refId` "1", a sombra com "1-shadow".
+  const ward = (ref: string) =>
+    asset(`ward_icon:${ref}`, { type: "ward_icon", category: "ward", refId: ref, fileName: `Ward_${ref}.png` });
+  const WARDS = [ward("0"), ward("0-shadow"), ward("1"), ward("1-shadow"), ward("2")];
+
+  it("a barra ganha o grupo Imagem, com Arte e Sombra e as contagens", () => {
+    const imagem = gruposDeFiltro(WARDS).find((g) => g.chave === "imagem");
+    expect(imagem?.rotulo).toBe("Imagem");
+    expect(imagem?.opcoes.map((o) => [o.rotulo, o.total])).toEqual([
+      ["Arte", 3],
+      ["Sombra", 2],
+    ]);
+  });
+
+  it("marcar Arte esconde as sombras", () => {
+    const soArte = filtrar(prepararLista(WARDS), new Set(["imagem:arte"]));
+    expect(soArte.map((a) => a.refId)).toEqual(["0", "1", "2"]);
+  });
+
+  it("a categoria abre sem o filtro: nada some sem a pessoa pedir", () => {
+    expect(filtrosPadrao("ward", gruposDeFiltro(WARDS)).size).toBe(0);
+  });
+
+  it("asset que não é ward não ganha a etiqueta", () => {
+    expect(etiquetasDe(asset("3031", { tags: ["compravel"] }))).toEqual(["compravel"]);
+  });
+});
