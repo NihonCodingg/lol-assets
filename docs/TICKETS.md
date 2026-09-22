@@ -3745,8 +3745,9 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
   dado, e duas fontes de verdade para a mesma regra são uma a mais.
 
 **Critérios de aceite**
-1. Nenhum arquivo de marcação no índice publicado; a fatia de emotes passa de 2.358 para 2.357.
-2. A galeria de emotes continua sem o "Emote 0".
+1. ✅ Nenhum arquivo de marcação no índice: de **1** para **0**, e a fatia de emotes de 2.358 para
+   **2.357** (conferido no índice gerado pelo workflow no branch, geração 5).
+2. ✅ A galeria de emotes continua sem o "Emote 0", agora sem filtro no front.
 
 **Testes que provam**
 - `test_cdragon.py`: o `_fpo` fica fora dos emotes e das wards, anotado à parte; `fpo` dentro de
