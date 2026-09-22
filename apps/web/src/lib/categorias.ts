@@ -123,6 +123,9 @@ const DO_INDEXADOR: Record<string, string> = {
   "slot:1": "Slot 1",
   "slot:2": "Slot 2",
   "slot:3": "Slot 3",
+  // Derivadas no front, não do indexador: ver `etiquetasDe` (T-75).
+  "imagem:arte": "Arte",
+  "imagem:sombra": "Sombra",
 };
 
 /** As classes de item com as palavras da loja do jogo em pt-BR (T-48). */
@@ -169,14 +172,35 @@ const ROTULO_DO_GRUPO: Record<string, string> = {
   mapa: "Mapa",
   arvore: "Árvore de runa",
   slot: "Slot da runa",
+  imagem: "Imagem",
 };
 
 /** Etiquetas diferentes da Riot para a mesma coisa: contam e filtram como uma só. */
 const SINONIMOS = new Map([["classe:magicresist", "classe:spellblock"]]);
 
-/** As etiquetas de um asset, com os sinônimos já resolvidos e sem repetição. */
-export function etiquetasDe(asset: Pick<Asset, "tags">): readonly string[] {
+/**
+ * A ward é arte ou é sombra (T-75).
+ *
+ * São 532 wards e 266 pares: cada skin de ward tem a arte e a sombra que ela
+ * projeta no chão, e as duas vêm do cdragon com o mesmo nome. O que as separa é
+ * o arquivo — `wardhero_1.png` e `wardheroshadow_1.png` —, que o indexador grava
+ * no `refId` como `1` e `1-shadow`. Quem quer só a arte rolava o dobro.
+ */
+function imagemDaWard(asset: Partial<Pick<Asset, "type" | "refId">>): string | undefined {
+  if (asset.type !== "ward_icon") return undefined;
+  return asset.refId?.endsWith("-shadow") ? "imagem:sombra" : "imagem:arte";
+}
+
+/**
+ * As etiquetas de um asset, com os sinônimos já resolvidos e sem repetição — e,
+ * na ward, a etiqueta de arte ou sombra, que o front deriva (T-75).
+ */
+export function etiquetasDe(
+  asset: Pick<Asset, "tags"> & Partial<Pick<Asset, "type" | "refId">>,
+): readonly string[] {
   const tags = asset.tags ?? [];
+  const imagem = imagemDaWard(asset);
+  if (imagem) return [...tags, imagem];
   if (!tags.some((tag) => SINONIMOS.has(tag))) return tags;
   return [...new Set(tags.map((tag) => SINONIMOS.get(tag) ?? tag))];
 }
