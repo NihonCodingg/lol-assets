@@ -3755,6 +3755,48 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+### T-77 — O aviso de patch mais novo que o índice
+
+| | |
+|---|---|
+| **Objetivo** | Que quem abre o site saiba quando a Riot já lançou um patch que o índice ainda não tem |
+| **Dependências** | T-31, T-51 |
+| **Estimativa** | ~150 linhas |
+| **Effort** | médio |
+| **Cobre** | §11 da Spec e a emenda do [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md) |
+
+> Até aqui o site só avisava se a indexação **parou** (índice sem verificação há 72 h). Entre o
+> lançamento de um patch e a próxima indexação (o workflow roda a cada 6 h e leva ~40 min), o site
+> mostrava o patch anterior sem dizer nada. O ADR 0018 tinha anotado a ideia com três objeções: uma
+> requisição ao ddragon em toda visita, um aviso que acenderia nas horas normais, e que mede outra
+> coisa.
+
+**Entra**
+- Depois de a página assentar, o front pede o `versions.json` do ddragon (5 KB, CORS aberto) e
+  guarda a resposta 6 horas no navegador, o intervalo da indexação.
+- Se o patch mais novo é mais novo que o do índice, um aviso **fixo no canto** diz qual, e que a
+  atualização automática o traz em algumas horas. Ele não empurra a grade (o CLS da chegada é
+  zero desde o T-59), fica abaixo dos painéis, é `role="status"` e dá para dispensar até o
+  próximo patch.
+- Com o aviso de índice velho aceso, este fica quieto.
+- A URL é configurável (`NEXT_PUBLIC_VERSIONS_URL`): o e2e usa um `versions.json` da fixture e
+  não toca a rede.
+
+**Critérios de aceite**
+1. Com o índice no patch mais novo (o caso de hoje), nada aparece, e a chegada mede o mesmo:
+   CLS 0, primeiro tile e LCP na faixa de antes.
+2. Com um patch mais novo, o aviso aparece sem salto de layout, passa no axe, e a dispensa vale
+   depois de recarregar.
+3. A lista é pedida no máximo uma vez a cada 6 horas.
+
+**Testes que provam**
+- `patch-novo.test.ts`: a versão mais nova da lista, a comparação número a número, o cache de
+  6 h, a falha de rede em silêncio e a dispensa por patch.
+- `patch-novo.spec.ts`: sem patch novo, nada aparece; com patch novo, o aviso aparece sem salto,
+  passa no axe, e a dispensa sobrevive ao recarregar.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -3813,7 +3855,6 @@ entregaria, e o trabalho segue. Quem decide se alguma delas vira trabalho é o d
 
 | Data | Ideia | O que entregaria |
 |---|---|---|
-| 15/09/2026 | Comparar com o `versions.json` do ddragon | Um aviso quando já existe patch mais novo que o índice (anotada no [ADR 0018](adr/0018-aviso-mede-a-ultima-verificacao.md)) |
 | 15/09/2026 | Dependabot | Atualização de segurança das dependências sem ninguém lembrar |
 | 15/09/2026 | Remover a API FastAPI (T-32) | Menos código e uma CI a menos: ela não está publicada e nada depende dela |
 | 21/09/2026 | Imagens no tamanho da tela (serviço de imagens) | A ddragon só tem o *tile* de 380 px, mostrado a 163 px no computador: a home baixa cerca de 1,1 MB de imagem para a primeira tela, e poderia baixar menos da metade. **Fica de fora por decisão do dono (22/09/2026):** exige um serviço de imagens, e o projeto tem custo zero pelo [ADR 0012](adr/0012-onde-guardar-os-assets.md) |

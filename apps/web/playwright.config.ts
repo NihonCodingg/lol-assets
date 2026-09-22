@@ -57,6 +57,8 @@ export default defineConfig({
       env: {
         // O app aponta para o bucket de fixture em vez do índice publicado.
         NEXT_PUBLIC_INDEX_BASE_URL: `${FIXTURE}/indice`,
+        // A lista de patches do ddragon (T-77), da fixture: o e2e não toca a rede.
+        NEXT_PUBLIC_VERSIONS_URL: `${FIXTURE}/versions.json`,
       },
     },
   ],
