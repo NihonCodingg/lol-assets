@@ -8,7 +8,8 @@
  * - um **ícone**, que diz o tipo de coisa antes da leitura;
  * - um **título**, que diz o que aconteceu em português;
  * - o **que fazer**, numa frase;
- * - o **detalhe técnico**, pequeno e em mono, para quem precisa relatar;
+ * - o **detalhe técnico**, recolhido depois da explicação (T-85): disponível
+ *   para quem precisa relatar, sem ser a primeira coisa que se lê;
  * - a **ação**, quando existe uma — "Tentar de novo", "Limpar filtros".
  *
  * Erro não é vermelho: o tema tem um acento só (ver o `TOKENS.md`), e o estado
@@ -52,7 +53,12 @@ export function Estado({
       </div>
       <p className="text-14 font-semibold text-texto">{titulo}</p>
       {children && <div className="max-w-md text-13 leading-cartao text-texto-suave">{children}</div>}
-      {detalhe && <p className="tabular-nums text-11 text-texto-suave">{detalhe}</p>}
+      {detalhe && (
+        <details className="text-11 text-texto-suave">
+          <summary className="cursor-pointer select-none hover:text-texto">Detalhe técnico</summary>
+          <p className="mt-1 tabular-nums">{detalhe}</p>
+        </details>
+      )}
       {acao && <div className="mt-2 flex flex-wrap items-center justify-center gap-2">{acao}</div>}
     </div>
   );

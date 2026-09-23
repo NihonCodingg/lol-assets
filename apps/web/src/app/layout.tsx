@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ProvedorDeNavegacao } from "@/components/navegacao-context";
+import { AvisoSemConexao } from "@/components/aviso-sem-conexao";
 import { Rodape } from "@/components/rodape";
 import { Topo } from "@/components/topo";
 import { RegiaoDeConfirmacoes } from "@/components/ui/confirmacoes";
@@ -57,6 +58,7 @@ export default function RootLayout({
           <div className="flex min-h-0 min-w-0 flex-col">{children}</div>
         </ProvedorDeNavegacao>
         <RegiaoDeConfirmacoes />
+        <AvisoSemConexao />
       </body>
     </html>
   );

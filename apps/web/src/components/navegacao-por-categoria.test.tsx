@@ -374,12 +374,12 @@ describe("erro e vazio que dizem o que fazer (T-50)", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
-  it("o vazio tem a saída: 'Limpar filtros' desmarca tudo e apaga o texto", async () => {
+  it("o vazio tem a saída: 'Limpar filtro' desmarca tudo e apaga o texto", async () => {
     montar();
     await abrir("Itens");
     fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
 
-    fireEvent.click(within(screen.getByRole("status")).getByRole("button", { name: "Limpar filtros" }));
+    fireEvent.click(within(screen.getByRole("status")).getByRole("button", { name: "Limpar filtro" }));
     expect(screen.getByText("4 de 4")).toBeTruthy();
     expect((screen.getByLabelText("Filtrar por texto") as HTMLInputElement).value).toBe("");
   });
@@ -396,7 +396,7 @@ describe("estado vazio", () => {
     });
 
     const vazio = screen.getByRole("status");
-    expect(vazio.textContent).toContain("Nenhum asset");
+    expect(vazio.textContent).toContain("Nada nesta categoria");
     const aplicado = within(vazio).getByRole("list", { name: "Filtro aplicado" });
     expect(aplicado.textContent).toContain("Comprável: Sim");
     expect(aplicado.textContent).toContain("Mapa: Summoner's Rift");

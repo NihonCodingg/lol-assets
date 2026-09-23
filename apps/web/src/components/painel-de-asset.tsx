@@ -574,6 +574,7 @@ export function useDownload(
         // O erro fica no cartão. Derrubar o painel por causa de um asset seria
         // esconder os outros trinta que funcionam.
         marcar(asset.id, "erro");
+        confirmar(`Não deu para baixar ${asset.fileName}. A fonte não respondeu; tente de novo.`, "falha");
       } finally {
         setAndamento(null);
       }
@@ -605,7 +606,10 @@ export function useCopia(copiar: (texto: string) => Promise<void>, url: string) 
     Promise.resolve()
       .then(() => copiar(url))
       .then(
-        () => setCopia("copiado"),
+        () => {
+          setCopia("copiado");
+          confirmar("Link copiado");
+        },
         () => setCopia("falhou"),
       );
   }, [copiar, url]);

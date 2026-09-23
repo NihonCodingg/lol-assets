@@ -519,10 +519,10 @@ function Vazio({ descricao, onLimpar }: { descricao: readonly string[]; onLimpar
     <Estado
       role="status"
       icone={SearchX}
-      titulo="Nenhum asset com esses filtros"
-      acao={<Botao onClick={onLimpar}>Limpar filtros</Botao>}
+      titulo="Nada nesta categoria com esse filtro"
+      acao={<Botao onClick={onLimpar}>Limpar filtro</Botao>}
     >
-      <p>Tente outro nome, ou desmarque um dos filtros.</p>
+      <p>Tente outro nome, ou desmarque uma das opções.</p>
       {descricao.length > 0 && (
         <ul
           aria-label="Filtro aplicado"

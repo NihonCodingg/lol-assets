@@ -424,7 +424,7 @@ test.describe("axe", () => {
     expect(resumir(await violacoesDoAxe(page))).toBe("");
 
     await page.getByLabel("Filtrar por texto").fill("zzzz");
-    await expect(page.getByText("Nenhum asset com esses filtros")).toBeVisible();
+    await expect(page.getByText("Nada nesta categoria com esse filtro")).toBeVisible();
     expect(resumir(await violacoesDoAxe(page))).toBe("");
   });
 
