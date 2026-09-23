@@ -16,6 +16,9 @@
  * cinco primeiras e quantas faltam. São decorativas — a contagem já está escrita
  * ao lado, e é ela que o leitor de tela ouve.
  *
+ * **O resumo (T-86)**: quantidade em destaque, peso estimado e tempo, sem ponto
+ * médio; e o zip pronto avisa no canto com o nome real do arquivo.
+ *
  * **No telefone (T-49)** os botões descem para uma linha própria, dividindo a
  * largura: lado a lado com as miniaturas e o resumo, "Baixar 10 como zip" saía
  * cortado da tela.
@@ -26,6 +29,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Asset } from "@lol-assets/schema";
 
 import { Botao } from "@/components/ui/botao";
+import { confirmar } from "@/components/ui/confirmacoes";
 import { Imagem } from "@/components/ui/imagem";
 import { assetUrl, formatBytes, saveBlob } from "@/lib/asset-file";
 import { aviso, duracao, nomeDoZip, resumir } from "@/lib/selecao";
@@ -109,7 +113,9 @@ export function BarraDeLote({
         sinal: controle.signal,
         onProgresso: (progresso) => setEstado({ fase: "montando", progresso }),
       });
-      salvar(resultado.blob, nomeDoZip(rotulo, resultado.arquivos));
+      const nome = nomeDoZip(rotulo, resultado.arquivos);
+      salvar(resultado.blob, nome);
+      confirmar(`Baixado: ${nome}`);
       setEstado({ fase: "pronto", arquivos: resultado.arquivos, falhas: resultado.falhas });
     } catch (erro) {
       if (erro instanceof ZipCanceladoError) setEstado({ fase: "parado" });
@@ -127,7 +133,7 @@ export function BarraDeLote({
   return (
     <section
       aria-label="Seleção"
-      className="flex flex-none flex-col gap-1.5 border-t border-linha-forte bg-superficie-alta px-3.5 py-2.5"
+      className="flex flex-none flex-col gap-1.5 border-t border-linha-forte bg-superficie-alta px-4 py-2.5 md:px-6"
     >
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2">
         <ul aria-hidden="true" className="flex flex-none -space-x-2">
@@ -152,9 +158,14 @@ export function BarraDeLote({
             </li>
           )}
         </ul>
-        <p className="min-w-0 flex-1 tabular-nums text-11 text-texto-suave">
-          {resumo.arquivos} {resumo.arquivos === 1 ? "selecionado" : "selecionados"} ·{" "}
-          {formatBytes(resumo.bytes)} · ~{duracao(resumo.segundos)}
+        {/* Quantidade, peso estimado e tempo, em colunas de texto, sem o ponto
+            médio (ADR 0024). A quantidade vai em destaque: é ela que se confere. */}
+        <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 text-12 tabular-nums text-texto-suave">
+          <span className="font-semibold text-texto">
+            {resumo.arquivos} {resumo.arquivos === 1 ? "selecionado" : "selecionados"}
+          </span>
+          <span>{formatBytes(resumo.bytes)}</span>
+          <span>~{duracao(resumo.segundos)}</span>
         </p>
         <div className="ml-auto flex flex-none items-center gap-1.5 max-md:w-full">
           <Botao onClick={onLimpar} disabled={montando} className="max-md:flex-1 max-md:justify-center">
