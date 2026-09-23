@@ -17,7 +17,7 @@ describe("o download rápido do square (T-81)", () => {
 
   it("baixa o square do catálogo, salva com o nome e avisa com ele", async () => {
     const blob = new Blob(["png"]);
-    // Uma resposta de mentira: \`new Response(blob)\` com o Blob do jsdom passa no
+    // Uma resposta de mentira: `new Response(blob)` com o Blob do jsdom passa no
     // Windows e falha no Linux da CI — o Blob do jsdom não é o nativo.
     const buscar = vi.fn(async () => ({ ok: true, status: 200, blob: async () => blob }) as unknown as Response);
     const salvar = vi.fn();
