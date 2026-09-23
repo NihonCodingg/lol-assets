@@ -145,17 +145,28 @@ export default function HomePage() {
    * promessa já em andamento — o `AssetsClient` guarda a promessa, e esquece a
    * que falhar (o clique tenta de novo, e mostra o erro se for o caso).
    */
-  // O código do painel e das categorias, no primeiro ócio depois do catálogo.
+  /**
+   * O código do painel e das categorias, depois da primeira tela (T-88).
+   *
+   * No primeiro ócio depois do catálogo, os dois pedaços competiam pela banda com
+   * as artes da primeira fileira de tiles — medido na produção, o primeiro tile
+   * foi de 445 a 464 ms. Agora eles esperam 1,5 s e o ócio seguinte; quem toca
+   * num tile antes disso os pede pela intenção (`preaquecer`).
+   */
   const pronto = estado.fase === "pronto";
   useEffect(() => {
     if (!pronto) return;
-    // O Safari não tem `requestIdleCallback`: lá, meio segundo depois.
-    if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(preCarregar, { timeout: 2000 });
-      return () => window.cancelIdleCallback(id);
-    }
-    const id = setTimeout(preCarregar, 500);
-    return () => clearTimeout(id);
+    let ocioso: number | undefined;
+    const espera = setTimeout(() => {
+      // O Safari não tem `requestIdleCallback`: lá, direto.
+      if (typeof window.requestIdleCallback === "function") {
+        ocioso = window.requestIdleCallback(preCarregar, { timeout: 3000 });
+      } else preCarregar();
+    }, 1500);
+    return () => {
+      clearTimeout(espera);
+      if (ocioso !== undefined) window.cancelIdleCallback(ocioso);
+    };
   }, [pronto]);
 
   const preaquecer = useCallback(
