@@ -3797,6 +3797,39 @@ Tese: **a arte na frente, a ferramenta à mão.** As 22 cores do tema bastam; es
 
 ---
 
+## Redesenho — o Plano de Design, desde 22/09/2026
+
+> O dono mandou executar o [Plano de Design](design/PLANO-DE-DESIGN.md) inteiro, da Fase 1 à 11,
+> sem consultar entre fases. O plano vence as instruções anteriores sobre estética, inclusive a
+> trava do `TOKENS.md`. A direção está no [ADR 0024](adr/0024-a-direcao-visual-do-bin.md). As
+> mudanças de comportamento da §6 do plano estão autorizadas, e só elas. O orçamento da §7 é limite
+> duro, medido em produção antes e depois: CLS 0, LCP ≤ 1,0 s, primeiro tile ≤ 450 ms, INP no
+> celular com CPU 4× ≤ 200 ms, JS inicial ≤ 190 KB, uma família de fonte com até 3 pesos.
+>
+> Linha de base, na produção em 22/09 (`orcamento.mjs`, mediana de 5): primeiro tile 426 ms, LCP
+> 752 ms, CLS 0 e 0. A chegada baixa 187 KB de JS e 75 KB de fonte, em dois arquivos. INP de tocar
+> num campeão (`inp-painel.mjs`, mediana de 5): **240 ms** frio e 168 ms quente. O frio já está
+> acima do limite do plano, e o redesenho tem de trazê-lo para baixo de 200.
+
+| Ticket | Fase | Entrega |
+|---|---|---|
+| T-78 | 1. Direção | O plano de tokens revisado contra a §2 e registrado no ADR 0024 |
+| T-79 | 2. Fundação | Novo `TOKENS.md`, a Schibsted Grotesk, a marca, o favicon e os primitivos: botão, controle segmentado, etiqueta de categoria, glifo de proporção, xadrez, marcas de corte, aviso de confirmação |
+| T-80 | 3. Casca | O topo com a busca central, a barra lateral com as etiquetas, o aviso legal inteiro e o layout responsivo |
+| T-81 | 4. Grade | O tile com o hover parado (marcas de corte, borda no destaque) e o download rápido do square |
+| T-82 | 5. Busca | Resultados agrupados por tipo, com itens e runas, miniatura na proporção real e prévia do ativo |
+| T-83 | 6. Painel | A prévia 16:9 com marcas de corte e área segura, a faixa de skins, as variantes em colunas e a abertura que cresce do tile |
+| T-84 | 7. Categorias | O tratamento de cada categoria: runas por árvore no xadrez, feitiços maiores, wards num card só, mapas largos |
+| T-85 | 8. Estados | Carregando, vazio, erro, sem conexão e os avisos de confirmação |
+| T-86 | 9. Lote | A barra do lote com quantidade, peso estimado, "Baixar zip" e "Limpar seleção" |
+| T-87 | 10. Celular | A busca fixa, as abas roláveis e o painel em tela cheia com a barra de ação embaixo |
+| T-88 | 11. Polimento | Capturas de cada tela, autocrítica contra o plano, um enfeite a menos por tela e o orçamento conferido |
+
+Os critérios de aceite de cada fase são os da §6 e da §8 do plano, mais o orçamento da §7. O
+relatório fica em `docs/sessoes/`, e as capturas em `docs/design/redesenho/`.
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.
@@ -3844,6 +3877,7 @@ Todo requisito da Spec tem pelo menos um ticket.
 | — | ✅ T-33 → ✅ T-42 → ✅ T-43 | gatilho manual | Pré-lançamento, publicação na Vercel e o site conferido fora do `localhost`. **No ar desde 11/09/2026**, e registrado no Developer Portal em 17/09/2026 |
 | 7 | ✅ T-45 → ✅ T-46 → ✅ T-47 → ✅ T-47b → ✅ T-48 → ✅ T-49 → ✅ T-50 (⏸️ T-50b) | sequencial; cada etapa aprovada pelo dono no preview | **O front incrível**: a arte na frente, a ferramenta à mão |
 | 8 | ✅ T-53 → ✅ T-54 → ✅ T-55 → ✅ T-56 → ✅ T-57 → ✅ T-58 | sequencial; merge do agente, com a CI verde | **A arte na frente, medida**: exceção pontual ao [ADR 0021](adr/0021-o-projeto-entra-em-manutencao.md), encerrada em 18/09/2026 |
+| Redesenho | ✅ T-78 → T-79 → … → T-88 | sequencial, por fase do plano | **O bin do editor** ([ADR 0024](adr/0024-a-direcao-visual-do-bin.md)) |
 
 ---
 
