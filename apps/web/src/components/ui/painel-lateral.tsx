@@ -9,15 +9,20 @@
  * o fundo continua rolando atrás, e o leitor de tela continua lendo a página
  * embaixo como se ela estivesse acessível.
  *
- * O T-28 já cobre `Escape` e ordem de tabulação por teste. Trocar o `<section>`
- * escrito à mão por este componente é o que faz esses testes passarem por
- * construção em vez de por vigilância.
+ * **O momento de abrir (T-83).** Com `origem` — a caixa do tile tocado —, o
+ * painel nasce do tamanho e na posição do tile e cresce até o lugar dele, em
+ * 240 ms: é a única animação elaborada do site ([ADR 0024]). Escala uniforme,
+ * para a arte não se deformar no caminho, e só `transform` e `opacity`. Com
+ * `prefers-reduced-motion`, ele simplesmente aparece.
  */
 import * as Dialog from "@radix-ui/react-dialog";
-import { useRef, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 import { useFocoDeVolta } from "@/lib/foco";
 import { cn } from "@/lib/utils";
+
+/** A duração do crescimento do tile ao painel. */
+export const DURACAO_DA_ABERTURA_MS = 240;
 
 export interface PainelLateralProps {
   readonly aberto: boolean;
@@ -30,13 +35,32 @@ export interface PainelLateralProps {
    * Se `Escape` e o clique fora fecham o painel.
    *
    * O padrão é o do Radix, que é o certo para um diálogo novo. O painel do
-   * campeão desliga os dois porque **já existia antes deste ticket** e não se
-   * comportava assim: ele trata `Escape` com ordem própria (chroma primeiro) e
-   * nunca fechou por clique fora. O T-30 veste, não muda comportamento — e há
-   * teste de onda anterior para cada uma das duas coisas.
+   * campeão desliga os dois: ele trata `Escape` com ordem própria (ampliação e
+   * chroma primeiro) e nunca fechou por clique fora.
    */
   readonly fecharPorEsc?: boolean;
   readonly fecharPorFora?: boolean;
+  /** A caixa do tile de onde o painel nasce. Sem ela, o painel só aparece. */
+  readonly origem?: DOMRect | null;
+}
+
+/** Faz o painel crescer da caixa do tile até a dele. Devolve se animou. */
+export function crescerDe(elemento: HTMLElement, origem: DOMRect): boolean {
+  if (typeof elemento.animate !== "function") return false;
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return false;
+  const alvo = elemento.getBoundingClientRect();
+  if (alvo.width === 0 || alvo.height === 0) return false;
+  const escala = origem.width / alvo.width;
+  const dx = origem.left - alvo.left;
+  const dy = origem.top - alvo.top;
+  elemento.animate(
+    [
+      { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${escala})`, opacity: 0.4 },
+      { transformOrigin: "0 0", transform: "none", opacity: 1 },
+    ],
+    { duration: DURACAO_DA_ABERTURA_MS, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" },
+  );
+  return true;
 }
 
 export function PainelLateral({
@@ -47,16 +71,22 @@ export function PainelLateral({
   className,
   fecharPorEsc = true,
   fecharPorFora = true,
+  origem = null,
 }: PainelLateralProps) {
   const conteudo = useRef<HTMLDivElement>(null);
   const foco = useFocoDeVolta();
+
+  // Antes de pintar: o primeiro quadro já é o painel do tamanho do tile.
+  useLayoutEffect(() => {
+    if (aberto && origem && conteudo.current) crescerDe(conteudo.current, origem);
+    // Só na abertura: trocar de skin não pode fazer o painel crescer de novo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aberto]);
+
   return (
     <Dialog.Root open={aberto} onOpenChange={(proximo) => !proximo && onFechar()}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          className="fixed inset-0 z-20"
-          style={{ background: "var(--veu)" }}
-        />
+        <Dialog.Overlay className="fixed inset-0 z-20" style={{ background: "var(--veu)" }} />
         <Dialog.Content
           ref={conteudo}
           tabIndex={-1}
@@ -64,8 +94,7 @@ export function PainelLateral({
           aria-label={titulo}
           aria-describedby={undefined}
           // Ao abrir, o foco vai para o painel, e não para o primeiro botão dele
-          // (T-47). O primeiro botão é o fechar, e o foco nele abria a dica
-          // "Fechar (Esc)" toda vez que o painel abria, por cima da arte. O
+          // (T-47): a dica "Fechar (Esc)" abria toda vez por cima da arte. O
           // primeiro Tab chega no fechar do mesmo jeito.
           onOpenAutoFocus={(evento) => {
             evento.preventDefault();
@@ -79,35 +108,17 @@ export function PainelLateral({
           onInteractOutside={(evento) => !fecharPorFora && evento.preventDefault()}
           className={cn(
             "fixed inset-y-0 right-0 z-25 flex w-[min(540px,74%)] flex-col",
-            "border-l border-linha-forte bg-superficie",
+            "border-l border-linha-forte bg-superficie-alta",
             className,
           )}
         >
           {/* O título existe para o leitor de tela mesmo quando a tela mostra
-              um cabeçalho próprio: sem ele o Radix avisa no console, e com
-              razão — um diálogo sem nome é um diálogo que ninguém anuncia. */}
+              um cabeçalho próprio: um diálogo sem nome é um diálogo que ninguém
+              anuncia. */}
           <Dialog.Title className="sr-only">{titulo}</Dialog.Title>
           {children}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  );
-}
-
-/** O botão de fechar do canto, com o `×` do design. */
-export function FecharPainel({ className }: { className?: string }) {
-  return (
-    <Dialog.Close
-      className={cn(
-        "grid h-controle-sm w-controle-sm flex-none cursor-pointer place-items-center",
-        "rounded-controle border border-linha-forte tabular-nums text-12 text-texto-suave",
-        "hover:bg-superficie-alta hover:text-texto",
-        className,
-      )}
-      aria-label="Fechar"
-      title="Fechar (Esc)"
-    >
-      ×
-    </Dialog.Close>
   );
 }

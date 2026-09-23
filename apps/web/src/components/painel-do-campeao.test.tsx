@@ -219,12 +219,12 @@ describe("vitrine", () => {
   it("a skin vem em destaque, e o campeão embaixo (ADR 0008)", () => {
     abrir({ skinInicial: 7 });
     expect(screen.getByRole("heading", { name: "Nemesis Jax" })).toBeTruthy();
-    expect(screen.getByText("Jax · 2 skins")).toBeTruthy();
+    expect(screen.getByText("Jax, 2 skins")).toBeTruthy();
   });
 
-  it("na skin base, o subtítulo diz que é a base", () => {
+  it("na skin base, o nome da skin já é o do campeão, e o subtítulo diz quantas skins há", () => {
     abrir();
-    expect(screen.getByText("Skin base · 2 skins")).toBeTruthy();
+    expect(screen.getByText("2 skins")).toBeTruthy();
   });
 
   it("há um fechar só, e ele fecha", () => {

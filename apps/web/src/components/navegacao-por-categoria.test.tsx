@@ -533,7 +533,7 @@ describe("a galeria das categorias (T-48)", () => {
     montar();
     await abrir("Itens");
     fireEvent.click(screen.getByRole("button", { name: "Ampliar botas.png" }));
-    expect(screen.getByRole("dialog", { name: /^Ampliação de Botas/ })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: /^Ampliação de .*Botas/ })).toBeTruthy();
 
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("dialog", { name: /^Ampliação de/ })).toBeNull();

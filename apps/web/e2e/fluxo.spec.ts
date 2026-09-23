@@ -95,7 +95,7 @@ test.describe("os três cliques", () => {
     await expect(cartao).toBeVisible();
     const download = page.waitForEvent("download");
     contador.cliques += 1;
-    await cartao.getByRole("button", { name: "Baixar original" }).click();
+    await cartao.getByRole("button", { name: "Baixar PNG" }).click();
 
     const arquivo = await download;
     expect(arquivo.suggestedFilename()).toBe("Jax_square.png");
@@ -151,7 +151,7 @@ test.describe("o arquivo baixado", () => {
     const download = page.waitForEvent("download");
     await page
       .locator('article[aria-label="Jax_square.png"]')
-      .getByRole("button", { name: "Baixar original" })
+      .getByRole("button", { name: "Baixar PNG" })
       .click();
 
     const arquivo = await download;
@@ -207,13 +207,12 @@ test.describe("converter para PNG no cliente", () => {
     expect(largura).toBe(1280);
   });
 
-  test("asset que já é PNG não oferece conversão (RF-12)", async ({ page }) => {
+  test("asset que já é PNG não oferece conversão: um botão só (RF-12, emendado no T-83)", async ({ page }) => {
     await irParaHome(page);
     await page.click('button:has-text("Jax")');
-    const botao = page
-      .locator('article[aria-label="Jax_square.png"]')
-      .getByRole("button", { name: "Já é PNG" });
-    await expect(botao).toBeDisabled();
+    const cartao = page.locator('article[aria-label="Jax_square.png"]');
+    await expect(cartao.getByRole("button", { name: "Baixar PNG" })).toBeEnabled();
+    await expect(cartao.getByRole("button", { name: "Baixar original" })).toHaveCount(0);
   });
 });
 
@@ -324,7 +323,7 @@ test.describe("a origem cruzada", () => {
     const download = page.waitForEvent("download");
     await page
       .locator('article[aria-label="Jax_square.png"]')
-      .getByRole("button", { name: "Baixar original" })
+      .getByRole("button", { name: "Baixar PNG" })
       .click();
     await download;
 

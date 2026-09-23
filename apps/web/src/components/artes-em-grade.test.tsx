@@ -4,13 +4,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
 import { BarraDeLote } from "./barra-de-lote";
-import { PainelDeAsset } from "./painel-de-asset";
+import { ListaDeVariantes } from "./lista-de-variantes";
 import { PainelDoCampeao } from "./painel-do-campeao";
 import { ParDeDownload } from "./ui/par-de-download";
 
 /**
- * O T-47b: as artes do painel do campeão em grade, a ampliação, o retorno do
- * download e as miniaturas da bandeja.
+ * As artes do painel do campeão — em grade no T-47b, em linhas desde o T-83 —,
+ * a ampliação, o retorno do download e as miniaturas da bandeja.
  *
  * O que pode quebrar em silêncio: a ficha sumir para dentro de um clique (RF-09),
  * o ícone de 64 px aparecer esticado, e o `Escape` da ampliação fechar o painel
@@ -54,29 +54,27 @@ const ARTES: Asset[] = [
   SPLASH,
   asset("tile", { id: "tile:24000", skinId: 24000, skinNum: 0, format: "jpeg", width: 380, height: 380 }),
   asset("square", { width: 128, height: 128 }),
-  asset("ability_icon", { id: "ability_icon:q" }),
+  asset("ability_icon", { id: "ability_icon:24.Q" }),
 ];
 
 function grade() {
   const baixar = vi.fn().mockResolvedValue(undefined);
   const onAmpliar = vi.fn();
   render(
-    <PainelDeAsset
+    <ListaDeVariantes
       titulo="Artes de Jax"
       assets={ARTES}
-      onClose={() => {}}
       baixar={baixar}
       copiar={vi.fn().mockResolvedValue(undefined)}
-      grade
       onAmpliar={onAmpliar}
     />,
   );
   return { baixar, onAmpliar };
 }
 
-// --- a grade ------------------------------------------------------------------------------
+// --- as variantes -------------------------------------------------------------------------
 
-describe("a grade do painel do campeão", () => {
+describe("as variantes do painel do campeão (T-83)", () => {
   it("agrupa as artes por família, cada uma com o seu cabeçalho", () => {
     grade();
     expect(screen.getByRole("heading", { level: 3, name: /Splash e tela de carregamento/ })).toBeTruthy();
@@ -86,14 +84,7 @@ describe("a grade do painel do campeão", () => {
   });
 
   it("uma família só não ganha cabeçalho — seria o nome da lista repetido", () => {
-    render(
-      <PainelDeAsset
-        titulo="Chromas de Jax"
-        assets={[asset("chroma", { id: "chroma:9", skinNum: 9 })]}
-        onClose={() => {}}
-        grade
-      />,
-    );
+    render(<ListaDeVariantes titulo="Chromas de Jax" assets={[asset("chroma", { id: "chroma:9", skinNum: 9 })]} />);
     expect(screen.queryAllByRole("heading", { level: 3 })).toHaveLength(0);
   });
 
@@ -103,14 +94,49 @@ describe("a grade do painel do campeão", () => {
     expect(within(cartao).getByText(/1280×720/)).toBeTruthy();
   });
 
-  it("ícone menor que a caixa não é esticado: a prévia para no tamanho do arquivo", () => {
+  it("cada linha diz o nome nas palavras do usuário, e a habilidade leva a tecla", () => {
     grade();
-    const icone = screen
-      .getByLabelText("Jax_ability_icon.png")
-      .querySelector("img[data-previa]") as HTMLImageElement;
-    // O menor entre a caixa e o arquivo: cabe inteira, e nunca passa de 64 px.
-    expect(icone.style.maxWidth).toBe("min(100%, 64px)");
-    expect(icone.style.maxHeight).toBe("min(100%, 64px)");
+    expect(within(screen.getByLabelText("Jax_000_splash_centered.jpg")).getByText("Splash centralizada")).toBeTruthy();
+    const habilidade = screen.getByLabelText("Jax_ability_icon.png");
+    expect(within(habilidade).getByText("Q")).toBeTruthy();
+  });
+
+  it("o glifo de proporção acompanha a resolução, e o formato e o peso vêm em colunas", () => {
+    grade();
+    const linha = screen.getByLabelText("Jax_000_splash_centered.jpg");
+    expect(linha.querySelector("[data-glifo='1280x720']")).not.toBeNull();
+    expect(within(linha).getAllByText("JPEG").length).toBeGreaterThan(0);
+    // Sem ponto médio entre os dados (ADR 0024).
+    expect(linha.textContent).not.toContain("·");
+  });
+
+  it("arquivo com alfa aparece sobre o xadrez; sem alfa, não", () => {
+    render(
+      <ListaDeVariantes
+        titulo="Artes"
+        assets={[asset("square", { hasAlpha: true }), asset("tile", { id: "tile:1", hasAlpha: false })]}
+      />,
+    );
+    const comAlfa = screen.getByLabelText("Jax_square.png").querySelector("img[data-previa]")!.parentElement!;
+    const semAlfa = screen.getByLabelText("Jax_tile.png").querySelector("img[data-previa]")!.parentElement!;
+    expect(comAlfa.className).toContain("xadrez");
+    expect(semAlfa.className).not.toContain("xadrez");
+  });
+
+  it("\"Baixar PNG\" é a ação primária, e o arquivo que já é PNG tem um botão só", () => {
+    grade();
+    const splash = screen.getByLabelText("Jax_000_splash_centered.jpg");
+    const png = within(splash).getByRole("button", { name: "Baixar PNG" });
+    expect(png.className).toContain("bg-acento");
+    expect(within(splash).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+    const square = screen.getByLabelText("Jax_square.png");
+    expect(within(square).getAllByRole("button", { name: /^Baixar/ }).map((b) => b.getAttribute("aria-label") ?? b.textContent)).toEqual(["Baixar PNG"]);
+  });
+
+  it("copiar mostra a dica do Radix, que abre sozinha", async () => {
+    render(<ListaDeVariantes titulo="Artes" assets={[asset("square")]} copiar={vi.fn().mockResolvedValue(undefined)} />);
+    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
+    await waitFor(() => expect(screen.getByRole("tooltip").textContent).toBe("Link copiado"));
   });
 
   it("a prévia é o botão da ampliação", () => {
@@ -169,7 +195,7 @@ describe("a ampliação", () => {
     render(<PainelDoCampeao champion={JAX} skins={SKINS} assets={ARTES} onClose={onClose} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Ampliar Jax_000_splash_centered.jpg" }));
-    expect(screen.getByRole("dialog", { name: /^Ampliação de Jax/ })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: /^Ampliação de Splash centralizada de Jax/ })).toBeTruthy();
 
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("dialog", { name: /^Ampliação de/ })).toBeNull();
@@ -188,7 +214,7 @@ describe("a ampliação", () => {
     render(<PainelDoCampeao champion={JAX} skins={SKINS} assets={ARTES} onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole("button", { name: "Ampliar Jax_000_splash_centered.jpg" }));
 
-    const ampliacao = screen.getByRole("dialog", { name: /^Ampliação de Jax/ });
+    const ampliacao = screen.getByRole("dialog", { name: /^Ampliação de Splash centralizada de Jax/ });
     expect(within(ampliacao).getByText(/1280×720/)).toBeTruthy();
     expect(within(ampliacao).getByRole("button", { name: "Baixar original" })).toBeTruthy();
     expect(within(ampliacao).getByRole("button", { name: "Baixar PNG" })).toBeTruthy();

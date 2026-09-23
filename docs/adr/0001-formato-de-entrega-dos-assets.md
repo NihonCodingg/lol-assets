@@ -75,3 +75,15 @@ re-encode, com PNG gerado no cliente sob demanda**:
   contraria a §A.5 ("não convertidos por requisição") e cria um vetor de abuso trivial.
 - **Servir WebP/AVIF.** Menor, mas o público-alvo edita em Premiere e Photoshop, onde o
   suporte é irregular. Fora de questão para a v1.
+
+## Emenda de 23/09/2026 — "Baixar PNG" passa a ser a ação primária (T-83)
+
+O [Plano de Design](../design/PLANO-DE-DESIGN.md) (§5 e §6), mandado executar pelo dono, põe
+"Baixar PNG" como a ação primária visual e "Original" como secundária: é o arquivo que o editor
+quer na pasta, com a transparência preservada. O que este ADR decide sobre **formato** não muda —
+a fonte continua servida sem reencode, o PNG continua gerado no navegador, e os dois continuam à
+vista **antes** do download, lado a lado, nunca num menu. Muda o peso visual de cada um.
+
+Asset cuja origem já é PNG (regra 4) passa a ter um botão só, "Baixar PNG", que entrega o arquivo
+original, sem conversão. O botão desabilitado "já é PNG" ao lado do primário baixava o mesmo
+arquivo que o outro, e deixava uma pergunta sem resposta. A Spec (RF-12) foi emendada junto.

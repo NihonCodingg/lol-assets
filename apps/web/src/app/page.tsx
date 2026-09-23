@@ -13,6 +13,7 @@
  */
 
 import { CloudOff } from "lucide-react";
+import dynamic from "next/dynamic";
 import { startTransition, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
@@ -23,8 +24,7 @@ import { AvisoDePatchNovo } from "@/components/aviso-de-patch-novo";
 import { AvisosNoFim } from "@/components/avisos-da-riot";
 import { EsqueletoDaGrade, GradeDeCampeoes } from "@/components/grade-de-campeoes";
 import { useNavegacao } from "@/components/navegacao-context";
-import { NavegacaoPorCategoria, type PedidoDaBusca } from "@/components/navegacao-por-categoria";
-import { PainelDoCampeao } from "@/components/painel-do-campeao";
+import type { PedidoDaBusca } from "@/components/navegacao-por-categoria";
 import { PaletaDeBusca } from "@/components/paleta-de-busca";
 import { Botao } from "@/components/ui/botao";
 import { Esqueleto } from "@/components/ui/esqueleto";
@@ -35,6 +35,28 @@ import { categoriasDisponiveis } from "@/lib/categorias";
 import { conexaoDoNavegador, devePreaquecer } from "@/lib/preaquecer";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
+
+/**
+ * O painel do campeão e as categorias chegam depois da home (T-83).
+ *
+ * Nenhum dos dois aparece na chegada, e juntos eram o maior pedaço do JS da
+ * home — o orçamento da §7 do Plano de Design é 190 KB. Eles são pedidos no
+ * primeiro momento ocioso depois de o catálogo chegar (`preCarregar`), e o
+ * sinal de intenção por um campeão também os pede: quem toca num tile encontra
+ * o código já baixado.
+ */
+const carregarPainel = () => import("@/components/painel-do-campeao");
+const carregarCategorias = () => import("@/components/navegacao-por-categoria");
+const PainelDoCampeao = dynamic(() => carregarPainel().then((m) => m.PainelDoCampeao), { ssr: false });
+const NavegacaoPorCategoria = dynamic(
+  () => carregarCategorias().then((m) => m.NavegacaoPorCategoria),
+  { ssr: false },
+);
+
+function preCarregar(): void {
+  void carregarPainel();
+  void carregarCategorias();
+}
 
 /** O índice é servido pelo próprio app, de `public/indice` (ADR 0012). */
 const BASE_INDICE = process.env.NEXT_PUBLIC_INDEX_BASE_URL ?? "/indice";
@@ -55,6 +77,14 @@ interface Aberto {
   readonly champion: CatalogChampion;
   /** Skin que a busca pediu; sem ela o painel abre na base. */
   readonly skinNum?: number;
+  /** A caixa da arte do tile tocado: o painel cresce dela (T-83). */
+  readonly origem?: DOMRect | null;
+}
+
+/** A caixa da arte do tile de um campeão na grade, se ele está na tela. */
+function caixaDoTile(champion: CatalogChampion): DOMRect | null {
+  const arte = document.querySelector(`[data-cartao-key="${champion.championKey}"]`)?.firstElementChild;
+  return arte instanceof HTMLElement ? arte.getBoundingClientRect() : null;
 }
 
 export default function HomePage() {
@@ -115,8 +145,22 @@ export default function HomePage() {
    * promessa já em andamento — o `AssetsClient` guarda a promessa, e esquece a
    * que falhar (o clique tenta de novo, e mostra o erro se for o caso).
    */
+  // O código do painel e das categorias, no primeiro ócio depois do catálogo.
+  const pronto = estado.fase === "pronto";
+  useEffect(() => {
+    if (!pronto) return;
+    // O Safari não tem `requestIdleCallback`: lá, meio segundo depois.
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(preCarregar, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(preCarregar, 500);
+    return () => clearTimeout(id);
+  }, [pronto]);
+
   const preaquecer = useCallback(
     (champion: CatalogChampion) => {
+      preCarregar();
       if (estado.fase !== "pronto") return;
       if (!devePreaquecer(conexaoDoNavegador())) return;
       cliente.loadChampion(champion).catch(() => {});
@@ -125,8 +169,8 @@ export default function HomePage() {
   );
 
   const abrirCampeao = useCallback(
-    async (champion: CatalogChampion, skinNum?: number) => {
-      setAberto({ champion, skinNum });
+    async (champion: CatalogChampion, skinNum?: number, origem?: DOMRect | null) => {
+      setAberto({ champion, skinNum, origem });
       // As artes do campeão anterior ficavam no estado depois de fechar: o
       // painel da Ahri nascia com as 115 artes do Jax, montadas à toa (T-72).
       setAssets(null);
@@ -173,7 +217,7 @@ export default function HomePage() {
 
   // Estáveis, para a grade e a busca memorizadas não renderizarem à toa (T-72).
   const abrirPeloCartao = useCallback(
-    (champion: CatalogChampion) => void abrirCampeao(champion),
+    (champion: CatalogChampion) => void abrirCampeao(champion, undefined, caixaDoTile(champion)),
     [abrirCampeao],
   );
   const abrirPelaSkin = useCallback(
@@ -333,6 +377,7 @@ export default function HomePage() {
           assetsBaseUrl={BASE_ASSETS}
           erro={erroDoPainel}
           onTentarDeNovo={() => void abrirCampeao(aberto.champion, aberto.skinNum)}
+          origem={aberto.origem}
           onClose={() => setAberto(null)}
         />
       )}
