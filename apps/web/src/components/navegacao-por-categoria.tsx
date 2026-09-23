@@ -65,6 +65,18 @@ import { focarConteudo } from "@/lib/foco";
 import { useFecharComVoltar } from "@/lib/voltar";
 import { ALVO_DE_TOQUE, cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
+/**
+ * Um asset escolhido na busca do topo (T-82): a categoria abre com o nome dele
+ * no filtro de texto e sem o filtro padrão — senão um item fora da loja, como
+ * os de Arena, sumiria atrás do "compráveis". `vez` muda a cada escolha, para
+ * escolher o mesmo item duas vezes funcionar duas vezes.
+ */
+export interface PedidoDaBusca {
+  readonly categoria: AssetCategory;
+  readonly consulta: string;
+  readonly vez: number;
+}
+
 export interface NavegacaoPorCategoriaProps {
   /**
    * A categoria aberta, decidida de fora.
@@ -75,6 +87,7 @@ export interface NavegacaoPorCategoriaProps {
    * rolar a grade inteira.
    */
   readonly aberta: AssetCategory | null;
+  readonly pedido?: PedidoDaBusca | null;
   readonly carregar: (category: AssetCategory) => Promise<IndexShard>;
   /** Fecha a categoria e volta para a grade de campeões. */
   readonly onFechar: () => void;
@@ -94,6 +107,7 @@ type Carga =
 
 export function NavegacaoPorCategoria({
   aberta,
+  pedido = null,
   carregar,
   onFechar,
   assetsBaseUrl,
@@ -154,6 +168,15 @@ export function NavegacaoPorCategoria({
       cancelado = true;
     };
   }, [aberta, carregar, tentativa]);
+
+  // O pedido da busca vale quando a fatia da categoria dele está pronta — na
+  // chegada dela, ou na hora, se a categoria já estava aberta.
+  const pronto = carga.fase === "pronta";
+  useEffect(() => {
+    if (!pedido || pedido.categoria !== aberta || !pronto) return;
+    setConsulta(pedido.consulta);
+    setMarcadas(new Set());
+  }, [pedido, aberta, pronto]);
 
   useEffect(() => {
     if (aberta === null) return;

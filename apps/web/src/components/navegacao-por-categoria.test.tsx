@@ -750,3 +750,23 @@ describe("barra lateral", () => {
     expect(container.querySelector("[data-aviso='riot']")).not.toBeNull();
   });
 });
+
+// --- o pedido da busca do topo (T-82) -------------------------------------------------
+
+describe("um item escolhido na busca do topo", () => {
+  it("abre a categoria com o nome no filtro e sem o filtro padrão", async () => {
+    const carregar = vi.fn(async (c: AssetCategory) => FATIAS[c]!);
+    render(
+      <NavegacaoPorCategoria
+        aberta="item"
+        pedido={{ categoria: "item", consulta: "Item de Missão", vez: 1 }}
+        carregar={carregar}
+        onFechar={() => {}}
+      />,
+    );
+    const filtro = (await screen.findByRole("searchbox")) as HTMLInputElement;
+    await waitFor(() => expect(filtro.value).toBe("Item de Missão"));
+    // Fora da loja: o filtro padrão ("compráveis") o esconderia.
+    expect(screen.getByRole("article", { name: /missao/ })).toBeTruthy();
+  });
+});

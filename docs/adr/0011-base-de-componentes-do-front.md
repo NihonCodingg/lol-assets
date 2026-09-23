@@ -110,3 +110,12 @@ dependência preventiva.
   usuário a caçar de página em página. Rolar é o gesto certo aqui.
 - **Escrever as primitivas na mão:** é reimplementar acessibilidade já resolvida, num
   projeto de uma pessoa.
+
+## Emenda de 23/09/2026 — a busca do topo deixa de virtualizar (T-82)
+
+A virtualização da busca existia para uma lista só com até 2.118 skins ("prestígio"). Desde o
+T-82 os resultados vêm agrupados por tipo — Campeões, Skins, Itens, Runas, Feitiços —, com quatro
+por grupo e "ver todos" com teto de 60 ([Plano de Design](../design/PLANO-DE-DESIGN.md), §6). A
+lista tem dezenas de nós em qualquer consulta, e o TanStack Virtual sai dela. Ele continua nas
+galerias de categoria, onde se paga (5.042 ícones de perfil). A guarda de fonte
+(`lib/paleta.test.ts`) passou a vigiar o corte por grupo.

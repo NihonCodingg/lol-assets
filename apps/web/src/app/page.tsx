@@ -23,13 +23,14 @@ import { AvisoDePatchNovo } from "@/components/aviso-de-patch-novo";
 import { AvisosNoFim } from "@/components/avisos-da-riot";
 import { EsqueletoDaGrade, GradeDeCampeoes } from "@/components/grade-de-campeoes";
 import { useNavegacao } from "@/components/navegacao-context";
-import { NavegacaoPorCategoria } from "@/components/navegacao-por-categoria";
+import { NavegacaoPorCategoria, type PedidoDaBusca } from "@/components/navegacao-por-categoria";
 import { PainelDoCampeao } from "@/components/painel-do-campeao";
 import { PaletaDeBusca } from "@/components/paleta-de-busca";
 import { Botao } from "@/components/ui/botao";
 import { Esqueleto } from "@/components/ui/esqueleto";
 import { Estado } from "@/components/ui/estado";
 import { AssetsClient } from "@/lib/assets-client";
+import { CATEGORIAS_DA_BUSCA, nomeDoAsset } from "@/lib/busca-agrupada";
 import { categoriasDisponiveis } from "@/lib/categorias";
 import { conexaoDoNavegador, devePreaquecer } from "@/lib/preaquecer";
 import { siteConfig } from "@/lib/site-config";
@@ -75,6 +76,8 @@ export default function HomePage() {
   const [aberto, setAberto] = useState<Aberto | null>(null);
   const [assets, setAssets] = useState<Asset[] | null>(null);
   const [erroDoPainel, setErroDoPainel] = useState<string | null>(null);
+  /** Um item, uma runa ou um feitiço escolhido na busca: a categoria abre nele (T-82). */
+  const [pedido, setPedido] = useState<PedidoDaBusca | null>(null);
 
   useEffect(() => {
     let vivo = true;
@@ -144,6 +147,30 @@ export default function HomePage() {
     },
     [cliente, estado],
   );
+  /**
+   * As fatias que a busca alcança além do catálogo — item, runa e feitiço —,
+   * pedidas pela paleta na primeira letra digitada, nunca na chegada (RNF-03).
+   * O `AssetsClient` guarda as promessas: abrir Itens depois não busca de novo.
+   */
+  const carregarExtras = useCallback(async (): Promise<readonly Asset[]> => {
+    if (estado.fase !== "pronto") return [];
+    const declaradas = new Set(versaoAtual(estado.manifest).shards.map((s) => s.category));
+    const fatias = await Promise.all(
+      CATEGORIAS_DA_BUSCA.filter((c) => declaradas.has(c)).map((c) =>
+        cliente.loadShard(estado.manifest, c),
+      ),
+    );
+    return fatias.flatMap((fatia) => fatia.assets);
+  }, [cliente, estado]);
+
+  const abrirAsset = useCallback(
+    (asset: Asset) => {
+      setPedido({ categoria: asset.category, consulta: nomeDoAsset(asset), vez: Date.now() });
+      abrir(asset.category);
+    },
+    [abrir],
+  );
+
   // Estáveis, para a grade e a busca memorizadas não renderizarem à toa (T-72).
   const abrirPeloCartao = useCallback(
     (champion: CatalogChampion) => void abrirCampeao(champion),
@@ -236,6 +263,8 @@ export default function HomePage() {
           // O resultado de skin é atalho para dentro do painel, não destino
           // separado: abre o campeão já naquela skin (RF-25).
           onSkin={abrirPelaSkin}
+          onAsset={abrirAsset}
+          carregarExtras={carregarExtras}
         />
         {/*
           Pular o cromo (T-57). Da busca até o primeiro campeão eram 21 paradas
@@ -281,6 +310,7 @@ export default function HomePage() {
              Nenhuma fatia é buscada até alguém abrir uma categoria. */
           <NavegacaoPorCategoria
             aberta={aberta}
+            pedido={pedido}
             carregar={(category) => cliente.loadShard(manifest, category)}
             onFechar={() => abrir(null)}
             assetsBaseUrl={BASE_ASSETS}

@@ -419,3 +419,24 @@ test.describe("a origem cruzada", () => {
     expect(await page.locator("[data-indice='velho']").count()).toBe(0);
   });
 });
+
+// --- T4 do Plano de Design: o item pela busca do topo (T-82) --------------------------------
+
+test("a busca do topo acha o item, e a galeria abre nele", async ({ page }) => {
+  const fatias: string[] = [];
+  page.on("request", (r) => {
+    if (/index-(item|rune|summoner_spell)-/.test(r.url())) fatias.push(r.url());
+  });
+  await irParaHome(page);
+  // A chegada não pede fatia nenhuma (RNF-03): só quem digita.
+  expect(fatias).toEqual([]);
+
+  await page.getByRole("combobox").fill("gume");
+  const itens = page.getByRole("group", { name: /Itens/ });
+  await expect(itens.getByRole("option", { name: /Gume do Infinito/ })).toBeVisible();
+  await itens.getByRole("option", { name: /Gume do Infinito/ }).click();
+
+  await expect(page.getByRole("searchbox")).toHaveValue("Gume do Infinito");
+  // Poucos resultados: a galeria nem precisa virtualizar.
+  await expect(page.getByRole("article").first()).toBeVisible();
+});

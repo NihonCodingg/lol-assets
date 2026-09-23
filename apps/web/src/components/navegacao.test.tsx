@@ -91,18 +91,18 @@ describe("resultados de busca de skin", () => {
     expect(Number(scroller.dataset.resultados)).toBeGreaterThan(1000);
   });
 
-  it("com milhares de resultados, o DOM fica na casa das dezenas", () => {
-    const scroller = buscar("prestigio");
+  it("com milhares de resultados, o grupo mostra poucos e oferece ver todos (T-82)", () => {
+    buscar("prestigio");
     const nos = document.querySelectorAll("[cmdk-item]").length;
-
-    expect(Number(scroller.dataset.resultados)).toBeGreaterThan(1000);
-    expect(nos).toBeLessThan(100);
-    expect(scroller.dataset.virtual).toBe("true");
+    expect(nos).toBeLessThan(10);
+    expect(screen.getByRole("option", { name: /^Ver todas as [\d.]+ skins$/ })).toBeTruthy();
   });
 
-  it("com poucos resultados, não paga o custo da virtualização", () => {
-    const scroller = buscar("Campeão 42");
-    expect(scroller.dataset.virtual).toBe("false");
+  it("ver todos abre o grupo, até o teto de 60, e o DOM continua nas dezenas", () => {
+    buscar("prestigio");
+    fireEvent.click(screen.getByRole("option", { name: /^Ver todas as/ }));
+    expect(document.querySelectorAll("[cmdk-item]").length).toBe(60);
+    expect(screen.getByText(/^Mostrando 60 de/)).toBeTruthy();
   });
 
   /**
@@ -546,12 +546,14 @@ describe("a busca flutuante (T-46)", () => {
   const lista = () => document.querySelector("[data-aberta]") as HTMLElement;
   const campo = () => screen.getByRole("combobox") as HTMLInputElement;
 
-  it("cada resultado diz o que é: campeão com as skins, skin com o dono (RF-24)", () => {
+  it("cada resultado mora no grupo do tipo dele, e diz o resto: as skins, ou o dono (RF-24)", () => {
     digitar("jax");
-    expect(screen.getByText("Campeão · 2 skins")).toBeTruthy();
+    const campeoes = screen.getByRole("group", { name: /Campeões/ });
+    expect(within(campeoes).getByRole("option").textContent).toContain("2 skins");
     cleanup();
     digitar("deus da guerra");
-    expect(screen.getByText("Skin · Jax")).toBeTruthy();
+    const skins = screen.getByRole("group", { name: /Skins/ });
+    expect(within(skins).getByRole("option").textContent).toContain("Jax");
   });
 
   it("escolher fecha a lista e limpa o campo para o próximo nome", () => {
@@ -578,9 +580,59 @@ describe("a busca flutuante (T-46)", () => {
     expect(lista().dataset.aberta).toBe("false");
   });
 
-  it("nada encontrado ensina o que dá para digitar", () => {
+  it("nada encontrado ensina o que dá para digitar, inclusive o nome em inglês", () => {
     digitar("zzzz");
-    expect(screen.getByText("Nada para “zzzz”.")).toBeTruthy();
-    expect(screen.getByText(/um apelido como mf ou j4/)).toBeTruthy();
+    expect(screen.getByText("Nada encontrado para “zzzz”.")).toBeTruthy();
+    expect(screen.getByText(/nome em inglês, um apelido como mf ou j4/)).toBeTruthy();
+  });
+});
+
+// --- itens, runas e feitiços na busca do topo (T-82) --------------------------------------
+
+describe("a busca acha item e runa (T-82)", () => {
+  const GUME = {
+    id: "item_icon:3031",
+    type: "item_icon",
+    category: "item",
+    names: { pt_BR: "Gume do Infinito", en_US: "Infinity Edge" },
+    fileName: "Item_3031.png",
+    sourceUrl: "https://exemplo/3031.png",
+    width: 64,
+    height: 64,
+    format: "png",
+    bytes: 1000,
+    source: "ddragon",
+    hasAlpha: false,
+  } as unknown as Asset;
+
+  it("as fatias extras só são pedidas quando alguém digita — a chegada não pede nada", async () => {
+    const carregarExtras = vi.fn(async () => [GUME]);
+    render(
+      <PaletaDeBusca catalog={CATALOGO_DO_JAX} onChampion={vi.fn()} onSkin={vi.fn()} carregarExtras={carregarExtras} />,
+    );
+    expect(carregarExtras).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "g" } });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "gu" } });
+    expect(carregarExtras).toHaveBeenCalledTimes(1);
+  });
+
+  it("o item aparece no grupo Itens, e escolher avisa com o asset", async () => {
+    const onAsset = vi.fn();
+    render(
+      <PaletaDeBusca
+        catalog={CATALOGO_DO_JAX}
+        onChampion={vi.fn()}
+        onSkin={vi.fn()}
+        onAsset={onAsset}
+        carregarExtras={async () => [GUME]}
+      />,
+    );
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "infinity edge" } });
+    const itens = await screen.findByRole("group", { name: /Itens/ });
+    const opcao = within(itens).getByRole("option");
+    expect(opcao.textContent).toContain("Gume do Infinito");
+    expect(opcao.textContent).toContain("64×64 PNG");
+    fireEvent.click(opcao);
+    expect(onAsset).toHaveBeenCalledWith(GUME);
   });
 });

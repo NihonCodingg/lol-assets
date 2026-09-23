@@ -396,7 +396,7 @@ test.describe("axe", () => {
     // Era aqui a violação crítica que a régua mais dura achou: a lista de
     // opções sem opção nenhuma dentro.
     await campo.fill("zzzz");
-    await expect(page.getByRole("status").filter({ hasText: "Nada para" })).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "Nada encontrado para" })).toBeVisible();
     expect(resumir(await violacoesDoAxe(page))).toBe("");
   });
 
@@ -617,7 +617,7 @@ test.describe("busca com erro de dedo", () => {
   test("o que não se parece com nada continua dizendo que não achou", async ({ page }) => {
     await irParaHome(page);
     await page.keyboard.type("zzzzqq");
-    await expect(page.getByRole("status").filter({ hasText: "Nada para" })).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "Nada encontrado para" })).toBeVisible();
     await expect(page.getByRole("option")).toHaveCount(0);
   });
 });

@@ -51,18 +51,18 @@ describe("o atalho não escreve a barra no campo (RF-02)", () => {
 });
 
 
-describe("virtualização dos resultados de skin (ADR 0011)", () => {
-  it("a lista usa TanStack Virtual", () => {
-    expect(fonte).toContain("@tanstack/react-virtual");
-    expect(fonte).toMatch(/useVirtualizer\(/);
+describe("a lista da busca não cresce com o índice (ADR 0011, emendado no T-82)", () => {
+  /**
+   * A virtualização existia para as 2.118 skins que "prestígio" devolvia numa
+   * lista só. Desde o T-82 a lista é agrupada: quatro por grupo, e o grupo aberto
+   * tem teto. Esta guarda é o que impede a lista de voltar a desenhar tudo.
+   */
+  it("os resultados passam pelo agrupar, que corta cada grupo", () => {
+    expect(fonte).toMatch(/agrupar\(exatos, grupoAberto\)/);
   });
 
-  it("a altura do item é fixa — é o que a virtualização exige para medir", () => {
-    expect(fonte).toMatch(/ALTURA_DO_ITEM = \d+/);
-    expect(fonte).toMatch(/estimateSize: \(\) => ALTURA_DO_ITEM/);
-  });
-
-  it("a busca não tem teto de resultados: quem segura a lista é a virtualização", () => {
-    expect(fonte).toContain("Number.POSITIVE_INFINITY");
+  it("a altura da linha é fixa: a lista não pula quando a arte chega", () => {
+    expect(fonte).toMatch(/export const ALTURA_DO_ITEM = \d+;/);
+    expect(fonte).toContain("height: ALTURA_DO_ITEM");
   });
 });
