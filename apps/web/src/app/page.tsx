@@ -262,7 +262,7 @@ export default function HomePage() {
           icone={CloudOff}
           titulo="Não deu para carregar o catálogo"
           detalhe={estado.motivo}
-          acao={<Botao onClick={() => window.location.reload()}>Recarregar</Botao>}
+          acao={<Botao onClick={() => window.location.reload()}>Tentar de novo</Botao>}
           className="my-auto"
         >
           {/* T-43: publicado, quem lê isto é um visitante, não quem roda o
@@ -273,7 +273,7 @@ export default function HomePage() {
               <code>{BASE_INDICE}</code>.
             </p>
           ) : (
-            <p>Recarregue a página. Se continuar, o site pode estar no meio de uma atualização.</p>
+            <p>Confira a conexão e tente de novo. Se continuar, o site pode estar no meio de uma atualização.</p>
           )}
         </Estado>
         <AvisosNoFim />
