@@ -71,6 +71,6 @@ describe("as categorias da barra", () => {
     caminho.atual = "/sobre";
     montar();
     const nav = screen.getByRole("navigation", { name: "Categorias" });
-    expect(nav.querySelector(".bg-superficie-alta")).toBeNull();
+    expect(nav.querySelector("[data-ativa]")).toBeNull();
   });
 });

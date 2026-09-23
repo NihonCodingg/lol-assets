@@ -13,7 +13,8 @@
  */
 
 import { CloudOff } from "lucide-react";
-import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 import type { Asset, Catalog, CatalogChampion, CatalogSkin, IndexManifest } from "@lol-assets/schema";
 
@@ -57,7 +58,19 @@ interface Aberto {
 
 export default function HomePage() {
   const cliente = useMemo(() => new AssetsClient(BASE_INDICE), []);
-  const { aberta, abrir, registrar } = useNavegacao();
+  const { aberta, abrir, registrar, lugarDaBusca, comTopo } = useNavegacao();
+  /**
+   * A busca mora no miolo do topo (T-80), que é do layout: vai para lá por
+   * portal. Até o topo registrar o lugar, ela não aparece — o topo desenha o
+   * esqueleto dela. Sem provedor nenhum (a página montada sozinha), ela fica no
+   * alto da página, com a borda e o respiro que o topo daria.
+   */
+  const noTopo = (busca: ReactNode) =>
+    lugarDaBusca ? (
+      createPortal(busca, lugarDaBusca)
+    ) : comTopo ? null : (
+      <div className="flex flex-none items-center border-b border-linha px-3.5 py-2">{busca}</div>
+    );
   const [estado, setEstado] = useState<Estado>({ fase: "carregando" });
   const [aberto, setAberto] = useState<Aberto | null>(null);
   const [assets, setAssets] = useState<Asset[] | null>(null);
@@ -150,9 +163,6 @@ export default function HomePage() {
         <p role="status" className="sr-only">
           Carregando o catálogo…
         </p>
-        <div className="flex flex-none items-center border-b border-linha px-3.5 py-2">
-          <Esqueleto className="h-controle-xl w-full max-w-busca-max rounded-controle" />
-        </div>
         {/*
           A mesma árvore da tela pronta (T-59): a barra de filtro **dentro** do
           bloco que rola, como o `GradeDeCampeoes` a desenha. Fora dele, ela
@@ -173,6 +183,9 @@ export default function HomePage() {
     return (
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto baixa:overflow-visible">
         <h1 className="sr-only">{siteConfig.displayName}</h1>
+        {/* Sem catálogo não há busca: ocupar o lugar dela tira do topo o
+            esqueleto, que pulsaria para sempre. */}
+        {noTopo(<span hidden />)}
         <Estado
           role="alert"
           icone={CloudOff}
@@ -201,7 +214,7 @@ export default function HomePage() {
   return (
     <main className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
       {/* O `h1` é o nome do produto e existe para leitor de tela e para o SEO;
-          na tela ele já está na barra lateral, em cima do quadrado do acento. */}
+          na tela ele já está no topo, ao lado do símbolo. */}
       <h1 className="sr-only">{siteConfig.displayName}</h1>
 
       {/* T-31: o único alarme que existe. Sem monitoramento, o site é o detector. */}
@@ -212,28 +225,32 @@ export default function HomePage() {
           categoria já tem o campo dela ("Nome ou arquivo"), e dois campos
           empilhados comiam 56 px do topo sem dizer qual era qual. Um toque em
           "Voltar aos campeões" a traz de volta. No computador, os dois cabem. */}
-      <PaletaDeBusca
-        className={cn(aberta !== null && "max-md:hidden")}
-        catalog={catalog}
-        assetsBaseUrl={BASE_ASSETS}
-        onIntencao={preaquecer}
-        onChampion={abrirPeloCartao}
-        // O resultado de skin é atalho para dentro do painel, não destino
-        // separado: abre o campeão já naquela skin (RF-25).
-        onSkin={abrirPelaSkin}
-      />
+      {noTopo(
+        <>
+        <PaletaDeBusca
+          className={cn("w-full justify-center", aberta !== null && "max-md:hidden")}
+          catalog={catalog}
+          assetsBaseUrl={BASE_ASSETS}
+          onIntencao={preaquecer}
+          onChampion={abrirPeloCartao}
+          // O resultado de skin é atalho para dentro do painel, não destino
+          // separado: abre o campeão já naquela skin (RF-25).
+          onSkin={abrirPelaSkin}
+        />
+        {/*
+          Pular o cromo (T-57). Da busca até o primeiro campeão eram 21 paradas
+          de Tab: a barra lateral inteira, as funções e a densidade. Vem logo
+          depois da busca, no topo, e aparece só quando recebe o foco.
+        */}
+        <a
+          href="#conteudo"
+          className="sr-only left-3.5 z-30 rounded-controle border border-linha-forte bg-superficie-alta px-3 py-2 text-12 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
+        >
+          Ir para o conteúdo
+        </a>
+        </>,
+      )}
 
-      {/*
-        Pular o cromo (T-57). Da busca até o primeiro campeão eram 21 paradas de
-        Tab: a barra lateral inteira, as funções e a densidade. O atalho aparece
-        só quando recebe o foco, que é como todo mundo o faz.
-      */}
-      <a
-        href="#conteudo"
-        className="sr-only left-3.5 z-30 rounded-controle border border-linha-forte bg-superficie px-3 py-2 text-12 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
-      >
-        Ir para o conteúdo
-      </a>
 
       {/* Uma grade por vez, como o design desenha (T-41). "Campeões" é a
           primeira categoria da barra lateral e é onde a home abre (RF-04);
@@ -271,9 +288,10 @@ export default function HomePage() {
         )}
       </div>
 
-      <p className="flex-none border-t border-linha px-3.5 py-1.5 tabular-nums text-11 text-texto-suave">
-        Patch {manifest.currentVersion} · {catalog.champions.length.toLocaleString("pt-BR")}{" "}
-        campeões · {catalog.skins.length.toLocaleString("pt-BR")} skins
+      {/* A barra de estado, como a de um editor: de que patch são as artes. As
+          contagens já estão na barra lateral; sem o ponto médio entre elas. */}
+      <p className="flex-none border-t border-linha px-3.5 py-1.5 text-11 tabular-nums text-texto-suave">
+        Patch {manifest.currentVersion}
       </p>
 
       {aberto && (

@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { AssetSource } from "@lol-assets/schema";
 
 import { Rodape } from "@/components/rodape";
+import { Topo } from "@/components/topo";
 import { CREDITOS, creditosVisiveis } from "@/lib/creditos";
 import { RIOT_POLICY_URLS, siteConfig } from "@/lib/site-config";
 
@@ -79,8 +80,8 @@ describe("avisos legais da Riot", () => {
     expect(screen.getByRole("link", { name: /Sobre/ }).getAttribute("href")).toBe("/sobre");
   });
 
-  it("e a marca leva de volta para a home — com 'Início' fora, é o caminho (T-46)", () => {
-    render(<Rodape />);
+  it("e a marca, no topo desde o T-80, leva de volta para a home (T-46)", () => {
+    render(<Topo />);
     expect(
       screen.getByRole("link", { name: siteConfig.displayName }).getAttribute("href"),
     ).toBe("/");

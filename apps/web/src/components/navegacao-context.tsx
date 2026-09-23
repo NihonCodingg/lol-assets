@@ -36,6 +36,21 @@ export interface Navegacao {
   readonly aberta: AssetCategory | null;
   readonly abrir: (categoria: AssetCategory | null) => void;
   readonly registrar: (categorias: readonly Categoria[], campeoes?: number) => void;
+  /**
+   * Onde a busca mora: o miolo do topo (T-80). O topo fica no layout e a busca
+   * precisa do catálogo, que é da página — a página a desenha ali por portal.
+   * `undefined` quando não há topo montado (os testes que montam a página
+   * sozinha): aí a busca fica no lugar de sempre, no alto da página.
+   */
+  readonly lugarDaBusca: HTMLElement | undefined;
+  readonly registrarLugarDaBusca: (elemento: HTMLElement | null) => void;
+  /**
+   * Há provedor — e, no site, topo. Enquanto o topo não registrou o lugar (o
+   * primeiro *commit*, e o HTML do servidor), a busca não aparece em lugar
+   * nenhum: desenhá-la no alto da página e mudá-la de lugar depois era um salto
+   * de 59 px na chegada.
+   */
+  readonly comTopo: boolean;
 }
 
 const VAZIO: Navegacao = {
@@ -44,6 +59,9 @@ const VAZIO: Navegacao = {
   aberta: null,
   abrir: () => {},
   registrar: () => {},
+  lugarDaBusca: undefined,
+  registrarLugarDaBusca: () => {},
+  comTopo: false,
 };
 
 const Contexto = createContext<Navegacao>(VAZIO);
@@ -56,6 +74,12 @@ export function ProvedorDeNavegacao({ children }: { children: React.ReactNode })
   const [categorias, setCategorias] = useState<readonly Categoria[]>([]);
   const [campeoes, setCampeoes] = useState<number | null>(null);
   const [aberta, setAberta] = useState<AssetCategory | null>(null);
+  const [lugarDaBusca, setLugarDaBusca] = useState<HTMLElement | undefined>(undefined);
+  // Referência de função do topo: chamada no *commit*, e o React redesenha antes
+  // de pintar — a busca nunca aparece no lugar errado por um quadro.
+  const registrarLugarDaBusca = useCallback((elemento: HTMLElement | null) => {
+    setLugarDaBusca(elemento ?? undefined);
+  }, []);
 
   // `useCallback` porque `registrar` entra num efeito da página: sem
   // identidade estável, o efeito rodaria a cada render e o `setState` dele
@@ -74,8 +98,17 @@ export function ProvedorDeNavegacao({ children }: { children: React.ReactNode })
   }, []);
 
   const valor = useMemo<Navegacao>(
-    () => ({ categorias, campeoes, aberta, abrir: setAberta, registrar }),
-    [categorias, campeoes, aberta, registrar],
+    () => ({
+      categorias,
+      campeoes,
+      aberta,
+      abrir: setAberta,
+      registrar,
+      lugarDaBusca,
+      registrarLugarDaBusca,
+      comTopo: true,
+    }),
+    [categorias, campeoes, aberta, registrar, lugarDaBusca, registrarLugarDaBusca],
   );
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
