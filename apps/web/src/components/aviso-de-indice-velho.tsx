@@ -37,15 +37,15 @@ export function AvisoDeIndiceVelho({ manifest, agora }: AvisoDeIndiceVelhoProps)
     <div
       role="status"
       data-indice="velho"
-      className="flex flex-none items-start gap-2 border-b border-borda bg-acento-suave px-3.5 py-1.5 text-texto-medio md:items-center md:gap-2.5 md:py-2"
+      className="flex flex-none items-start gap-2 border-b border-linha bg-acento-suave px-3.5 py-1.5 text-texto md:items-center md:gap-2.5 md:py-2"
     >
       <History
         aria-hidden="true"
         strokeWidth={1.75}
-        className="mt-px size-3.5 flex-none text-acento-mais-claro md:mt-0 md:size-4"
+        className="mt-px size-3.5 flex-none text-acento md:mt-0 md:size-4"
       />
-      <p className="text-10 leading-cartao md:text-12">
-        <strong className="font-medium text-texto-forte">O índice pode estar desatualizado.</strong>{" "}
+      <p className="text-11 leading-cartao md:text-12">
+        <strong className="font-semibold text-texto">O índice pode estar desatualizado.</strong>{" "}
         Ele foi gerado há {idadeEmPalavras(frescor.horas)}, em{" "}
         <time dateTime={manifest.generatedAt}>{dataLegivel(frescor.geradoEm)}</time>, e a
         atualização automática pode ter parado. O que está aqui continua funcionando, mas pode não

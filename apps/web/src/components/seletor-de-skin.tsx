@@ -83,15 +83,15 @@ export function SeletorDeSkin({
                 foco precisa aparecer em algum lugar. */}
             <div
               className={cn(
-                "size-[72px] overflow-hidden rounded-medio border-2 transition-colors duration-150 ease-saida",
+                "size-[72px] overflow-hidden rounded-quadro border-2 transition-colors duration-150 ease-saida",
                 "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento",
-                marcada ? "border-acento" : "border-transparent group-hover:border-borda-fraca",
+                marcada ? "border-acento" : "border-transparent group-hover:border-linha-forte",
               )}
             >
               {tile ? (
                 <Imagem src={tile} alt="" erroCompacto classeDaCaixa="size-full" className="object-cover" />
               ) : (
-                <div aria-hidden="true" className="size-full bg-campo" />
+                <div aria-hidden="true" className="size-full bg-superficie-alta" />
               )}
             </div>
             {/* Numa linha, com o nome inteiro no `title`: em duas, a faixa ficava
@@ -103,8 +103,8 @@ export function SeletorDeSkin({
               aria-hidden="true"
               title={skin.names.pt_BR}
               className={cn(
-                "truncate text-10 leading-cartao",
-                marcada ? "font-medium text-texto" : "text-texto-suave group-hover:text-texto-medio",
+                "truncate text-11 leading-cartao",
+                marcada ? "font-semibold text-texto" : "text-texto-suave group-hover:text-texto",
               )}
             >
               {nomeSemOCampeao(skin.names.pt_BR, campeao)}

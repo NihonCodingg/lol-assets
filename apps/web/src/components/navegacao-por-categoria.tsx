@@ -227,7 +227,7 @@ export function NavegacaoPorCategoria({
 
   return (
     <section aria-label="Categorias" className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
-      <div className="flex-none border-b border-borda bg-fundo-barra">
+      <div className="flex-none border-b border-linha bg-superficie">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2">
           <Botao
             variante="fantasma"
@@ -293,7 +293,7 @@ export function NavegacaoPorCategoria({
                       <SlidersHorizontal aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
                       Mais filtros
                       {escondidas > 0 && (
-                        <span className="rounded-min bg-acento-suave px-1 font-mono text-10 text-acento-mais-claro">
+                        <span className="rounded-quadro bg-acento-suave px-1 tabular-nums text-11 text-acento">
                           {escondidas}
                         </span>
                       )}
@@ -314,7 +314,7 @@ export function NavegacaoPorCategoria({
                 </div>
               )}
 
-              <p className="ml-auto hidden font-mono text-11 tabular-nums text-texto-suave md:block">
+              <p className="ml-auto hidden tabular-nums text-11 tabular-nums text-texto-suave md:block">
                 {filtrados.length} de {assets.length}
               </p>
 
@@ -333,7 +333,7 @@ export function NavegacaoPorCategoria({
             id={ID_DE_MAIS_FILTROS}
             // No telefone são dez linhas de classes: com altura máxima, a galeria
             // continua aparecendo embaixo.
-            className="flex flex-col gap-2 border-t border-borda px-3.5 pt-2 pb-2.5 max-md:max-h-48 max-md:overflow-y-auto"
+            className="flex flex-col gap-2 border-t border-linha px-3.5 pt-2 pb-2.5 max-md:max-h-48 max-md:overflow-y-auto"
           >
             {maisFiltros.map((grupo) => (
               <GrupoDeChips
@@ -439,12 +439,12 @@ function GrupoDeChips({
 }) {
   return (
     <fieldset className="flex min-w-0 flex-none flex-wrap items-center gap-1.5 max-md:flex-nowrap">
-      <legend className="float-left mr-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
+      <legend className="float-left mr-1 tabular-nums text-11 text-texto-suave">
         {grupo.rotulo}
       </legend>
       {grupo.opcoes.map((opcao) => (
         <Chip key={opcao.tag} marcado={marcadas.has(opcao.tag)} onAlternar={() => onAlternar(opcao.tag)}>
-          {opcao.rotulo} <span className="ml-1 font-mono text-10">({opcao.total})</span>
+          {opcao.rotulo} <span className="ml-1 tabular-nums text-11">({opcao.total})</span>
         </Chip>
       ))}
     </fieldset>
@@ -465,12 +465,12 @@ function Carregando({ rotulo }: { rotulo: string }) {
         {Array.from({ length: 40 }, (_, i) => (
           <div
             key={i}
-            className="flex animate-pulsar flex-col overflow-hidden rounded-medio border border-borda bg-superficie-alta"
+            className="flex animate-pulsar flex-col overflow-hidden rounded-quadro border border-linha bg-superficie-alta"
             style={{ animationDelay: `${(i % 6) * 0.06}s` }}
           >
-            <div className="h-24 bg-campo" />
+            <div className="h-24 bg-superficie-alta" />
             <div className="flex h-10 items-center px-2">
-              <div className="h-2.5 w-3/4 rounded-min bg-campo" />
+              <div className="h-2.5 w-3/4 rounded-quadro bg-superficie-alta" />
             </div>
           </div>
         ))}
@@ -495,10 +495,10 @@ function Vazio({ descricao, onLimpar }: { descricao: readonly string[]; onLimpar
       {descricao.length > 0 && (
         <ul
           aria-label="Filtro aplicado"
-          className="mt-2.5 flex flex-wrap justify-center gap-1.5 font-mono text-11 text-texto-suave"
+          className="mt-2.5 flex flex-wrap justify-center gap-1.5 tabular-nums text-11 text-texto-suave"
         >
           {descricao.map((parte) => (
-            <li key={parte} className="rounded-padrao border border-borda-forte px-2 py-0.75">
+            <li key={parte} className="rounded-controle border border-linha-forte px-2 py-0.75">
               {parte}
             </li>
           ))}

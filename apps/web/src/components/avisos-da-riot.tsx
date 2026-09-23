@@ -18,10 +18,10 @@ import { cn } from "@/lib/utils";
 export function AvisosDaRiot({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <p data-aviso="riot" lang="en" className="text-10 leading-solta text-texto-suave">
+      <p data-aviso="riot" lang="en" className="text-11 leading-solta text-texto-suave">
         {siteConfig.riotLegalNotice}
       </p>
-      <p data-aviso="jibber-jabber" lang="en" className="text-10 leading-solta text-texto-suave">
+      <p data-aviso="jibber-jabber" lang="en" className="text-11 leading-solta text-texto-suave">
         {siteConfig.riotJibberJabberNotice}
       </p>
     </div>
@@ -37,7 +37,7 @@ export function AvisosNoFim({ className }: { className?: string }) {
   return (
     <footer
       data-avisos="fim"
-      className={cn("mt-2 border-t border-borda px-3.5 pt-3 pb-4 md:hidden", className)}
+      className={cn("mt-2 border-t border-linha px-3.5 pt-3 pb-4 md:hidden", className)}
     >
       <AvisosDaRiot />
     </footer>

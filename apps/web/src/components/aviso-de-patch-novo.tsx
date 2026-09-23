@@ -59,15 +59,15 @@ export function AvisoDePatchNovo({ manifest }: AvisoDePatchNovoProps) {
     <div
       role="status"
       data-patch="novo"
-      className="fixed inset-x-3 bottom-3 z-10 flex items-start gap-2.5 rounded-medio border border-borda-forte bg-superficie-alta p-3 text-texto-medio shadow-[var(--sombra-paleta)] md:inset-x-auto md:right-4 md:bottom-4 md:w-[360px]"
+      className="fixed inset-x-3 bottom-3 z-10 flex items-start gap-2.5 rounded-painel border border-linha-forte bg-superficie-alta p-3 text-texto md:inset-x-auto md:right-4 md:bottom-4 md:w-[360px]"
     >
       <RefreshCw
         aria-hidden="true"
         strokeWidth={1.75}
-        className="mt-0.5 size-4 flex-none text-acento-mais-claro"
+        className="mt-0.5 size-4 flex-none text-acento"
       />
       <p className="flex-1 text-12 leading-cartao">
-        <strong className="font-medium text-texto-forte">Já saiu o patch {novo}.</strong> As artes
+        <strong className="font-semibold text-texto">Já saiu o patch {novo}.</strong> As artes
         aqui ainda são do {atual}; a atualização automática traz o patch novo em algumas horas.
       </p>
       <BotaoIcone

@@ -36,7 +36,7 @@ export function VitrineDaSkin({ titulo, subtitulo, splash, tile }: VitrineDaSkin
   return (
     // 46vh no telefone, onde a vitrine é a tela; 38 no computador, onde ela
     // dividia o painel com as artes e não sobrava fileira nenhuma (T-58).
-    <div className="relative aspect-video max-h-[46vh] w-full overflow-hidden bg-campo md:max-h-[38vh]">
+    <div className="relative aspect-video max-h-[46vh] w-full overflow-hidden bg-superficie-alta md:max-h-[38vh]">
       {tile && (
         // eslint-disable-next-line @next/next/no-img-element -- a URL é de terceiro e não há proxy (ADR 0012)
         <img
@@ -63,8 +63,8 @@ export function VitrineDaSkin({ titulo, subtitulo, splash, tile }: VitrineDaSkin
         />
       )}
       <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-fundo via-fundo/70 to-transparent px-5 pt-16 pb-4">
-        <h2 className="text-22 font-semibold leading-apertada tracking-titulo text-texto">{titulo}</h2>
-        <p className="mt-1 text-13 text-texto-medio">{subtitulo}</p>
+        <h2 className="text-26 font-semibold leading-apertada tracking-titulo text-texto">{titulo}</h2>
+        <p className="mt-1 text-13 text-texto">{subtitulo}</p>
       </div>
     </div>
   );

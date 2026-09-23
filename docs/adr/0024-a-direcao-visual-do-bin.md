@@ -57,12 +57,14 @@ medida. Todos foram corrigidos antes do código.
 | `fundo` | `#1E2023` | Fundo da página | — |
 | `superficie` | `#272A2E` | Topo, barra lateral, controles | — |
 | `superficie-alta` | `#30343A` | Painel, menus, aviso de confirmação, hover | — |
+| `campo` | `#383C42` | Hover do botão de contorno, dica | só o `texto` (8,98:1); o `texto-suave` reprova aqui e não vai |
 | `linha` | `#363A3F` | Divisões | — |
 | `linha-forte` | `#4A4F56` | Borda de controle e de campo | 1,75:1 na superfície (não é o único sinal do controle) |
 | `texto` | `#E9E7E2` | Texto principal | 11,66:1 na superfície |
 | `texto-suave` | `#9B9EA3` | Contagens, metadados, aviso legal | 5,36:1 na superfície; 4,66:1 na elevada |
 | `acento` | `#F072B3` | Foco, seleção, ação primária | 5,33:1 na superfície; 4,63:1 na elevada |
 | `acento-forte` | `#F990C4` | Hover da ação primária | 6,74:1 na superfície |
+| `acento-suave` | `#45293A` | Fundo do que está selecionado | o `texto` sobre ele: 10,42:1 |
 | `xadrez-claro` e `xadrez-escuro` | `#3A3D42` e `#2C2F33` | O fundo de transparência | 1,23:1 entre eles: é textura, não informação |
 
 O texto sobre o destaque é o `fundo` (6,04:1). O anel de foco é o destaque com 2 px de largura e
@@ -78,7 +80,7 @@ Nenhuma fica a menos de 40° do destaque (350°):
 | Itens | 65° | `#D79E65` | 6,16:1 |
 | Runas | 185° | `#55BFB3` | 6,51:1 |
 | Feitiços | 230° | `#61B7DE` | 6,41:1 |
-| Ícones de perfil | 20° | `#E39191` | 5,99:1 |
+| Ícones de perfil | 30° | `#E39385` | 6,03:1 |
 | Emotes | 100° | `#B9AC5F` | 6,27:1 |
 | Wards | 145° | `#82BC83` | 6,50:1 |
 | Mapas | 305° | `#B99BDE` | 6,04:1 |

@@ -30,9 +30,8 @@
  * home, já com a categoria aberta. Antes ela era botão em toda página: marcava a
  * categoria e deixava a pessoa na Sobre, sem nada mudar na tela.
  *
- * O quadrado violeta de 20px no topo é a marca do design. Ele não é logotipo: é
- * o acento, do tamanho que o desenho pede, no lugar que o desenho reservou para
- * `[ nome do produto ]`.
+ * No topo, a marca do [ADR 0024]: um quadro dentro de marcas de corte, na cor
+ * do texto, e o nome em peso 800.
  */
 
 import {
@@ -55,6 +54,7 @@ import { useEffect, useRef } from "react";
 
 import { AvisosDaRiot } from "@/components/avisos-da-riot";
 import { useNavegacao } from "@/components/navegacao-context";
+import { Marca } from "@/components/ui/marca";
 import { siteConfig } from "@/lib/site-config";
 import { ALVO_DE_TOQUE, cn } from "@/lib/utils";
 
@@ -74,8 +74,8 @@ const ICONE_DA_CATEGORIA: Readonly<Record<string, LucideIcon>> = {
 const TRACO = 1.75;
 
 const ITEM_DE_SECAO = cn(
-  "flex flex-none items-center gap-2.5 rounded-padrao px-2 py-1.5 text-13 text-texto-suave",
-  "transition-colors duration-150 ease-saida hover:bg-campo hover:text-texto",
+  "flex flex-none items-center gap-2.5 rounded-controle px-2 py-1.5 text-13 text-texto-suave",
+  "transition-colors duration-150 ease-saida hover:bg-superficie-alta hover:text-texto",
   // No telefone, alvo de toque de 44 px (T-49).
   "max-md:min-h-controle-xl max-md:px-2.5",
 );
@@ -101,7 +101,7 @@ export function Rodape() {
     // categorias, dentro do espaço dela. Com a barra inteira rolando, numa tela
     // de 1024×640 os avisos da Riot saíam da tela — e a política pede que eles
     // estejam "readily visible".
-    <aside className="flex min-h-0 flex-col border-b border-borda bg-superficie md:overflow-hidden md:border-b-0 md:border-r baixa:md:overflow-visible">
+    <aside className="flex min-h-0 flex-col border-b border-linha bg-superficie md:overflow-hidden md:border-b-0 md:border-r baixa:md:overflow-visible">
       {/* A marca leva para a home. Com "Início" fora (T-46), é o caminho de
           volta de quem está na página Sobre. */}
       <Link
@@ -109,14 +109,11 @@ export function Rodape() {
         // 42 px à vista no telefone, 44 de toque (T-66): crescer a faixa do topo
         // por 2 px empurraria a arte inteira para baixo.
         className={cn(
-          "flex h-12 flex-none items-center gap-2 self-start rounded-padrao px-3.5 md:h-cabecalho md:self-auto",
+          "flex h-12 flex-none items-center gap-2 self-start rounded-controle px-3.5 md:h-cabecalho md:self-auto",
           ALVO_DE_TOQUE,
         )}
       >
-        <div className="size-5 flex-none rounded-marca bg-acento" aria-hidden="true" />
-        <span className="text-13 font-semibold tracking-marca text-texto-forte">
-          {siteConfig.displayName}
-        </span>
+        <Marca />
       </Link>
 
       {/* No telefone, as duas listas numa linha só que rola de lado; no
@@ -145,7 +142,7 @@ export function Rodape() {
           aria-label="Categorias"
           className="flex flex-none flex-row gap-0.5 md:min-h-0 md:flex-1 md:flex-col md:overflow-y-auto md:px-2 baixa:md:flex-none baixa:md:overflow-visible"
         >
-            <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
+            <span className="hidden px-2 pt-1.5 pb-1 tabular-nums text-11 text-texto-suave md:block">
               Categorias
             </span>
             {/* RF-04: campeão é a navegação padrão, e no design ele é a
@@ -177,13 +174,13 @@ export function Rodape() {
               Array.from({ length: LINHAS_RESERVADAS }, (_, i) => <LugarDeCategoria key={i} />)}
         </nav>
 
-        <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-borda-forte md:hidden" />
+        <span aria-hidden="true" className="mx-1.5 h-5 w-px flex-none bg-linha-forte md:hidden" />
 
         <nav
           aria-label="Seções"
           className="flex flex-none flex-row gap-0.5 md:mt-3 md:flex-col md:px-2"
         >
-          <span className="hidden px-2 pt-1.5 pb-1 font-mono text-10 uppercase tracking-rotulo text-texto-suave md:block">
+          <span className="hidden px-2 pt-1.5 pb-1 tabular-nums text-11 text-texto-suave md:block">
             Projeto
           </span>
           <Link href="/sobre" className={ITEM_DE_SECAO}>
@@ -202,7 +199,7 @@ export function Rodape() {
       {/* Preso ao pé da coluna e sem encolher: em qualquer altura de tela, os
           dois avisos inteiros à vista (RF-21). Quem cede espaço é a lista de
           categorias, que rola; nunca a área da arte, que fica na outra coluna. */}
-      <footer className="hidden flex-none px-3.5 md:mt-auto md:block md:border-t md:border-borda md:pt-3 md:pb-3.5">
+      <footer className="hidden flex-none px-3.5 md:mt-auto md:block md:border-t md:border-linha md:pt-3 md:pb-3.5">
         <AvisosDaRiot />
       </footer>
     </aside>
@@ -226,10 +223,10 @@ function ItemDeCategoria({
   onClick: () => void;
 }) {
   const classe = cn(
-    "flex w-full cursor-pointer items-center gap-2.5 rounded-padrao px-2 py-1.5 text-left text-13 whitespace-nowrap",
+    "flex w-full cursor-pointer items-center gap-2.5 rounded-controle px-2 py-1.5 text-left text-13 whitespace-nowrap md:h-[30px]",
     "transition-colors duration-150 ease-saida md:pr-12",
     "max-md:min-h-controle-xl max-md:px-2.5",
-    ativo ? "bg-selecionado text-texto" : "text-texto-suave hover:bg-campo hover:text-texto",
+    ativo ? "bg-superficie-alta text-texto" : "text-texto-suave hover:bg-superficie-alta hover:text-texto",
   );
   const conteudo = (
     <>
@@ -238,7 +235,7 @@ function ItemDeCategoria({
       <Icone
         aria-hidden="true"
         strokeWidth={TRACO}
-        className={cn("hidden size-4 flex-none md:block", ativo && "text-acento-claro")}
+        className={cn("hidden size-4 flex-none md:block", ativo && "text-acento-forte")}
       />
       {rotulo}
     </>
@@ -258,7 +255,7 @@ function ItemDeCategoria({
       {total !== undefined && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 font-mono text-10 tabular-nums text-texto-suave md:block"
+          className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 tabular-nums text-11 tabular-nums text-texto-suave md:block"
         >
           {total.toLocaleString("pt-BR")}
         </span>
@@ -291,7 +288,7 @@ function LugarDeCategoria() {
       aria-hidden="true"
       className="relative flex h-[30px] flex-none items-center px-2 max-md:h-controle-xl"
     >
-      <div className="h-4 w-24 animate-pulsar rounded-padrao bg-campo max-md:w-16" />
+      <div className="h-4 w-24 animate-pulsar rounded-controle bg-superficie-alta max-md:w-16" />
     </div>
   );
 }

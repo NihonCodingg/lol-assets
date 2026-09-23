@@ -79,7 +79,7 @@ export function PainelLateral({
           onInteractOutside={(evento) => !fecharPorFora && evento.preventDefault()}
           className={cn(
             "fixed inset-y-0 right-0 z-25 flex w-[min(540px,74%)] flex-col",
-            "border-l border-borda-forte bg-superficie",
+            "border-l border-linha-forte bg-superficie",
             className,
           )}
         >
@@ -100,8 +100,8 @@ export function FecharPainel({ className }: { className?: string }) {
     <Dialog.Close
       className={cn(
         "grid h-controle-sm w-controle-sm flex-none cursor-pointer place-items-center",
-        "rounded-padrao border border-borda-forte font-mono text-12 text-texto-suave",
-        "hover:bg-campo hover:text-texto",
+        "rounded-controle border border-linha-forte tabular-nums text-12 text-texto-suave",
+        "hover:bg-superficie-alta hover:text-texto",
         className,
       )}
       aria-label="Fechar"
