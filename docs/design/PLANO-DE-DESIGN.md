@@ -4,9 +4,11 @@
 > de verdade do redesenho. O [`TOKENS.md`](TOKENS.md) será reescrito a partir dele. Onde este plano
 > conflitar com instruções anteriores sobre estética, este plano vence.
 >
-> **Estado:** **em execução** desde 22/09/2026, por comando do dono (Fases 1 a 11, §10). A direção
-> final está no [ADR 0024](../adr/0024-a-direcao-visual-do-bin.md), e os tickets são o T-78 a
-> T-88. A rodada de linha de base com pessoas (§9) é do dono e não foi feita antes do redesenho.
+> **Estado:** **executado** em 22–23/09/2026, por comando do dono (Fases 1 a 11, §10, PRs #107 a
+> #118). A direção final está no [ADR 0024](../adr/0024-a-direcao-visual-do-bin.md), o relatório em
+> [`sessoes/2026-09-23-o-redesenho.md`](../sessoes/2026-09-23-o-redesenho.md), e o orçamento da §7
+> foi cumprido na produção. Falta a validação com pessoas (§9), que é do dono: a rodada de linha de
+> base não foi feita antes do redesenho.
 
 ## 1. Para quem é, e o que "bom" significa
 
