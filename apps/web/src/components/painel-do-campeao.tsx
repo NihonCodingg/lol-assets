@@ -54,6 +54,7 @@ import { Estado } from "@/components/ui/estado";
 import { PainelLateral } from "@/components/ui/painel-lateral";
 import { VitrineDaSkin } from "@/components/vitrine-da-skin";
 import { assetUrl, thumbnailSrc } from "@/lib/asset-file";
+import { orderAssets } from "@/lib/asset-panel";
 import { baseSkin, chromasOf, panelAssets, skinsOf } from "@/lib/champion-panel";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
 import { useFecharComVoltar } from "@/lib/voltar";
@@ -148,7 +149,9 @@ export function PainelDoCampeao({
   );
   const noLote = useMemo(() => selecionados(alcancaveis, selecao), [alcancaveis, selecao]);
   // A escolhida vale enquanto está na tela; trocar de skin volta para a primeira.
-  const acaoNoPe = (escolhida && alcancaveis.find((a) => a.id === escolhida.id)) ?? visiveis[0];
+  // Sem escolha, a primeira na ordem da lista: a splash centralizada.
+  const primeira = useMemo(() => orderAssets(visiveis)[0], [visiveis]);
+  const acaoNoPe = (escolhida && alcancaveis.find((a) => a.id === escolhida.id)) ?? primeira;
   const alternarNoLote = (id: string) => setSelecao((antes) => alternar(antes, id));
 
   return (

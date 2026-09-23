@@ -312,3 +312,20 @@ describe("estados do painel", () => {
     expect(seletor()).toBeTruthy();
   });
 });
+
+describe("a barra de ação do telefone (T-87)", () => {
+  it("sem escolha, age sobre a primeira da lista — a splash centralizada", () => {
+    abrir();
+    const barra = screen.getByRole("region", { name: "Ação da variante escolhida" });
+    expect(barra.textContent).toContain("Splash centralizada");
+  });
+
+  it("tocar numa variante a escolhe para a barra", () => {
+    abrir();
+    const [, segunda] = screen.getAllByRole("button", { name: /^Escolher / });
+    fireEvent.click(segunda);
+    expect(segunda.getAttribute("aria-pressed")).toBe("true");
+    const barra = screen.getByRole("region", { name: "Ação da variante escolhida" });
+    expect(barra.textContent).toContain(segunda.getAttribute("aria-label")!.replace("Escolher ", ""));
+  });
+});
