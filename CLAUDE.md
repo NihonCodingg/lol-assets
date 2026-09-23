@@ -23,6 +23,10 @@ Desde 18/09 ele tem **dois regimes** ao mesmo tempo
 - Em 22/09/2026 o dono abriu uma **exceção única** para o T-73 (fatia por campeão, ADR 0023) e o
   T-74 (nomes em inglês). Ela está encerrada e **não é precedente**: outra mudança aqui precisa
   de outra autorização dele.
+- Também em 22/09/2026 ele abriu o escopo das **ideias sem custo** (T-75 a T-77: sombras das wards,
+  `_fpo` fora do índice, aviso de patch novo). Está encerrado; o projeto voltou à manutenção.
+  **Não abra escopo novo por conta própria.** O [Plano de Design](docs/design/PLANO-DE-DESIGN.md)
+  está salvo e só entra em execução com o comando do dono.
 
 ### Interface — UI, UX, acessibilidade e desempenho percebido: frente contínua
 
