@@ -357,7 +357,7 @@ function variante(fileName: string): string | undefined {
  * feitiços e 30 emotes. Dois tiles com o mesmo nome e artes diferentes é o
  * produto parecendo quebrado sem estar.
  *
- * Só quem repete ganha sufixo — acrescentar "· 1004" em tudo seria ruído em
+ * Só quem repete ganha sufixo — acrescentar "(1004)" em tudo seria ruído em
  * 26.781 assets que não precisam. O sufixo é a variante conhecida (sombra,
  * Jade) ou, na falta dela, o `refId`, que é o número que aparece no nome do
  * arquivo que a pessoa vai salvar.
@@ -380,7 +380,8 @@ export function rotulosDaLista(
     if ((quantos.get(chaveDe(asset)) ?? 0) < 2) continue;
     const sufixo =
       variante(asset.fileName) ?? asset.refId ?? asset.fileName.replace(/\.[^.]+$/, "");
-    rotulos.set(asset.id, `${nome} · ${sufixo}`);
+    // Entre parênteses, e não depois de um ponto médio (ADR 0024).
+    rotulos.set(asset.id, `${nome} (${sufixo})`);
   }
   return rotulos;
 }

@@ -61,6 +61,7 @@ import {
   type GrupoDeFiltro,
 } from "@/lib/categorias";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
+import { tratamentoDe, wardsEmPares } from "@/lib/tratamento";
 import { focarConteudo } from "@/lib/foco";
 import { useFecharComVoltar } from "@/lib/voltar";
 import { ALVO_DE_TOQUE, cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
@@ -199,7 +200,12 @@ export function NavegacaoPorCategoria({
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [aberta, ampliado, onFechar]);
 
-  const assets = carga.fase === "pronta" ? carga.assets : SEM_ASSETS;
+  const daFatia = carga.fase === "pronta" ? carga.assets : SEM_ASSETS;
+  // As wards viram pares — a arte e a sombra num card só (T-84): a galeria, o
+  // filtro e a contagem andam sobre os pares.
+  const pares = useMemo(() => (aberta === "ward" ? wardsEmPares(daFatia) : null), [aberta, daFatia]);
+  const assets = pares?.lista ?? daFatia;
+  const tratamento = useMemo(() => (aberta ? tratamentoDe(aberta) : undefined), [aberta]);
   const grupos = useMemo(() => gruposDeFiltro(assets), [assets]);
   const { naBarra, maisFiltros } = useMemo(() => separarGrupos(grupos), [grupos]);
   const lista = useMemo(() => prepararLista(assets), [assets]);
@@ -415,6 +421,8 @@ export function NavegacaoPorCategoria({
             onAlternar={alternarNoLote}
             onAmpliar={setAmpliado}
             fim={<AvisosNoFim />}
+            tratamento={tratamento}
+            sombraDe={pares?.sombraDe}
             acoes={
               <Botao
                 variante="fantasma"

@@ -65,6 +65,7 @@ import type { Asset } from "@lol-assets/schema";
 import {
   colunasDaGaleria,
   larguraDaColuna,
+  LARGURA_COM_ROTULO,
   LIMITE_DE_VIRTUALIZACAO,
   medidasDaGaleria,
   medidasNaColuna,
@@ -77,6 +78,7 @@ import { BotaoIcone } from "@/components/ui/botao-icone";
 import { Imagem } from "@/components/ui/imagem";
 import { ParDeDownload, type QualDownload } from "@/components/ui/par-de-download";
 import { confirmar } from "@/components/ui/confirmacoes";
+import type { Tratamento } from "@/lib/tratamento";
 import { cn } from "@/lib/utils";
 import {
   assetUrl,
@@ -125,6 +127,10 @@ export interface PainelDeAssetProps {
    * comeriam a altura da lista.
    */
   readonly fim?: ReactNode;
+  /** O que muda na galeria desta categoria (T-84, `lib/tratamento.ts`). */
+  readonly tratamento?: Tratamento;
+  /** Nas wards, a sombra de cada arte: o tile vira um card com alternância (T-84). */
+  readonly sombraDe?: ReadonlyMap<string, Asset>;
 }
 
 export async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: string): Promise<void> {
@@ -152,6 +158,8 @@ export function PainelDeAsset({
   onAmpliar,
   acoes,
   fim,
+  tratamento,
+  sombraDe,
 }: PainelDeAssetProps) {
   const ordenados = useMemo(() => orderAssets(assets), [assets]);
   const rotulos = useMemo(() => rotulosDaLista(ordenados), [ordenados]);
@@ -174,6 +182,8 @@ export function PainelDeAsset({
     asset,
     rotulo: rotulos.get(asset.id) ?? asset.names.pt_BR,
     url: assetUrl(asset, assetsBaseUrl),
+    par: sombraDe?.get(asset.id),
+    assetsBaseUrl,
     estado: estados[asset.id] ?? "pronto",
     marcar,
     baixar,
@@ -182,6 +192,17 @@ export function PainelDeAsset({
     onAlternar,
     onAmpliar,
   });
+
+  const secoes = useMemo(
+    () =>
+      tratamento?.agrupar && ordenados.length <= LIMITE_DE_VIRTUALIZACAO
+        ? tratamento.agrupar(ordenados)
+        : null,
+    [tratamento, ordenados],
+  );
+  const desenharTile = (asset: Asset, medidas: MedidasDaGaleria, modoSelecao: boolean, naVez: boolean) => (
+    <TileDaGaleria {...doCartao(asset)} medidas={medidas} modoSelecao={modoSelecao} naVez={naVez} />
+  );
 
   return (
     <section aria-label={titulo} className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
@@ -193,20 +214,38 @@ export function PainelDeAsset({
         {acoes && <div className="ml-auto flex items-center gap-1.5">{acoes}</div>}
       </div>
 
-      <Galeria
-        assets={ordenados}
-        virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
-        modoSelecao={(selecao?.size ?? 0) > 0}
-        fim={fim}
-        tile={(asset, medidas, modoSelecao, naVez) => (
-          <TileDaGaleria
-            {...doCartao(asset)}
-            medidas={medidas}
-            modoSelecao={modoSelecao}
-            naVez={naVez}
-          />
-        )}
-      />
+      {secoes ? (
+        // Em seções (as runas por árvore): poucas dezenas de tiles, sem
+        // virtualizar, numa área que rola só.
+        <div className="min-h-0 flex-1 overflow-y-auto px-3.5 pb-6 baixa:overflow-visible">
+          {secoes.map((secao) => (
+            <section key={secao.chave} aria-label={secao.rotulo} className="pt-2">
+              <h3 className="mb-2 flex items-baseline gap-2 text-12 font-semibold text-texto-suave">
+                {secao.rotulo}
+                <span className="font-normal tabular-nums">{secao.assets.length}</span>
+              </h3>
+              <Galeria
+                assets={secao.assets}
+                virtual={false}
+                embutida
+                larguraMinima={tratamento?.larguraMinima}
+                modoSelecao={(selecao?.size ?? 0) > 0}
+                tile={desenharTile}
+              />
+            </section>
+          ))}
+          {fim}
+        </div>
+      ) : (
+        <Galeria
+          assets={ordenados}
+          virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
+          larguraMinima={tratamento?.larguraMinima}
+          modoSelecao={(selecao?.size ?? 0) > 0}
+          fim={fim}
+          tile={desenharTile}
+        />
+      )}
     </section>
   );
 }
@@ -248,13 +287,21 @@ interface GaleriaProps {
     naVez: boolean,
   ) => ReactNode;
   readonly fim?: ReactNode;
+  /** A largura mínima que a categoria pede, acima da que a arte pediria. */
+  readonly larguraMinima?: number;
+  /** Dentro de uma seção: sem área de rolagem própria — quem rola é a lista de seções. */
+  readonly embutida?: boolean;
 }
 
-function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
+function Galeria({ assets, virtual, modoSelecao, tile, fim, larguraMinima, embutida = false }: GaleriaProps) {
   const scroller = useRef<HTMLDivElement>(null);
   const lista = useRef<HTMLUListElement>(null);
   const largura = useLargura(lista);
-  const daLista = useMemo(() => medidasDaGaleria(assets), [assets]);
+  const daLista = useMemo(() => {
+    const medidas = medidasDaGaleria(assets);
+    if (!larguraMinima || larguraMinima <= medidas.larguraMinima) return medidas;
+    return { ...medidas, larguraMinima, acoesComRotulo: larguraMinima >= LARGURA_COM_ROTULO };
+  }, [assets, larguraMinima]);
   const colunas = colunasDaGaleria(largura, daLista);
   // A coluna é que decide a altura da linha (T-53): o teto da categoria diz o
   // quanto a arte pode ocupar, a coluna diz o quanto ela ocupa.
@@ -353,11 +400,15 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
   if (!virtual) {
     return (
       // Em tela baixa, a galeria pequena rola junto com a página (T-67).
-      <div className={cn(classeDoScroller, "baixa:flex-none baixa:overflow-visible")}>
+      <div
+        className={
+          embutida ? undefined : cn(classeDoScroller, "baixa:flex-none baixa:overflow-visible")
+        }
+      >
         <ul
           ref={lista}
           {...teclado}
-          className="mx-3.5 mb-6 grid"
+          className={cn("grid", embutida ? "mb-2" : "mx-3.5 mb-6")}
           style={{
             gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))`,
             gridAutoRows: medidas.alturaDoTile,
@@ -427,6 +478,9 @@ function Galeria({ assets, virtual, modoSelecao, tile, fim }: GaleriaProps) {
 
 interface CartaoProps {
   readonly asset: Asset;
+  /** Nas wards, a sombra desta arte: o tile ganha a alternância "Arte / Sombra" (T-84). */
+  readonly par?: Asset;
+  readonly assetsBaseUrl?: string;
   /**
    * O nome na tela. É o do asset, com o que o diferencia quando dois compartilham
    * o mesmo nome na lista (T-56) — a ward e a sombra dela, o item do Rift e o do
@@ -675,7 +729,9 @@ function Previa({
         alt={`Prévia de ${asset.names.pt_BR}`}
         data-previa={asset.type}
         classeDaCaixa="size-full"
-        className="absolute inset-0 m-auto size-auto"
+        // O xadrez é o fundo da própria imagem: aparece nos pixels transparentes,
+        // do tamanho do arquivo, e nunca em volta dele.
+        className={cn("absolute inset-0 m-auto size-auto", asset.hasAlpha && "xadrez")}
         style={{
           maxWidth: `min(${limite}, ${asset.width}px)`,
           maxHeight: `min(${limite}, ${asset.height}px)`,
@@ -735,9 +791,11 @@ const SO_COM_PONTEIRO =
  * valores simples e funções que não mudam enquanto a lista não muda.
  */
 const TileDaGaleria = memo(function TileDaGaleria({
-  asset,
+  asset: arte,
+  par,
+  assetsBaseUrl,
   rotulo,
-  url,
+  url: urlDaArte,
   estado,
   marcar,
   baixar,
@@ -754,6 +812,11 @@ const TileDaGaleria = memo(function TileDaGaleria({
   /** Fora da vez, o tile sai da ordem do Tab: as setas é que chegam nele (T-63). */
   readonly naVez?: boolean;
 }) {
+  // A ward mostra a arte ou a sombra; o que se baixa e se seleciona é o que está
+  // na tela.
+  const [naSombra, setNaSombra] = useState(false);
+  const asset = naSombra && par ? par : arte;
+  const url = naSombra && par ? assetUrl(par, assetsBaseUrl) : urlDaArte;
   const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
   const { copia, copiarUrl } = useCopia(copiar, url);
   // Enquanto alguma coisa acontece no tile, as ações não somem debaixo do mouse.
@@ -790,12 +853,20 @@ const TileDaGaleria = memo(function TileDaGaleria({
         if (!evento.currentTarget.contains(evento.relatedTarget)) setRevelado(false);
       }}
       className={cn(
-        "group/tile flex h-full flex-col overflow-hidden rounded-quadro border bg-superficie-alta",
-        "transition-colors duration-150 ease-saida",
-        selecionado ? "border-acento" : "border-linha hover:border-linha-forte",
+        "group/tile flex h-full flex-col overflow-hidden rounded-quadro border bg-superficie",
+        selecionado ? "border-acento" : "border-linha hover:border-acento",
       )}
     >
-      <div className="relative flex-none" style={{ height: medidas.alturaDaPrevia }}>
+      <div
+        className={cn(
+          "relative flex-none",
+          // As marcas de corte no hover e no foco, num pseudo-elemento: a galeria
+          // virtual monta dezenas de tiles por rolagem, e nó a mais custa quadro.
+          "after:pointer-events-none after:absolute after:inset-1.5 after:hidden after:text-texto after:mix-blend-difference after:content-[''] after:marcas-de-corte",
+          "group-hover/tile:after:block group-focus-within/tile:after:block",
+        )}
+        style={{ height: medidas.alturaDaPrevia }}
+      >
         <Previa
           asset={asset}
           url={url}
@@ -828,8 +899,8 @@ const TileDaGaleria = memo(function TileDaGaleria({
           {/* RF-09: a ficha aparece antes de qualquer clique de download — e
               aparece junto das ações, no mesmo gesto que as revela. Em duas
               linhas, porque inteira ela não cabe num tile estreito. */}
-          <p className="overflow-hidden tabular-nums text-11 leading-3.5 text-ellipsis whitespace-pre text-texto-suave">
-            {`${asset.width}×${asset.height} · ${asset.format}\n${formatBytes(asset.bytes)} · ${asset.source}`}
+          <p className="overflow-hidden text-11 leading-3.5 tabular-nums text-ellipsis whitespace-pre text-texto-suave">
+            {`${asset.width}×${asset.height}  ${asset.format.toUpperCase()}\n${formatBytes(asset.bytes)}  ${asset.source}`}
           </p>
           <div className="flex min-h-controle-md items-center gap-1">
             {mostrarAcoes && (
@@ -867,10 +938,35 @@ const TileDaGaleria = memo(function TileDaGaleria({
         )}
       </div>
 
-      <div className="flex min-w-0 flex-col justify-center px-2 py-1.5">
-        <h3 title={rotulo} className="truncate text-12 leading-4 font-semibold text-texto">
+      <div className="flex min-w-0 items-center gap-1.5 px-2 py-1.5">
+        <h3 title={rotulo} className="min-w-0 flex-1 truncate text-12 leading-4 font-semibold text-texto">
           {rotulo}
         </h3>
+        {par && (
+          // Arte e sombra num card só (T-84): a alternância diz o que está na tela.
+          <div role="group" aria-label={`Imagem de ${rotulo}`} className="flex flex-none gap-0.5">
+            {(["Arte", "Sombra"] as const).map((rotuloDoLado) => {
+              const sombra = rotuloDoLado === "Sombra";
+              return (
+                <button
+                  key={rotuloDoLado}
+                  type="button"
+                  tabIndex={naVez ? 0 : -1}
+                  aria-pressed={naSombra === sombra}
+                  onClick={() => setNaSombra(sombra)}
+                  className={cn(
+                    "h-6 cursor-pointer rounded-controle border px-1.5 text-11",
+                    naSombra === sombra
+                      ? "border-linha-forte bg-campo text-texto"
+                      : "border-transparent text-texto-suave hover:text-texto",
+                  )}
+                >
+                  {rotuloDoLado}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <span role="status" className="sr-only">

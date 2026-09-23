@@ -90,9 +90,9 @@ describe("ficha honesta antes de qualquer download", () => {
     const primeiro = cartoes()[0];
     const asset = DO_JAX.find((a) => a.type === "splash_centered")!;
 
-    const ficha = within(primeiro).getByText(/·/);
+    const ficha = within(primeiro).getByText(/×/);
     expect(ficha.textContent).toContain(`${asset.width}`);
-    expect(ficha.textContent).toContain(asset.format);
+    expect(ficha.textContent).toContain(asset.format.toUpperCase());
     expect(ficha.textContent).toContain(asset.source);
   });
 
@@ -273,7 +273,7 @@ describe("a galeria das categorias", () => {
   it("a ficha inteira continua à vista, com a fonte (RF-09)", () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     abrir([square]);
-    const ficha = within(cartoes()[0]).getByText(/·/);
+    const ficha = within(cartoes()[0]).getByText(/×/);
     expect(ficha.textContent).toContain(`${square.width}×${square.height}`);
     expect(ficha.textContent).toContain(square.source);
   });
@@ -312,8 +312,8 @@ describe("a galeria das categorias", () => {
     abrir([arte, sombra]);
 
     const nomes = cartoes().map((c) => c.querySelector("h3")?.textContent);
-    expect(nomes).toContain("Default Ward · 0");
-    expect(nomes).toContain("Default Ward · sombra");
+    expect(nomes).toContain("Default Ward (0)");
+    expect(nomes).toContain("Default Ward (sombra)");
   });
 
   it("nome que não repete continua como está", () => {
@@ -333,7 +333,7 @@ describe("a galeria das categorias", () => {
     const tile = cartoes()[0];
     expect(within(tile).queryByRole("button", { name: "Baixar PNG" })).toBeNull();
     // A ficha fica: é ela que o RF-09 pede antes do download.
-    expect(within(tile).getByText(/·/)).toBeTruthy();
+    expect(within(tile).getByText(/×/)).toBeTruthy();
 
     fireEvent.mouseEnter(tile);
     expect(within(tile).getByRole("button", { name: "Baixar PNG" })).toBeTruthy();
