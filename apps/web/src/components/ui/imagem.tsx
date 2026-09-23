@@ -67,9 +67,9 @@ export function Imagem({
   }, [src]);
 
   return (
-    <div className={cn("relative overflow-hidden bg-campo", classeDaCaixa)}>
+    <div className={cn("relative overflow-hidden bg-superficie-alta", classeDaCaixa)}>
       {estado === "carregando" && (
-        <div aria-hidden="true" className="absolute inset-0 animate-pulsar bg-campo" />
+        <div aria-hidden="true" className="absolute inset-0 animate-pulsar bg-superficie-alta" />
       )}
       {estado === "erro" ? (
         <div
@@ -77,7 +77,7 @@ export function Imagem({
           className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-1.5 text-center text-texto-suave"
         >
           <ImageOff aria-hidden="true" className="size-4 flex-none" />
-          {!erroCompacto && <span className="text-10 leading-cartao">A fonte não respondeu</span>}
+          {!erroCompacto && <span className="text-11 leading-cartao">A fonte não respondeu</span>}
         </div>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- a URL é de terceiro e não há proxy (ADR 0012)

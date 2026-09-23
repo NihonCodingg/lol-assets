@@ -210,7 +210,7 @@ function Grade({
           no meio da rolagem não obriga a voltar lá em cima. No telefone, não
           fica presa, e as funções vão numa linha só que rola de lado: em três
           linhas quebradas, elas tomavam 150 px antes do primeiro cartão (T-49). */}
-      <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-borda bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10 baixa:md:static">
+      <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-linha bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10 baixa:md:static">
         <h2 className="sr-only">Campeões</h2>
         {funcoes.length > 0 && (
           <fieldset
@@ -219,7 +219,7 @@ function Grade({
               ROLA_SEM_CORTAR_O_TOQUE,
             )}
           >
-            <legend className="float-left mr-1.5 font-mono text-10 uppercase tracking-rotulo text-texto-suave">
+            <legend className="float-left mr-1.5 tabular-nums text-11 text-texto-suave">
               Função
             </legend>
             {funcoes.map((funcao) => (
@@ -228,14 +228,14 @@ function Grade({
                 marcado={marcadas.has(funcao.tag)}
                 onAlternar={() => alternar(funcao.tag)}
               >
-                {funcao.rotulo} <span className="ml-1 font-mono text-10">({funcao.total})</span>
+                {funcao.rotulo} <span className="ml-1 tabular-nums text-11">({funcao.total})</span>
               </Chip>
             ))}
             {marcadas.size > 0 && (
               <button
                 type="button"
                 onClick={() => setMarcadas(new Set())}
-                className="h-controle-md flex-none cursor-pointer whitespace-nowrap rounded-padrao px-2 text-12 text-texto-suave transition-colors duration-150 ease-saida hover:bg-campo hover:text-texto"
+                className="h-controle-md flex-none cursor-pointer whitespace-nowrap rounded-controle px-2 text-12 text-texto-suave transition-colors duration-150 ease-saida hover:bg-superficie-alta hover:text-texto"
               >
                 Todas as funções
               </button>
@@ -246,13 +246,13 @@ function Grade({
         {/* No telefone, a contagem sai e o controle fica na mesma linha das
             funções: era uma linha inteira de 44 px antes do primeiro cartão. */}
         <div className="ml-auto flex flex-none items-center gap-2.5">
-          <span className="hidden font-mono text-11 tabular-nums text-texto-suave md:inline">
+          <span className="hidden tabular-nums text-11 tabular-nums text-texto-suave md:inline">
             {visiveis.length} de {champions.length} campeões
           </span>
           <div
             role="group"
             aria-label="Densidade da grade"
-            className="flex items-center gap-0.5 rounded-padrao border border-borda-forte p-0.5"
+            className="flex items-center gap-0.5 rounded-controle border border-linha-forte p-0.5"
           >
             <BotaoIcone
               rotulo="Grade compacta"
@@ -260,7 +260,7 @@ function Grade({
               aria-pressed={densidade === "compacta"}
               icone={<LayoutGrid aria-hidden="true" strokeWidth={1.75} className="size-4" />}
               onClick={() => escolherDensidade("compacta")}
-              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-selecionado aria-pressed:text-texto"
+              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
             />
             <BotaoIcone
               rotulo="Grade densa"
@@ -268,7 +268,7 @@ function Grade({
               aria-pressed={densidade === "densa"}
               icone={<Grid3x3 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
               onClick={() => escolherDensidade("densa")}
-              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-selecionado aria-pressed:text-texto"
+              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
             />
             <BotaoIcone
               rotulo="Grade confortável"
@@ -276,7 +276,7 @@ function Grade({
               aria-pressed={densidade === "confortavel"}
               icone={<Grid2x2 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
               onClick={() => escolherDensidade("confortavel")}
-              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-selecionado aria-pressed:text-texto"
+              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
             />
           </div>
         </div>
@@ -357,7 +357,7 @@ function Cartao({
         onPointerLeave={pararDeEsperar}
         onPointerDown={avisar}
         onClick={() => onAbrir(champion)}
-        className="group block w-full cursor-pointer rounded-medio text-left"
+        className="group block w-full cursor-pointer rounded-quadro text-left"
       >
         {/* Hover discreto, sem acento: o violeta é de seleção e de ação, e
             aqui ainda não há nenhuma das duas. */}
@@ -365,17 +365,17 @@ function Cartao({
           <Imagem
             src={arte}
             alt={champion.names.pt_BR}
-            classeDaCaixa="aspect-square rounded-medio border border-borda transition-colors duration-200 ease-saida group-hover:border-borda-fraca"
+            classeDaCaixa="aspect-square rounded-quadro border border-linha transition-colors duration-200 ease-saida group-hover:border-linha-forte"
             className="object-cover transition-[opacity,transform] duration-200 ease-saida group-hover:scale-[1.03]"
           />
         ) : (
-          <div aria-hidden="true" className="aspect-square rounded-medio border border-borda bg-campo" />
+          <div aria-hidden="true" className="aspect-square rounded-quadro border border-linha bg-superficie-alta" />
         )}
-        <div className="truncate pt-2 text-12 leading-cartao font-medium text-texto-forte transition-colors duration-150 ease-saida group-hover:text-texto">
+        <div className="truncate pt-2 text-12 leading-cartao font-semibold text-texto transition-colors duration-150 ease-saida group-hover:text-texto">
           {champion.names.pt_BR}
         </div>
         {/* RF-04: o cartão conta skins, nunca chromas. */}
-        <div className="truncate font-mono text-10 text-texto-suave">
+        <div className="truncate tabular-nums text-11 text-texto-suave">
           {champion.skinCount} {champion.skinCount === 1 ? "skin" : "skins"}
         </div>
       </button>
@@ -394,9 +394,9 @@ export function EsqueletoDaGrade({ cartoes = 24 }: { cartoes?: number }) {
     <div aria-hidden="true" className={cn("grid px-3.5 pt-3", COLUNAS.densa)}>
       {Array.from({ length: cartoes }, (_, i) => (
         <div key={i} className="animate-pulsar" style={{ animationDelay: `${(i % 8) * 0.06}s` }}>
-          <div className="aspect-square rounded-medio bg-campo" />
-          <div className="mt-2 h-3 w-3/4 rounded-min bg-campo" />
-          <div className="mt-1.5 h-2.5 w-1/3 rounded-min bg-campo" />
+          <div className="aspect-square rounded-quadro bg-superficie-alta" />
+          <div className="mt-2 h-3 w-3/4 rounded-quadro bg-superficie-alta" />
+          <div className="mt-1.5 h-2.5 w-1/3 rounded-quadro bg-superficie-alta" />
         </div>
       ))}
     </div>

@@ -191,7 +191,7 @@ function Paleta({
       onValueChange={setEmDestaque}
       label="Buscar campeão ou skin"
       className={cn(
-        "relative z-20 flex flex-none items-center border-b border-borda px-3.5 py-2",
+        "relative z-20 flex flex-none items-center border-b border-linha px-3.5 py-2",
         className,
       )}
     >
@@ -227,7 +227,7 @@ function Paleta({
           // Anel fino: o campo abre focado, e o anel de 2 px somado à borda
           // violeta virava uma moldura grossa na primeira coisa que se vê.
           data-anel="fino"
-          className="h-controle-xl w-full rounded-medio border border-borda-forte bg-campo pr-11 pl-10 font-interface text-14 text-texto caret-acento transition-colors duration-150 ease-saida placeholder:text-texto-suave hover:border-borda-fraca focus:border-acento"
+          className="h-controle-xl w-full rounded-controle border border-linha-forte bg-superficie-alta pr-11 pl-10 font-interface text-14 text-texto caret-acento transition-colors duration-150 ease-saida placeholder:text-texto-suave hover:border-linha-forte focus:border-acento"
         />
         <Tecla className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 sm:block">
           /
@@ -236,7 +236,7 @@ function Paleta({
         <div
           data-aberta={mostrar}
           className={cn(
-            "absolute top-full right-0 left-0 mt-1.5 overflow-hidden rounded-medio border border-borda-forte bg-superficie-alta shadow-[var(--sombra-paleta)]",
+            "absolute top-full right-0 left-0 mt-1.5 overflow-hidden rounded-painel border border-linha-forte bg-superficie-alta",
             // Mais largo que o campo a partir de `sm`, para caber a prévia ao
             // lado sem espremer a lista. No telefone, a largura do campo.
             "sm:right-auto sm:w-[min(760px,92vw)]",
@@ -257,7 +257,7 @@ function Paleta({
                 "nada para": o `Command.Empty` é `role="presentation"`. */}
             {vazia && (
               <div role="status" className="px-3 py-6 text-center">
-                <p className="text-13 text-texto-forte">Nada para “{consulta.trim()}”.</p>
+                <p className="text-13 text-texto">Nada para “{consulta.trim()}”.</p>
                 <p className="mt-1 text-12 text-texto-suave">
                   Tente o nome do campeão, um apelido como mf ou j4, ou o nome da skin.
                 </p>
@@ -285,7 +285,7 @@ function Paleta({
                     key={hitId(hit)}
                     value={hitId(hit)}
                     onSelect={() => escolher(hit)}
-                    className="flex cursor-pointer items-center gap-3 rounded-padrao px-2 data-[selected=true]:bg-acento-suave"
+                    className="flex cursor-pointer items-center gap-3 rounded-controle px-2 data-[selected=true]:bg-acento-suave"
                     style={
                       virtual
                         ? {
@@ -309,7 +309,7 @@ function Paleta({
             <PreviaDoResultado hit={destacado} arte={destacado && arteDe(destacado)} />
           </div>
 
-          <div className="flex h-paleta-rodape items-center gap-3 border-t border-borda px-3 font-mono text-10 text-texto-suave">
+          <div className="flex h-paleta-rodape items-center gap-3 border-t border-linha px-3 tabular-nums text-11 text-texto-suave">
             <span className="tabular-nums">
               {resultados.length}{" "}
               {soParecidos
@@ -364,22 +364,22 @@ function PreviaDoResultado({ hit, arte }: { hit: SearchHit | undefined; arte: st
   return (
     <div
       data-previa-da-busca=""
-      className="hidden w-[248px] flex-none flex-col gap-2 border-l border-borda p-3 sm:flex"
+      className="hidden w-[248px] flex-none flex-col gap-2 border-l border-linha p-3 sm:flex"
     >
       {arte ? (
         <Imagem
           src={arte}
           alt=""
-          classeDaCaixa="aspect-square w-full rounded-medio"
+          classeDaCaixa="aspect-square w-full rounded-quadro"
           className="object-cover"
         />
       ) : (
-        <div aria-hidden="true" className="aspect-square w-full rounded-medio bg-campo" />
+        <div aria-hidden="true" className="aspect-square w-full rounded-quadro bg-superficie-alta" />
       )}
       {/* Sem repetir o que a linha já diz ao lado: aqui o nome é o título, e o
           que sobra é de quem a skin é (RF-24) ou quantas o campeão tem. */}
       <div className="min-w-0">
-        <p className="truncate text-14 font-medium text-texto-forte">{nome}</p>
+        <p className="truncate text-14 font-semibold text-texto">{nome}</p>
         <p className="truncate text-12 text-texto-suave">{detalhe}</p>
       </div>
     </div>
@@ -403,14 +403,14 @@ function Linha({ hit, arte }: { hit: SearchHit; arte: string | undefined }) {
           src={arte}
           alt=""
           erroCompacto
-          classeDaCaixa="size-[56px] flex-none rounded-padrao"
+          classeDaCaixa="size-[56px] flex-none rounded-controle"
           className="object-cover"
         />
       ) : (
-        <div aria-hidden="true" className="size-[56px] flex-none rounded-padrao bg-campo" />
+        <div aria-hidden="true" className="size-[56px] flex-none rounded-controle bg-superficie-alta" />
       )}
       <div className="min-w-0 flex-1">
-        <div className="truncate text-14 font-medium text-texto-forte">{nome}</div>
+        <div className="truncate text-14 font-semibold text-texto">{nome}</div>
         <div className="truncate text-12 text-texto-suave">{detalhe}</div>
       </div>
     </>

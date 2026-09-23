@@ -194,7 +194,7 @@ export function PainelDoCampeao({
 
           {/* RF-18: um clique pré-monta a seleção do campeão inteiro. */}
           {assets && alcancaveis.length > 0 && (
-            <div className="flex items-center border-b border-borda px-3.5 pb-3">
+            <div className="flex items-center border-b border-linha px-3.5 pb-3">
               <Botao
                 tamanho="md"
                 onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}
@@ -236,7 +236,7 @@ export function PainelDoCampeao({
 
           {/* RF-06: chroma não aparece sozinho; só quando alguém pede o desta skin. */}
           {assets && chromas.length > 0 && (
-            <section aria-label="Chromas" className="border-t border-borda">
+            <section aria-label="Chromas" className="border-t border-linha">
               <Botao
                 variante="fantasma"
                 tamanho="md"

@@ -1,19 +1,16 @@
 /**
- * Botão — as três variantes que o design usa, e nenhuma a mais.
+ * Botão — três variantes, e nenhuma a mais ([ADR 0024]).
  *
- * Lendo `docs/design/telas/biblioteca-de-assets-v2.html`, todo botão do arquivo
- * cai num destes três desenhos:
+ * - **primário**: o destaque magenta com texto no grafite do fundo (6,04:1).
+ *   É a ação que a tela existe para oferecer — "Baixar PNG", "Baixar zip" —, e
+ *   há no máximo uma por contexto.
+ * - **contorno**: superfície elevada com a linha forte. A ação secundária:
+ *   "Original", "Limpar seleção", fechar.
+ * - **fantasma**: sem borda, ganha superfície no `hover`. Item de lista,
+ *   ação dentro de campo.
  *
- * - **primário** (`#8b5cf6` com texto `#0b0b0d`): "Baixar .zip", "Baixar
- *   original". É a ação que a tela existe para oferecer, e há no máximo uma por
- *   contexto.
- * - **contorno** (transparente com borda `#27272a`): "Limpar", "Baixar PNG",
- *   fechar, setas de skin. A ação secundária.
- * - **fantasma** (sem borda, ganha fundo no `hover`): item da barra lateral,
- *   `esc` dentro do campo, remover da bandeja.
- *
- * O tamanho é altura, porque é assim que o design pensa: `28 · 30 · 32`, mais o
- * `24` e o `26` dos botões-ícone. Ver a tabela "Altura de controle" no TOKENS.
+ * Sem sombra: a profundidade é a superfície mais clara. O tamanho é altura:
+ * `28 · 30 · 32`, mais o `24` e o `26` dos botões-ícone (TOKENS.md).
  */
 import type { ComponentProps } from "react";
 
@@ -23,9 +20,9 @@ export type VarianteDoBotao = "primario" | "contorno" | "fantasma";
 export type TamanhoDoBotao = "xs" | "sm" | "md" | "padrao" | "lg";
 
 const VARIANTE: Record<VarianteDoBotao, string> = {
-  primario: "bg-acento text-superficie font-semibold hover:bg-acento-claro",
-  contorno: "border border-borda-forte text-texto-forte hover:bg-campo",
-  fantasma: "text-texto-suave hover:bg-campo hover:text-texto",
+  primario: "bg-acento text-fundo font-semibold hover:bg-acento-forte",
+  contorno: "border border-linha-forte bg-superficie-alta text-texto hover:bg-campo",
+  fantasma: "text-texto-suave hover:bg-superficie-alta hover:text-texto",
 };
 
 const TAMANHO: Record<TamanhoDoBotao, string> = {
@@ -54,7 +51,7 @@ export function Botao({
     <button
       type={type}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 rounded-padrao",
+        "inline-flex cursor-pointer items-center gap-1.5 rounded-controle",
         "whitespace-nowrap font-interface",
         // `disabled` precisa parecer desabilitado: um botão que só ignora o
         // clique é indistinguível de um botão quebrado.

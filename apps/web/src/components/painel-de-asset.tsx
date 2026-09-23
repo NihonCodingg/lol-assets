@@ -194,8 +194,8 @@ export function PainelDeAsset({
   return (
     <section aria-label={titulo} className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
       <div className="flex flex-none flex-wrap items-center gap-x-2 gap-y-1 px-3.5 py-2">
-        <h2 className="truncate text-12 font-medium text-texto-forte">{titulo}</h2>
-        <span className="font-mono text-11 text-texto-suave">
+        <h2 className="truncate text-12 font-semibold text-texto">{titulo}</h2>
+        <span className="tabular-nums text-11 text-texto-suave">
           {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
         </span>
         {acoes && <div className="ml-auto flex items-center gap-1.5">{acoes}</div>}
@@ -217,9 +217,9 @@ export function PainelDeAsset({
             if (grupos.length === 1) return <div key={grupo.chave}>{cartoes}</div>;
             return (
               <section key={grupo.chave} aria-label={grupo.rotulo}>
-                <h3 className="mb-2.5 flex items-baseline gap-2 text-12 font-medium text-texto-forte">
+                <h3 className="mb-2.5 flex items-baseline gap-2 text-12 font-semibold text-texto">
                   {grupo.rotulo}
-                  <span className="font-mono text-10 font-normal text-texto-suave">
+                  <span className="tabular-nums text-11 font-normal text-texto-suave">
                     {grupo.assets.length}
                   </span>
                 </h3>
@@ -658,13 +658,13 @@ function CaixaDeSelecao({
   return (
     <label
       className={cn(
-        "grid size-controle-min flex-none cursor-pointer place-items-center rounded-tecla border",
-        "font-mono text-10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
+        "grid size-controle-min flex-none cursor-pointer place-items-center rounded-controle border",
+        "tabular-nums text-11 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
         // No toque, a caixa de 17 px ganha uma área invisível de 45 px em volta (T-49).
         "pointer-coarse:before:absolute pointer-coarse:before:-inset-[14px] pointer-coarse:before:content-['']",
         selecionado
-          ? "border-acento bg-acento text-superficie"
-          : "border-borda-fraca bg-superficie/80 text-texto-suave hover:border-acento",
+          ? "border-acento bg-acento text-fundo"
+          : "border-linha-forte bg-superficie/80 text-texto-suave hover:border-acento",
         className,
       )}
     >
@@ -733,7 +733,7 @@ function Previa({
       {imagem}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute top-2 right-2 grid size-7 place-items-center rounded-padrao bg-superficie/80 text-texto opacity-0 transition-opacity duration-150 ease-saida group-hover/previa:opacity-100 group-focus-visible/previa:opacity-100"
+        className="pointer-events-none absolute top-2 right-2 grid size-7 place-items-center rounded-controle bg-superficie/80 text-texto opacity-0 transition-opacity duration-150 ease-saida group-hover/previa:opacity-100 group-focus-visible/previa:opacity-100"
       >
         <Maximize2 strokeWidth={1.75} className="size-3.5" />
       </span>
@@ -826,9 +826,9 @@ const TileDaGaleria = memo(function TileDaGaleria({
         if (!evento.currentTarget.contains(evento.relatedTarget)) setRevelado(false);
       }}
       className={cn(
-        "group/tile flex h-full flex-col overflow-hidden rounded-medio border bg-superficie-alta",
+        "group/tile flex h-full flex-col overflow-hidden rounded-quadro border bg-superficie-alta",
         "transition-colors duration-150 ease-saida",
-        selecionado ? "border-acento" : "border-borda hover:border-borda-forte",
+        selecionado ? "border-acento" : "border-linha hover:border-linha-forte",
       )}
     >
       <div className="relative flex-none" style={{ height: medidas.alturaDaPrevia }}>
@@ -864,7 +864,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
           {/* RF-09: a ficha aparece antes de qualquer clique de download — e
               aparece junto das ações, no mesmo gesto que as revela. Em duas
               linhas, porque inteira ela não cabe num tile estreito. */}
-          <p className="overflow-hidden font-mono text-10 leading-3.5 text-ellipsis whitespace-pre text-texto-suave">
+          <p className="overflow-hidden tabular-nums text-11 leading-3.5 text-ellipsis whitespace-pre text-texto-suave">
             {`${asset.width}×${asset.height} · ${asset.format}\n${formatBytes(asset.bytes)} · ${asset.source}`}
           </p>
           <div className="flex min-h-controle-md items-center gap-1">
@@ -896,7 +896,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
         {estado === "erro" && (
           <p
             role="alert"
-            className="absolute inset-x-1.5 top-1.5 rounded-padrao bg-superficie/90 px-2 py-1 text-11 leading-cartao text-acento-mais-claro"
+            className="absolute inset-x-1.5 top-1.5 rounded-controle bg-superficie/90 px-2 py-1 text-11 leading-cartao text-acento"
           >
             Não deu para baixar. Tente de novo.
           </p>
@@ -904,7 +904,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
       </div>
 
       <div className="flex min-w-0 flex-col justify-center px-2 py-1.5">
-        <h3 title={rotulo} className="truncate text-12 leading-4 font-medium text-texto-forte">
+        <h3 title={rotulo} className="truncate text-12 leading-4 font-semibold text-texto">
           {rotulo}
         </h3>
       </div>
@@ -942,7 +942,7 @@ function CartaoDaGrade({
       aria-label={asset.fileName}
       data-tipo={asset.type}
       data-estado={estado}
-      className="flex flex-col overflow-hidden rounded-medio border border-borda bg-superficie-alta"
+      className="flex flex-col overflow-hidden rounded-quadro border border-linha bg-superficie-alta"
     >
       <div className="relative">
         {/* Proporção real, e nunca maior que o arquivo. Altura em porcentagem,
@@ -974,15 +974,15 @@ function CartaoDaGrade({
         {/* O tipo na mesma linha do nome (T-58): eram três linhas de texto por
             cartão, e o painel do campeão mostrava uma fileira de cada vez. */}
         <div className="flex min-w-0 items-baseline gap-2">
-          <h4 title={rotulo} className="truncate text-13 font-medium text-texto-forte">
+          <h4 title={rotulo} className="truncate text-13 font-semibold text-texto">
             {rotulo}
           </h4>
-          <p className="flex-none truncate font-mono text-10 uppercase tracking-rotulo text-texto-suave">
+          <p className="flex-none truncate tabular-nums text-11 text-texto-suave">
             {rotuloDoTipo(asset.type)}
           </p>
         </div>
         {/* RF-09: a ficha aparece antes de qualquer clique de download. */}
-        <p className="truncate font-mono text-10 text-texto-suave">{assetSummary(asset)}</p>
+        <p className="truncate tabular-nums text-11 text-texto-suave">{assetSummary(asset)}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2.5 pb-3">
@@ -1001,7 +1001,7 @@ function CartaoDaGrade({
       </div>
 
       {estado === "erro" && (
-        <p role="alert" className="px-3 pb-3 text-11 text-acento-mais-claro">
+        <p role="alert" className="px-3 pb-3 text-11 text-acento">
           Não deu para baixar. Tente de novo.
         </p>
       )}

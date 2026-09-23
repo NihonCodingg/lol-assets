@@ -8,13 +8,13 @@
  *
  * ## Por que o `twMerge` precisa ser ensinado
  *
- * Os tamanhos de texto do design são `text-9` … `text-19`, e o `tailwind-merge`
- * não tem como saber que `text-12` é **tamanho** e `text-superficie` é **cor** —
+ * Os tamanhos de texto do design são `text-11` … `text-26`, e o `tailwind-merge`
+ * não tem como saber que `text-12` é **tamanho** e `text-fundo` é **cor** —
  * os dois começam com `text-`. Sem a configuração abaixo ele trata os dois como
  * o mesmo grupo e descarta o primeiro.
  *
- * O sintoma foi exatamente este: o botão primário perdeu `text-superficie`,
- * herdou o branco do corpo e passou a ter **3,1:1** de contraste sobre o violeta
+ * O sintoma foi exatamente este: o botão primário perdeu `text-fundo`,
+ * herdou o branco do corpo e passou a ter **3,1:1** de contraste sobre o acento
  * em vez de 4,64:1. Nenhum teste de unidade pegou — quem pegou foi o axe do
  * T-28, no e2e, porque só ali as classes viram cor de verdade.
  *
@@ -43,6 +43,7 @@ const twMerge = extendTailwindMerge({
         "paleta-campo",
         "cabecalho",
         "bandeja",
+        "topo",
         "barra-lateral",
         "busca-max",
         "alvo-cartao-denso",
@@ -50,7 +51,7 @@ const twMerge = extendTailwindMerge({
       ],
     },
     classGroups: {
-      "font-size": [{ text: ["9", "10", "11", "12", "13", "14", "16", "19", "22"] }],
+      "font-size": [{ text: ["11", "12", "13", "14", "16", "20", "26"] }],
     },
   },
 });

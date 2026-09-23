@@ -25,12 +25,12 @@ export function Chip({ marcado, onAlternar, children }: ChipProps) {
     <label
       className={cn(
         ALVO_DE_TOQUE,
-        "inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-padrao border px-2.5 text-12",
+        "inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-controle border px-2.5 text-12",
         "transition-colors duration-150 ease-saida",
         "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
         marcado
           ? "border-acento bg-acento-suave text-texto"
-          : "border-borda-forte text-texto-suave hover:bg-campo hover:text-texto",
+          : "border-linha-forte text-texto-suave hover:bg-superficie-alta hover:text-texto",
       )}
     >
       <input type="checkbox" className="sr-only" checked={marcado} onChange={onAlternar} />

@@ -11,80 +11,72 @@
 /**
  * O tema, traduzido de `docs/design/TOKENS.md` — e **só** dele.
  *
- * Cada valor abaixo foi lido do design, não estimado, e há um teste que compara
- * os dois: mexer aqui sem mexer lá (ou o contrário) fica vermelho. É o critério 1
- * do T-34, e é o que impede o tema de virar uma coleção de cinzas *parecidos*
- * com o desenho.
+ * A direção é a do [ADR 0024] (o bin do editor): grafite de software de edição,
+ * um destaque magenta de marcador, e oito cores de etiqueta, uma por categoria.
+ * Há um teste que compara este arquivo com o TOKENS.md valor a valor, e mede o
+ * contraste de cada par de texto: mexer aqui sem mexer lá fica vermelho.
  *
  * Os nomes são em português porque é o idioma da documentação do projeto
  * (regra 8 do CLAUDE.md).
  */
 @theme {
-  /* --- superfícies ------------------------------------------------------ */
-  --color-fundo: #09090b;
-  --color-fundo-barra: #0a0a0c;
-  --color-superficie: #0b0b0d;
-  --color-superficie-alta: #0f0f11;
-  --color-superficie-lote: #101012;
-  --color-campo: #18181b;
-  --color-campo-alto: #212124;
-  --color-selecionado: #1c1c1f;
-  --color-acento-suave: #1e1b2e;
+  /* --- superfícies: a profundidade vem da superfície mais clara, não de sombra */
+  --color-fundo: #1e2023;
+  --color-superficie: #272a2e;
+  --color-superficie-alta: #30343a;
+  --color-campo: #383c42;
 
-  /* --- bordas ----------------------------------------------------------- */
-  --color-borda: #1c1c1f;
-  --color-borda-forte: #27272a;
-  --color-borda-tecla: #2c2c30;
-  --color-borda-fraca: #3f3f46;
+  /* --- linhas -------------------------------------------------------------- */
+  --color-linha: #363a3f;
+  --color-linha-forte: #4a4f56;
 
-  /* --- texto ------------------------------------------------------------
-   * `texto-fraco` e `texto-tenue` são fiéis ao design e reprovam em AA nos
-   * tamanhos em que ele os usa. Ficam no tema porque o teste de paridade os
-   * verifica, mas não vão para `color` — ver a decisão de 10/09 no TOKENS.md.
-   */
-  --color-texto: #fafafa;
-  --color-texto-forte: #e4e4e7;
-  --color-texto-medio: #d4d4d8;
-  --color-texto-suave: #a1a1aa;
-  --color-texto-fraco: #71717a;
-  --color-texto-tenue: #52525b;
+  /* --- texto --------------------------------------------------------------- */
+  --color-texto: #e9e7e2;
+  --color-texto-suave: #9b9ea3;
 
-  /* --- acento: um só ---------------------------------------------------- */
-  --color-acento: #8b5cf6;
-  --color-acento-claro: #a78bfa;
-  --color-acento-mais-claro: #c4b5fd;
+  /* --- destaque: foco, seleção e ação primária, e nada mais --------------- */
+  --color-acento: #f072b3;
+  --color-acento-forte: #f990c4;
+  --color-acento-suave: #45293a;
 
-  /* --- tipografia ------------------------------------------------------- */
+  /* --- o fundo de transparência -------------------------------------------- */
+  --color-xadrez-claro: #3a3d42;
+  --color-xadrez-escuro: #2c2f33;
+
+  /* --- etiquetas: mesma luminosidade (OKLCH 0,74), croma 0,10, só a matiz muda */
+  --color-etiqueta-campeoes: #92a8eb;
+  --color-etiqueta-itens: #d79e65;
+  --color-etiqueta-runas: #55bfb3;
+  --color-etiqueta-feiticos: #61b7de;
+  --color-etiqueta-icones: #e39385;
+  --color-etiqueta-emotes: #b9ac5f;
+  --color-etiqueta-wards: #82bc83;
+  --color-etiqueta-mapas: #b99bde;
+
+  /* --- tipografia: uma família, três pesos (400, 600, 800) ---------------- */
   --font-interface: var(--fonte-interface), system-ui, sans-serif;
-  --font-mono: var(--fonte-mono), ui-monospace, monospace;
 
-  --text-9: 9px;
-  --text-10: 10px;
   --text-11: 11px;
   --text-12: 12px;
   --text-13: 13px;
   --text-14: 14px;
   --text-16: 16px;
-  --text-19: 19px;
-  --text-22: 22px;
+  --text-20: 20px;
+  --text-26: 26px;
 
-  --tracking-titulo: -0.02em;
-  --tracking-marca: -0.01em;
-  --tracking-rotulo: 0.06em;
+  --tracking-titulo: -0.01em;
+  --tracking-marca: -0.02em;
 
   --leading-apertada: 1.2;
   --leading-cartao: 1.3;
-  --leading-solta: 1.7;
+  --leading-solta: 1.6;
 
-  /* --- raio ------------------------------------------------------------- */
-  --radius-min: 3px;
-  --radius-tecla: 4px;
-  --radius-marca: 5px;
-  --radius-padrao: 6px;
-  --radius-medio: 8px;
-  --radius-grande: 10px;
+  /* --- raio: quadro, controle, painel -------------------------------------- */
+  --radius-quadro: 2px;
+  --radius-controle: 6px;
+  --radius-painel: 12px;
 
-  /* --- altura de controle ----------------------------------------------- */
+  /* --- altura de controle -------------------------------------------------- */
   --spacing-controle-min: 17px;
   --spacing-controle-xs: 24px;
   --spacing-controle-sm: 26px;
@@ -96,23 +88,32 @@
   --spacing-paleta-campo: 44px;
   --spacing-cabecalho: 48px;
   --spacing-bandeja: 52px;
-  /* T-45: o campo de busca principal e o alvo de toque no celular. */
+  --spacing-topo: 56px;
+  /* O campo de busca principal e o alvo de toque no celular. */
   --spacing-controle-xl: 44px;
 
-  /* --- largura ---------------------------------------------------------- */
+  /* --- largura ------------------------------------------------------------- */
   --spacing-barra-lateral: 208px;
   --spacing-busca-max: 560px;
-  /* Largura-alvo do cartão: é ela que decide quantas colunas cabem. */
+  /* Largura-alvo do tile: é ela que decide quantas colunas cabem. */
   --spacing-alvo-cartao-compacto: 112px;
   --spacing-alvo-cartao-denso: 152px;
   --spacing-alvo-cartao-confortavel: 210px;
 
-  /* --- movimento --------------------------------------------------------
-   * Uma animação (o pulso do esqueleto) e transições de 150–200 ms com uma
-   * curva só. Movimento aqui diz estado, nunca enfeita (T-45).
+  /* --- movimento ------------------------------------------------------------
+   * Dois momentos, os dois em resposta a uma ação: abrir um campeão e confirmar
+   * um download. Só `transform` e `opacity` (ADR 0024).
    */
   --animate-pulsar: pulsar 1.2s ease-in-out infinite;
   --ease-saida: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* A confirmação que chega: 160 ms, só opacidade e deslocamento. */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 }
 
 @keyframes pulsar {
@@ -125,13 +126,18 @@
   }
 }
 
+/* O fundo de transparência, como em qualquer software de edição: quem vê xadrez
+   sabe que o arquivo tem alfa. Só em formato com alfa (PNG, WebP). */
+@utility xadrez {
+  background-color: var(--color-xadrez-escuro);
+  background-image: repeating-conic-gradient(var(--color-xadrez-claro) 0 25%, transparent 0 50%);
+  background-size: 16px 16px;
+}
+
 :root {
   color-scheme: dark;
-  /* Véus e sombra: valores do design que não são cor de token. */
-  --sombra-paleta: 0 24px 60px rgba(0, 0, 0, 0.6);
-  --veu: rgba(9, 9, 11, 0.6);
-  --veu-forte: rgba(9, 9, 11, 0.7);
-  --etiqueta-skin: rgba(30, 27, 46, 0.85);
+  /* O véu atrás do painel: é ele, e não uma sombra, que separa as camadas. */
+  --veu: rgba(18, 19, 21, 0.72);
 }
 
 html,
@@ -146,21 +152,23 @@ body {
 }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(240, 114, 179, 0.32);
 }
 
-/* O anel de foco é o acento. `:focus { outline: none }` sozinho esconderia o
-   foco de quem navega por teclado — o T-28 tem teste para isso. */
+/* O anel de foco é o destaque, afastado 2 px do elemento: sobre uma arte clara o
+   magenta cai para 2,7:1, e o afastamento o deixa sobre o fundo da página (6:1).
+   `:focus { outline: none }` sozinho esconderia o foco de quem navega por
+   teclado — o T-28 tem teste para isso. */
 :focus {
   outline: none;
 }
 
 :focus-visible {
   outline: 2px solid var(--color-acento);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
-/* Anel fino, para campo de borda própria que fica violeta no foco: o anel cola
+/* Anel colado, para campo de borda própria que fica magenta no foco: o anel cola
    na borda e os dois somam 2 px, em vez de uma moldura dupla (T-46). Continua
    sendo `outline` — o teste de foco visível do T-28 vale para ele também. */
 [data-anel="fino"]:focus-visible {
@@ -194,12 +202,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-borda-forte);
-  border-radius: var(--radius-padrao);
+  background: var(--color-linha-forte);
+  border-radius: var(--radius-controle);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-borda-fraca);
+  background: var(--color-campo);
 }
 
 ::-webkit-scrollbar-track {

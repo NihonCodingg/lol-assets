@@ -1,196 +1,157 @@
 # Tokens do design
 
-> **Extraídos por leitura, não por estimativa.** Todo valor desta página foi lido de
-> [`telas/biblioteca-de-assets-v2.html`](telas/biblioteca-de-assets-v2.html) — o
-> [README desta pasta](README.md) pediu HTML justamente para que este documento fosse exato,
-> e o critério 1 do **T-34** é o tema do Tailwind bater com ele **valor a valor**, verificado
-> por teste.
+> **A fonte de verdade do tema.** Reescrito em 22/09/2026 a partir do
+> [Plano de Design](PLANO-DE-DESIGN.md) e do [ADR 0024](../adr/0024-a-direcao-visual-do-bin.md)
+> (o bin do editor). A versão anterior (zinco, violeta, Inter Tight e JetBrains Mono) está no
+> histórico do git.
 >
-> A `v1` fica como histórico. Quando o design mudar, muda aqui primeiro e o teste de paridade
-> diz o que ficou para trás.
+> `apps/web/src/lib/tokens.test.ts` compara esta página com `globals.css` valor a valor, nos
+> dois sentidos, e mede o contraste de cada par de texto. Mudou token, muda aqui primeiro.
 
 ## Cor
 
-A paleta é a escala **zinc** do Tailwind mais **violet** como acento, com quatro superfícies
-quase-pretas próprias que não existem na escala. Os nomes abaixo são os do tema; a coluna
-"no design" é onde o valor aparece.
+Grafite de software de edição, não preto: um cinza-médio-escuro com corpo cansa menos a vista e
+deixa a arte saturada saltar. A profundidade vem da superfície mais clara, nunca de sombra.
 
-### Superfícies
+### Superfícies e linhas
 
-| Token | Valor | No design |
+| Token | Valor | Onde |
 |---|---|---|
-| `fundo` | `#09090b` | `html, body`, fundo da grade |
-| `fundo-barra` | `#0a0a0c` | faixa do título da grade |
-| `superficie` | `#0b0b0d` | barra lateral, painel do asset |
-| `superficie-alta` | `#0f0f11` | paleta de busca (⌘K) |
-| `superficie-lote` | `#101012` | bandeja do lote |
-| `campo` | `#18181b` | `input`, cartão da bandeja, `hover` de item |
-| `campo-alto` | `#212124` | tecla `/` do campo de busca |
-| `selecionado` | `#1c1c1f` | categoria ativa na barra lateral |
-| `acento-suave` | `#1e1b2e` | linha destacada da paleta |
-
-### Bordas
-
-| Token | Valor | No design |
-|---|---|---|
-| `borda` | `#1c1c1f` | divisórias entre seções |
-| `borda-forte` | `#27272a` | contorno de campo, botão e painel |
-| `borda-tecla` | `#2c2c30` | contorno da tecla `/` |
-| `borda-fraca` | `#3f3f46` | caixa de seleção não marcada |
+| `fundo` | `#1e2023` | fundo da página, atrás da grade |
+| `superficie` | `#272a2e` | topo, barra lateral, controle segmentado |
+| `superficie-alta` | `#30343a` | painel, menus, avisos, `hover` de item, botão de contorno |
+| `campo` | `#383c42` | `hover` do botão de contorno, dica. **Só com `texto`** (8,98:1); o `texto-suave` reprova aqui |
+| `linha` | `#363a3f` | divisões |
+| `linha-forte` | `#4a4f56` | borda de controle e de campo |
 
 ### Texto
 
-Contraste calculado pela fórmula da WCAG 2.1, contra os dois fundos em que cada cor aparece.
-**Os números são computados, não estimados** — o mesmo cálculo roda no teste do T-34.
+Contraste pela fórmula da WCAG 2.1. **Os números são computados**, e o mesmo cálculo roda no
+teste.
 
-| Token | Valor | s/ `#09090b` | s/ `#18181b` | AA? | No design |
-|---|---|---:|---:|---|---|
-| `texto` | `#fafafa` | 19,06 | 16,97 | ✅ | texto principal |
-| `texto-forte` | `#e4e4e7` | 15,68 | 13,96 | ✅ | títulos de seção, rótulo de variante |
-| `texto-medio` | `#d4d4d8` | 13,46 | 11,99 | ✅ | nome do asset no cartão |
-| `texto-suave` | `#a1a1aa` | 7,76 | 6,91 | ✅ | rótulo secundário, botão fantasma |
-| `texto-fraco` | `#71717a` | 4,12 | 3,67 | ❌ | metadado, nota, tecla |
-| `texto-tenue` | `#52525b` | 2,57 | 2,29 | ❌ | rótulo de seção, contagem, dica |
+| Token | Valor | s/ `fundo` | s/ `superficie` | s/ `superficie-alta` | Onde |
+|---|---|---:|---:|---:|---|
+| `texto` | `#e9e7e2` | 13,21 | 11,66 | 10,13 | texto principal |
+| `texto-suave` | `#9b9ea3` | 6,08 | 5,36 | 4,66 | contagens, metadados, aviso legal |
 
-> ⚠️ **Dois tokens do design não passam em AA. Divergência levantada e decidida.**
->
-> `texto-fraco` (4,12) e `texto-tenue` (2,57) ficam abaixo do mínimo de **4,5:1** para texto
-> normal, e não alcançam a exceção de texto grande (≥ 18pt, ou ≥ 14pt em negrito) porque no
-> design aparecem em **9–11px**. O critério 4 do T-34 e o RNF-11 pedem AA, e a suíte de axe do
-> **T-28** roda `color-contrast` como violação *serious* em quatro telas: aplicar essas cores
-> em texto deixaria a CI vermelha. Não era questão de gosto.
->
-> **Decisão de 10/09/2026 — clarear as duas.**
->
-> | Uso no design | Cor do design | Cor que vai para a tela |
-> |---|---|---|
-> | metadado, nota, tecla, contagem, dica | `#71717a` / `#52525b` | **`#a1a1aa`** (6,91:1) |
-> | borda, divisória, caixa não marcada, placa | `#52525b` / `#3f3f46` | inalterado — não é texto |
->
-> `texto-fraco` e `texto-tenue` continuam **no tema**, porque são fiéis ao design e o teste de
-> paridade os verifica. O que muda é onde podem ser usados: os dois ficam reservados a borda e
-> decoração, e `tokens.test.ts` falha se algum componente os aplicar a `color`. *(Até o T-45
-> este parágrafo prometia esse teste sem que ele existisse; agora existe.)*
->
-> O custo é real e está aceito: a hierarquia de cinza fica um degrau mais rasa que a do
-> desenho. O ganho é que a menor letra do produto continua legível.
+### Destaque — um só
 
-### Acento — **um só**
-
-| Token | Valor | No design |
+| Token | Valor | Onde |
 |---|---|---|
-| `acento` | `#8b5cf6` | botão primário, foco, `caret`, anel de seleção, `kicker` do painel |
-| `acento-claro` | `#a78bfa` | `hover` do botão primário, link, subtítulo de skin |
-| `acento-mais-claro` | `#c4b5fd` | `hover` de link, etiqueta "skin" |
+| `acento` | `#f072b3` | foco, seleção, ação primária, marca de confirmado |
+| `acento-forte` | `#f990c4` | `hover` da ação primária |
+| `acento-suave` | `#45293a` | fundo do que está selecionado (o `texto` sobre ele: 10,42:1) |
 
-Os três são o mesmo violeta em claridades diferentes (`violet-500/400/300`). O critério 3 do
-T-34 — **uma** cor de destaque — está satisfeito: não há um segundo matiz de acento no
-arquivo.
+Magenta de marcador, cor de etiqueta clássica de editor de vídeo. Não é roxo, dourado, verde-azulado
+(Riot), verde-ácido nem vermelhão. Sobre ele, o texto é o `fundo` (6,04:1). Como texto: 6,04:1
+sobre o fundo, 5,33:1 sobre a superfície, 4,63:1 sobre a superfície elevada.
 
-### Transparências
+### Transparência
 
-| Token | Valor | No design |
+| Token | Valor | Onde |
 |---|---|---|
-| `selecao-de-texto` | `rgba(139,92,246,0.35)` | `::selection` |
-| `veu` | `rgba(9,9,11,0.6)` | fundo atrás do painel |
-| `veu-forte` | `rgba(9,9,11,0.7)` | fundo atrás da paleta; caixa de seleção |
-| `etiqueta-skin` | `rgba(30,27,46,0.85)` | fundo da etiqueta "skin" |
-| `sombra-paleta` | `0 24px 60px rgba(0,0,0,0.6)` | elevação da paleta |
-| `placa-texto` | `rgba(250,250,250,0.30 · 0.32 · 0.34)` | nome sobre a placa de miniatura |
+| `xadrez-claro` | `#3a3d42` | quadrados claros do fundo de transparência |
+| `xadrez-escuro` | `#2c2f33` | quadrados escuros do fundo de transparência |
+
+O xadrez é a utilidade `xadrez` (quadrados de 8 px) e vai em **todo** asset cujo formato tem alfa
+(PNG, WebP). JPEG não tem alfa e não recebe xadrez.
+
+### Etiquetas de categoria
+
+Oito tons com a mesma luminosidade (OKLCH L 0,74) e croma contido (0,10). Só a matiz muda, e
+nenhuma fica a menos de 40° do destaque (350°). Aparecem só como marcador pequeno ao lado do nome
+da categoria, **nunca sozinhas**.
+
+| Token | Valor | Matiz | s/ `superficie` |
+|---|---|---:|---:|
+| `etiqueta-campeoes` | `#92a8eb` | 270° | 6,19 |
+| `etiqueta-itens` | `#d79e65` | 65° | 6,16 |
+| `etiqueta-runas` | `#55bfb3` | 185° | 6,51 |
+| `etiqueta-feiticos` | `#61b7de` | 230° | 6,41 |
+| `etiqueta-icones` | `#e39385` | 30° | 6,03 |
+| `etiqueta-emotes` | `#b9ac5f` | 100° | 6,27 |
+| `etiqueta-wards` | `#82bc83` | 145° | 6,50 |
+| `etiqueta-mapas` | `#b99bde` | 305° | 6,04 |
+
+### Fora do tema
+
+| Valor | Onde |
+|---|---|
+| `rgba(18, 19, 21, 0.72)` (`--veu`) | véu atrás do painel |
+| `rgba(240, 114, 179, 0.32)` | `::selection` |
 
 ## Tipografia
 
-Duas famílias, e a divisão entre elas é semântica, não decorativa:
+Uma família: **Schibsted Grotesk**, pelo `next/font`, subconjunto latino, um woff2 variável.
+Três pesos: **400** (texto), **600** (nomes, botões, item ativo) e **800** (marca, título do
+painel). Nada de mono: resolução, peso, contagem e progresso usam `tabular-nums` da própria
+família. Nenhum rótulo em caixa-alta.
 
-| Token | Família | Para quê |
-|---|---|---|
-| `fonte-interface` | `"Inter Tight", system-ui, sans-serif` | tudo que é linguagem |
-| `fonte-mono` | `"JetBrains Mono", monospace` | **metadado técnico**: resolução, formato, bytes, contagem, tecla, rótulo de seção |
-
-Pesos usados: **400**, **500**, **600**. Nenhum outro aparece no arquivo.
+| Token | Família |
+|---|---|
+| `fonte-interface` | `"Schibsted Grotesk", system-ui, sans-serif` |
 
 ### Escala
 
-| Token | Tamanho | No design |
+A raiz é 14 px.
+
+| Token | Tamanho | Onde |
 |---|---:|---|
-| `texto-9` | 9px | nome curto no strip de skins, etiqueta "skin" |
-| `texto-10` | 10px | rótulo de seção, contagem, tecla, nota |
-| `texto-11` | 11px | metadado, nome no cartão, dica |
-| `texto-12` | 12px | botão, título de seção |
-| `texto-13` | 13px | corpo, campo de busca, item de lista |
-| `texto-14` | 14px | base do documento, campo da paleta, estado vazio |
-| `texto-16` | 16px | campo de busca principal, título de seção grande (T-45) |
-| `texto-19` | 19px | título do painel |
-| `texto-22` | 22px | título sobre a arte, no painel do campeão (T-45) |
+| `texto-11` | 11px | aviso legal, contagem, dica curta |
+| `texto-12` | 12px | botão, metadado, controle segmentado |
+| `texto-13` | 13px | nome no tile, item de lista, corpo compacto |
+| `texto-14` | 14px | corpo, campo de busca da categoria |
+| `texto-16` | 16px | campo de busca principal |
+| `texto-20` | 20px | título do painel |
+| `texto-26` | 26px | título de página (Sobre) |
 
 ### Entrelinha e espacejamento
 
 | Token | Valor | Onde |
 |---|---|---|
-| `entrelinha-apertada` | `1.2` | título do painel |
-| `entrelinha-cartao` | `1.25` / `1.3` | nome sobre a placa / nome do cartão |
-| `entrelinha-solta` | `1.7` | rodapé da barra lateral |
-| `espacejamento-titulo` | `-0.02em` | título do painel (19px) |
-| `espacejamento-marca` | `-0.01em` | nome do produto |
-| `espacejamento-rotulo` | `0.06em` | rótulo de seção em caixa alta |
+| `entrelinha-apertada` | `1.2` | títulos |
+| `entrelinha-cartao` | `1.3` | nome e contagem do tile |
+| `entrelinha-solta` | `1.6` | aviso legal, texto corrido |
+| `espacejamento-titulo` | `-0.01em` | títulos de 20 px ou mais |
+| `espacejamento-marca` | `-0.02em` | nome do produto |
 
 ## Raio
 
+Uma hierarquia, não um raio em tudo: a arte é quadro, não cartão.
+
 | Token | Valor | Onde |
 |---|---:|---|
-| `raio-min` | 3px | etiqueta "skin" |
-| `raio-tecla` | 4px | tecla, placa da paleta |
-| `raio-marca` | 5px | quadrado da marca |
-| `raio` | 6px | **o padrão**: botão, campo, cartão, item de lista |
-| `raio-medio` | 8px | prévia grande do painel |
-| `raio-grande` | 10px | caixa da paleta |
+| `raio-quadro` | 2px | tile, prévia, miniatura |
+| `raio-controle` | 6px | botão, campo, chip, controle segmentado |
+| `raio-painel` | 12px | painel, menu da busca, aviso |
 
 ## Altura de controle
 
 | Token | Valor | Onde |
 |---|---:|---|
-| `controle-min` | 17px | caixa de seleção no cartão |
+| `controle-min` | 17px | caixa de seleção no tile |
 | `controle-xs` | 24px | seta de skin anterior/próxima |
-| `controle-sm` | 26px | fechar painel |
-| `controle-md` | 28px | botão de variante, botão do rodapé do painel |
-| `controle` | 30px | botão da bandeja |
-| `controle-lg` | 32px | campo de busca, botão do cabeçalho |
-| `barra` | 36px | faixa do título da grade |
-| `paleta-rodape` | 34px | rodapé da paleta |
-| `paleta-campo` | 44px | campo da paleta |
-| `cabecalho` | 48px | cabeçalho e topo da barra lateral |
-| `bandeja` | 52px | bandeja do lote |
-| `controle-xl` | 44px | campo de busca principal; alvo de toque no celular (T-45) |
-
-## Espaçamento
-
-O design usa uma escala de 4 com dois valores ímpares deliberados (5 e 7) em espaços
-apertados de cartão. `gap` da grade: **6px**. `padding` de seção: **14px**.
-
-| Valor | Onde |
-|---|---|
-| 2, 3, 4 | ajustes finos dentro de cartão e etiqueta |
-| 5, 6, 7 | `gap` da grade, espaço entre botões, respiro do cartão |
-| 8, 10, 12, 14 | `gap` de seção e `padding` de container |
-| 18, 24, 26 | respiros grandes do painel |
+| `controle-sm` | 26px | segmento do controle segmentado, fechar |
+| `controle-md` | 28px | botão de variante, chip |
+| `controle` | 30px | botão da barra do lote |
+| `controle-lg` | 32px | botão do cabeçalho |
+| `barra` | 36px | faixa de título |
+| `paleta-rodape` | 34px | rodapé do menu da busca |
+| `paleta-campo` | 44px | campo do menu da busca |
+| `cabecalho` | 48px | cabeçalho do painel |
+| `bandeja` | 52px | barra do lote |
+| `topo` | 56px | o topo do site, com a busca |
+| `controle-xl` | 44px | campo de busca principal; alvo de toque no celular |
 
 ## Largura
 
 | Token | Valor | Onde |
 |---|---:|---|
 | `barra-lateral` | 208px | coluna da esquerda |
-| `busca-max` | 560px | campo de busca do cabeçalho |
-| `paleta-max` | `min(620px, 88%)` | caixa da paleta |
-| `painel` | `min(540px, 74%)` | painel do asset |
-| `alvo-cartao-compacto` | 112px | largura-alvo do cartão (modo compacto, T-55) |
-| `alvo-cartao-denso` | 152px | largura-alvo do cartão (modo denso) |
-| `alvo-cartao-confortavel` | 210px | largura-alvo do cartão (modo confortável) |
-
-> **`alvo-cartao-compacto` entrou no T-55**, e não estava no desenho da v2. O desenho
-> tinha dois passos de densidade; medido na produção, o "denso" dava 7 colunas e 28
-> campeões numa tela de 1440, e no telefone os dois passos davam as mesmas 2 colunas —
-> o controle aparecia e não mudava nada. 112px é a largura em que cabem 3 colunas em
-> 390px de tela e 11 numa de 1440, com a arte ainda reconhecível.
+| `busca-max` | 560px | campo de busca do topo |
+| `alvo-cartao-compacto` | 112px | largura-alvo do tile (compacto, T-55) |
+| `alvo-cartao-denso` | 152px | largura-alvo do tile (denso) |
+| `alvo-cartao-confortavel` | 210px | largura-alvo do tile (confortável) |
 
 ## Altura de tela
 
@@ -198,77 +159,33 @@ apertados de cartão. `gap` da grade: **6px**. `padding` de seção: **14px**.
 |---|---|---|
 | `baixa:` | `max-height: 500px` | a janela volta a rolar inteira; a galeria virtual ganha a altura da tela |
 
-> **Entrou no T-67.** A casca tem altura fixa e rola por dentro: a barra lateral fica
-> parada enquanto a galeria passa. Medido na produção em 21/09/2026: com zoom de 400%
-> (320×225 px úteis), o cromo ocupava a tela inteira e a galeria de Itens tinha **0 px**;
-> com 200% (640×450), 174 px de 450. 500px cobre o zoom de 200% num monitor 1080p (cerca
-> de 475px úteis) e todo telefone deitado, e deixa de fora o menor telefone em pé
-> (568px), onde a casca ainda funciona: a galeria fica com metade da tela.
+Entrou no T-67: com zoom de 400%, o cromo de altura fixa ocupava a tela inteira e a galeria
+ficava com 0 px.
 
 ## Movimento
 
-Uma animação só no arquivo inteiro:
+Movimento só em resposta a uma ação, para mostrar o que mudou, e só com `transform` e `opacity`:
 
-```css
-@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.45 } }
-```
+1. **Abrir um campeão:** o painel nasce na posição e no tamanho do tile tocado e cresce até o
+   lugar dele, com escala uniforme.
+2. **Confirmar um download:** o botão mostra o sinal de confirmado, e o aviso "Baixado:
+   <arquivo>" surge no canto (`surgir`, 160 ms).
 
-`1.2s ease-in-out infinite`, com atraso escalonado por coluna (`0.06s` por índice), usada
-**só** no esqueleto de carregamento.
+Além deles, o pulso do esqueleto (`pulsar`, 1,2 s) e o giro do ícone enquanto um arquivo baixa. Sem
+zoom no `hover` e sem entrada em *fade* nas seções. Toda transição de estado usa a mesma curva:
 
-**Acréscimo de 14/09/2026 (T-45).** Transição de estado — imagem que entra, *hover* de
-cartão, painel que abre — dura **150 ms** (`duration-150`) ou **200 ms** (`duration-200`),
-sempre com a mesma curva:
+| Token | Valor |
+|---|---|
+| `curva-saida` | `cubic-bezier(0.2, 0.8, 0.2, 1)` |
 
-| Token | Valor | Onde |
-|---|---|---|
-| `curva-saida` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | toda transição de estado |
-
-Movimento diz estado, nunca enfeita. Quem pede menos movimento ao sistema
-(`prefers-reduced-motion`) recebe transição e pulso instantâneos.
-
-**Acréscimo de 15/09/2026 (T-47b).** Uma segunda animação: o ícone do botão de download
-**gira** enquanto o arquivo baixa (`animate-spin` do Tailwind, 1 s linear) e vira ✓ quando
-termina. Ela diz estado — há um download em andamento neste botão — e some junto com ele. Com
-`prefers-reduced-motion`, o giro para, e o ícone continua dizendo o estado.
+Com `prefers-reduced-motion`, tudo vira instantâneo, e o estado continua dito por texto e ícone.
 
 ## Foco
 
 ```css
-:focus { outline: none }
-:focus-visible { outline: 2px solid #8b5cf6; outline-offset: 1px }
+:focus-visible { outline: 2px solid var(--color-acento); outline-offset: 2px }
 ```
 
-O anel de foco é o acento. Cartão e item selecionados usam `outline: 2px solid #8b5cf6` com
-`outline-offset: 2px` — o mesmo desenho, aplicado a estado em vez de foco.
-
-## Os rótulos das variantes, corrigidos
-
-O mock rotula **1280×720** como "corte do cliente" e **1215×717** como "corte centralizado" —
-o inverso do [ADR 0002](../adr/0002-nomes-canonicos-de-corte-de-splash.md), que é medido e
-reverificado todo dia pelos testes de contrato das fontes.
-
-**Decisão de 10/09/2026:** as palavras do design ficam, no tipo certo. A troca no mock é dado
-de exemplo errado, não decisão de design.
-
-| Tipo no índice | Resolução medida | Rótulo na tela |
-|---|---|---|
-| `splash_centered` | 1280×720 | Splash — corte centralizado |
-| `splash_wide` | 1215×717 | Splash — corte do cliente |
-
-## O que este documento **não** decide
-
-O design não desenhou quatro coisas que os requisitos exigem. Elas **não** são inventadas
-aqui — o T-30 as desenha com os tokens desta página e os padrões que já existem no arquivo,
-sem criar um segundo sistema:
-
-1. **Rodapé legal da Riot** (RF-21) — obrigatório em toda página, e o layout do design é
-   `100vh` sem rodapé. **Decidido em 10/09/2026:** vai no pé da barra lateral, onde hoje
-   ficam as contagens, com link para a página "Sobre".
-2. **Chromas atrás de um controle** (RF-06).
-3. **Filtros de categoria** (RF-08) — a barra lateral navega categorias, mas não filtra
-   dentro delas.
-4. **Aviso de índice velho** (T-31) e **erro por asset**.
-
-O design também expõe uma densidade de grade (`densa` / `confortável`) que nenhum requisito
-pede. Fica registrada como **T-40**, não construída no T-30.
+O anel é o destaque, **afastado 2 px**: sobre uma arte clara o magenta cai para 2,71:1 contra o
+branco, e o afastamento o põe sobre o fundo da página (6,04:1). Seleção para o lote tem contorno
+no destaque **e** marca de seleção; a cor nunca diz o estado sozinha.

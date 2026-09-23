@@ -150,8 +150,8 @@ export default function HomePage() {
         <p role="status" className="sr-only">
           Carregando o catálogo…
         </p>
-        <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
-          <Esqueleto className="h-controle-xl w-full max-w-busca-max rounded-medio" />
+        <div className="flex flex-none items-center border-b border-linha px-3.5 py-2">
+          <Esqueleto className="h-controle-xl w-full max-w-busca-max rounded-controle" />
         </div>
         {/*
           A mesma árvore da tela pronta (T-59): a barra de filtro **dentro** do
@@ -160,7 +160,7 @@ export default function HomePage() {
           catálogo chegava — parte do salto de 0,16 medido na produção.
         */}
         <div data-conteudo="" className="flex min-h-0 flex-1 flex-col overflow-hidden baixa:overflow-visible">
-          <div className="flex flex-none items-center border-b border-borda px-3.5 py-2">
+          <div className="flex flex-none items-center border-b border-linha px-3.5 py-2">
             <Esqueleto className="h-controle-md w-80 max-w-full" />
           </div>
           <EsqueletoDaGrade />
@@ -230,7 +230,7 @@ export default function HomePage() {
       */}
       <a
         href="#conteudo"
-        className="sr-only left-3.5 z-30 rounded-padrao border border-borda-forte bg-superficie px-3 py-2 text-12 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
+        className="sr-only left-3.5 z-30 rounded-controle border border-linha-forte bg-superficie px-3 py-2 text-12 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
       >
         Ir para o conteúdo
       </a>
@@ -271,7 +271,7 @@ export default function HomePage() {
         )}
       </div>
 
-      <p className="flex-none border-t border-borda px-3.5 py-1.5 font-mono text-10 text-texto-suave">
+      <p className="flex-none border-t border-linha px-3.5 py-1.5 tabular-nums text-11 text-texto-suave">
         Patch {manifest.currentVersion} · {catalog.champions.length.toLocaleString("pt-BR")}{" "}
         campeões · {catalog.skins.length.toLocaleString("pt-BR")} skins
       </p>

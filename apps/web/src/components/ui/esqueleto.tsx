@@ -10,5 +10,5 @@
 import { cn } from "@/lib/utils";
 
 export function Esqueleto({ className }: { readonly className?: string }) {
-  return <div aria-hidden="true" className={cn("animate-pulsar rounded-padrao bg-campo", className)} />;
+  return <div aria-hidden="true" className={cn("animate-pulsar rounded-controle bg-superficie-alta", className)} />;
 }

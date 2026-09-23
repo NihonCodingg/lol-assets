@@ -73,7 +73,7 @@ export function BotaoIcone({
         data-dica={dicaAberta ? "aberta" : "fechada"}
         className={cn(
           "pointer-events-none absolute right-0 bottom-full z-10 mb-1.5 whitespace-nowrap",
-          "rounded-tecla border border-borda-forte bg-campo-alto px-2 py-1 text-12 text-texto shadow-[var(--sombra-paleta)]",
+          "rounded-controle border border-linha-forte bg-campo px-2 py-1 text-12 text-texto",
           // O atraso do Radix (300 ms) no hover; no foco e no clique, na hora.
           "opacity-0 transition-opacity duration-150 ease-saida group-hover/dica:opacity-100 group-hover/dica:delay-300",
           "group-has-[:focus-visible]/dica:opacity-100 group-has-[:focus-visible]/dica:delay-0",

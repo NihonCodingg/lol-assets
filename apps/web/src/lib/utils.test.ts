@@ -4,12 +4,12 @@ import { cn } from "./utils";
 
 /**
  * O `cn` precisa conhecer o vocabulário do tema. Quando não conhece, ou descarta
- * a classe errada (T-28: `text-12` apagando `text-superficie`), ou mantém as duas
+ * a classe errada (T-28: `text-12` apagando `text-fundo`), ou mantém as duas
  * e deixa a ordem do CSS decidir (T-48: `h-controle-lg` com `h-controle-md`).
  */
 describe("cn", () => {
   it("tamanho de texto e cor de texto não são o mesmo grupo", () => {
-    expect(cn("text-superficie text-12", "text-13")).toBe("text-superficie text-13");
+    expect(cn("text-fundo text-12", "text-13")).toBe("text-fundo text-13");
   });
 
   it("a altura com nome de fora vence a de dentro", () => {

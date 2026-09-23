@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 import { ProvedorDeNavegacao } from "@/components/navegacao-context";
 import { Rodape } from "@/components/rodape";
-import { fonteInterface, fonteMono } from "@/lib/fontes";
+import { RegiaoDeConfirmacoes } from "@/components/ui/confirmacoes";
+import { fonteInterface } from "@/lib/fontes";
 import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
@@ -37,7 +38,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${fonteInterface.variable} ${fonteMono.variable}`}>
+    <html lang="pt-BR" className={fonteInterface.variable}>
       {/* Abaixo de `md` a barra lateral vira faixa no topo: 208px fixos num
           telefone de 375px deixariam 167px para a grade, que não é largura de
           nada. Acima, as duas colunas do design.
@@ -54,6 +55,7 @@ export default function RootLayout({
           <Rodape />
           <div className="flex min-h-0 min-w-0 flex-col">{children}</div>
         </ProvedorDeNavegacao>
+        <RegiaoDeConfirmacoes />
       </body>
     </html>
   );

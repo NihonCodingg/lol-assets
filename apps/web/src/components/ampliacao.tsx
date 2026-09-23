@@ -88,10 +88,10 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
             src={url}
             alt={nome}
             data-ampliacao=""
-            className="max-h-[78vh] max-w-full rounded-medio object-contain"
+            className="max-h-[78vh] max-w-full rounded-quadro object-contain"
           />
-          <p className="mt-2 text-13 font-medium text-texto-forte">{nome}</p>
-          <p className="font-mono text-11 text-texto-suave">{assetSummary(asset)}</p>
+          <p className="mt-2 text-13 font-semibold text-texto">{nome}</p>
+          <p className="tabular-nums text-11 text-texto-suave">{assetSummary(asset)}</p>
           {/* Baixar daqui (T-53). Em tela de toque a faixa do tile não aparece,
               e este é o caminho: tocar na arte, conferir grande, baixar. */}
           <AcoesDoAsset asset={asset} url={url} baixar={baixar} copiar={copiar} className="mt-1" />

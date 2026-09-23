@@ -28,10 +28,10 @@ export default function SobrePage() {
   return (
     <main className="min-h-0 flex-1 overflow-y-auto px-3.5 py-6 baixa:overflow-visible">
       <div className="mx-auto flex max-w-busca-max flex-col gap-6">
-      <h1 className="text-19 font-semibold tracking-titulo">Sobre</h1>
+      <h1 className="text-20 font-semibold tracking-titulo">Sobre</h1>
 
-      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="O que é">
-        <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">O que é</h2>
+      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto" aria-label="O que é">
+        <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">O que é</h2>
         <p>
           {siteConfig.displayName} é um catálogo de assets visuais de League of Legends: um
           índice que diz onde cada arte está, em que resolução e em que formato, para que
@@ -44,8 +44,8 @@ export default function SobrePage() {
         </p>
       </section>
 
-      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="Como usar">
-        <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">Como usar</h2>
+      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto" aria-label="Como usar">
+        <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">Como usar</h2>
         {/* T-50: quem chega por um link de amigo não sabe que "mf" acha a Miss
             Fortune, nem que o PNG é convertido no próprio navegador. */}
         <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-texto-suave">
@@ -69,23 +69,23 @@ export default function SobrePage() {
         </ul>
       </section>
 
-      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="Não afiliação">
-        <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">Não afiliação</h2>
+      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto" aria-label="Não afiliação">
+        <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">Não afiliação</h2>
         {/* RF-21 e RNF-10. Os mesmos dois textos do rodapé, aqui em destaque. */}
-        <p data-aviso="riot" lang="en" className="rounded-padrao border border-borda-forte bg-campo p-2.5 font-mono text-11 leading-cartao text-texto-suave">
+        <p data-aviso="riot" lang="en" className="rounded-controle border border-linha-forte bg-superficie-alta p-2.5 tabular-nums text-11 leading-cartao text-texto-suave">
           {siteConfig.riotLegalNotice}
         </p>
-        <p data-aviso="jibber-jabber" lang="en" className="rounded-padrao border border-borda-forte bg-campo p-2.5 font-mono text-11 leading-cartao text-texto-suave">
+        <p data-aviso="jibber-jabber" lang="en" className="rounded-controle border border-linha-forte bg-superficie-alta p-2.5 tabular-nums text-11 leading-cartao text-texto-suave">
           {siteConfig.riotJibberJabberNotice}
         </p>
         <p>
           Os dois avisos são exigidos pela Riot Games e ficam no idioma original, copiados
           das políticas: o primeiro das{" "}
-          <a href={RIOT_POLICY_URLS.portal} className="underline underline-offset-2 text-acento-claro hover:text-acento-mais-claro">
+          <a href={RIOT_POLICY_URLS.portal} className="underline underline-offset-2 text-acento-forte hover:text-acento">
             políticas do Developer Portal
           </a>
           , o segundo da{" "}
-          <a href={RIOT_POLICY_URLS.jibberJabber} className="underline underline-offset-2 text-acento-claro hover:text-acento-mais-claro">
+          <a href={RIOT_POLICY_URLS.jibberJabber} className="underline underline-offset-2 text-acento-forte hover:text-acento">
             Legal Jibber Jabber
           </a>
           .
@@ -96,12 +96,12 @@ export default function SobrePage() {
         </p>
       </section>
 
-      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="Fontes e créditos">
-        <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">Fontes e créditos</h2>
+      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto" aria-label="Fontes e créditos">
+        <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">Fontes e créditos</h2>
         <ul className="flex flex-col gap-2">
           {creditos.map((credito) => (
-            <li key={credito.fonte} data-fonte={credito.fonte} className="rounded-padrao border border-borda-forte p-2.5">
-              <a href={credito.url} className="font-medium underline underline-offset-2 text-acento-claro hover:text-acento-mais-claro">
+            <li key={credito.fonte} data-fonte={credito.fonte} className="rounded-controle border border-linha-forte p-2.5">
+              <a href={credito.url} className="font-semibold underline underline-offset-2 text-acento-forte hover:text-acento">
                 {credito.nome}
               </a> — {credito.papel}
               {credito.licencaDoTexto && <> Licença do conteúdo: {credito.licencaDoTexto}.</>}
@@ -110,8 +110,8 @@ export default function SobrePage() {
         </ul>
       </section>
 
-      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto-medio" aria-label="Licenças">
-        <h2 className="mb-1.5 text-12 font-medium uppercase tracking-rotulo text-texto-suave">Licenças</h2>
+      <section className="flex flex-col gap-2 text-13 leading-cartao text-texto" aria-label="Licenças">
+        <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">Licenças</h2>
         <p>
           <strong>A arte é da Riot Games.</strong> Toda ela, em todas as fontes. Este projeto
           não reivindica direito nenhum sobre as imagens e não altera a licença delas: ele
@@ -119,7 +119,7 @@ export default function SobrePage() {
         </p>
         <p>
           O <strong>código</strong> deste projeto é aberto e está em{" "}
-          <a href={siteConfig.repositoryUrl} className="underline underline-offset-2 text-acento-claro hover:text-acento-mais-claro">
+          <a href={siteConfig.repositoryUrl} className="underline underline-offset-2 text-acento-forte hover:text-acento">
             {siteConfig.repositoryUrl}
           </a>. O índice gerado
           descreve arquivos de terceiros e não contém nenhum deles.
@@ -127,7 +127,7 @@ export default function SobrePage() {
       </section>
 
       <p>
-        <Link href="/" className="text-13 underline underline-offset-2 text-acento-claro hover:text-acento-mais-claro">
+        <Link href="/" className="text-13 underline underline-offset-2 text-acento-forte hover:text-acento">
           Voltar ao catálogo
         </Link>
       </p>

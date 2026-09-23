@@ -40,7 +40,7 @@ describe("Botão", () => {
     const classes = [...container.querySelectorAll("button")].map((b) => b.className);
     expect(new Set(classes).size).toBe(3);
     expect(classes[0]).toContain("bg-acento");
-    expect(classes[1]).toContain("border-borda-forte");
+    expect(classes[1]).toContain("border-linha-forte");
   });
 
   it("desabilitado parece desabilitado, não só ignora o clique", () => {
@@ -54,7 +54,7 @@ describe("Botão", () => {
     render(<Botao className="w-full">x</Botao>);
     const classe = screen.getByRole("button").className;
     expect(classe).toContain("w-full");
-    expect(classe).toContain("rounded-padrao");
+    expect(classe).toContain("rounded-controle");
   });
 });
 
@@ -83,22 +83,22 @@ describe("Tecla", () => {
 // --- rótulos ------------------------------------------------------------------------
 
 describe("rótulos", () => {
-  it("o rótulo de seção é mono, caixa alta e com o espacejamento do design", () => {
+  it("o rótulo de seção não é mono nem caixa-alta espaçada (ADR 0024)", () => {
     const { container } = render(<RotuloDeSecao>Categorias</RotuloDeSecao>);
     const classe = container.firstElementChild!.className;
-    expect(classe).toContain("font-mono");
-    expect(classe).toContain("uppercase");
-    expect(classe).toContain("tracking-rotulo");
+    expect(classe).not.toContain("font-mono");
+    expect(classe).not.toContain("uppercase");
+    expect(classe).toContain("text-texto-suave");
   });
 
-  it("metadado técnico é sempre mono — é assim que o design separa número de texto", () => {
+  it("metadado técnico usa algarismos tabulares da própria família", () => {
     const { container } = render(<Meta>1280×720 · jpeg · 121 KB</Meta>);
-    expect(container.firstElementChild!.className).toContain("font-mono");
+    expect(container.firstElementChild!.className).toContain("tabular-nums");
   });
 
-  it("a etiqueta usa o acento mais claro sobre o véu violeta", () => {
+  it("a etiqueta usa o destaque sobre o fundo magenta escuro", () => {
     const { container } = render(<Etiqueta>skin</Etiqueta>);
-    expect(container.firstElementChild!.className).toContain("text-acento-mais-claro");
+    expect(container.firstElementChild!.className).toContain("text-acento");
   });
 });
 

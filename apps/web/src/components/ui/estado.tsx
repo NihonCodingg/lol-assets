@@ -47,12 +47,12 @@ export function Estado({
       role={role}
       className={cn("flex flex-col items-center gap-2 px-3.5 py-16 text-center", className)}
     >
-      <div className="mb-1 grid size-10 place-items-center rounded-medio border border-borda-forte bg-campo text-texto-suave">
+      <div className="mb-1 grid size-10 place-items-center rounded-controle border border-linha-forte bg-superficie-alta text-texto-suave">
         <Icone aria-hidden="true" strokeWidth={1.75} className="size-5" />
       </div>
-      <p className="text-14 font-medium text-texto-forte">{titulo}</p>
+      <p className="text-14 font-semibold text-texto">{titulo}</p>
       {children && <div className="max-w-md text-13 leading-cartao text-texto-suave">{children}</div>}
-      {detalhe && <p className="font-mono text-11 text-texto-suave">{detalhe}</p>}
+      {detalhe && <p className="tabular-nums text-11 text-texto-suave">{detalhe}</p>}
       {acao && <div className="mt-2 flex flex-wrap items-center justify-center gap-2">{acao}</div>}
     </div>
   );
