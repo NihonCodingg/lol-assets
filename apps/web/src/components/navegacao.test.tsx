@@ -226,7 +226,7 @@ describe("orçamento de 3 cliques", () => {
       />,
     );
     const cartao = screen.getByLabelText("Jax_004_splash_centered.jpg");
-    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar original" }));
+    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar PNG" }));
 
     expect(cliques.total).toBe(2);
   });
@@ -250,7 +250,7 @@ describe("orçamento de 3 cliques", () => {
       />,
     );
     const cartao = screen.getByLabelText("Jax_square.png");
-    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar original" }));
+    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar PNG" }));
 
     expect(cliques.total).toBe(2);
   });
@@ -276,7 +276,7 @@ describe("orçamento de 3 cliques", () => {
     cliques.clicar(screen.getByRole("radio", { name: "Jax Deus da Guerra" }));
 
     const cartao = screen.getByLabelText("Jax_004_splash_centered.jpg");
-    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar original" }));
+    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar PNG" }));
 
     expect(cliques.total).toBe(3);
   });
@@ -301,7 +301,7 @@ describe("orçamento de 3 cliques", () => {
     cliques.clicar(screen.getByRole("radio", { name: "Jax Deus da Guerra" }));
 
     const cartao = screen.getByLabelText("Jax_004_splash_centered.jpg");
-    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar original" }));
+    cliques.clicar(within(cartao).getByRole("button", { name: "Baixar PNG" }));
 
     expect(cliques.total).toBe(3);
   });

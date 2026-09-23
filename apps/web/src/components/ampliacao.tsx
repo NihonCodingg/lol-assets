@@ -29,7 +29,8 @@ import type { Asset } from "@lol-assets/schema";
 
 import { AcoesDoAsset } from "@/components/painel-de-asset";
 import { BotaoIcone } from "@/components/ui/botao-icone";
-import { assetSummary } from "@/lib/asset-file";
+import { GlifoDeProporcao } from "@/components/ui/quadro";
+import { formatBytes } from "@/lib/asset-file";
 import { rotuloDoTipo } from "@/lib/asset-panel";
 import { useFocoDeVolta } from "@/lib/foco";
 import { useFecharComVoltar } from "@/lib/voltar";
@@ -48,7 +49,7 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
   // Voltar fecha a ampliação, não o site (T-70).
   useFecharComVoltar(true, onFechar);
   const foco = useFocoDeVolta();
-  const nome = `${asset.names.pt_BR} — ${rotuloDoTipo(asset.type)}`;
+  const nome = `${rotuloDoTipo(asset.type)} de ${asset.names.pt_BR}`;
 
   return (
     <Dialog.Root open onOpenChange={(aberta) => !aberta && onFechar()}>
@@ -91,7 +92,16 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
             className="max-h-[78vh] max-w-full rounded-quadro object-contain"
           />
           <p className="mt-2 text-13 font-semibold text-texto">{nome}</p>
-          <p className="tabular-nums text-11 text-texto-suave">{assetSummary(asset)}</p>
+          {/* RF-09: a ficha, em colunas de texto, sem o ponto médio (ADR 0024). */}
+          <p className="flex items-center gap-3 text-12 tabular-nums text-texto-suave">
+            <span className="inline-flex items-center gap-1.5">
+              <GlifoDeProporcao largura={asset.width} altura={asset.height} />
+              {asset.width}×{asset.height}
+            </span>
+            <span>{asset.format.toUpperCase()}</span>
+            <span>{formatBytes(asset.bytes)}</span>
+            <span>{asset.source}</span>
+          </p>
           {/* Baixar daqui (T-53). Em tela de toque a faixa do tile não aparece,
               e este é o caminho: tocar na arte, conferir grande, baixar. */}
           <AcoesDoAsset asset={asset} url={url} baixar={baixar} copiar={copiar} className="mt-1" />

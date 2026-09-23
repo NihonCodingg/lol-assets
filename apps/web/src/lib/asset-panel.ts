@@ -46,30 +46,31 @@ export const TYPE_ORDER: readonly AssetType[] = [
 /**
  * O nome legível de cada tipo, na tela.
  *
- * As palavras vêm do design; **o mapeamento foi corrigido**. O mock entregue em
- * 10/09 rotulava 1280×720 como "corte do cliente" e 1215×717 como "corte
- * centralizado" — o inverso do [ADR 0002], que é medido e reverificado todo dia
- * pelos testes de contrato das fontes. A divergência foi levantada e a decisão
- * foi manter as palavras no tipo certo:
+ * As palavras são do usuário (Plano de Design, §3): "Splash centralizada",
+ * "Square", "Tela de carregamento". O [ADR 0002] é medido e reverificado todo
+ * dia pelos testes de contrato das fontes, e o mapeamento segue ele:
  *
  * | Tipo | Medido | Rótulo |
  * |---|---|---|
- * | `splash_centered` | 1280×720 | Splash — corte centralizado |
- * | `splash_wide` | 1215×717 | Splash — corte do cliente |
+ * | `splash_centered` | 1280×720 | Splash centralizada |
+ * | `splash_wide` | 1215×717 | Splash larga (o corte do cliente) |
+ *
+ * Sem o travessão de antes ("Splash — corte centralizado"): rótulo montado como
+ * "palavra — fragmento" é um dos traços de template que o [ADR 0024] tirou.
  *
  * Tipo sem rótulo cai no próprio nome, que é feio mas honesto — melhor do que
  * sumir da tela porque ninguém lembrou de traduzir.
  */
 export const ROTULO_DO_TIPO: Partial<Record<AssetType, string>> = {
-  splash_centered: "Splash — corte centralizado",
-  splash_wide: "Splash — corte do cliente",
+  splash_centered: "Splash centralizada",
+  splash_wide: "Splash larga",
   loading: "Tela de carregamento",
-  loading_vintage: "Tela de carregamento — versão antiga",
-  tile: "Tile quadrado",
+  loading_vintage: "Tela de carregamento antiga",
+  tile: "Tile",
   chroma: "Chroma",
-  square: "Ícone do campeão",
-  passive_icon: "Ícone da passiva",
-  ability_icon: "Ícone de habilidade",
+  square: "Square",
+  passive_icon: "Passiva",
+  ability_icon: "Habilidade",
   item_icon: "Ícone do item",
   rune_icon: "Ícone da runa",
   rune_tree_icon: "Ícone da árvore",
@@ -77,13 +78,29 @@ export const ROTULO_DO_TIPO: Partial<Record<AssetType, string>> = {
   summoner_spell_icon: "Ícone do feitiço",
   profile_icon: "Ícone de perfil",
   emote_icon: "Emote",
-  ward_icon: "Ward skin",
+  ward_icon: "Ward",
   map_image: "Imagem do mapa",
   rank_emblem: "Emblema de elo",
 };
 
 export function rotuloDoTipo(tipo: AssetType): string {
   return ROTULO_DO_TIPO[tipo] ?? tipo;
+}
+
+/**
+ * O nome de uma variante no painel do campeão (T-83): o tipo, nas palavras do
+ * usuário; e, para passiva e habilidade, o nome dela com a tecla — "Q", "W", "E",
+ * "R" ou "P" —, que é como quem joga as reconhece. Chroma leva o nome dela.
+ */
+export function nomeDaVariante(
+  asset: Pick<Asset, "id" | "type" | "names">,
+): { readonly nome: string; readonly tecla?: string } {
+  if (asset.type === "ability_icon" || asset.type === "passive_icon") {
+    const tecla = /\.([A-Z])$/.exec(asset.id)?.[1];
+    return { nome: asset.names.pt_BR, tecla: asset.type === "passive_icon" ? "P" : tecla };
+  }
+  if (asset.type === "chroma") return { nome: asset.names.pt_BR };
+  return { nome: rotuloDoTipo(asset.type) };
 }
 
 const POSICAO = new Map(TYPE_ORDER.map((tipo, indice) => [tipo, indice]));
@@ -105,8 +122,16 @@ export function orderAssets(assets: readonly Asset[]): Asset[] {
     (a, b) =>
       posicaoDe(a.type) - posicaoDe(b.type) ||
       (a.skinNum ?? -1) - (b.skinNum ?? -1) ||
+      ordemDaTecla(a.id) - ordemDaTecla(b.id) ||
       a.id.localeCompare(b.id),
   );
+}
+
+/** As habilidades na ordem do teclado de quem joga — Q, W, E, R —, e não do alfabeto (T-83). */
+const TECLAS = ["Q", "W", "E", "R"];
+function ordemDaTecla(id: string): number {
+  const tecla = /\.([QWER])$/.exec(id)?.[1];
+  return tecla ? TECLAS.indexOf(tecla) : -1;
 }
 
 /** Os tipos presentes, na ordem do painel. Nenhum inventado. */

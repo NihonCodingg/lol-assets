@@ -152,12 +152,12 @@ test("na galeria, as ações não ficam por cima da arte", async ({ page }) => {
   // Desde o T-60 as ações nem entram no DOM sem apontar — e no toque não há o
   // que apontar. Mais forte que a opacidade 0 que este teste pedia no T-53: não
   // há botão nenhum por cima da arte.
-  await expect(tile.getByRole("button", { name: "Baixar original" })).toHaveCount(0);
+  await expect(tile.getByRole("button", { name: /^Baixar/ })).toHaveCount(0);
 
   // E o caminho continua existindo, com alvo de toque de verdade.
   await tile.getByRole("button", { name: /^Ampliar / }).click();
   const ampliacao = page.getByRole("dialog", { name: /^Ampliação de/ });
-  const baixar = ampliacao.getByRole("button", { name: "Baixar original" });
+  const baixar = ampliacao.getByRole("button", { name: "Baixar PNG" });
   await expect(baixar).toBeVisible();
   expect((await baixar.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 });

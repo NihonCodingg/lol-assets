@@ -105,7 +105,7 @@ implementa e pelo teste que o prova.
 | **RF-09** | O card mostra formato, resolução, tamanho e fonte **antes** do download | O card exibe `1280×720 · image/jpeg · 121 KB · ddragon` sem nenhum clique extra |
 | **RF-10** | Download individual entrega os **bytes de origem**, sem re-encode | O arquivo baixado é o que a fonte entregou ao navegador, com o formato e as dimensões do índice; nas fontes de bytes estáveis (`isByteStable` — hoje, só o ddragon), também o `sha256` do índice ([ADR 0019](adr/0019-o-sha256-do-cdragon-nao-confere-o-download.md)) |
 | **RF-11** | O botão "Baixar PNG" converte no navegador, no clique | O arquivo salvo é `image/png` com as mesmas dimensões; nenhum PNG foi armazenado no bucket |
-| **RF-12** | Asset com origem PNG não oferece conversão | O botão aparece desabilitado com rótulo "já é PNG" |
+| **RF-12** | Asset com origem PNG não oferece conversão | Um botão só, "Baixar PNG", que entrega o arquivo original sem conversão (emendado em 23/09/2026 pelo Plano de Design; antes, o botão aparecia desabilitado com rótulo "já é PNG") |
 | **RF-13** | Nome de arquivo previsível | `Jax_004_splash_centered.jpg`, `Item_3031.png`, `Rank_Diamond_IV.png` — casa com `^[A-Za-z0-9_.-]+\.(png\|jpg)$` |
 | **RF-14** | Copiar URL direta do arquivo | O clipboard recebe a URL pública que responde 200 |
 | **RF-15** | Do carregamento ao arquivo salvo: no máximo 3 cliques | Teste e2e conta os cliques do fluxo J1 e J2 e falha em > 3 |

@@ -60,18 +60,24 @@ describe("BotaoIcone", () => {
 // --- as duas formas de baixar (ADR 0001) ----------------------------------------------
 
 describe("ParDeDownload", () => {
-  it("o original é o primário e vem primeiro", () => {
+  it("\"Baixar PNG\" é o primário e vem primeiro; \"Original\" ao lado (Plano de Design, §5)", () => {
     render(<ParDeDownload podeConverter onOriginal={() => {}} onPng={() => {}} />);
-    const [original, png] = screen.getAllByRole("button");
-    expect(original.textContent).toContain("Baixar original");
-    expect(original.className).toContain("bg-acento");
-    expect(png.textContent).toBe("Baixar PNG");
+    const [png, original] = screen.getAllByRole("button");
+    expect(png.textContent).toContain("Baixar PNG");
+    expect(png.className).toContain("bg-acento");
+    expect(original.textContent).toBe("Original");
+    expect(original.getAttribute("aria-label")).toBe("Baixar original");
   });
 
-  it("origem PNG: o botão fica, desabilitado, dizendo 'Já é PNG' (RF-12)", () => {
-    render(<ParDeDownload podeConverter={false} onOriginal={() => {}} onPng={() => {}} />);
-    const png = screen.getByRole("button", { name: "Já é PNG" }) as HTMLButtonElement;
-    expect(png.disabled).toBe(true);
+  it("origem PNG: um botão só, que entrega o original sem conversão (RF-12, emendado)", () => {
+    const onOriginal = vi.fn();
+    const onPng = vi.fn();
+    render(<ParDeDownload podeConverter={false} onOriginal={onOriginal} onPng={onPng} />);
+    const botoes = screen.getAllByRole("button");
+    expect(botoes).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "Baixar PNG" }));
+    expect(onOriginal).toHaveBeenCalledTimes(1);
+    expect(onPng).not.toHaveBeenCalled();
   });
 
   it("download em andamento trava os dois", () => {

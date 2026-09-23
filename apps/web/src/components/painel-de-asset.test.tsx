@@ -96,10 +96,13 @@ describe("ficha honesta antes de qualquer download", () => {
     expect(ficha.textContent).toContain(asset.source);
   });
 
-  it("um asset que já é PNG não oferece conversão", () => {
+  it("um asset que já é PNG não oferece conversão: um botão só, que entrega o original (RF-12)", async () => {
     const square = DO_JAX.find((a) => a.format === "png")!;
-    abrir([square]);
-    expect(screen.getByRole("button", { name: "Já é PNG" }).hasAttribute("disabled")).toBe(true);
+    const { baixar } = abrir([square]);
+    expect(screen.queryByRole("button", { name: "Baixar original" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Baixar PNG" }));
+    await waitFor(() => expect(baixar).toHaveBeenCalledTimes(1));
+    expect(baixar.mock.calls[0][1]).toBe(false);
   });
 });
 
@@ -107,7 +110,8 @@ describe("ficha honesta antes de qualquer download", () => {
 
 describe("as duas formas de baixar (ADR 0001)", () => {
   it("original chama o download sem conversão", async () => {
-    const { baixar } = abrir([DO_JAX[0]]);
+    const jpeg = DO_JAX.find((a) => a.format === "jpeg")!;
+    const { baixar } = abrir([jpeg]);
     fireEvent.click(screen.getByRole("button", { name: "Baixar original" }));
 
     await waitFor(() => expect(baixar).toHaveBeenCalledTimes(1));
@@ -163,13 +167,6 @@ describe("copiar URL", () => {
     expect(screen.getByRole("button", { name: "Copiar link" })).toBeTruthy();
   });
 
-  it("na grade do painel do campeão, a dica é a do Radix, e abre sozinha", async () => {
-    const square = DO_JAX.find((a) => a.type === "square")!;
-    abrir([square], { grade: true });
-    fireEvent.click(screen.getByRole("button", { name: "Copiar link" }));
-    await waitFor(() => expect(screen.getByRole("tooltip").textContent).toBe("Link copiado"));
-  });
-
   it("sem área de transferência, diz que não deu — e nada quebra", async () => {
     // Fora de HTTPS o `navigator.clipboard` nem existe, e o erro sai síncrono.
     const square = DO_JAX.find((a) => a.type === "square")!;
@@ -210,7 +207,7 @@ describe("um asset que falha não derruba os outros", () => {
 
   it("o cartão que deu certo volta para pronto", async () => {
     abrir([DO_JAX[0]]);
-    fireEvent.click(screen.getByRole("button", { name: "Baixar original" }));
+    fireEvent.click(screen.getByRole("button", { name: "Baixar PNG" }));
 
     await waitFor(() => expect(cartoes()[0].dataset.estado).toBe("pronto"));
     expect(screen.queryByRole("alert")).toBeNull();
@@ -221,7 +218,7 @@ describe("um asset que falha não derruba os outros", () => {
     const baixar = vi.fn(() => new Promise<void>((resolve) => (liberar = resolve)));
     abrir([DO_JAX[0]], { baixar });
 
-    const botao = screen.getByRole("button", { name: "Baixar original" });
+    const botao = screen.getByRole("button", { name: "Baixar PNG" });
     fireEvent.click(botao);
 
     await waitFor(() => expect(botao.hasAttribute("disabled")).toBe(true));
@@ -295,14 +292,11 @@ describe("a galeria das categorias", () => {
    * acessível e na dica; os dois botões continuam lado a lado, do mesmo
    * tamanho, que é o que o [ADR 0001] pede.
    */
-  it("no tile estreito os dois viram ícone, sem perder o nome", () => {
+  it("no tile estreito o download vira ícone, sem perder o nome", () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     abrir([square]);
-    const original = screen.getByRole("button", { name: "Baixar original" });
-    const png = screen.getByRole("button", { name: /Baixar PNG|Já é PNG/ });
-    expect(original.textContent).toBe("");
+    const png = screen.getByRole("button", { name: "Baixar PNG" });
     expect(png.textContent).toBe("");
-    expect(original.querySelector("svg")).toBeTruthy();
     expect(png.querySelector("svg")).toBeTruthy();
   });
 
@@ -337,24 +331,24 @@ describe("a galeria das categorias", () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     render(<PainelDeAsset titulo="Jax" assets={[square]} onClose={vi.fn()} onAmpliar={vi.fn()} />);
     const tile = cartoes()[0];
-    expect(within(tile).queryByRole("button", { name: "Baixar original" })).toBeNull();
+    expect(within(tile).queryByRole("button", { name: "Baixar PNG" })).toBeNull();
     // A ficha fica: é ela que o RF-09 pede antes do download.
     expect(within(tile).getByText(/·/)).toBeTruthy();
 
     fireEvent.mouseEnter(tile);
-    expect(within(tile).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+    expect(within(tile).getByRole("button", { name: "Baixar PNG" })).toBeTruthy();
     fireEvent.mouseLeave(tile);
-    expect(within(tile).queryByRole("button", { name: "Baixar original" })).toBeNull();
+    expect(within(tile).queryByRole("button", { name: "Baixar PNG" })).toBeNull();
 
     // Pelo teclado: o foco entra pela prévia, que está sempre no DOM.
     fireEvent.focus(within(tile).getByRole("button", { name: /^Ampliar / }));
-    expect(within(tile).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+    expect(within(tile).getByRole("button", { name: "Baixar PNG" })).toBeTruthy();
   });
 
   it("sem nada focável antes delas, as ações ficam sempre — o teclado precisa chegar", () => {
     const square = DO_JAX.find((a) => a.type === "square")!;
     render(<PainelDeAsset titulo="Jax" assets={[square]} onClose={vi.fn()} />);
-    expect(within(cartoes()[0]).getByRole("button", { name: "Baixar original" })).toBeTruthy();
+    expect(within(cartoes()[0]).getByRole("button", { name: "Baixar PNG" })).toBeTruthy();
   });
 
   it("com a ampliação, a prévia vira o botão dela", () => {

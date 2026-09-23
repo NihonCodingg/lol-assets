@@ -11,45 +11,44 @@
  * nem a grade nem a lista de skins. O controle só existe quando a skin tem
  * chroma.
  *
- * **A seleção do lote mora aqui, não nos painéis.** "Tudo do Jax" (RF-18)
- * atravessa duas listas — a da skin e a dos chromas — e um estado por painel
- * faria o botão selecionar metade. Chroma só entra se estiver revelado, pela
- * mesma razão do RF-06: seleção que arrasta 43 chromas escondidos é a surpresa
- * que o RF-06 existe para evitar.
+ * **A seleção do lote mora aqui, não nas listas.** "Tudo do Jax" (RF-18)
+ * atravessa duas listas — a da skin e a dos chromas — e um estado por lista
+ * faria o botão selecionar metade. Chroma só entra se estiver revelado.
  *
- * ## A vitrine (T-47)
+ * ## O desenho (T-83, §5 do Plano de Design)
  *
- * O painel abre na arte: a splash da skin escolhida no topo, grande, e as skins
- * numa faixa de *tiles* logo abaixo — escolhe-se a skin pela imagem, não pelo
- * nome. Tudo rola junto; só o fechar e a bandeja do lote ficam parados. E há um
- * fechar só, o do canto: o "fechar" da lista de dentro saiu, porque fechava o
- * mesmo painel por outro caminho.
+ * De cima para baixo: o cabeçalho com o nome da skin e o fechar; a prévia 16:9
+ * com as marcas de corte e a guia de área segura; a faixa de skins; e as
+ * variantes em linhas, com a ficha em colunas e "Baixar PNG" como ação primária.
+ * O painel nasce do tile tocado e cresce até o lugar dele (`PainelLateral`).
  *
- * ## As artes em grade (T-47b)
+ * **O toque responde antes** (T-72, e de novo no T-83): o primeiro quadro depois
+ * do toque é o painel com o cabeçalho e a prévia — o que o tile já sabia. A
+ * faixa de skins e as variantes entram numa transição logo depois, sem segurar
+ * a pintura. Medido no telefone com a CPU 4× mais lenta, era esse primeiro
+ * quadro que passava de 200 ms.
  *
- * As artes vêm em grade, agrupadas por família, e a prévia de cada uma amplia a
- * arte. A ampliação mora aqui, e não no cartão, pelo mesmo motivo do `Escape`:
- * é daqui que a tecla sai, na ordem ampliação → chromas → painel.
+ * O `Escape` segue a ordem ampliação → chromas → painel.
  *
  * ## No telefone (T-49)
  *
- * Tela cheia: os 92% de antes deixavam uma tira da home à esquerda, que não
- * servia para nada e parecia clicável. O `×` fica parado no canto e a bandeja no
- * pé, como no computador. Em tela de toque, todo botão do painel tem pelo menos
- * 44 px, e a caixa do lote ganha área de toque em volta (ver `CaixaDeSelecao`).
+ * Tela cheia, o `×` parado no canto e a barra do lote no pé. Em tela de toque,
+ * todo botão do painel tem pelo menos 44 px.
  */
 
 import { CloudOff, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
 import { Ampliacao } from "@/components/ampliacao";
 import { BarraDeLote } from "@/components/barra-de-lote";
-import { PainelDeAsset } from "@/components/painel-de-asset";
+import { ListaDeVariantes } from "@/components/lista-de-variantes";
 import { SeletorDeSkin } from "@/components/seletor-de-skin";
 import { Botao } from "@/components/ui/botao";
 import { BotaoIcone } from "@/components/ui/botao-icone";
+import { Tecla } from "@/components/ui/campo";
+import { Esqueleto } from "@/components/ui/esqueleto";
 import { Estado } from "@/components/ui/estado";
 import { PainelLateral } from "@/components/ui/painel-lateral";
 import { VitrineDaSkin } from "@/components/vitrine-da-skin";
@@ -69,6 +68,8 @@ export interface PainelDoCampeaoProps {
   /** Pede a fatia de novo, depois de um erro (T-50). Sem ele, não há o botão. */
   readonly onTentarDeNovo?: () => void;
   readonly onClose: () => void;
+  /** A caixa do tile tocado: o painel cresce dela (T-83). */
+  readonly origem?: DOMRect | null;
 }
 
 export function PainelDoCampeao({
@@ -80,6 +81,7 @@ export function PainelDoCampeao({
   erro,
   onTentarDeNovo,
   onClose,
+  origem = null,
 }: PainelDoCampeaoProps) {
   const doCampeao = useMemo(() => skinsOf(skins, champion), [skins, champion]);
   const padrao = useMemo(
@@ -90,19 +92,17 @@ export function PainelDoCampeao({
   const [chromasAbertos, setChromasAbertos] = useState(false);
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
   const [ampliado, setAmpliado] = useState<Asset | null>(null);
+  // O resto do painel — a faixa de skins e as variantes — depois do primeiro quadro.
+  const [completo, setCompleto] = useState(false);
+  useEffect(() => startTransition(() => setCompleto(true)), []);
   // Voltar fecha o painel, não o site: no telefone ele ocupa a tela inteira (T-70).
   useFecharComVoltar(true, onClose);
 
   /**
-   * `Escape` mora aqui, e não nos painéis de dentro, por dois motivos.
-   *
-   * O primeiro é ordem: com a ampliação aberta, `Escape` fecha a ampliação; com
-   * os chromas abertos, fecha os chromas — o de dentro primeiro, como todo mundo
-   * espera. Dois ouvintes na mesma tecla fechariam os dois de uma vez.
-   *
-   * O segundo é tempo: o painel aparece antes de a fatia chegar, e um ouvinte
-   * que só existe depois dos assets deixa `Escape` sem efeito exatamente
-   * durante a espera, que é quando alguém mais desiste.
+   * `Escape` mora aqui, e não nas listas de dentro: com a ampliação aberta, fecha
+   * a ampliação; com os chromas abertos, fecha os chromas. E o painel aparece
+   * antes de a fatia chegar — a tecla vale durante a espera, que é quando alguém
+   * mais desiste.
    */
   useEffect(() => {
     function aoTeclar(evento: KeyboardEvent) {
@@ -116,8 +116,7 @@ export function PainelDoCampeao({
   }, [ampliado, chromasAbertos, onClose]);
 
   // A busca pode trocar de campeão com o painel aberto: sem isto, a skin
-  // selecionada ficaria a do campeão anterior — e a seleção levaria assets de
-  // um campeão que já não está na tela.
+  // selecionada ficaria a do campeão anterior.
   useEffect(() => {
     setSkinNum(padrao);
     setChromasAbertos(false);
@@ -132,15 +131,14 @@ export function PainelDoCampeao({
   const nomeDaSkin = skinAtual?.names.pt_BR ?? champion.names.pt_BR;
   const contagem = `${doCampeao.length} ${doCampeao.length === 1 ? "skin" : "skins"}`;
 
-  // A splash centralizada da skin é a arte da vitrine. Sem a fatia, ela ainda
-  // não existe, e a vitrine fica com o tile do catálogo.
-  const splash = useMemo(() => {
-    const achada = lista.find((a) => a.type === "splash_centered" && a.skinNum === skinNum);
-    return achada && assetUrl(achada, assetsBaseUrl);
-  }, [lista, skinNum, assetsBaseUrl]);
+  // A splash centralizada da skin é a arte da prévia. Sem a fatia, ela ainda não
+  // existe, e a prévia fica com o tile do catálogo.
+  const splash = useMemo(
+    () => lista.find((a) => a.type === "splash_centered" && a.skinNum === skinNum),
+    [lista, skinNum],
+  );
 
-  // O que o lote pode alcançar: o que está na tela agora. Chroma escondido não
-  // está na tela e por isso não entra nem no "tudo", nem na conta.
+  // O que o lote pode alcançar: o que está na tela agora.
   const alcancaveis = useMemo(
     () => (chromasAbertos ? [...visiveis, ...chromas] : visiveis),
     [visiveis, chromas, chromasAbertos],
@@ -153,52 +151,68 @@ export function PainelDoCampeao({
       aberto
       onFechar={onClose}
       titulo={`Painel de ${champion.names.pt_BR}`}
-      // O `Escape` daqui tem ordem própria (ampliação e chroma antes do painel)
-      // e o clique fora nunca fechou. Ver o comentário em `PainelLateral`.
       fecharPorEsc={false}
       fecharPorFora={false}
-      // 880 px: a splash é 16:9, e é ela que o painel mostra primeiro. Nos
-      // 540 px de antes ela ficava do tamanho de um cartão. No telefone, tudo.
-      className="w-full max-md:border-l-0 md:w-[min(880px,92vw)]"
+      origem={origem}
+      // Largo o bastante para a prévia 16:9 e as colunas da ficha. No computador
+      // o painel é uma folha com o raio maior do sistema, afastada das bordas;
+      // no telefone, a tela inteira.
+      className="w-full max-md:border-l-0 md:inset-y-2 md:right-2 md:w-[min(920px,94vw)] md:rounded-painel md:border"
     >
       <section
         aria-label={`Painel de ${champion.names.pt_BR}`}
         className="relative flex min-h-0 flex-1 flex-col pointer-coarse:[&_button]:min-h-controle-xl pointer-coarse:[&_button]:min-w-controle-xl"
       >
-        {/* Um fechar só, parado no canto enquanto o resto rola. */}
-        <BotaoIcone
-          rotulo="Fechar"
-          dica="Fechar (Esc)"
-          icone={<X aria-hidden="true" strokeWidth={1.75} className="size-4" />}
-          onClick={onClose}
-          className="absolute top-3 right-3 z-10 bg-superficie/80 text-texto hover:bg-superficie"
-        />
+        {/* O cabeçalho: a skin em destaque e o campeão embaixo (ADR 0008), e um
+            fechar só, parado enquanto o resto rola. */}
+        <header className="flex flex-none items-center gap-3 border-b border-linha py-3 pr-3 pl-4 md:pl-6">
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate text-20 leading-apertada font-extrabold tracking-titulo text-texto">
+              {nomeDaSkin}
+            </h2>
+            <p className="truncate text-12 text-texto-suave">
+              {skinAtual?.isBase ? contagem : `${champion.names.pt_BR}, ${contagem}`}
+            </p>
+          </div>
+          <Tecla className="hidden md:block">Esc</Tecla>
+          <BotaoIcone
+            rotulo="Fechar"
+            dica="Fechar (Esc)"
+            icone={<X aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+            onClick={onClose}
+          />
+        </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
           <VitrineDaSkin
             titulo={nomeDaSkin}
-            // ADR 0008: a skin em destaque, o campeão embaixo.
-            subtitulo={skinAtual?.isBase ? `Skin base · ${contagem}` : `${champion.names.pt_BR} · ${contagem}`}
-            splash={splash}
+            splash={splash && assetUrl(splash, assetsBaseUrl)}
+            arquivo={splash && { nome: splash.fileName, formato: splash.format }}
             tile={skinAtual && thumbnailSrc(skinAtual, assetsBaseUrl)}
           />
 
-          <SeletorDeSkin
-            nome={`skin-${champion.championKey}`}
-            campeao={champion.names.pt_BR}
-            skins={doCampeao}
-            valor={skinNum}
-            onEscolher={setSkinNum}
-            assetsBaseUrl={assetsBaseUrl}
-          />
+          {completo ? (
+            <SeletorDeSkin
+              nome={`skin-${champion.championKey}`}
+              campeao={champion.names.pt_BR}
+              skins={doCampeao}
+              valor={skinNum}
+              onEscolher={setSkinNum}
+              assetsBaseUrl={assetsBaseUrl}
+            />
+          ) : (
+            // A faixa ocupa o lugar dela desde o primeiro quadro: nada pula.
+            <div aria-hidden="true" className="flex h-[111px] gap-2 overflow-hidden px-4 pt-3 md:px-6">
+              {Array.from({ length: Math.min(doCampeao.length, 10) }, (_, i) => (
+                <Esqueleto key={i} className="size-[72px] flex-none rounded-quadro" />
+              ))}
+            </div>
+          )}
 
           {/* RF-18: um clique pré-monta a seleção do campeão inteiro. */}
-          {assets && alcancaveis.length > 0 && (
-            <div className="flex items-center border-b border-linha px-3.5 pb-3">
-              <Botao
-                tamanho="md"
-                onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}
-              >
+          {assets && completo && alcancaveis.length > 0 && (
+            <div className="flex items-center gap-3 px-4 pb-2 md:px-6">
+              <Botao tamanho="md" onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}>
                 Tudo de {champion.names.pt_BR} ({alcancaveis.length})
               </Botao>
             </div>
@@ -216,31 +230,30 @@ export function PainelDoCampeao({
               O índice dos campeões não chegou. Confira a conexão e tente de novo.
             </Estado>
           )}
-          {!assets && !erro && (
-            <p className="px-3.5 py-3 text-13 text-texto-suave">Carregando as artes…</p>
+          {(!assets || !completo) && !erro && (
+            <p role="status" className="px-4 py-3 text-13 text-texto-suave md:px-6">
+              Carregando as artes…
+            </p>
           )}
 
-          {assets && (
-            <PainelDeAsset
+          {assets && completo && (
+            <ListaDeVariantes
               titulo={`Artes de ${nomeDaSkin}`}
               assets={visiveis}
               assetsBaseUrl={assetsBaseUrl}
-              onClose={onClose}
               selecao={selecao}
               onAlternar={alternarNoLote}
-              fecharComEsc={false}
-              grade
               onAmpliar={setAmpliado}
             />
           )}
 
           {/* RF-06: chroma não aparece sozinho; só quando alguém pede o desta skin. */}
-          {assets && chromas.length > 0 && (
+          {assets && completo && chromas.length > 0 && (
             <section aria-label="Chromas" className="border-t border-linha">
               <Botao
                 variante="fantasma"
                 tamanho="md"
-                className="m-3.5"
+                className="mx-4 my-3 md:mx-6"
                 aria-expanded={chromasAbertos}
                 onClick={() => setChromasAbertos((aberto) => !aberto)}
               >
@@ -248,15 +261,12 @@ export function PainelDoCampeao({
                 {chromas.length === 1 ? "chroma" : "chromas"}
               </Botao>
               {chromasAbertos && (
-                <PainelDeAsset
+                <ListaDeVariantes
                   titulo={`Chromas de ${nomeDaSkin}`}
                   assets={chromas}
                   assetsBaseUrl={assetsBaseUrl}
-                  onClose={() => setChromasAbertos(false)}
                   selecao={selecao}
                   onAlternar={alternarNoLote}
-                  fecharComEsc={false}
-                  grade
                   onAmpliar={setAmpliado}
                 />
               )}
@@ -264,8 +274,8 @@ export function PainelDoCampeao({
           )}
         </div>
 
-        {/* A bandeja fica no pé do painel, fixa: com 40 assets selecionados, o
-            botão de baixar não pode estar a uma rolagem de distância. */}
+        {/* A barra do lote fica no pé do painel, fixa: com 40 assets
+            selecionados, o botão de baixar não pode estar a uma rolagem de distância. */}
         <BarraDeLote
           assets={noLote}
           rotulo={champion.names.pt_BR}

@@ -355,7 +355,8 @@ function Grade({
                 // Uma parada de Tab para a grade inteira: o resto se alcança pelas
                 // setas, e clicar num cartão passa a vez para ele.
                 tabIndex={indice === comFoco ? 0 : -1}
-                onFocar={() => setComFoco(indice)}
+                indice={indice}
+                onFocar={setComFoco}
                 onAbrir={onAbrir}
                 onIntencao={onIntencao}
               />
@@ -368,11 +369,19 @@ function Grade({
   );
 }
 
-function Cartao({
+/**
+ * Memorizado (T-83): focar um tile — e o clique foca — muda a vez do Tab, e sem
+ * isto a grade redesenhava os 173 tiles no mesmo quadro do toque que abre o
+ * painel. Medido no telefone com a CPU 4× mais lenta: 29 ms. Agora redesenham
+ * os dois tiles cuja vez mudou. As props são estáveis: `onFocar` recebe o índice
+ * em vez de ser um fecho novo por tile.
+ */
+const Cartao = memo(function Cartao({
   champion,
   arte,
   assetsBaseUrl,
   tabIndex,
+  indice,
   acoes,
   onFocar,
   onAbrir,
@@ -382,8 +391,9 @@ function Cartao({
   arte: string | undefined;
   assetsBaseUrl?: string;
   tabIndex: number;
+  indice: number;
   acoes: RefObject<AlcaDasAcoes | null>;
-  onFocar: () => void;
+  onFocar: (indice: number) => void;
   onAbrir: (champion: CatalogChampion) => void;
   onIntencao?: (champion: CatalogChampion) => void;
 }) {
@@ -410,6 +420,8 @@ function Cartao({
       <button
         type="button"
         data-cartao=""
+        // O painel cresce da arte deste tile (T-83): a página a acha por aqui.
+        data-cartao-key={champion.championKey}
         tabIndex={tabIndex}
         // A tecla do download rápido, para quem chega pelo teclado: o botão de
         // download da sobreposição é só do ponteiro, e a grade é uma parada de Tab.
@@ -426,7 +438,7 @@ function Cartao({
           void baixarSquare(champion, assetsBaseUrl);
         }}
         onFocus={(evento) => {
-          onFocar();
+          onFocar(indice);
           avisar();
           mostrarAcoes(evento.currentTarget);
         }}
@@ -473,7 +485,7 @@ function Cartao({
       </button>
     </li>
   );
-}
+});
 
 /**
  * A home enquanto o catálogo não chega: a forma da grade, sem texto.

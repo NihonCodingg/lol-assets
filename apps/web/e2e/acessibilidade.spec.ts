@@ -63,10 +63,11 @@ test.describe("só com teclado", () => {
     await page.keyboard.press("Enter");
     await expect(page.getByRole("region", { name: "Painel de Jax" })).toBeVisible();
 
-    // Tab até o botão de baixar do square, e Enter.
+    // Tab até o botão de baixar do square, e Enter. O square já é PNG: um
+    // botão só, "Baixar PNG", que entrega o original (T-83).
     const baixar = page
       .locator('article[aria-label="Jax_square.png"]')
-      .getByRole("button", { name: "Baixar original" });
+      .getByRole("button", { name: "Baixar PNG" });
     await expect(baixar).toBeVisible();
 
     const download = page.waitForEvent("download");

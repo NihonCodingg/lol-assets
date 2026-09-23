@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Asset } from "@lol-assets/schema";
 
-import { agruparPorFamilia } from "./asset-panel";
+import { agruparPorFamilia, orderAssets } from "./asset-panel";
 
 /**
  * As famílias do painel do campeão (T-47b): o que aparece junto, e em que ordem.
@@ -54,5 +54,14 @@ describe("as famílias do painel do campeão (T-47b)", () => {
   it("tipo sem família aparece no fim, com o próprio rótulo — não some", () => {
     const grupos = agruparPorFamilia([asset("emote_icon"), asset("splash_centered")]);
     expect(grupos.map((g) => g.rotulo)).toEqual(["Splash e tela de carregamento", "Emote"]);
+  });
+});
+
+describe("as habilidades na ordem do teclado (T-83)", () => {
+  it("Q, W, E, R — e não E, Q, R, W", () => {
+    const habilidade = (tecla: string) =>
+      ({ id: `ability_icon:24.${tecla}`, type: "ability_icon", names: { pt_BR: tecla } }) as unknown as Asset;
+    const ordem = orderAssets(["E", "R", "W", "Q"].map(habilidade)).map((a) => a.id.slice(-1));
+    expect(ordem).toEqual(["Q", "W", "E", "R"]);
   });
 });

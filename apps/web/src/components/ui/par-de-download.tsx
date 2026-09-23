@@ -1,22 +1,22 @@
 /**
- * As duas formas de baixar, lado a lado (T-45, [ADR 0001]).
+ * As duas formas de baixar, lado a lado (T-45, [ADR 0001], emendado no T-83).
  *
- * O ADR é explícito sobre a ordem e o peso: "o botão primário é o original, o
- * PNG é secundário", e os dois aparecem **antes** do download. Por isso é um par
- * visível e não um menu — esconder o PNG atrás de uma seta seria um clique a
- * mais no orçamento do RF-15 e uma opção que ninguém descobre.
+ * **"Baixar PNG" é a ação primária** desde o Plano de Design (§5, §6): é o que o
+ * editor quer na pasta, com transparência preservada e sem pensar em formato.
+ * "Original" — os bytes da fonte, sem reencode — é a secundária, sempre à vista
+ * ao lado, nunca num menu. Os dois aparecem **antes** do download.
  *
- * Asset que já é PNG não oferece conversão, e o botão **fica** — desabilitado,
- * dizendo "Já é PNG" (RF-12). Um botão que some deixa a pessoa procurando.
+ * Asset que já é PNG tem um botão só: "Baixar PNG" entrega o arquivo original,
+ * sem conversão nenhuma (a regra 4 do ADR 0001). Um segundo botão baixaria o
+ * mesmo arquivo, e um botão desabilitado dizendo "já é PNG" ao lado do primário
+ * era uma pergunta sem resposta. É a emenda do RF-12.
  *
  * **O retorno (T-47b).** O botão do download em andamento troca o ícone por um
- * que gira, e o do que acabou de dar certo mostra ✓ por um instante. O **texto**
- * não muda: o nome do botão é o jeito de achá-lo, para gente e para teste.
+ * que gira, e o que acabou de dar certo mostra ✓ por um instante. O **texto** não
+ * muda: o nome do botão é o jeito de achá-lo, para gente e para teste.
  *
- * **Compacto (T-48).** No tile da galeria, "Baixar original" e "Baixar PNG" não
- * cabem lado a lado. O texto encurta para "Original" e "PNG", e o nome
- * acessível continua o inteiro: é por ele que o botão é achado, e o que está
- * escrito continua dentro do nome — quem comanda por voz diz o que vê.
+ * **Compacto (T-48)** e **ícone (T-53)**: no tile estreito o texto encurta ou vira
+ * só ícone com dica; o nome acessível continua o inteiro.
  */
 
 import { Check, Download, FileImage, LoaderCircle } from "lucide-react";
@@ -30,7 +30,7 @@ import { BotaoIcone } from "./botao-icone";
 export type QualDownload = "original" | "png";
 
 export interface ParDeDownloadProps {
-  /** `false` quando a origem já é PNG. */
+  /** `false` quando a origem já é PNG: um botão só, que entrega o original. */
   readonly podeConverter: boolean;
   /** Um download em andamento trava os dois: clicar de novo baixaria duas vezes. */
   readonly ocupado?: boolean;
@@ -40,13 +40,7 @@ export interface ParDeDownloadProps {
   readonly baixado?: QualDownload | null;
   /** Texto curto, nome inteiro: o par dentro do tile da galeria. */
   readonly compacto?: boolean;
-  /**
-   * Só os ícones, com dica (T-53): o par dentro de um tile estreito.
-   *
-   * Os dois continuam **visíveis e do mesmo tamanho**, que é o que o [ADR 0001]
-   * pede — o PNG não vira menu nem some. O que sai é o rótulo escrito, que
-   * passa para a dica e para o nome acessível.
-   */
+  /** Só os ícones, com dica: o par dentro de um tile estreito. */
   readonly icone?: boolean;
   readonly onOriginal: () => void;
   readonly onPng: () => void;
@@ -83,43 +77,47 @@ export function ParDeDownload({
   onPng,
   className,
 }: ParDeDownloadProps) {
-  const nomeDoPng = podeConverter ? "Baixar PNG" : "Já é PNG";
+  // O PNG de um asset que já é PNG é o próprio original.
+  const qualDoPng: QualDownload = podeConverter ? "png" : "original";
+  const baixarPng = podeConverter ? onPng : onOriginal;
 
   if (icone) {
     return (
       <div className={cn("inline-flex items-center gap-1", className)}>
         <BotaoIcone
-          rotulo="Baixar original"
+          rotulo="Baixar PNG"
           dicaLeve
           variante="primario"
           disabled={ocupado}
-          aria-busy={baixando === "original" || undefined}
+          aria-busy={baixando === qualDoPng || undefined}
           icone={
             <IconeDoBotao
-              qual="original"
+              qual={qualDoPng}
               baixando={baixando}
               baixado={baixado}
               padrao={<Download aria-hidden="true" className="size-3.5" />}
             />
           }
-          onClick={onOriginal}
+          onClick={baixarPng}
         />
-        <BotaoIcone
-          rotulo={nomeDoPng}
-          dicaLeve
-          disabled={ocupado || !podeConverter}
-          aria-busy={baixando === "png" || undefined}
-          className="bg-superficie/80"
-          icone={
-            <IconeDoBotao
-              qual="png"
-              baixando={baixando}
-              baixado={baixado}
-              padrao={<FileImage aria-hidden="true" className="size-3.5" />}
-            />
-          }
-          onClick={onPng}
-        />
+        {podeConverter && (
+          <BotaoIcone
+            rotulo="Baixar original"
+            dicaLeve
+            disabled={ocupado}
+            aria-busy={baixando === "original" || undefined}
+            className="bg-superficie/80"
+            icone={
+              <IconeDoBotao
+                qual="original"
+                baixando={baixando}
+                baixado={baixado}
+                padrao={<FileImage aria-hidden="true" className="size-3.5" />}
+              />
+            }
+            onClick={onOriginal}
+          />
+        )}
       </div>
     );
   }
@@ -130,30 +128,33 @@ export function ParDeDownload({
         variante="primario"
         tamanho="md"
         disabled={ocupado}
-        aria-busy={baixando === "original" || undefined}
-        aria-label={compacto ? "Baixar original" : undefined}
+        aria-busy={baixando === qualDoPng || undefined}
+        aria-label={compacto ? "Baixar PNG" : undefined}
         className={cn(compacto && "px-2")}
-        onClick={onOriginal}
+        onClick={baixarPng}
       >
         <IconeDoBotao
-          qual="original"
+          qual={qualDoPng}
           baixando={baixando}
           baixado={baixado}
           padrao={compacto ? undefined : <Download aria-hidden="true" className="size-3.5" />}
         />
-        {compacto ? "Original" : "Baixar original"}
+        {compacto ? "PNG" : "Baixar PNG"}
       </Botao>
-      <Botao
-        tamanho="md"
-        disabled={ocupado || !podeConverter}
-        aria-busy={baixando === "png" || undefined}
-        aria-label={compacto ? nomeDoPng : undefined}
-        className={cn(compacto && "bg-superficie/80 px-2")}
-        onClick={onPng}
-      >
-        <IconeDoBotao qual="png" baixando={baixando} baixado={baixado} />
-        {compacto ? "PNG" : nomeDoPng}
-      </Botao>
+      {podeConverter && (
+        <Botao
+          tamanho="md"
+          disabled={ocupado}
+          aria-busy={baixando === "original" || undefined}
+          // "Original" à vista; o nome inteiro para quem procura "Baixar original".
+          aria-label="Baixar original"
+          className={cn(compacto && "bg-superficie/80 px-2")}
+          onClick={onOriginal}
+        >
+          <IconeDoBotao qual="original" baixando={baixando} baixado={baixado} />
+          Original
+        </Botao>
+      )}
     </div>
   );
 }

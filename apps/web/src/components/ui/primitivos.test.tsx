@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Botao } from "./botao";
 import { Campo, Tecla } from "./campo";
-import { FecharPainel, PainelLateral } from "./painel-lateral";
+import { crescerDe, PainelLateral } from "./painel-lateral";
 import { Etiqueta, Meta, RotuloDeSecao } from "./rotulo";
 
 /**
@@ -134,24 +134,46 @@ describe("PainelLateral", () => {
     expect(fechar).toHaveBeenCalled();
   });
 
-  it("o botão de fechar tem nome acessível, não só um `×`", () => {
-    render(
-      <PainelLateral aberto onFechar={() => {}} titulo="Painel">
-        <FecharPainel />
-      </PainelLateral>,
-    );
-    expect(screen.getByRole("button", { name: "Fechar" })).toBeTruthy();
-  });
-
   it("ao abrir, o foco vai para o painel, não para o fechar — a dica não abre sozinha (T-47)", () => {
     // O primeiro botão do painel do campeão é o fechar, com dica. Foco nele ao
     // abrir fazia "Fechar (Esc)" aparecer toda vez, por cima da arte.
     render(
       <PainelLateral aberto onFechar={() => {}} titulo="Painel">
-        <FecharPainel />
+        <button type="button">Fechar</button>
       </PainelLateral>,
     );
     expect(document.activeElement).toBe(screen.getByRole("dialog", { name: "Painel" }));
+  });
+
+  /** O momento de abrir (T-83): o painel cresce da caixa do tile, com escala uniforme. */
+  it("cresce da caixa do tile, com escala uniforme e só transform e opacidade", () => {
+    const quadros: Keyframe[][] = [];
+    const elemento = {
+      animate: (k: Keyframe[]) => {
+        quadros.push(k);
+        return {} as Animation;
+      },
+      getBoundingClientRect: () => ({ left: 500, top: 0, width: 900, height: 800 }) as DOMRect,
+    } as unknown as HTMLElement;
+    const origem = { left: 50, top: 100, width: 150, height: 150 } as DOMRect;
+    expect(crescerDe(elemento, origem)).toBe(true);
+    const [de, para] = quadros[0];
+    expect(de.transform).toBe("translate(-450px, 100px) scale(0.16666666666666666)");
+    expect(para.transform).toBe("none");
+    expect(Object.keys(de).sort()).toEqual(["opacity", "transform", "transformOrigin"]);
+  });
+
+  it("com menos movimento pedido, não anima", () => {
+    const antes = window.matchMedia;
+    window.matchMedia = ((q: string) => ({ matches: q.includes("reduce") })) as typeof window.matchMedia;
+    const animate = vi.fn();
+    const elemento = {
+      animate,
+      getBoundingClientRect: () => ({ left: 0, top: 0, width: 900, height: 800 }) as DOMRect,
+    } as unknown as HTMLElement;
+    expect(crescerDe(elemento, { left: 0, top: 0, width: 100, height: 100 } as DOMRect)).toBe(false);
+    expect(animate).not.toHaveBeenCalled();
+    window.matchMedia = antes;
   });
 });
 

@@ -1,19 +1,22 @@
 "use client";
 
 /**
- * O seletor de skin como vitrine (T-47): uma faixa de *tiles*, e não uma lista
- * de nomes.
+ * A faixa de skins (T-47, redesenhada no T-83): uma fileira de *tiles* que rola
+ * de lado, e não uma lista de nomes.
  *
  * Quem procura uma skin procura uma imagem — "a de armadura dourada" —, e o
  * `<select>` de texto obrigava a ler dezoito nomes para achá-la. Aqui cada skin é
  * o *tile* dela, com o nome embaixo.
  *
+ * **A escolhida é inequívoca** (§6 do Plano de Design): contorno no destaque,
+ * uma marca ✓ no canto e o nome em peso de leitura. A cor nunca diz sozinha.
+ *
  * **Rádios de verdade, escondidos.** O grupo é de `<input type="radio">`: as setas
  * trocam de skin, o Tab entra e sai do grupo numa parada só, e o leitor de tela
- * anuncia "Nemesis Jax, rádio, 2 de 18" — de graça, sem reescrever o que o
- * navegador já sabe fazer.
+ * anuncia "Nemesis Jax, rádio, 2 de 18" — de graça.
  */
 
+import { Check } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import type { CatalogSkin } from "@lol-assets/schema";
@@ -57,7 +60,7 @@ export function SeletorDeSkin({
       ref={faixa}
       role="radiogroup"
       aria-label="Selecionar skin"
-      className="flex gap-2.5 overflow-x-auto px-3.5 pt-3 pb-2"
+      className="flex gap-2 overflow-x-auto px-4 pt-3 pb-3 md:px-6"
     >
       {skins.map((skin) => {
         const marcada = skin.skinNum === valor;
@@ -83,7 +86,7 @@ export function SeletorDeSkin({
                 foco precisa aparecer em algum lugar. */}
             <div
               className={cn(
-                "size-[72px] overflow-hidden rounded-quadro border-2 transition-colors duration-150 ease-saida",
+                "relative size-[72px] overflow-hidden rounded-quadro border-2",
                 "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento",
                 marcada ? "border-acento" : "border-transparent group-hover:border-linha-forte",
               )}
@@ -91,14 +94,19 @@ export function SeletorDeSkin({
               {tile ? (
                 <Imagem src={tile} alt="" erroCompacto classeDaCaixa="size-full" className="object-cover" />
               ) : (
-                <div aria-hidden="true" className="size-full bg-superficie-alta" />
+                <div aria-hidden="true" className="size-full bg-superficie" />
+              )}
+              {marcada && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-acento text-fundo"
+                >
+                  <Check strokeWidth={3} className="size-3" />
+                </span>
               )}
             </div>
-            {/* Numa linha, com o nome inteiro no `title`: em duas, a faixa ficava
-                serrilhada — umas com uma linha, outras com duas — e crescia 14 px
-                por causa do nome mais comprido (T-58). Sem o nome do campeão na
-                frente (T-65): dentro do painel do Jax, o "Jax" de cada legenda
-                era o que empurrava o resto para as reticências. */}
+            {/* Numa linha, com o nome inteiro no `title` (T-58), e sem o nome do
+                campeão na frente (T-65). */}
             <span
               aria-hidden="true"
               title={skin.names.pt_BR}
