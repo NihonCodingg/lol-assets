@@ -333,7 +333,7 @@ describe("filtros", () => {
     expect(screen.getByRole("group", { name: "Árvore de runa" })).toBeTruthy();
     expect(screen.queryByRole("group", { name: "Mapa" })).toBeNull();
     // O rótulo da árvore sai do nome do próprio ícone; `nenhuma` é dos stat mods.
-    expect(screen.getByLabelText(/Sem árvore/)).toBeTruthy();
+    expect(screen.getByRole("checkbox", { name: /Sem árvore/ })).toBeTruthy();
   });
 
   it("categoria sem etiqueta nenhuma não mostra filtro nenhum", async () => {
