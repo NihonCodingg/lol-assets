@@ -193,8 +193,10 @@ test("os chips e os botões dos filtros têm 44 px de toque, sem crescer à vist
   await irParaHome(page);
   const chips = "fieldset label";
   expect(await alvosQueNaoPegam(page, chips)).toEqual([]);
-  // À vista continuam com 28 px: a linha não empurra a grade para baixo.
-  expect((await page.locator(chips).first().boundingBox())!.height).toBe(28);
+  // À vista, o controle segmentado das funções (T-81) tem 32 px com a moldura, e
+  // cada segmento 26: a linha não empurra a grade para baixo.
+  expect((await page.locator(chips).first().boundingBox())!.height).toBe(26);
+  expect((await page.locator("fieldset").first().boundingBox())!.height).toBeLessThanOrEqual(32);
 
   await page.getByRole("navigation", { name: "Categorias" }).getByRole("button", { name: "Itens" }).click();
   await expect(page.locator("[data-virtual='sim'] article").first()).toBeVisible();

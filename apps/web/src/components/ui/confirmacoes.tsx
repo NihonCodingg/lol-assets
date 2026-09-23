@@ -18,14 +18,18 @@
  * sozinho em 4 s; no máximo três na tela.
  */
 
-import { Check } from "lucide-react";
+import { Check, TriangleAlert } from "lucide-react";
 import { useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/utils";
 
+/** `falha` troca o ✓ por um alerta: o texto diz o que houve, o ícone não mente. */
+export type Tom = "ok" | "falha";
+
 export interface Confirmacao {
   readonly id: number;
   readonly texto: string;
+  readonly tom: Tom;
 }
 
 export const DURACAO_MS = 4000;
@@ -40,9 +44,9 @@ function avisarOuvintes(): void {
 }
 
 /** Mostra uma confirmação e a tira depois de `DURACAO_MS`. Devolve o id. */
-export function confirmar(texto: string): number {
+export function confirmar(texto: string, tom: Tom = "ok"): number {
   const id = proximoId++;
-  lista = [...lista, { id, texto }].slice(-MAXIMO);
+  lista = [...lista, { id, texto, tom }].slice(-MAXIMO);
   avisarOuvintes();
   setTimeout(() => {
     lista = lista.filter((c) => c.id !== id);
@@ -82,7 +86,11 @@ export function RegiaoDeConfirmacoes() {
             "animate-[surgir_160ms_var(--ease-saida)]",
           )}
         >
-          <Check aria-hidden="true" strokeWidth={2} className="size-4 flex-none text-acento" />
+          {c.tom === "ok" ? (
+            <Check aria-hidden="true" strokeWidth={2} className="size-4 flex-none text-acento" />
+          ) : (
+            <TriangleAlert aria-hidden="true" strokeWidth={2} className="size-4 flex-none text-texto" />
+          )}
           <span className="min-w-0 [overflow-wrap:anywhere]">{c.texto}</span>
         </p>
       ))}
