@@ -48,6 +48,9 @@ export interface ListaDeVariantesProps {
   readonly onAmpliar?: (asset: Asset) => void;
   readonly baixar?: (asset: Asset, comoPng: boolean, url: string) => Promise<void>;
   readonly copiar?: (texto: string) => Promise<void>;
+  /** No telefone (T-87): a variante escolhida, que a barra de ação do pé baixa. */
+  readonly escolhida?: string;
+  readonly onEscolher?: (asset: Asset) => void;
 }
 
 /**
@@ -68,6 +71,8 @@ export function ListaDeVariantes({
   onAmpliar,
   baixar = baixarDeVerdade,
   copiar = copiarDeVerdade,
+  escolhida,
+  onEscolher,
 }: ListaDeVariantesProps) {
   const grupos = useMemo(() => agruparPorFamilia(assets), [assets]);
   const [estados, setEstados] = useState<Record<string, EstadoDoCartao>>({});
@@ -92,6 +97,8 @@ export function ListaDeVariantes({
                   selecionado={selecao?.has(asset.id)}
                   onAlternar={onAlternar}
                   onAmpliar={onAmpliar}
+                  escolhida={escolhida === asset.id}
+                  onEscolher={onEscolher}
                 />
               </li>
             ))}
@@ -123,6 +130,8 @@ interface LinhaProps {
   readonly selecionado?: boolean;
   readonly onAlternar?: (id: string) => void;
   readonly onAmpliar?: (asset: Asset) => void;
+  readonly escolhida?: boolean;
+  readonly onEscolher?: (asset: Asset) => void;
 }
 
 /** Memorizada: trocar a seleção de uma linha não redesenha as outras vinte. */
@@ -136,6 +145,8 @@ const Linha = memo(function Linha({
   selecionado,
   onAlternar,
   onAmpliar,
+  escolhida = false,
+  onEscolher,
 }: LinhaProps) {
   const { acionar, andamento, feito } = useDownload(asset, url, marcar, baixar);
   const { copia, copiarUrl } = useCopia(copiar, url);
@@ -156,10 +167,28 @@ const Linha = memo(function Linha({
       aria-label={asset.fileName}
       data-tipo={asset.type}
       data-estado={estado}
-      className={cn(COLUNAS, "rounded-controle py-2 pr-1 pl-1", selecionado && "bg-acento-suave")}
+      data-escolhida={escolhida || undefined}
+      className={cn(
+        COLUNAS,
+        "relative rounded-controle py-2 pr-1 pl-1",
+        selecionado && "bg-acento-suave",
+        // No telefone, a escolhida tem contorno e peso — nunca só a cor.
+        escolhida && "max-md:outline-2 max-md:-outline-offset-2 max-md:outline-acento",
+      )}
     >
+      {onEscolher && (
+        // No telefone, tocar na linha escolhe a variante para a barra do pé. Por
+        // baixo da caixa e da miniatura, que continuam respondendo por si.
+        <button
+          type="button"
+          aria-pressed={escolhida}
+          aria-label={`Escolher ${nome}`}
+          onClick={() => onEscolher(asset)}
+          className="absolute inset-0 z-0 cursor-pointer rounded-controle md:hidden"
+        />
+      )}
       {onAlternar ? (
-        <CaixaDeSelecao asset={asset} selecionado={selecionado} onAlternar={onAlternar} className="relative" />
+        <CaixaDeSelecao asset={asset} selecionado={selecionado} onAlternar={onAlternar} className="relative z-10" />
       ) : (
         <span aria-hidden="true" />
       )}
@@ -169,7 +198,7 @@ const Linha = memo(function Linha({
           type="button"
           onClick={() => onAmpliar(asset)}
           aria-label={`Ampliar ${asset.fileName}`}
-          className="block cursor-zoom-in rounded-quadro"
+          className="relative z-10 block cursor-zoom-in rounded-quadro"
         >
           {miniatura}
         </button>
@@ -199,7 +228,8 @@ const Linha = memo(function Linha({
       <p className="hidden text-12 tabular-nums text-texto-suave md:block">{asset.format.toUpperCase()}</p>
       <p className="hidden text-right text-12 tabular-nums text-texto-suave md:block">{formatBytes(asset.bytes)}</p>
 
-      <div className="col-span-3 col-start-1 flex items-center gap-1.5 max-md:pl-[76px] md:col-span-1 md:col-start-auto md:justify-end">
+      {/* No telefone as ações moram na barra do pé (T-87); aqui, só no computador. */}
+      <div className="hidden items-center justify-end gap-1.5 md:flex">
         <ParDeDownload
           podeConverter={canConvertToPng(asset)}
           ocupado={estado === "baixando"}

@@ -42,6 +42,7 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import type { Asset, CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
 import { Ampliacao } from "@/components/ampliacao";
+import { BarraDeAcao } from "@/components/barra-de-acao";
 import { BarraDeLote } from "@/components/barra-de-lote";
 import { ListaDeVariantes } from "@/components/lista-de-variantes";
 import { SeletorDeSkin } from "@/components/seletor-de-skin";
@@ -53,6 +54,7 @@ import { Estado } from "@/components/ui/estado";
 import { PainelLateral } from "@/components/ui/painel-lateral";
 import { VitrineDaSkin } from "@/components/vitrine-da-skin";
 import { assetUrl, thumbnailSrc } from "@/lib/asset-file";
+import { orderAssets } from "@/lib/asset-panel";
 import { baseSkin, chromasOf, panelAssets, skinsOf } from "@/lib/champion-panel";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
 import { useFecharComVoltar } from "@/lib/voltar";
@@ -92,6 +94,8 @@ export function PainelDoCampeao({
   const [chromasAbertos, setChromasAbertos] = useState(false);
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
   const [ampliado, setAmpliado] = useState<Asset | null>(null);
+  // No telefone, a variante que a barra de ação do pé baixa (T-87).
+  const [escolhida, setEscolhida] = useState<Asset | null>(null);
   // O resto do painel — a faixa de skins e as variantes — depois do primeiro quadro.
   const [completo, setCompleto] = useState(false);
   useEffect(() => startTransition(() => setCompleto(true)), []);
@@ -144,6 +148,10 @@ export function PainelDoCampeao({
     [visiveis, chromas, chromasAbertos],
   );
   const noLote = useMemo(() => selecionados(alcancaveis, selecao), [alcancaveis, selecao]);
+  // A escolhida vale enquanto está na tela; trocar de skin volta para a primeira.
+  // Sem escolha, a primeira na ordem da lista: a splash centralizada.
+  const primeira = useMemo(() => orderAssets(visiveis)[0], [visiveis]);
+  const acaoNoPe = (escolhida && alcancaveis.find((a) => a.id === escolhida.id)) ?? primeira;
   const alternarNoLote = (id: string) => setSelecao((antes) => alternar(antes, id));
 
   return (
@@ -244,6 +252,8 @@ export function PainelDoCampeao({
               selecao={selecao}
               onAlternar={alternarNoLote}
               onAmpliar={setAmpliado}
+              escolhida={acaoNoPe?.id}
+              onEscolher={setEscolhida}
             />
           )}
 
@@ -268,6 +278,8 @@ export function PainelDoCampeao({
                   selecao={selecao}
                   onAlternar={alternarNoLote}
                   onAmpliar={setAmpliado}
+                  escolhida={acaoNoPe?.id}
+                  onEscolher={setEscolhida}
                 />
               )}
             </section>
@@ -276,6 +288,7 @@ export function PainelDoCampeao({
 
         {/* A barra do lote fica no pé do painel, fixa: com 40 assets
             selecionados, o botão de baixar não pode estar a uma rolagem de distância. */}
+        {assets && completo && acaoNoPe && <BarraDeAcao asset={acaoNoPe} assetsBaseUrl={assetsBaseUrl} />}
         <BarraDeLote
           assets={noLote}
           rotulo={champion.names.pt_BR}
