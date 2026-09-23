@@ -25,8 +25,11 @@ Desde 18/09 ele tem **dois regimes** ao mesmo tempo
   de outra autorização dele.
 - Também em 22/09/2026 ele abriu o escopo das **ideias sem custo** (T-75 a T-77: sombras das wards,
   `_fpo` fora do índice, aviso de patch novo). Está encerrado; o projeto voltou à manutenção.
-  **Não abra escopo novo por conta própria.** O [Plano de Design](docs/design/PLANO-DE-DESIGN.md)
-  está salvo e só entra em execução com o comando do dono.
+  **Não abra escopo novo por conta própria.**
+- **O [Plano de Design](docs/design/PLANO-DE-DESIGN.md) está em execução** desde 22/09/2026, por
+  comando do dono (T-78 a T-88, [ADR 0024](docs/adr/0024-a-direcao-visual-do-bin.md)). Ele vence
+  qualquer instrução anterior sobre estética, inclusive a trava do TOKENS.md, e o orçamento da §7
+  dele é limite duro.
 
 ### Interface — UI, UX, acessibilidade e desempenho percebido: frente contínua
 
