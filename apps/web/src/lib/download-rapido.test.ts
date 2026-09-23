@@ -17,7 +17,9 @@ describe("o download rápido do square (T-81)", () => {
 
   it("baixa o square do catálogo, salva com o nome e avisa com ele", async () => {
     const blob = new Blob(["png"]);
-    const buscar = vi.fn(async () => new Response(blob));
+    // Uma resposta de mentira: \`new Response(blob)\` com o Blob do jsdom passa no
+    // Windows e falha no Linux da CI — o Blob do jsdom não é o nativo.
+    const buscar = vi.fn(async () => ({ ok: true, status: 200, blob: async () => blob }) as unknown as Response);
     const salvar = vi.fn();
     const avisar = vi.fn();
     expect(await baixarSquare(JAX, undefined, { buscar, salvar, avisar })).toBe(true);
@@ -29,7 +31,7 @@ describe("o download rápido do square (T-81)", () => {
   it("quando a fonte falha, avisa a falha — e não diz que baixou", async () => {
     const avisar = vi.fn();
     const salvar = vi.fn();
-    const buscar = async () => new Response("", { status: 503 });
+    const buscar = async () => ({ ok: false, status: 503 }) as unknown as Response;
     expect(await baixarSquare(JAX, undefined, { buscar, salvar, avisar })).toBe(false);
     expect(salvar).not.toHaveBeenCalled();
     expect(avisar.mock.calls[0][0]).toMatch(/^Não deu para baixar Jax_square\.png/);
