@@ -40,12 +40,15 @@ describe("glifo de proporção", () => {
 });
 
 describe("marcas de corte", () => {
-  it("são quatro cantos, decorativos e fora do caminho do ponteiro", () => {
+  it("são um elemento só, decorativo e fora do caminho do ponteiro", () => {
     const { container } = render(<MarcasDeCorte />);
     const marcas = container.firstElementChild as HTMLElement;
     expect(marcas.getAttribute("aria-hidden")).toBe("true");
     expect(marcas.className).toContain("pointer-events-none");
-    expect(marcas.children).toHaveLength(4);
+    // Os quatro cantos são o fundo dele (a utilidade `marcas-de-corte`): o tile
+    // tem 173 cópias, e filhos contam.
+    expect(marcas.className).toContain("marcas-de-corte");
+    expect(marcas.children).toHaveLength(0);
   });
 
   it("dentro do tile, invertem a arte embaixo: aparecem sobre imagem clara e escura", () => {

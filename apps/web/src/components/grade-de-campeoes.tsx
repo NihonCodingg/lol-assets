@@ -10,13 +10,21 @@
  *
  * O filtro por **função** do RF-08 mora aqui e não na navegação por categoria:
  * função é atributo de campeão, e campeão é a home ([ADR 0010]). As etiquetas
- * vêm do catálogo — os 173 campeões do patch 16.18.1 têm todas.
+ * vêm do catálogo — os 173 campeões do patch 16.18.1 têm todas. Desde o T-81 é
+ * um controle segmentado, uma função por vez (§5 do Plano de Design): "Todas",
+ * "Assassino", "Atirador"…
  *
- * ## O cartão
+ * ## O tile (T-81)
  *
- * Placa quadrada com a arte, nome embaixo e contagem de skins em mono. A arte é
- * o *tile* 380×380 da skin base (T-46): o `square` de 128 px esticado até 152 ou
- * 210 px ficava borrado. O `square` continua de reserva, para catálogo sem skin.
+ * A arte quadrada, o nome embaixo com peso de leitura e a contagem de skins em
+ * texto secundário. A arte é o *tile* 380×380 da skin base (T-46); o `square`
+ * continua de reserva, para catálogo sem skin.
+ *
+ * O hover **não se move** ([ADR 0024]): a borda fica no destaque, e aparecem
+ * as marcas de corte e o download rápido do square — a tarefa T1 num clique.
+ * Os dois moram numa sobreposição só, para a grade inteira (`acoes-do-tile.tsx`).
+ * O foco do teclado mostra o mesmo, e a tecla `D` baixa o square do tile
+ * focado. Arrastar o tile entrega o square (`DownloadURL`, Chrome e Edge).
  *
  * ## Densidade (T-40)
  *
@@ -33,16 +41,23 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type RefObject,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 
 import type { CatalogChampion, CatalogSkin } from "@lol-assets/schema";
 
+import { AcoesDoTile, type AlcaDasAcoes } from "@/components/acoes-do-tile";
 import { BotaoIcone } from "@/components/ui/botao-icone";
-import { Chip } from "@/components/ui/chip";
+import { ControleSegmentado } from "@/components/ui/controle-segmentado";
 import { Imagem } from "@/components/ui/imagem";
 import { thumbnailSrc } from "@/lib/asset-file";
 import { filtrarCampeoes, funcoesDe } from "@/lib/categorias";
+import {
+  arrastarArquivo,
+  baixarSquare,
+  nomeDoSquare,
+} from "@/lib/download-rapido";
 import { ESPERA_DA_INTENCAO_MS } from "@/lib/preaquecer";
 import { cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
@@ -55,7 +70,9 @@ export const CHAVE_DA_DENSIDADE = "biblioteca:densidade";
 
 export function lerDensidade(): Densidade {
   try {
-    const guardada = window.localStorage.getItem(CHAVE_DA_DENSIDADE) as Densidade | null;
+    const guardada = window.localStorage.getItem(
+      CHAVE_DA_DENSIDADE,
+    ) as Densidade | null;
     return guardada && DENSIDADES.includes(guardada) ? guardada : "densa";
   } catch {
     return "densa";
@@ -125,8 +142,12 @@ function Grade({
   onIntencao,
 }: GradeDeCampeoesProps) {
   const funcoes = useMemo(() => funcoesDe(champions), [champions]);
-  const [marcadas, setMarcadas] = useState<ReadonlySet<string>>(new Set());
-  const visiveis = useMemo(() => filtrarCampeoes(champions, marcadas), [champions, marcadas]);
+  // Uma função por vez; `""` é "Todas".
+  const [funcao, setFuncao] = useState("");
+  const visiveis = useMemo(
+    () => filtrarCampeoes(champions, new Set(funcao ? [funcao] : [])),
+    [champions, funcao],
+  );
   // A grade só monta no cliente, depois que o catálogo chega: ler o
   // `localStorage` no primeiro render não arrisca divergir do HTML do servidor.
   const [densidade, setDensidade] = useState<Densidade>(lerDensidade);
@@ -135,17 +156,12 @@ function Grade({
     const porId = new Map((skins ?? []).map((skin) => [skin.skinId, skin]));
     return (champion: CatalogChampion): string | undefined => {
       const base = porId.get(champion.baseSkinId);
-      return (base && thumbnailSrc(base, assetsBaseUrl)) ?? thumbnailSrc(champion, assetsBaseUrl);
+      return (
+        (base && thumbnailSrc(base, assetsBaseUrl)) ??
+        thumbnailSrc(champion, assetsBaseUrl)
+      );
     };
   }, [skins, assetsBaseUrl]);
-
-  function alternar(tag: string) {
-    setMarcadas((antes) => {
-      const proximo = new Set(antes);
-      if (!proximo.delete(tag)) proximo.add(tag);
-      return proximo;
-    });
-  }
 
   /**
    * Foco itinerante (T-57).
@@ -160,15 +176,18 @@ function Grade({
    */
   const [comFoco, setComFoco] = useState(0);
   const lista = useRef<HTMLUListElement>(null);
+  const acoes = useRef<AlcaDasAcoes>(null);
 
   useEffect(() => {
     setComFoco(0);
-  }, [marcadas]);
+  }, [funcao]);
 
   function focar(indice: number) {
     const alvo = Math.max(0, Math.min(visiveis.length - 1, indice));
     setComFoco(alvo);
-    const botao = lista.current?.querySelectorAll("li button")[alvo];
+    const botao = lista.current?.querySelectorAll("li button[data-cartao]")[
+      alvo
+    ];
     if (botao instanceof HTMLElement) botao.focus();
   }
 
@@ -213,52 +232,50 @@ function Grade({
       <div className="flex flex-none flex-wrap items-center gap-x-3 gap-y-2 border-b border-linha bg-fundo px-3.5 py-2 md:sticky md:top-0 md:z-10 baixa:md:static">
         <h2 className="sr-only">Campeões</h2>
         {funcoes.length > 0 && (
-          <fieldset
+          <div
             className={cn(
-              "flex min-w-0 flex-1 flex-wrap items-center gap-1.5 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]",
+              "flex min-w-0 flex-1 items-center max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none]",
               ROLA_SEM_CORTAR_O_TOQUE,
             )}
           >
-            <legend className="float-left mr-1.5 tabular-nums text-11 text-texto-suave">
-              Função
-            </legend>
-            {funcoes.map((funcao) => (
-              <Chip
-                key={funcao.tag}
-                marcado={marcadas.has(funcao.tag)}
-                onAlternar={() => alternar(funcao.tag)}
-              >
-                {funcao.rotulo} <span className="ml-1 tabular-nums text-11">({funcao.total})</span>
-              </Chip>
-            ))}
-            {marcadas.size > 0 && (
-              <button
-                type="button"
-                onClick={() => setMarcadas(new Set())}
-                className="h-controle-md flex-none cursor-pointer whitespace-nowrap rounded-controle px-2 text-12 text-texto-suave transition-colors duration-150 ease-saida hover:bg-superficie-alta hover:text-texto"
-              >
-                Todas as funções
-              </button>
-            )}
-          </fieldset>
+            <ControleSegmentado
+              rotulo="Função"
+              valor={funcao}
+              onMudar={setFuncao}
+              opcoes={[
+                { valor: "", rotulo: "Todas" },
+                ...funcoes.map((f) => ({
+                  valor: f.tag,
+                  rotulo: f.rotulo,
+                  contagem: f.total,
+                })),
+              ]}
+            />
+          </div>
         )}
 
         {/* No telefone, a contagem sai e o controle fica na mesma linha das
             funções: era uma linha inteira de 44 px antes do primeiro cartão. */}
         <div className="ml-auto flex flex-none items-center gap-2.5">
-          <span className="hidden tabular-nums text-11 tabular-nums text-texto-suave md:inline">
+          <span className="hidden text-12 tabular-nums text-texto-suave md:inline">
             {visiveis.length} de {champions.length} campeões
           </span>
           <div
             role="group"
             aria-label="Densidade da grade"
-            className="flex items-center gap-0.5 rounded-controle border border-linha-forte p-0.5"
+            className="flex items-center gap-0.5 rounded-controle border border-linha bg-superficie p-0.5"
           >
             <BotaoIcone
               rotulo="Grade compacta"
               dica="Máximo de cartões"
               aria-pressed={densidade === "compacta"}
-              icone={<LayoutGrid aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+              icone={
+                <LayoutGrid
+                  aria-hidden="true"
+                  strokeWidth={1.75}
+                  className="size-4"
+                />
+              }
               onClick={() => escolherDensidade("compacta")}
               className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
             />
@@ -266,7 +283,13 @@ function Grade({
               rotulo="Grade densa"
               dica="Mais cartões por linha"
               aria-pressed={densidade === "densa"}
-              icone={<Grid3x3 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+              icone={
+                <Grid3x3
+                  aria-hidden="true"
+                  strokeWidth={1.75}
+                  className="size-4"
+                />
+              }
               onClick={() => escolherDensidade("densa")}
               className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
             />
@@ -274,7 +297,13 @@ function Grade({
               rotulo="Grade confortável"
               dica="Cartões maiores"
               aria-pressed={densidade === "confortavel"}
-              icone={<Grid2x2 aria-hidden="true" strokeWidth={1.75} className="size-4" />}
+              icone={
+                <Grid2x2
+                  aria-hidden="true"
+                  strokeWidth={1.75}
+                  className="size-4"
+                />
+              }
               onClick={() => escolherDensidade("confortavel")}
               className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
             />
@@ -283,33 +312,57 @@ function Grade({
       </div>
 
       {visiveis.length === 0 ? (
-        <p role="status" className="px-3.5 py-20 text-center text-14 text-texto-suave">
+        <p
+          role="status"
+          className="px-3.5 py-20 text-center text-14 text-texto-suave"
+        >
           Nenhum campeão com essa função.
         </p>
       ) : (
-        <ul
-          ref={lista}
-          id="grade-de-campeoes"
-          aria-label="Campeões"
-          data-densidade={densidade}
-          onKeyDown={aoTeclar}
-          style={{ "--altura-do-cartao": ALTURA_ESTIMADA[densidade] } as CSSProperties}
-          className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
+        // A camada do hover precisa de um pai posicionado que role junto com a
+        // grade; sair dele com o ponteiro a esconde.
+        <div
+          data-grade-com-acoes=""
+          className="relative"
+          onPointerLeave={(evento) => {
+            if (evento.pointerType === "mouse") acoes.current?.esconder();
+          }}
+          // O foco que sai da grade leva a camada junto.
+          onBlur={(evento) => {
+            if (!evento.currentTarget.contains(evento.relatedTarget as Node | null)) acoes.current?.esconder();
+          }}
         >
-          {visiveis.map((champion, indice) => (
-            <Cartao
-              key={champion.championKey}
-              champion={champion}
-              arte={arteDe(champion)}
-              // Uma parada de Tab para a grade inteira: o resto se alcança pelas
-              // setas, e clicar num cartão passa a vez para ele.
-              tabIndex={indice === comFoco ? 0 : -1}
-              onFocar={() => setComFoco(indice)}
-              onAbrir={onAbrir}
-              onIntencao={onIntencao}
-            />
-          ))}
-        </ul>
+          <ul
+            ref={lista}
+            id="grade-de-campeoes"
+            aria-label="Campeões"
+            data-densidade={densidade}
+            onKeyDown={aoTeclar}
+            style={
+              {
+                "--altura-do-cartao": ALTURA_ESTIMADA[densidade],
+              } as CSSProperties
+            }
+            className={cn("grid px-3.5 pt-3 pb-6", COLUNAS[densidade])}
+          >
+            {visiveis.map((champion, indice) => (
+              <Cartao
+                key={champion.championKey}
+                champion={champion}
+                arte={arteDe(champion)}
+                assetsBaseUrl={assetsBaseUrl}
+                acoes={acoes}
+                // Uma parada de Tab para a grade inteira: o resto se alcança pelas
+                // setas, e clicar num cartão passa a vez para ele.
+                tabIndex={indice === comFoco ? 0 : -1}
+                onFocar={() => setComFoco(indice)}
+                onAbrir={onAbrir}
+                onIntencao={onIntencao}
+              />
+            ))}
+          </ul>
+          <AcoesDoTile alca={acoes} assetsBaseUrl={assetsBaseUrl} />
+        </div>
       )}
     </>
   );
@@ -318,14 +371,18 @@ function Grade({
 function Cartao({
   champion,
   arte,
+  assetsBaseUrl,
   tabIndex,
+  acoes,
   onFocar,
   onAbrir,
   onIntencao,
 }: {
   champion: CatalogChampion;
   arte: string | undefined;
+  assetsBaseUrl?: string;
   tabIndex: number;
+  acoes: RefObject<AlcaDasAcoes | null>;
   onFocar: () => void;
   onAbrir: (champion: CatalogChampion) => void;
   onIntencao?: (champion: CatalogChampion) => void;
@@ -341,41 +398,76 @@ function Cartao({
   };
   useEffect(() => pararDeEsperar, []);
 
+  const square = thumbnailSrc(champion, assetsBaseUrl);
+  // A sobreposição de hover vai para cima da arte deste tile (ver `acoes-do-tile.tsx`).
+  const mostrarAcoes = (botao: HTMLElement) => {
+    const caixa = botao.firstElementChild;
+    if (caixa instanceof HTMLElement) acoes.current?.mostrar(caixa, champion);
+  };
+
   return (
     <li className={CARTAO_PULAVEL}>
       <button
         type="button"
+        data-cartao=""
         tabIndex={tabIndex}
-        onFocus={() => {
+        // A tecla do download rápido, para quem chega pelo teclado: o botão de
+        // download da sobreposição é só do ponteiro, e a grade é uma parada de Tab.
+        aria-keyshortcuts="D"
+        onKeyDown={(evento) => {
+          if (
+            evento.key.toLowerCase() !== "d" ||
+            evento.ctrlKey ||
+            evento.metaKey ||
+            evento.altKey
+          )
+            return;
+          evento.preventDefault();
+          void baixarSquare(champion, assetsBaseUrl);
+        }}
+        onFocus={(evento) => {
           onFocar();
           avisar();
+          mostrarAcoes(evento.currentTarget);
         }}
-        onPointerEnter={() => {
+        onPointerEnter={(evento) => {
           pararDeEsperar();
           espera.current = setTimeout(avisar, ESPERA_DA_INTENCAO_MS);
+          if (evento.pointerType === "mouse")
+            mostrarAcoes(evento.currentTarget);
         }}
         onPointerLeave={pararDeEsperar}
         onPointerDown={avisar}
         onClick={() => onAbrir(champion)}
+        // Arrastar o tile entrega o square, como o download rápido.
+        draggable={Boolean(square)}
+        onDragStart={(evento) => {
+          if (square)
+            arrastarArquivo(evento, square, nomeDoSquare(champion), "png");
+        }}
         className="group block w-full cursor-pointer rounded-quadro text-left"
       >
-        {/* Hover discreto, sem acento: o violeta é de seleção e de ação, e
-            aqui ainda não há nenhuma das duas. */}
+        {/* O hover é parado ([ADR 0024]): a borda fica no destaque, e as marcas
+            de corte chegam pela sobreposição. Nada se mexe. */}
         {arte ? (
           <Imagem
             src={arte}
             alt={champion.names.pt_BR}
-            classeDaCaixa="aspect-square rounded-quadro border border-linha transition-colors duration-200 ease-saida group-hover:border-linha-forte"
-            className="object-cover transition-[opacity,transform] duration-200 ease-saida group-hover:scale-[1.03]"
+            draggable={false}
+            classeDaCaixa="aspect-square rounded-quadro border border-linha group-hover:border-acento group-focus-visible:border-acento"
+            className="object-cover"
           />
         ) : (
-          <div aria-hidden="true" className="aspect-square rounded-quadro border border-linha bg-superficie-alta" />
+          <div
+            aria-hidden="true"
+            className="aspect-square rounded-quadro border border-linha bg-superficie-alta"
+          />
         )}
-        <div className="truncate pt-2 text-12 leading-cartao font-semibold text-texto transition-colors duration-150 ease-saida group-hover:text-texto">
+        <div className="truncate pt-2 text-13 leading-cartao font-semibold text-texto">
           {champion.names.pt_BR}
         </div>
-        {/* RF-04: o cartão conta skins, nunca chromas. */}
-        <div className="truncate tabular-nums text-11 text-texto-suave">
+        {/* RF-04: o tile conta skins, nunca chromas. */}
+        <div className="truncate text-12 leading-cartao tabular-nums text-texto-suave">
           {champion.skinCount} {champion.skinCount === 1 ? "skin" : "skins"}
         </div>
       </button>
@@ -393,7 +485,11 @@ export function EsqueletoDaGrade({ cartoes = 24 }: { cartoes?: number }) {
   return (
     <div aria-hidden="true" className={cn("grid px-3.5 pt-3", COLUNAS.densa)}>
       {Array.from({ length: cartoes }, (_, i) => (
-        <div key={i} className="animate-pulsar" style={{ animationDelay: `${(i % 8) * 0.06}s` }}>
+        <div
+          key={i}
+          className="animate-pulsar"
+          style={{ animationDelay: `${(i % 8) * 0.06}s` }}
+        >
           <div className="aspect-square rounded-quadro bg-superficie-alta" />
           <div className="mt-2 h-3 w-3/4 rounded-quadro bg-superficie-alta" />
           <div className="mt-1.5 h-2.5 w-1/3 rounded-quadro bg-superficie-alta" />

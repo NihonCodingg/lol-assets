@@ -599,32 +599,37 @@ describe("filtro por função (RF-08)", () => {
     return render(<GradeDeCampeoes champions={CAMPEOES} onAbrir={() => {}} />);
   }
 
-  it("as funções vêm do catálogo, em português, com a contagem", () => {
+  it("as funções vêm do catálogo, em português, e a contagem não entra no nome", () => {
     grade();
-    expect(screen.getByLabelText("Lutador (2)")).toBeTruthy();
-    expect(screen.getByLabelText("Mago (1)")).toBeTruthy();
-    expect(screen.queryByLabelText(/Atirador/)).toBeNull();
+    const funcao = screen.getByRole("group", { name: "Função" });
+    expect(within(funcao).getByRole("radio", { name: "Todas" })).toHaveProperty("checked", true);
+    expect(within(funcao).getByRole("radio", { name: "Lutador" })).toBeTruthy();
+    expect(within(funcao).getByRole("radio", { name: "Mago" })).toBeTruthy();
+    expect(within(funcao).queryByRole("radio", { name: /Atirador/ })).toBeNull();
+    // A contagem está à vista, ao lado do nome.
+    expect(funcao.textContent).toContain("Lutador2");
   });
 
-  it("marcar uma função reduz a grade", () => {
+  it("escolher uma função reduz a grade", () => {
     grade();
-    fireEvent.click(screen.getByLabelText("Mago (1)"));
+    fireEvent.click(screen.getByRole("radio", { name: "Mago" }));
     expect(screen.getByText("1 de 3 campeões")).toBeTruthy();
     const lista = screen.getByRole("list", { name: "Campeões" });
     expect(within(lista).getAllByRole("listitem")).toHaveLength(1);
   });
 
-  it("duas funções são OU, e o campeão das duas aparece uma vez só", () => {
+  it("é uma função por vez: escolher outra troca, não soma (T-81)", () => {
     grade();
-    fireEvent.click(screen.getByLabelText("Lutador (2)"));
-    fireEvent.click(screen.getByLabelText("Tanque (1)"));
+    fireEvent.click(screen.getByRole("radio", { name: "Lutador" }));
     expect(screen.getByText("2 de 3 campeões")).toBeTruthy();
+    fireEvent.click(screen.getByRole("radio", { name: "Tanque" }));
+    expect(screen.getByText("1 de 3 campeões")).toBeTruthy();
   });
 
-  it("limpar volta a grade inteira", () => {
+  it("\"Todas\" volta a grade inteira", () => {
     grade();
-    fireEvent.click(screen.getByLabelText("Mago (1)"));
-    fireEvent.click(screen.getByRole("button", { name: "Todas as funções" }));
+    fireEvent.click(screen.getByRole("radio", { name: "Mago" }));
+    fireEvent.click(screen.getByRole("radio", { name: "Todas" }));
     expect(screen.getByText("3 de 3 campeões")).toBeTruthy();
   });
 

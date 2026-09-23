@@ -64,13 +64,6 @@ export interface MarcasDeCorteProps {
   readonly className?: string;
 }
 
-const CANTOS = [
-  "top-0 left-0 border-t-[1.5px] border-l-[1.5px]",
-  "top-0 right-0 border-t-[1.5px] border-r-[1.5px]",
-  "bottom-0 left-0 border-b-[1.5px] border-l-[1.5px]",
-  "bottom-0 right-0 border-b-[1.5px] border-r-[1.5px]",
-] as const;
-
 /** Vai dentro de um pai `relative`. Sempre decorativo. */
 export function MarcasDeCorte({ lado = "fora", className }: MarcasDeCorteProps) {
   return (
@@ -78,14 +71,10 @@ export function MarcasDeCorte({ lado = "fora", className }: MarcasDeCorteProps) 
       aria-hidden="true"
       data-marcas-de-corte={lado}
       className={cn(
-        "pointer-events-none absolute",
+        "marcas-de-corte pointer-events-none absolute",
         lado === "fora" ? "-inset-2 text-texto-suave" : "inset-1.5 text-texto mix-blend-difference",
         className,
       )}
-    >
-      {CANTOS.map((canto) => (
-        <span key={canto} className={cn("absolute size-2.5 border-current", canto)} />
-      ))}
-    </span>
+    />
   );
 }

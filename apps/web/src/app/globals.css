@@ -134,6 +134,23 @@
   background-size: 16px 16px;
 }
 
+/* As marcas de corte: quatro cantos de prova de impressão num elemento só, sem
+   filhos — o tile tem 173 cópias e cada nó conta. Na cor do texto (`currentColor`). */
+@utility marcas-de-corte {
+  --marca: 10px;
+  --traco: 1.5px;
+  background:
+    linear-gradient(currentColor, currentColor) top left / var(--marca) var(--traco),
+    linear-gradient(currentColor, currentColor) top left / var(--traco) var(--marca),
+    linear-gradient(currentColor, currentColor) top right / var(--marca) var(--traco),
+    linear-gradient(currentColor, currentColor) top right / var(--traco) var(--marca),
+    linear-gradient(currentColor, currentColor) bottom left / var(--marca) var(--traco),
+    linear-gradient(currentColor, currentColor) bottom left / var(--traco) var(--marca),
+    linear-gradient(currentColor, currentColor) bottom right / var(--marca) var(--traco),
+    linear-gradient(currentColor, currentColor) bottom right / var(--traco) var(--marca);
+  background-repeat: no-repeat;
+}
+
 :root {
   color-scheme: dark;
   /* O véu atrás do painel: é ele, e não uma sombra, que separa as camadas. */
