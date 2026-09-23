@@ -363,7 +363,7 @@ function Paleta({
           </div>
 
           <div className="flex h-paleta-rodape items-center gap-3 border-t border-linha px-3 text-11 text-texto-suave">
-            <span className="tabular-nums">
+            <span>
               {cortado
                 ? `Mostrando ${TETO_DO_GRUPO} de ${cortado.total.toLocaleString("pt-BR")}. Continue digitando para achar o que procura.`
                 : `${total.toLocaleString("pt-BR")} ${
@@ -375,19 +375,6 @@ function Paleta({
                         ? "resultado"
                         : "resultados"
                   }`}
-            </span>
-            <span className="ml-auto hidden items-center gap-1 sm:flex">
-              <Tecla>↑</Tecla>
-              <Tecla>↓</Tecla>
-              Navegar
-            </span>
-            <span className="hidden items-center gap-1 sm:flex">
-              <Tecla>↵</Tecla>
-              Abrir
-            </span>
-            <span className="hidden items-center gap-1 sm:flex">
-              <Tecla>esc</Tecla>
-              Fechar
             </span>
           </div>
         </div>

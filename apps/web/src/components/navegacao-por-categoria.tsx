@@ -35,7 +35,7 @@
  * galeria já diz quantos. E os avisos da Riot ficam no fim da área que rola.
  */
 
-import { ArrowLeft, CloudOff, ListChecks, Search, SearchX, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, CloudOff, Search, SearchX, SlidersHorizontal } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Asset, AssetCategory, IndexShard } from "@lol-assets/schema";
@@ -343,7 +343,7 @@ export function NavegacaoPorCategoria({
                 </div>
               )}
 
-              <p className="ml-auto hidden tabular-nums text-11 tabular-nums text-texto-suave md:block">
+              <p className="ml-auto hidden text-11 tabular-nums text-texto-suave md:block">
                 {filtrados.length} de {assets.length}
               </p>
 
@@ -430,7 +430,6 @@ export function NavegacaoPorCategoria({
                 className={ALVO_DE_TOQUE}
                 onClick={() => setSelecao(tudoDo(filtrados, true))}
               >
-                <ListChecks aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
                 Selecionar os {filtrados.length} filtrados
               </Botao>
             }
@@ -470,7 +469,7 @@ function GrupoDeChips({
 }) {
   return (
     <fieldset className="flex min-w-0 flex-none flex-wrap items-center gap-1.5 max-md:flex-nowrap">
-      <legend className="float-left mr-1 tabular-nums text-11 text-texto-suave">
+      <legend className="float-left mr-1 text-11 text-texto-suave">
         {grupo.rotulo}
       </legend>
       {grupo.opcoes.map((opcao) => (
@@ -526,7 +525,7 @@ function Vazio({ descricao, onLimpar }: { descricao: readonly string[]; onLimpar
       {descricao.length > 0 && (
         <ul
           aria-label="Filtro aplicado"
-          className="mt-2.5 flex flex-wrap justify-center gap-1.5 tabular-nums text-11 text-texto-suave"
+          className="mt-2.5 flex flex-wrap justify-center gap-1.5 text-11 text-texto-suave"
         >
           {descricao.map((parte) => (
             <li key={parte} className="rounded-controle border border-linha-forte px-2 py-0.75">

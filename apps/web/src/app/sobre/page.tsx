@@ -58,9 +58,8 @@ export default function SobrePage() {
             baixar cada arte.
           </li>
           <li>
-            <strong>Baixar original</strong> entrega o arquivo como a fonte o publica.{" "}
-            <strong>PNG</strong> converte a imagem no seu navegador, sem passar por servidor
-            nenhum.
+            <strong>Baixar PNG</strong> entrega o PNG, convertido no seu navegador, sem passar por
+            servidor nenhum. <strong>Original</strong> entrega o arquivo como a fonte o publica.
           </li>
           <li>
             <strong>Nas categorias</strong> — itens, runas, ícones, emotes — há filtros; marque
@@ -72,10 +71,10 @@ export default function SobrePage() {
       <section className="flex flex-col gap-2 text-13 leading-cartao text-texto" aria-label="Não afiliação">
         <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">Não afiliação</h2>
         {/* RF-21 e RNF-10. Os mesmos dois textos do rodapé, aqui em destaque. */}
-        <p data-aviso="riot" lang="en" className="rounded-controle border border-linha-forte bg-superficie-alta p-2.5 tabular-nums text-11 leading-cartao text-texto-suave">
+        <p data-aviso="riot" lang="en" className="rounded-controle border border-linha-forte bg-superficie-alta p-2.5 text-11 leading-cartao text-texto-suave">
           {siteConfig.riotLegalNotice}
         </p>
-        <p data-aviso="jibber-jabber" lang="en" className="rounded-controle border border-linha-forte bg-superficie-alta p-2.5 tabular-nums text-11 leading-cartao text-texto-suave">
+        <p data-aviso="jibber-jabber" lang="en" className="rounded-controle border border-linha-forte bg-superficie-alta p-2.5 text-11 leading-cartao text-texto-suave">
           {siteConfig.riotJibberJabberNotice}
         </p>
         <p>
@@ -100,10 +99,11 @@ export default function SobrePage() {
         <h2 className="mb-1.5 text-12 font-semibold text-texto-suave">Fontes e créditos</h2>
         <ul className="flex flex-col gap-2">
           {creditos.map((credito) => (
-            <li key={credito.fonte} data-fonte={credito.fonte} className="rounded-controle border border-linha-forte p-2.5">
+            <li key={credito.fonte} data-fonte={credito.fonte}>
               <a href={credito.url} className="font-semibold underline underline-offset-2 text-acento-forte hover:text-acento">
                 {credito.nome}
-              </a> — {credito.papel}
+              </a>
+              : {credito.papel}
               {credito.licencaDoTexto && <> Licença do conteúdo: {credito.licencaDoTexto}.</>}
             </li>
           ))}
