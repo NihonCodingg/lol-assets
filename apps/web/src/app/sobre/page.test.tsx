@@ -95,8 +95,8 @@ describe("como usar (T-50)", () => {
     render(<SobrePage />);
     const secao = screen.getByLabelText("Como usar");
     expect(secao.textContent).toContain("mf");
-    expect(secao.textContent).toContain("Baixar original");
-    expect(secao.textContent).toContain("PNG");
+    expect(secao.textContent).toContain("Baixar PNG");
+    expect(secao.textContent).toContain("Original");
   });
 });
 

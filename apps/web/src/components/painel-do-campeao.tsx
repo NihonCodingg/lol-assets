@@ -48,7 +48,6 @@ import { ListaDeVariantes } from "@/components/lista-de-variantes";
 import { SeletorDeSkin } from "@/components/seletor-de-skin";
 import { Botao } from "@/components/ui/botao";
 import { BotaoIcone } from "@/components/ui/botao-icone";
-import { Tecla } from "@/components/ui/campo";
 import { Esqueleto } from "@/components/ui/esqueleto";
 import { Estado } from "@/components/ui/estado";
 import { PainelLateral } from "@/components/ui/painel-lateral";
@@ -182,7 +181,6 @@ export function PainelDoCampeao({
               {skinAtual?.isBase ? contagem : `${champion.names.pt_BR}, ${contagem}`}
             </p>
           </div>
-          <Tecla className="hidden md:block">Esc</Tecla>
           <BotaoIcone
             rotulo="Fechar"
             dica="Fechar (Esc)"

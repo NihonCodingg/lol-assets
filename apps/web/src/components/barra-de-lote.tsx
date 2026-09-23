@@ -217,7 +217,7 @@ export function BarraDeLote({
       )}
 
       {estado.fase === "pronto" && (
-        <p role="status" className="tabular-nums text-11 text-texto-suave">
+        <p role="status" className="text-11 text-texto-suave">
           Zip com {estado.arquivos} {estado.arquivos === 1 ? "arquivo" : "arquivos"}.
           {estado.falhas.length > 0 &&
             ` ${estado.falhas.length} não ${estado.falhas.length === 1 ? "veio" : "vieram"} — a lista está no FALHAS.txt dentro do zip.`}
