@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { ProvedorDeNavegacao } from "@/components/navegacao-context";
 import { Rodape } from "@/components/rodape";
+import { Topo } from "@/components/topo";
 import { RegiaoDeConfirmacoes } from "@/components/ui/confirmacoes";
 import { fonteInterface } from "@/lib/fontes";
 import { siteConfig } from "@/lib/site-config";
@@ -18,16 +19,15 @@ export const metadata: Metadata = {
 };
 
 /**
- * A casca de duas colunas do design: barra lateral de 208px e o resto.
+ * A casca: o topo com a marca e a busca, a barra lateral e o conteúdo (T-80).
  *
  * Ela mora no layout, e não na página, por causa do RF-21: o aviso da Riot é
  * obrigatório em **toda** página, e o layout é o único caminho por onde toda
- * página passa. O design não tinha rodapé — decidido em 10/09 que ele vai no pé
- * da barra lateral, que é onde sobrava espaço sem comer altura da grade.
+ * página passa. O aviso fica no pé da barra lateral no computador, e no fim da
+ * página no telefone.
  *
- * `h-screen` com `overflow-hidden`: as duas colunas rolam por dentro, não a
- * janela. É o que faz a barra lateral ficar parada enquanto 5.042 ícones passam
- * ao lado.
+ * `h-screen` com `overflow-hidden`: as colunas rolam por dentro, não a janela. É
+ * o que faz a barra lateral ficar parada enquanto 5.042 ícones passam ao lado.
  *
  * **Menos em tela baixa (T-67).** Até 500 px de altura — zoom de 200% ou 400%,
  * telefone deitado —, a casca fixa não tinha o que ceder: o cromo ocupava a
@@ -39,19 +39,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" className={fonteInterface.variable}>
-      {/* Abaixo de `md` a barra lateral vira faixa no topo: 208px fixos num
-          telefone de 375px deixariam 167px para a grade, que não é largura de
-          nada. Acima, as duas colunas do design.
+      {/* No telefone, três linhas: o topo, as categorias em abas que rolam de
+          lado e o conteúdo. No computador, o topo atravessa as duas colunas, e
+          embaixo ficam a barra lateral e o conteúdo.
 
           A coluna do telefone é `minmax(0, 1fr)`, e não a implícita: a
           implícita cresce até caber o conteúdo, e a linha de categorias que
           rola de lado (T-49) tem 668 px — a página inteira ficava com 668, e o
           telefone a mostrava reduzida. */}
-      <body className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr] overflow-hidden bg-fundo text-texto md:grid-cols-[var(--spacing-barra-lateral)_minmax(0,1fr)] md:grid-rows-1 baixa:h-auto baixa:min-h-screen baixa:overflow-visible">
+      <body className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_auto_1fr] overflow-hidden bg-fundo text-texto md:grid-cols-[var(--spacing-barra-lateral)_minmax(0,1fr)] md:grid-rows-[auto_1fr] baixa:h-auto baixa:min-h-screen baixa:overflow-visible">
         {/* O provedor envolve os dois porque a barra lateral tem os botões de
             categoria e a página tem o conteúdo — e layout não recebe prop de
             página. Ver `navegacao-context.tsx`. */}
         <ProvedorDeNavegacao>
+          <Topo />
           <Rodape />
           <div className="flex min-h-0 min-w-0 flex-col">{children}</div>
         </ProvedorDeNavegacao>

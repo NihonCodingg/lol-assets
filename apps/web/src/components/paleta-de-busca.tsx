@@ -8,11 +8,12 @@
  * o nosso ranqueamento ver a consulta — em silêncio, sem erro nenhum. Quem
  * decide o que aparece é o `search()` ([ADR 0011]).
  *
- * ## A busca é a porta da frente (T-46)
+ * ## A busca é a porta da frente (T-46, T-80)
  *
- * O campo fica no topo de toda tela, e os resultados **flutuam** sobre a grade
- * em vez de empurrá-la: antes, digitar uma letra jogava os 173 cartões para
- * baixo. Cada linha mostra a arte — a da skin, ou a da skin base para campeão —,
+ * O campo fica no centro do topo, com presença, e os resultados **flutuam**
+ * sobre a grade em vez de empurrá-la: antes, digitar uma letra jogava os 173
+ * cartões para baixo. Onde ela mora é decisão de quem a usa (`className`): no
+ * topo, por portal, ou no alto da página, quando não há topo. Cada linha mostra a arte — a da skin, ou a da skin base para campeão —,
  * porque quem edita vídeo reconhece a imagem antes de terminar de ler o nome.
  *
  * ## A arte ao lado (T-54)
@@ -190,10 +191,7 @@ function Paleta({
       value={emDestaque}
       onValueChange={setEmDestaque}
       label="Buscar campeão ou skin"
-      className={cn(
-        "relative z-20 flex flex-none items-center border-b border-linha px-3.5 py-2",
-        className,
-      )}
+      className={cn("relative z-20 flex flex-none items-center", className)}
     >
       <div className="relative w-full max-w-busca-max">
         <Search
@@ -222,12 +220,13 @@ function Paleta({
               setConsulta("");
             }
           }}
-          placeholder="Campeão ou skin — tente mf, j4, K/DA"
+          placeholder="Buscar campeão ou skin"
           // 44 px em toda largura: no telefone é também o alvo de toque (T-49).
           // Anel fino: o campo abre focado, e o anel de 2 px somado à borda
           // violeta virava uma moldura grossa na primeira coisa que se vê.
           data-anel="fino"
-          className="h-controle-xl w-full rounded-controle border border-linha-forte bg-superficie-alta pr-11 pl-10 font-interface text-14 text-texto caret-acento transition-colors duration-150 ease-saida placeholder:text-texto-suave hover:border-linha-forte focus:border-acento"
+          // 16 px: o campo tem presença, e o iOS não amplia a página ao focar.
+          className="h-controle-xl w-full rounded-controle border border-linha-forte bg-superficie-alta pr-11 pl-10 font-interface text-16 text-texto caret-acento transition-colors duration-150 ease-saida placeholder:text-texto-suave focus:border-acento"
         />
         <Tecla className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 sm:block">
           /
@@ -238,8 +237,9 @@ function Paleta({
           className={cn(
             "absolute top-full right-0 left-0 mt-1.5 overflow-hidden rounded-painel border border-linha-forte bg-superficie-alta",
             // Mais largo que o campo a partir de `sm`, para caber a prévia ao
-            // lado sem espremer a lista. No telefone, a largura do campo.
-            "sm:right-auto sm:w-[min(760px,92vw)]",
+            // lado sem espremer a lista; centrado no campo, como o campo está
+            // centrado no topo. No telefone, a largura do campo.
+            "sm:right-auto sm:left-1/2 sm:w-[min(760px,92vw)] sm:-translate-x-1/2",
             !mostrar && "hidden",
           )}
         >
