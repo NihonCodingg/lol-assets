@@ -108,8 +108,8 @@ A raiz é 14 px.
 | `texto-14` | 14px | corpo, campo de busca da categoria, nome no tile |
 | `texto-15` | 15px | nome do arquivo na lista do painel (T-89) |
 | `texto-16` | 16px | campo de busca principal |
-| `texto-20` | 20px | título do painel |
-| `texto-26` | 26px | título de página (Sobre) |
+| `texto-20` | 20px | título de estado de página inteira (404) |
+| `texto-26` | 26px | título de página (Sobre) e nome da skin no painel do campeão (T-89) |
 
 ### Entrelinha e espacejamento
 

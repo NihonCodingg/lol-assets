@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T00:00:00Z",
+  "title": "Design System: Biblioteca de Assets",
+  "extensions": {
+    "colorMeta": {
+      "acento": { "role": "primary", "displayName": "Magenta de marcador", "canonical": "oklch(0.72 0.17 350)", "tonalRamp": ["#45293a", "#f072b3", "#f990c4"] },
+      "acento-forte": { "role": "primary", "displayName": "Magenta de hover" },
+      "acento-suave": { "role": "primary", "displayName": "Magenta escuro (tonal, selecionado)" },
+      "fundo": { "role": "neutral", "displayName": "Grafite de fundo", "tonalRamp": ["#1e2023", "#272a2e", "#30343a", "#383c42", "#4a4f56", "#b3b6bb", "#e9e7e2"] },
+      "superficie": { "role": "neutral", "displayName": "Superfície" },
+      "superficie-alta": { "role": "neutral", "displayName": "Superfície elevada" },
+      "campo": { "role": "neutral", "displayName": "Campo" },
+      "linha": { "role": "neutral", "displayName": "Linha" },
+      "linha-forte": { "role": "neutral", "displayName": "Linha forte" },
+      "texto": { "role": "neutral", "displayName": "Texto" },
+      "texto-suave": { "role": "neutral", "displayName": "Texto suave" },
+      "xadrez-claro": { "role": "neutral", "displayName": "Xadrez claro" },
+      "xadrez-escuro": { "role": "neutral", "displayName": "Xadrez escuro" },
+      "etiqueta-campeoes": { "role": "tertiary", "displayName": "Etiqueta Campeões", "canonical": "oklch(0.74 0.10 270)" },
+      "etiqueta-itens": { "role": "tertiary", "displayName": "Etiqueta Itens", "canonical": "oklch(0.74 0.10 65)" },
+      "etiqueta-runas": { "role": "tertiary", "displayName": "Etiqueta Runas", "canonical": "oklch(0.74 0.10 185)" },
+      "etiqueta-feiticos": { "role": "tertiary", "displayName": "Etiqueta Feitiços", "canonical": "oklch(0.74 0.10 230)" },
+      "etiqueta-icones": { "role": "tertiary", "displayName": "Etiqueta Ícones", "canonical": "oklch(0.74 0.10 30)" },
+      "etiqueta-emotes": { "role": "tertiary", "displayName": "Etiqueta Emotes", "canonical": "oklch(0.74 0.10 100)" },
+      "etiqueta-wards": { "role": "tertiary", "displayName": "Etiqueta Wards", "canonical": "oklch(0.74 0.10 145)" },
+      "etiqueta-mapas": { "role": "tertiary", "displayName": "Etiqueta Mapas", "canonical": "oklch(0.74 0.10 305)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Título de página e nome do campeão no painel." },
+      "headline": { "displayName": "Headline", "purpose": "Título de estado de página inteira." },
+      "title": { "displayName": "Title", "purpose": "Nome no tile; até duas linhas nas galerias de nome longo." },
+      "body": { "displayName": "Body", "purpose": "Corpo e texto corrido." },
+      "label": { "displayName": "Label", "purpose": "Botões, chips, metadados com algarismos tabulares." },
+      "brand": { "displayName": "Marca", "purpose": "O nome do produto ao lado do símbolo." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-saida", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "Toda transição de estado." },
+      { "name": "abertura-do-painel", "value": "240ms", "purpose": "O painel cresce da caixa do tile até o lugar dele; escala uniforme, só transform e opacity." },
+      { "name": "surgir", "value": "160ms", "purpose": "O aviso 'Baixado: <arquivo>' que surge no canto." },
+      { "name": "pulsar", "value": "1.2s ease-in-out infinite", "purpose": "O esqueleto carregando." },
+      { "name": "reduced-motion", "value": "0.01ms", "purpose": "Com prefers-reduced-motion, tudo vira instantâneo." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" },
+      { "name": "baixa", "value": "max-height: 500px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "botao-primario",
+      "description": "A ação que a tela existe para oferecer; no máximo uma por contexto.",
+      "html": "<button class=\"ds-botao ds-botao-primario\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><path d=\"m7 10 5 5 5-5\"/><path d=\"M12 15V3\"/></svg>Baixar PNG</button>",
+      "css": ".ds-botao { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: var(--radius-controle, 6px); font-family: var(--font-interface); font-size: 13px; white-space: nowrap; cursor: pointer; border: 0; } .ds-botao:focus-visible { outline: 2px solid var(--color-acento, #f072b3); outline-offset: 2px; } .ds-botao-primario { background: var(--color-acento, #f072b3); color: var(--color-fundo, #1e2023); font-weight: 600; } .ds-botao-primario:hover { background: var(--color-acento-forte, #f990c4); }"
+    },
+    {
+      "name": "Botão tonal",
+      "kind": "button",
+      "refersTo": "botao-tonal",
+      "description": "A primária que se repete numa lista.",
+      "html": "<button class=\"ds-botao-t\">Baixar PNG</button>",
+      "css": ".ds-botao-t { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--radius-controle, 6px); font-family: var(--font-interface); font-size: 13px; font-weight: 600; cursor: pointer; background: var(--color-acento-suave, #45293a); color: var(--color-texto, #e9e7e2); border: 1px solid rgba(240, 114, 179, 0.6); } .ds-botao-t:hover { background: var(--color-acento, #f072b3); border-color: var(--color-acento, #f072b3); color: var(--color-fundo, #1e2023); } .ds-botao-t:focus-visible { outline: 2px solid var(--color-acento, #f072b3); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão de contorno",
+      "kind": "button",
+      "refersTo": "botao-contorno",
+      "description": "Ação secundária: Original, Limpar seleção, fechar.",
+      "html": "<button class=\"ds-botao-c\">Original</button>",
+      "css": ".ds-botao-c { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--radius-controle, 6px); font-family: var(--font-interface); font-size: 13px; cursor: pointer; background: var(--color-superficie-alta, #30343a); color: var(--color-texto, #e9e7e2); border: 1px solid var(--color-linha-forte, #4a4f56); } .ds-botao-c:hover { background: var(--color-campo, #383c42); } .ds-botao-c:focus-visible { outline: 2px solid var(--color-acento, #f072b3); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão fantasma",
+      "kind": "button",
+      "refersTo": "botao-fantasma",
+      "description": "Item de lista, ação dentro de campo.",
+      "html": "<button class=\"ds-botao-f\">Sobre</button>",
+      "css": ".ds-botao-f { display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border-radius: var(--radius-controle, 6px); font-family: var(--font-interface); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-texto-suave, #b3b6bb); border: 0; } .ds-botao-f:hover { background: var(--color-superficie-alta, #30343a); color: var(--color-texto, #e9e7e2); } .ds-botao-f:focus-visible { outline: 2px solid var(--color-acento, #f072b3); outline-offset: 2px; }"
+    },
+    {
+      "name": "Chip de filtro",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtro que liga e desliga; marcado em grafite elevado, não magenta.",
+      "html": "<span class=\"ds-chip\">Animado</span> <span class=\"ds-chip ds-chip-marcado\">Estático</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--radius-controle, 6px); border: 1px solid var(--color-linha, #363a3f); color: var(--color-texto-suave, #b3b6bb); font-family: var(--font-interface); font-size: 13px; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1); } .ds-chip:hover { background: var(--color-superficie-alta, #30343a); color: var(--color-texto, #e9e7e2); } .ds-chip-marcado { background: var(--color-campo, #383c42); border-color: var(--color-linha-forte, #4a4f56); color: var(--color-texto, #e9e7e2); font-weight: 600; }"
+    },
+    {
+      "name": "Controle segmentado",
+      "kind": "custom",
+      "refersTo": "segmento",
+      "description": "Uma escolha entre poucas, lado a lado; o segmento marcado ganha superfície, contorno e peso.",
+      "html": "<div class=\"ds-seg\"><span class=\"ds-seg-op ds-seg-on\">Todas <span class=\"ds-seg-n\">173</span></span><span class=\"ds-seg-op\">Assassino</span><span class=\"ds-seg-op\">Atirador</span></div>",
+      "css": ".ds-seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--radius-controle, 6px); border: 1px solid var(--color-linha, #363a3f); background: var(--color-superficie, #272a2e); font-family: var(--font-interface); } .ds-seg-op { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 4px; border: 1px solid transparent; color: var(--color-texto-suave, #b3b6bb); font-size: 13px; cursor: pointer; } .ds-seg-op:hover { color: var(--color-texto, #e9e7e2); } .ds-seg-on { background: var(--color-superficie-alta, #30343a); border-color: var(--color-linha-forte, #4a4f56); color: var(--color-texto, #e9e7e2); font-weight: 600; } .ds-seg-n { font-weight: 400; color: var(--color-texto-suave, #b3b6bb); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Campo de busca",
+      "kind": "input",
+      "refersTo": "campo",
+      "description": "Campo com cursor magenta e borda magenta no foco.",
+      "html": "<input class=\"ds-campo\" placeholder=\"Buscar campeão, skin, item\">",
+      "css": ".ds-campo { height: 32px; width: 280px; padding: 0 10px; border-radius: var(--radius-controle, 6px); border: 1px solid var(--color-linha-forte, #4a4f56); background: var(--color-superficie-alta, #30343a); color: var(--color-texto, #e9e7e2); caret-color: var(--color-acento, #f072b3); font-family: var(--font-interface); font-size: 14px; outline: none; } .ds-campo::placeholder { color: var(--color-texto-suave, #b3b6bb); } .ds-campo:focus { border-color: var(--color-acento, #f072b3); } .ds-campo:focus-visible { outline: 1px solid var(--color-acento, #f072b3); outline-offset: 0; }"
+    },
+    {
+      "name": "Tile com quadro",
+      "kind": "card",
+      "refersTo": "tile",
+      "description": "A arte como quadro (raio 2 px) sobre xadrez; marcas de corte no hover e no foco; nome em 600, contagem em texto suave.",
+      "html": "<a class=\"ds-tile\" href=\"#\"><span class=\"ds-tile-arte\"><span class=\"ds-corte\"></span></span><span class=\"ds-tile-nome\">Ahri</span><span class=\"ds-tile-meta\">12 skins</span></a>",
+      "css": ".ds-tile { display: inline-flex; flex-direction: column; gap: 4px; width: 152px; text-decoration: none; font-family: var(--font-interface); } .ds-tile:focus-visible { outline: none; } .ds-tile-arte { position: relative; display: block; aspect-ratio: 1; border-radius: var(--radius-quadro, 2px); border: 1px solid var(--color-linha, #363a3f); background-color: var(--color-xadrez-escuro, #2c2f33); background-image: repeating-conic-gradient(var(--color-xadrez-claro, #35383d) 0 25%, transparent 0 50%); background-size: 16px 16px; } .ds-tile:hover .ds-tile-arte, .ds-tile:focus-visible .ds-tile-arte { border-color: var(--color-acento, #f072b3); } .ds-corte { position: absolute; inset: 6px; color: var(--color-texto, #e9e7e2); mix-blend-mode: difference; opacity: 0; background: linear-gradient(currentColor, currentColor) top left / 10px 1.5px, linear-gradient(currentColor, currentColor) top left / 1.5px 10px, linear-gradient(currentColor, currentColor) top right / 10px 1.5px, linear-gradient(currentColor, currentColor) top right / 1.5px 10px, linear-gradient(currentColor, currentColor) bottom left / 10px 1.5px, linear-gradient(currentColor, currentColor) bottom left / 1.5px 10px, linear-gradient(currentColor, currentColor) bottom right / 10px 1.5px, linear-gradient(currentColor, currentColor) bottom right / 1.5px 10px; background-repeat: no-repeat; } .ds-tile:hover .ds-corte, .ds-tile:focus-visible .ds-corte { opacity: 1; } .ds-tile-nome { color: var(--color-texto, #e9e7e2); font-size: 14px; font-weight: 600; line-height: 1.3; } .ds-tile-meta { color: var(--color-texto-suave, #b3b6bb); font-size: 13px; line-height: 1.3; }"
+    },
+    {
+      "name": "Navegação por categoria",
+      "kind": "nav",
+      "refersTo": "navegacao",
+      "description": "Barra lateral: bolinha de etiqueta ao lado do nome; item ativo em peso 600.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-on\" href=\"#\"><i style=\"background:var(--color-etiqueta-campeoes,#92a8eb)\"></i>Campeões</a><a class=\"ds-nav-item\" href=\"#\"><i style=\"background:var(--color-etiqueta-itens,#d79e65)\"></i>Itens</a><a class=\"ds-nav-item\" href=\"#\"><i style=\"background:var(--color-etiqueta-runas,#55bfb3)\"></i>Runas</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 208px; padding: 8px; background: var(--color-superficie, #272a2e); font-family: var(--font-interface); } .ds-nav-item { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; border-radius: var(--radius-controle, 6px); color: var(--color-texto-suave, #b3b6bb); font-size: 13px; text-decoration: none; } .ds-nav-item i { width: 8px; height: 8px; border-radius: 999px; flex: none; } .ds-nav-item:hover { background: var(--color-superficie-alta, #30343a); color: var(--color-texto, #e9e7e2); } .ds-nav-on { background: var(--color-superficie-alta, #30343a); color: var(--color-texto, #e9e7e2); font-weight: 600; } .ds-nav-item:focus-visible { outline: 2px solid var(--color-acento, #f072b3); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O bin do editor",
+    "overview": "O vocabulário visual vem da mesa de edição, não do jogo: grafite de software de edição, a arte como quadro na proporção real, e as marcas que um editor reconhece — o xadrez de transparência, as marcas de corte, o glifo de proporção. A interface é densa e calma; quem grita é a arte. Nada de dourado, hextech ou moldura da Riot.\n\nA profundidade é tonal (fundo → superfície → superfície elevada), nunca sombra. Há um único destaque, o magenta de marcador, reservado para ação primária e foco. As oito cores de etiqueta existem só como marcador pequeno ao lado do nome da categoria.",
+    "keyCharacteristics": [
+      "Grafite médio-escuro, tema só escuro (`color-scheme: dark`).",
+      "Um destaque, magenta, para ação e foco; seleção em grafite elevado com peso e contorno.",
+      "Uma família (Schibsted Grotesk), três pesos (400, 600, 800), algarismos tabulares onde há coluna.",
+      "Três raios com hierarquia: quadro 2, controle 6, painel 12.",
+      "Ornamento só do ofício: xadrez, marcas de corte, glifo de proporção.",
+      "Um momento de movimento autoral: o painel que cresce do tile (240 ms)."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "O magenta é ação e foco, e nada mais. Seleção de filtro e de segmento é grafite elevado (`campo` / `superficie-alta`) com contorno e peso 600. A marca é desenhada na cor do texto.", "section": "colors" },
+      { "name": "The Never Alone Rule", "body": "Cor nunca diz um estado sozinha: seleção tem marca além do contorno; erro tem ícone e texto, e não é vermelho (não existe cor de erro); etiqueta sempre acompanha o nome.", "section": "colors" },
+      { "name": "The Measured Contrast Rule", "body": "Todo par de texto passa WCAG AA pelo cálculo da WCAG 2.1, rodado no `tokens.test.ts`; o axe roda com `wcag2aa`/`wcag22aa` em `e2e/acessibilidade.spec.ts`.", "section": "colors" },
+      { "name": "The No Caps Rule", "body": "Nenhum rótulo em caixa-alta; o rótulo de seção é 13 px, peso 600, em `texto-suave`.", "section": "typography" },
+      { "name": "The Thousand Point Rule", "body": "Números com o ponto do milhar (`toLocaleString(\"pt-BR\")`) em toda parte; algarismos tabulares só onde há coluna para alinhar.", "section": "typography" },
+      { "name": "The Box Owns The Size Rule", "body": "Toda imagem mora numa caixa que já tem o tamanho final; nada pula quando os bytes chegam. `e2e/desempenho.spec.ts` observa o `layout-shift` desde o primeiro script (orçamento do Plano §7: CLS 0; o teste tolera 0,02).", "section": "layout" },
+      { "name": "The Budget Rule", "body": "Orçamento do Plano de Design §7, não negociável: JS inicial ≤ 190 KB, LCP desktop ≤ 1,0 s, INP ≤ 200 ms, uma família com até três pesos. Decisão visual que estoura sai.", "section": "layout" },
+      { "name": "The Lighter Is Closer Rule", "body": "Profundidade vem da superfície mais clara, nunca de `box-shadow`.", "section": "elevation" },
+      { "name": "The Craft Ornament Rule", "body": "Os únicos ornamentos são do ofício: o xadrez (utilidade `xadrez`, quadrados de 8 px) em todo asset com alfa (PNG, WebP; JPEG nunca), as marcas de corte (utilidade `marcas-de-corte`, cantos de 10 × 1,5 px em `currentColor`; fora da prévia do painel, dentro do tile no `hover`/foco) e o glifo de proporção (retângulo vazado nas medidas reais do arquivo, tracejado quando desconhecidas). O símbolo da marca é um quadro 16:9 entre marcas de corte.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do usar `acento` só em ação primária, foco e confirmação; `tonal` quando a primária se repete numa lista.",
+      "Do mostrar toda arte na proporção real, com xadrez se o formato tem alfa.",
+      "Do manter o anel de foco em 2 px de magenta afastado 2 px, sobre o fundo, não sobre a arte.",
+      "Do dar a todo controle um alvo de toque de 44 px no celular.",
+      "Do reservar a altura de toda imagem e de toda linha de galeria antes do conteúdo chegar.",
+      "Do mudar o `TOKENS.md` antes de mudar um token no `globals.css`."
+    ],
+    "donts": [
+      "Don't usar sombra de elevação; a profundidade é a superfície mais clara.",
+      "Don't usar o magenta para seleção de filtro, para a marca ou como decoração.",
+      "Don't usar uma cor de etiqueta sozinha, grande ou como fundo.",
+      "Don't escrever rótulo em caixa-alta espaçada, nem usar fonte mono.",
+      "Don't dar zoom na arte no `hover`, nem entrada em *fade* nas seções.",
+      "Don't imitar o cliente do jogo (dourado, hextech, molduras da Riot).",
+      "Don't criar cor de erro: o estado é dito por ícone e texto."
+    ]
+  }
+}

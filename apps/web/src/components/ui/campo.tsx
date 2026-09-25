@@ -1,7 +1,7 @@
 /**
  * Campo de texto e a tecla (`kbd`) que aparece dentro dele.
  *
- * O `caret-acento` não é enfeite: no design o cursor do campo é violeta, e é o
+ * O `caret-acento` não é enfeite: no design o cursor do campo é magenta, e é o
  * único sinal de que o campo tem foco quando o anel de `:focus-visible` não
  * aparece — porque quem clicou com o mouse não recebe anel.
  */
