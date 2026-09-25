@@ -25,7 +25,7 @@ export function Chip({ marcado, onAlternar, children }: ChipProps) {
     <label
       className={cn(
         ALVO_DE_TOQUE,
-        "inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-controle border px-2.5 text-12",
+        "inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-controle border px-2.5 text-13",
         "transition-colors duration-150 ease-saida",
         "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
         marcado

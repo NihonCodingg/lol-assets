@@ -153,14 +153,14 @@ export function BarraDeLote({
             </li>
           ))}
           {assets.length > MINIATURAS && (
-            <li className="grid size-8 place-items-center rounded-controle border-2 border-superficie-alta bg-campo tabular-nums text-11 text-texto">
+            <li className="grid size-8 place-items-center rounded-controle border-2 border-superficie-alta bg-campo tabular-nums text-12 text-texto">
               +{assets.length - MINIATURAS}
             </li>
           )}
         </ul>
         {/* Quantidade, peso estimado e tempo, em colunas de texto, sem o ponto
             médio (ADR 0024). A quantidade vai em destaque: é ela que se confere. */}
-        <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 text-12 tabular-nums text-texto-suave">
+        <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 text-13 tabular-nums text-texto-suave">
           <span className="font-semibold text-texto">
             {resumo.arquivos} {resumo.arquivos === 1 ? "selecionado" : "selecionados"}
           </span>
@@ -185,7 +185,7 @@ export function BarraDeLote({
 
       {/* Critério 3: acima do limite avisa, e o botão continua habilitado. */}
       {resumo.pesada && (
-        <p role="alert" className="text-11 leading-cartao text-acento">
+        <p role="alert" className="text-12 leading-cartao text-acento">
           {aviso(resumo)}
         </p>
       )}
@@ -202,7 +202,7 @@ export function BarraDeLote({
             max={estado.progresso.total}
             className="h-1 flex-1 overflow-hidden rounded-quadro bg-superficie-alta [&::-webkit-progress-bar]:bg-superficie-alta [&::-webkit-progress-value]:bg-acento"
           />
-          <p className="flex-none tabular-nums text-11 text-texto-suave">
+          <p className="flex-none tabular-nums text-12 text-texto-suave">
             {estado.progresso.feitos} de {estado.progresso.total}
           </p>
           <Botao
@@ -217,7 +217,7 @@ export function BarraDeLote({
       )}
 
       {estado.fase === "pronto" && (
-        <p role="status" className="text-11 text-texto-suave">
+        <p role="status" className="text-12 text-texto-suave">
           Zip com {estado.arquivos} {estado.arquivos === 1 ? "arquivo" : "arquivos"}.
           {estado.falhas.length > 0 &&
             ` ${estado.falhas.length} não ${estado.falhas.length === 1 ? "veio" : "vieram"} — a lista está no FALHAS.txt dentro do zip.`}
@@ -225,7 +225,7 @@ export function BarraDeLote({
       )}
 
       {estado.fase === "erro" && (
-        <p role="alert" className="text-11 text-acento">
+        <p role="alert" className="text-12 text-acento">
           Não deu para montar o zip ({estado.motivo}). Tente de novo.
         </p>
       )}

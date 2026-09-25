@@ -3830,6 +3830,24 @@ relatório fica em `docs/sessoes/`, e as capturas em `docs/design/redesenho/`.
 
 ---
 
+## Pedido do dono — 25/09/2026
+
+> Com prints do painel da Ahri e da galeria de emotes, o dono pediu: tudo visível com clareza (o
+> texto estava difícil de ler, e na lista de arquivos o botão cobria o peso do arquivo); o painel do
+> campeão no **centro** da tela, e não na direita; as imagens do painel chegando mais rápido; os
+> emotes separados por emoção (felizes, fofos, bravos…), com a opção de ver os mais recentes e os
+> mais antigos; e o design "realmente melhor", mantendo o conceito do [ADR 0024](adr/0024-a-direcao-visual-do-bin.md)
+> e refazendo a execução. "O site precisa ficar bonito no final de tudo e com uma boa experiência
+> para o usuário final."
+
+| Ticket | Entrega |
+|---|---|
+| ✅ T-89 | Legibilidade (texto secundário de 5,36 para 7,09:1, a escala de texto um degrau acima, o xadrez mais discreto); o painel no centro em duas colunas, com todas as skins à vista; a linha de arquivo flexível, sem o botão sobre o peso; "Baixar PNG" tonal na lista; a splash pedida no sinal de intenção e as miniaturas depois dela |
+| T-90 | Os emotes por emoção — felizes e engraçados, fofos e amor, bravos e provocação, tristes e surpresos, e símbolos, times e eventos — e a ordem "Mais recentes / Mais antigos" |
+| T-91 | O acabamento do resto do site no mesmo padrão de clareza, revisado contra a skill de design |
+
+---
+
 ## Mapa de cobertura
 
 Todo requisito da Spec tem pelo menos um ticket.

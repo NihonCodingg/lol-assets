@@ -18,7 +18,7 @@ export function RotuloDeSecao({
   return (
     <span
       className={cn(
-        "text-12 font-semibold text-texto-suave",
+        "text-13 font-semibold text-texto-suave",
         className,
       )}
     >
@@ -28,7 +28,7 @@ export function RotuloDeSecao({
 }
 
 export function Meta({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <span className={cn("tabular-nums text-11 text-texto-suave", className)}>{children}</span>;
+  return <span className={cn("tabular-nums text-12 text-texto-suave", className)}>{children}</span>;
 }
 
 /** A etiqueta "skin" do canto do cartão (RF-05: skin é resultado de busca). */
@@ -36,7 +36,7 @@ export function Etiqueta({ children, className }: { children: React.ReactNode; c
   return (
     <span
       className={cn(
-        "rounded-quadro bg-acento-suave px-1 py-px text-11 text-acento",
+        "rounded-quadro bg-acento-suave px-1 py-px text-12 text-acento",
         className,
       )}
     >

@@ -206,9 +206,11 @@ export function PainelDeAsset({
 
   return (
     <section aria-label={titulo} className="flex min-h-0 flex-1 flex-col baixa:min-h-auto">
-      <div className="flex flex-none flex-wrap items-center gap-x-2 gap-y-1 px-3.5 py-2">
-        <h2 className="truncate text-12 font-semibold text-texto">{titulo}</h2>
-        <span className="tabular-nums text-11 text-texto-suave">
+      {/* Acima da galeria (T-89): no telefone ela sobe 8 px para não cortar o
+          toque dos tiles, e cobria a metade de baixo do alvo de 44 px do botão. */}
+      <div className="relative z-10 flex flex-none flex-wrap items-center gap-x-2 gap-y-1 px-3.5 py-2">
+        <h2 className="truncate text-13 font-semibold text-texto">{titulo}</h2>
+        <span className="tabular-nums text-12 text-texto-suave">
           {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
         </span>
         {acoes && <div className="ml-auto flex items-center gap-1.5">{acoes}</div>}
@@ -220,7 +222,7 @@ export function PainelDeAsset({
         <div className="min-h-0 flex-1 overflow-y-auto px-3.5 pb-6 baixa:overflow-visible">
           {secoes.map((secao) => (
             <section key={secao.chave} aria-label={secao.rotulo} className="pt-2">
-              <h3 className="mb-2 flex items-baseline gap-2 text-12 font-semibold text-texto-suave">
+              <h3 className="mb-2 flex items-baseline gap-2 text-13 font-semibold text-texto-suave">
                 {secao.rotulo}
                 <span className="font-normal tabular-nums">{secao.assets.length}</span>
               </h3>
@@ -681,7 +683,7 @@ export function CaixaDeSelecao({
     <label
       className={cn(
         "grid size-controle-min flex-none cursor-pointer place-items-center rounded-controle border",
-        "tabular-nums text-11 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
+        "tabular-nums text-12 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
         // No toque, a caixa de 17 px ganha uma área invisível de 45 px em volta (T-49).
         "pointer-coarse:before:absolute pointer-coarse:before:-inset-[14px] pointer-coarse:before:content-['']",
         selecionado
@@ -903,7 +905,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
           {/* RF-09: a ficha aparece antes de qualquer clique de download — e
               aparece junto das ações, no mesmo gesto que as revela. Em duas
               linhas, porque inteira ela não cabe num tile estreito. */}
-          <p className="overflow-hidden text-11 leading-3.5 tabular-nums text-ellipsis whitespace-pre text-texto-suave">
+          <p className="overflow-hidden text-12 leading-3.5 tabular-nums text-ellipsis whitespace-pre text-texto-suave">
             {`${asset.width}×${asset.height}  ${asset.format.toUpperCase()}\n${formatBytes(asset.bytes)}  ${asset.source}`}
           </p>
           <div className="flex min-h-controle-md items-center gap-1">
@@ -935,7 +937,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
         {estado === "erro" && (
           <p
             role="alert"
-            className="absolute inset-x-1.5 top-1.5 rounded-controle bg-superficie/90 px-2 py-1 text-11 leading-cartao text-acento"
+            className="absolute inset-x-1.5 top-1.5 rounded-controle bg-superficie/90 px-2 py-1 text-12 leading-cartao text-acento"
           >
             Não deu para baixar. Tente de novo.
           </p>
@@ -943,7 +945,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
       </div>
 
       <div className="flex min-w-0 items-center gap-1.5 px-2 py-1.5">
-        <h3 title={rotulo} className="min-w-0 flex-1 truncate text-12 leading-4 font-semibold text-texto">
+        <h3 title={rotulo} className="min-w-0 flex-1 truncate text-13 leading-4 font-semibold text-texto">
           {rotulo}
         </h3>
         {par && (
@@ -959,7 +961,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
                   aria-pressed={naSombra === sombra}
                   onClick={() => setNaSombra(sombra)}
                   className={cn(
-                    "h-6 cursor-pointer rounded-controle border px-1.5 text-11",
+                    "h-6 cursor-pointer rounded-controle border px-1.5 text-12",
                     naSombra === sombra
                       ? "border-linha-forte bg-campo text-texto"
                       : "border-transparent text-texto-suave hover:text-texto",

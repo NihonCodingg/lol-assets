@@ -168,3 +168,21 @@ esqueleto fica, também desligado por essa preferência.
   para o relatório.
 - A validação com pessoas (§9) é do dono. A rodada de linha de base não foi feita antes do
   redesenho.
+
+## Emenda de 25/09/2026 — mais clareza, o painel no centro (T-89)
+
+O dono confirmou o conceito e pediu a execução "bem melhor": mais clara, texto maior, mais
+contraste. O que muda, sem trocar o mundo desta página:
+
+- **Contraste.** O `texto-suave` vai de `#9B9EA3` a `#B3B6BB` (7,09:1 na superfície, antes 5,36),
+  e passa a valer também sobre o `campo`. O xadrez fica mais discreto (`#35383D`), para a arte
+  aparecer mais do que o fundo. Valores e contas no `TOKENS.md`.
+- **Tipo.** A escala de texto do site sobe um degrau: o metadado de 12 para 13 px, o nome de 13
+  para 14, e entra o `text-15` para o nome do arquivo na lista.
+- **O painel do campeão** abre no centro da tela, numa folha de até 1320 × 900 px com o raio
+  maior do sistema, em duas colunas: a prévia e **todas** as skins à vista, sem rolagem de lado,
+  e os arquivos ao lado. O véu em volta fecha o painel. A abertura que cresce do tile continua a
+  mesma. No telefone, nada muda: tela cheia.
+- **O botão tonal.** Quando a ação primária se repete numa lista — dez "Baixar PNG" empilhados —,
+  ela usa a variante `tonal`: o fundo magenta escuro com a borda no destaque, cheia no hover.
+  Continua a primária da linha; a arte volta a ser o que mais chama o olho.

@@ -32,7 +32,7 @@
 
   /* --- texto --------------------------------------------------------------- */
   --color-texto: #e9e7e2;
-  --color-texto-suave: #9b9ea3;
+  --color-texto-suave: #b3b6bb;
 
   /* --- destaque: foco, seleção e ação primária, e nada mais --------------- */
   --color-acento: #f072b3;
@@ -40,7 +40,7 @@
   --color-acento-suave: #45293a;
 
   /* --- o fundo de transparência -------------------------------------------- */
-  --color-xadrez-claro: #3a3d42;
+  --color-xadrez-claro: #35383d;
   --color-xadrez-escuro: #2c2f33;
 
   /* --- etiquetas: mesma luminosidade (OKLCH 0,74), croma 0,10, só a matiz muda */
@@ -60,6 +60,7 @@
   --text-12: 12px;
   --text-13: 13px;
   --text-14: 14px;
+  --text-15: 15px;
   --text-16: 16px;
   --text-20: 20px;
   --text-26: 26px;

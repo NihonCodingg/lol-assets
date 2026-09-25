@@ -17,10 +17,10 @@
  *
  * ## O desenho (T-83, §5 do Plano de Design)
  *
- * De cima para baixo: o cabeçalho com o nome da skin e o fechar; a prévia 16:9
- * com as marcas de corte e a guia de área segura; a faixa de skins; e as
- * variantes em linhas, com a ficha em colunas e "Baixar PNG" como ação primária.
- * O painel nasce do tile tocado e cresce até o lugar dele (`PainelLateral`).
+ * O cabeçalho com o nome da skin e o fechar; embaixo, duas colunas (T-89): à
+ * esquerda a prévia 16:9 com as marcas de corte e a guia de área segura, e todas
+ * as skins à vista; à direita os arquivos da skin, com a ficha e "Baixar PNG".
+ * O painel abre no centro da tela, nascendo do tile tocado (`PainelLateral`).
  *
  * **O toque responde antes** (T-72, e de novo no T-83): o primeiro quadro depois
  * do toque é o painel com o cabeçalho e a prévia — o que o tile já sabia. A
@@ -159,12 +159,13 @@ export function PainelDoCampeao({
       onFechar={onClose}
       titulo={`Painel de ${champion.names.pt_BR}`}
       fecharPorEsc={false}
-      fecharPorFora={false}
+      // No centro da tela, o véu em volta é o lugar de fechar (T-89): é o que a
+      // pessoa espera de uma janela no meio da página. Na borda, não fechava.
       origem={origem}
-      // Largo o bastante para a prévia 16:9 e as colunas da ficha. No computador
-      // o painel é uma folha com o raio maior do sistema, afastada das bordas;
-      // no telefone, a tela inteira.
-      className="w-full max-md:border-l-0 md:inset-y-2 md:right-2 md:w-[min(920px,94vw)] md:rounded-painel md:border"
+      // No centro da tela (T-89, pedido do dono): a folha grande, com o raio
+      // maior do sistema, e as duas colunas lado a lado. No telefone, a tela
+      // inteira.
+      centralizado
     >
       <section
         aria-label={`Painel de ${champion.names.pt_BR}`}
@@ -172,12 +173,12 @@ export function PainelDoCampeao({
       >
         {/* O cabeçalho: a skin em destaque e o campeão embaixo (ADR 0008), e um
             fechar só, parado enquanto o resto rola. */}
-        <header className="flex flex-none items-center gap-3 border-b border-linha py-3 pr-3 pl-4 md:pl-6">
+        <header className="flex flex-none items-center gap-3 border-b border-linha py-3.5 pr-3 pl-4 md:pl-6">
           <div className="min-w-0 flex-1">
-            <h2 className="truncate text-20 leading-apertada font-extrabold tracking-titulo text-texto">
+            <h2 className="truncate text-26 leading-apertada font-extrabold tracking-titulo text-texto">
               {nomeDaSkin}
             </h2>
-            <p className="truncate text-12 text-texto-suave">
+            <p className="truncate text-13 text-texto-suave">
               {skinAtual?.isBase ? contagem : `${champion.names.pt_BR}, ${contagem}`}
             </p>
           </div>
@@ -189,99 +190,112 @@ export function PainelDoCampeao({
           />
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <VitrineDaSkin
-            titulo={nomeDaSkin}
-            splash={splash && assetUrl(splash, assetsBaseUrl)}
-            arquivo={splash && { nome: splash.fileName, formato: splash.format }}
-            tile={skinAtual && thumbnailSrc(skinAtual, assetsBaseUrl)}
-          />
-
-          {completo ? (
-            <SeletorDeSkin
-              nome={`skin-${champion.championKey}`}
-              campeao={champion.names.pt_BR}
-              skins={doCampeao}
-              valor={skinNum}
-              onEscolher={setSkinNum}
-              assetsBaseUrl={assetsBaseUrl}
+        {/* Duas colunas no computador (T-89): à esquerda a arte — a prévia e todas
+            as skins à vista, sem rolagem de lado —, à direita os arquivos da skin.
+            Cada coluna rola por conta própria. No telefone, uma coluna só. */}
+        <div className="min-h-0 flex-1 overflow-y-auto md:grid md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:overflow-hidden">
+          <div className="flex flex-col pb-4 md:min-h-0 md:overflow-y-auto md:border-r md:border-linha">
+            <VitrineDaSkin
+              titulo={nomeDaSkin}
+              splash={splash && assetUrl(splash, assetsBaseUrl)}
+              arquivo={splash && { nome: splash.fileName, formato: splash.format }}
+              tile={skinAtual && thumbnailSrc(skinAtual, assetsBaseUrl)}
             />
-          ) : (
-            // A faixa ocupa o lugar dela desde o primeiro quadro: nada pula.
-            <div aria-hidden="true" className="flex h-[111px] gap-2 overflow-hidden px-4 pt-3 md:px-6">
-              {Array.from({ length: Math.min(doCampeao.length, 10) }, (_, i) => (
-                <Esqueleto key={i} className="size-[72px] flex-none rounded-quadro" />
-              ))}
-            </div>
-          )}
 
-          {/* RF-18: um clique pré-monta a seleção do campeão inteiro. */}
-          {assets && completo && alcancaveis.length > 0 && (
-            <div className="flex items-center gap-3 px-4 pb-2 md:px-6">
-              <Botao tamanho="md" onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}>
-                Tudo de {champion.names.pt_BR} ({alcancaveis.length})
-              </Botao>
-            </div>
-          )}
+            {completo ? (
+              <SeletorDeSkin
+                nome={`skin-${champion.championKey}`}
+                campeao={champion.names.pt_BR}
+                skins={doCampeao}
+                valor={skinNum}
+                onEscolher={setSkinNum}
+                assetsBaseUrl={assetsBaseUrl}
+              />
+            ) : (
+              // A faixa ocupa o lugar dela desde o primeiro quadro: nada pula.
+              <div aria-hidden="true" className="flex gap-2 overflow-hidden px-4 pt-4 md:flex-wrap md:px-6">
+                {Array.from({ length: Math.min(doCampeao.length, 10) }, (_, i) => (
+                  <Esqueleto key={i} className="size-[76px] flex-none rounded-quadro" />
+                ))}
+              </div>
+            )}
+          </div>
 
-          {erro && (
-            <Estado
-              role="alert"
-              icone={CloudOff}
-              titulo={`Não deu para carregar as artes de ${champion.names.pt_BR}`}
-              detalhe={erro}
-              acao={onTentarDeNovo && <Botao onClick={onTentarDeNovo}>Tentar de novo</Botao>}
-              className="py-10"
-            >
-              O índice dos campeões não chegou. Confira a conexão e tente de novo.
-            </Estado>
-          )}
-          {(!assets || !completo) && !erro && (
-            <p role="status" className="px-4 py-3 text-13 text-texto-suave md:px-6">
-              Carregando as artes…
-            </p>
-          )}
-
-          {assets && completo && (
-            <ListaDeVariantes
-              titulo={`Artes de ${nomeDaSkin}`}
-              assets={visiveis}
-              assetsBaseUrl={assetsBaseUrl}
-              selecao={selecao}
-              onAlternar={alternarNoLote}
-              onAmpliar={setAmpliado}
-              escolhida={acaoNoPe?.id}
-              onEscolher={setEscolhida}
-            />
-          )}
-
-          {/* RF-06: chroma não aparece sozinho; só quando alguém pede o desta skin. */}
-          {assets && completo && chromas.length > 0 && (
-            <section aria-label="Chromas" className="border-t border-linha">
-              <Botao
-                variante="fantasma"
-                tamanho="md"
-                className="mx-4 my-3 md:mx-6"
-                aria-expanded={chromasAbertos}
-                onClick={() => setChromasAbertos((aberto) => !aberto)}
-              >
-                {chromasAbertos ? "Esconder" : "Mostrar"} {chromas.length}{" "}
-                {chromas.length === 1 ? "chroma" : "chromas"}
-              </Botao>
-              {chromasAbertos && (
-                <ListaDeVariantes
-                  titulo={`Chromas de ${nomeDaSkin}`}
-                  assets={chromas}
-                  assetsBaseUrl={assetsBaseUrl}
-                  selecao={selecao}
-                  onAlternar={alternarNoLote}
-                  onAmpliar={setAmpliado}
-                  escolhida={acaoNoPe?.id}
-                  onEscolher={setEscolhida}
-                />
+          <div className="flex flex-col md:min-h-0 md:overflow-y-auto">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 pt-4 pb-2 md:px-5">
+              <h3 className="min-w-0 flex-1 text-16 font-semibold text-texto">
+                Arquivos{" "}
+                {assets && completo && (
+                  <span className="text-14 font-normal tabular-nums text-texto-suave">{visiveis.length}</span>
+                )}
+              </h3>
+              {/* RF-18: um clique pré-monta a seleção do campeão inteiro. */}
+              {assets && completo && alcancaveis.length > 0 && (
+                <Botao tamanho="md" onClick={() => setSelecao(tudoDo(alcancaveis, chromasAbertos))}>
+                  Tudo de {champion.names.pt_BR} ({alcancaveis.length})
+                </Botao>
               )}
-            </section>
-          )}
+            </div>
+
+            {erro && (
+              <Estado
+                role="alert"
+                icone={CloudOff}
+                titulo={`Não deu para carregar as artes de ${champion.names.pt_BR}`}
+                detalhe={erro}
+                acao={onTentarDeNovo && <Botao onClick={onTentarDeNovo}>Tentar de novo</Botao>}
+                className="py-10"
+              >
+                O índice dos campeões não chegou. Confira a conexão e tente de novo.
+              </Estado>
+            )}
+            {(!assets || !completo) && !erro && (
+              <p role="status" className="px-4 py-3 text-14 text-texto-suave md:px-5">
+                Carregando as artes…
+              </p>
+            )}
+
+            {assets && completo && (
+              <ListaDeVariantes
+                titulo={`Artes de ${nomeDaSkin}`}
+                assets={visiveis}
+                assetsBaseUrl={assetsBaseUrl}
+                selecao={selecao}
+                onAlternar={alternarNoLote}
+                onAmpliar={setAmpliado}
+                escolhida={acaoNoPe?.id}
+                onEscolher={setEscolhida}
+              />
+            )}
+
+            {/* RF-06: chroma não aparece sozinho; só quando alguém pede o desta skin. */}
+            {assets && completo && chromas.length > 0 && (
+              <section aria-label="Chromas" className="border-t border-linha">
+                <Botao
+                  variante="fantasma"
+                  tamanho="md"
+                  className="mx-4 my-3 md:mx-5"
+                  aria-expanded={chromasAbertos}
+                  onClick={() => setChromasAbertos((aberto) => !aberto)}
+                >
+                  {chromasAbertos ? "Esconder" : "Mostrar"} {chromas.length}{" "}
+                  {chromas.length === 1 ? "chroma" : "chromas"}
+                </Botao>
+                {chromasAbertos && (
+                  <ListaDeVariantes
+                    titulo={`Chromas de ${nomeDaSkin}`}
+                    assets={chromas}
+                    assetsBaseUrl={assetsBaseUrl}
+                    selecao={selecao}
+                    onAlternar={alternarNoLote}
+                    onAmpliar={setAmpliado}
+                    escolhida={acaoNoPe?.id}
+                    onEscolher={setEscolhida}
+                  />
+                )}
+              </section>
+            )}
+          </div>
         </div>
 
         {/* A barra do lote fica no pé do painel, fixa: com 40 assets

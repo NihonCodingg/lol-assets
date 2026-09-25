@@ -60,7 +60,9 @@ export function SeletorDeSkin({
       ref={faixa}
       role="radiogroup"
       aria-label="Selecionar skin"
-      className="flex gap-2 overflow-x-auto px-4 pt-3 pb-3 md:px-6"
+      // No telefone, uma faixa que rola de lado; no computador (T-89), todas as
+      // skins à vista, em fileiras: nada escondido atrás de uma rolagem lateral.
+      className="flex gap-2 overflow-x-auto px-4 pt-4 pb-3 md:flex-wrap md:gap-x-2 md:gap-y-3 md:overflow-visible md:px-6"
     >
       {skins.map((skin) => {
         const marcada = skin.skinNum === valor;
@@ -69,7 +71,7 @@ export function SeletorDeSkin({
           <label
             key={skin.skinId}
             data-skin={skin.skinNum}
-            className="group flex w-[72px] flex-none cursor-pointer flex-col gap-1.5"
+            className="group flex w-[76px] flex-none cursor-pointer flex-col gap-1.5"
           >
             <input
               type="radio"
@@ -86,13 +88,21 @@ export function SeletorDeSkin({
                 foco precisa aparecer em algum lugar. */}
             <div
               className={cn(
-                "relative size-[72px] overflow-hidden rounded-quadro border-2",
+                "relative size-[76px] overflow-hidden rounded-quadro border-2",
                 "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento",
                 marcada ? "border-acento" : "border-transparent group-hover:border-linha-forte",
               )}
             >
               {tile ? (
-                <Imagem src={tile} alt="" erroCompacto classeDaCaixa="size-full" className="object-cover" />
+                // Baixa prioridade: a prévia grande chega primeiro (T-89).
+                <Imagem
+                  src={tile}
+                  alt=""
+                  erroCompacto
+                  fetchPriority="low"
+                  classeDaCaixa="size-full"
+                  className="object-cover"
+                />
               ) : (
                 <div aria-hidden="true" className="size-full bg-superficie" />
               )}
@@ -111,7 +121,7 @@ export function SeletorDeSkin({
               aria-hidden="true"
               title={skin.names.pt_BR}
               className={cn(
-                "truncate text-11 leading-cartao",
+                "truncate text-12 leading-cartao",
                 marcada ? "font-semibold text-texto" : "text-texto-suave group-hover:text-texto",
               )}
             >

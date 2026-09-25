@@ -91,9 +91,9 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
             data-ampliacao=""
             className="max-h-[78vh] max-w-full rounded-quadro object-contain"
           />
-          <p className="mt-2 text-13 font-semibold text-texto">{nome}</p>
+          <p className="mt-2 text-14 font-semibold text-texto">{nome}</p>
           {/* RF-09: a ficha, em colunas de texto, sem o ponto médio (ADR 0024). */}
-          <p className="flex items-center gap-3 text-12 tabular-nums text-texto-suave">
+          <p className="flex items-center gap-3 text-13 tabular-nums text-texto-suave">
             <span className="inline-flex items-center gap-1.5">
               <GlifoDeProporcao largura={asset.width} altura={asset.height} />
               {asset.width}×{asset.height}

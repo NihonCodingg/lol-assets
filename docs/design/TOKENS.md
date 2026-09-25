@@ -10,6 +10,11 @@
 
 ## Cor
 
+> **T-89, 25/09/2026.** O dono achou o site difícil de ler: o texto secundário subiu de
+> `#9b9ea3` (5,36:1 na superfície) para `#b3b6bb` (7,09:1), a escala de texto de todo o site subiu
+> um degrau (o metadado de 12 para 13 px, o nome de 13 para 14), e o xadrez ficou mais discreto
+> (1,14:1 entre os quadrados, antes 1,23), para a arte aparecer mais do que o fundo.
+
 Grafite de software de edição, não preto: um cinza-médio-escuro com corpo cansa menos a vista e
 deixa a arte saturada saltar. A profundidade vem da superfície mais clara, nunca de sombra.
 
@@ -20,7 +25,7 @@ deixa a arte saturada saltar. A profundidade vem da superfície mais clara, nunc
 | `fundo` | `#1e2023` | fundo da página, atrás da grade |
 | `superficie` | `#272a2e` | topo, barra lateral, controle segmentado |
 | `superficie-alta` | `#30343a` | painel, menus, avisos, `hover` de item, botão de contorno |
-| `campo` | `#383c42` | `hover` do botão de contorno, dica. **Só com `texto`** (8,98:1); o `texto-suave` reprova aqui |
+| `campo` | `#383c42` | `hover` do botão de contorno, dica. `texto` 8,98:1, `texto-suave` 5,45:1 |
 | `linha` | `#363a3f` | divisões |
 | `linha-forte` | `#4a4f56` | borda de controle e de campo |
 
@@ -32,7 +37,7 @@ teste.
 | Token | Valor | s/ `fundo` | s/ `superficie` | s/ `superficie-alta` | Onde |
 |---|---|---:|---:|---:|---|
 | `texto` | `#e9e7e2` | 13,21 | 11,66 | 10,13 | texto principal |
-| `texto-suave` | `#9b9ea3` | 6,08 | 5,36 | 4,66 | contagens, metadados, aviso legal |
+| `texto-suave` | `#b3b6bb` | 8,03 | 7,09 | 6,15 | contagens, metadados, aviso legal |
 
 ### Destaque — um só
 
@@ -50,7 +55,7 @@ sobre o fundo, 5,33:1 sobre a superfície, 4,63:1 sobre a superfície elevada.
 
 | Token | Valor | Onde |
 |---|---|---|
-| `xadrez-claro` | `#3a3d42` | quadrados claros do fundo de transparência |
+| `xadrez-claro` | `#35383d` | quadrados claros do fundo de transparência |
 | `xadrez-escuro` | `#2c2f33` | quadrados escuros do fundo de transparência |
 
 O xadrez é a utilidade `xadrez` (quadrados de 8 px) e vai em **todo** asset cujo formato tem alfa
@@ -100,7 +105,8 @@ A raiz é 14 px.
 | `texto-11` | 11px | aviso legal, contagem, dica curta |
 | `texto-12` | 12px | botão, metadado, controle segmentado |
 | `texto-13` | 13px | nome no tile, item de lista, corpo compacto |
-| `texto-14` | 14px | corpo, campo de busca da categoria |
+| `texto-14` | 14px | corpo, campo de busca da categoria, nome no tile |
+| `texto-15` | 15px | nome do arquivo na lista do painel (T-89) |
 | `texto-16` | 16px | campo de busca principal |
 | `texto-20` | 20px | título do painel |
 | `texto-26` | 26px | título de página (Sobre) |

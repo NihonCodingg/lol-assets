@@ -32,7 +32,8 @@ import { Estado } from "@/components/ui/estado";
 import { AssetsClient } from "@/lib/assets-client";
 import { CATEGORIAS_DA_BUSCA, nomeDoAsset } from "@/lib/busca-agrupada";
 import { categoriasDisponiveis } from "@/lib/categorias";
-import { conexaoDoNavegador, devePreaquecer } from "@/lib/preaquecer";
+import { baseSkin } from "@/lib/champion-panel";
+import { adiantarSplash, conexaoDoNavegador, devePreaquecer } from "@/lib/preaquecer";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -174,7 +175,12 @@ export default function HomePage() {
       preCarregar();
       if (estado.fase !== "pronto") return;
       if (!devePreaquecer(conexaoDoNavegador())) return;
-      cliente.loadChampion(champion).catch(() => {});
+      // Com a fatia, a splash que o painel abre (T-89): a prévia chega com o clique.
+      const skin = baseSkin(estado.catalog.skins, champion)?.skinNum ?? 0;
+      cliente
+        .loadChampion(champion)
+        .then((shard) => adiantarSplash(shard.assets, skin, BASE_ASSETS))
+        .catch(() => {});
     },
     [cliente, estado],
   );
@@ -328,7 +334,7 @@ export default function HomePage() {
         */}
         <a
           href="#conteudo"
-          className="sr-only left-3.5 z-30 rounded-controle border border-linha-forte bg-superficie-alta px-3 py-2 text-12 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
+          className="sr-only left-3.5 z-30 rounded-controle border border-linha-forte bg-superficie-alta px-3 py-2 text-13 text-texto focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2"
         >
           Ir para o conteúdo
         </a>
@@ -375,7 +381,7 @@ export default function HomePage() {
 
       {/* A barra de estado, como a de um editor: de que patch são as artes. As
           contagens já estão na barra lateral; sem o ponto médio entre elas. */}
-      <p className="flex-none border-t border-linha px-3.5 py-1.5 text-11 tabular-nums text-texto-suave">
+      <p className="flex-none border-t border-linha px-3.5 py-1.5 text-12 tabular-nums text-texto-suave">
         Patch {manifest.currentVersion}
       </p>
 

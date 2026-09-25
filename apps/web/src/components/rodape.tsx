@@ -34,7 +34,7 @@ import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 const ITEM_DE_SECAO = cn(
-  "flex flex-none items-center rounded-controle px-2 text-13 text-texto-suave md:h-[30px]",
+  "flex flex-none items-center rounded-controle px-2 text-14 text-texto-suave md:h-[30px]",
   "transition-colors duration-150 ease-saida hover:bg-superficie-alta hover:text-texto",
   // No telefone, alvo de toque de 44 px (T-49).
   "max-md:min-h-controle-xl max-md:px-2.5",
@@ -148,7 +148,7 @@ function ItemDeCategoria({
   onClick: () => void;
 }) {
   const classe = cn(
-    "flex w-full cursor-pointer items-center gap-2.5 rounded-controle px-2 text-left text-13 whitespace-nowrap",
+    "flex w-full cursor-pointer items-center gap-2.5 rounded-controle px-2 text-left text-14 whitespace-nowrap",
     "transition-colors duration-150 ease-saida md:h-[30px] md:pr-12",
     // No telefone é aba: 44 px de toque, e a aberta ganha o traço embaixo.
     "max-md:min-h-controle-xl max-md:rounded-none max-md:border-b-2 max-md:px-2.5",
@@ -177,7 +177,7 @@ function ItemDeCategoria({
       {total !== undefined && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 text-11 tabular-nums text-texto-suave md:block"
+          className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 text-12 tabular-nums text-texto-suave md:block"
         >
           {total.toLocaleString("pt-BR")}
         </span>

@@ -53,15 +53,6 @@ export interface ListaDeVariantesProps {
   readonly onEscolher?: (asset: Asset) => void;
 }
 
-/**
- * As colunas da linha, no computador: caixa, miniatura, nome, resolução,
- * formato, peso e ações. A das ações tem largura fixa: o arquivo que já é PNG
- * tem um botão só, e com largura automática as colunas da ficha andavam de
- * linha para linha. No telefone, a ficha desce para baixo do nome.
- */
-const COLUNAS =
-  "grid grid-cols-[auto_40px_minmax(0,1fr)] items-center gap-x-3 gap-y-1.5 md:grid-cols-[auto_40px_minmax(0,1fr)_7.5rem_2.75rem_3.75rem_12.5rem]";
-
 export function ListaDeVariantes({
   titulo,
   assets,
@@ -81,7 +72,7 @@ export function ListaDeVariantes({
   }, []);
 
   return (
-    <section aria-label={titulo} className="flex flex-col gap-4 px-4 pb-6">
+    <section aria-label={titulo} className="flex flex-col gap-5 px-3 pb-6 md:px-4">
       {grupos.map((grupo) => {
         const linhas = (
           <ul className="flex flex-col">
@@ -108,7 +99,7 @@ export function ListaDeVariantes({
         if (grupos.length === 1) return <div key={grupo.chave}>{linhas}</div>;
         return (
           <section key={grupo.chave} aria-label={grupo.rotulo}>
-            <h3 className="mb-1 flex items-baseline gap-2 text-12 font-semibold text-texto-suave">
+            <h3 className="mb-1 flex items-baseline gap-2 px-2 text-13 font-semibold text-texto-suave">
               {grupo.rotulo}
               <span className="font-normal tabular-nums">{grupo.assets.length}</span>
             </h3>
@@ -157,7 +148,8 @@ const Linha = memo(function Linha({
       src={url}
       alt={`Prévia de ${nome}`}
       data-previa={asset.type}
-      classeDaCaixa={cn("size-10 rounded-quadro", asset.hasAlpha && "xadrez")}
+      fetchPriority="low"
+      classeDaCaixa={cn("size-12 rounded-quadro", asset.hasAlpha && "xadrez")}
       className="object-contain"
     />
   );
@@ -169,9 +161,12 @@ const Linha = memo(function Linha({
       data-estado={estado}
       data-escolhida={escolhida || undefined}
       className={cn(
-        COLUNAS,
-        "relative rounded-controle py-2 pr-1 pl-1",
-        selecionado && "bg-acento-suave",
+        // Uma linha flexível (T-89): o nome e a ficha empilhados no meio, as
+        // ações no fim. Com colunas de largura fixa, o botão cobria o peso do
+        // arquivo quando o painel estreitava — o defeito que o dono apontou.
+        "group/linha relative flex items-center gap-3 rounded-controle px-2 py-2.5",
+        "hover:bg-superficie",
+        selecionado && "bg-acento-suave hover:bg-acento-suave",
         // No telefone, a escolhida tem contorno e peso — nunca só a cor.
         escolhida && "max-md:outline-2 max-md:-outline-offset-2 max-md:outline-acento",
       )}
@@ -187,10 +182,13 @@ const Linha = memo(function Linha({
           className="absolute inset-0 z-0 cursor-pointer rounded-controle md:hidden"
         />
       )}
-      {onAlternar ? (
-        <CaixaDeSelecao asset={asset} selecionado={selecionado} onAlternar={onAlternar} className="relative z-10" />
-      ) : (
-        <span aria-hidden="true" />
+      {onAlternar && (
+        <CaixaDeSelecao
+          asset={asset}
+          selecionado={selecionado}
+          onAlternar={onAlternar}
+          className="relative z-10 flex-none"
+        />
       )}
 
       {onAmpliar ? (
@@ -198,39 +196,40 @@ const Linha = memo(function Linha({
           type="button"
           onClick={() => onAmpliar(asset)}
           aria-label={`Ampliar ${asset.fileName}`}
-          className="relative z-10 block cursor-zoom-in rounded-quadro"
+          className="relative z-10 block flex-none cursor-zoom-in rounded-quadro"
         >
           {miniatura}
         </button>
       ) : (
-        miniatura
+        <div className="flex-none">{miniatura}</div>
       )}
 
-      <div className="flex min-w-0 items-baseline gap-2">
-        {tecla && (
-          <span className="flex-none rounded-quadro border border-linha-forte px-1 text-11 font-semibold tabular-nums text-texto-suave">
-            {tecla}
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-baseline gap-2">
+          {tecla && (
+            <span className="flex-none rounded-quadro border border-linha-forte px-1 text-12 font-semibold tabular-nums text-texto-suave">
+              {tecla}
+            </span>
+          )}
+          <h4 title={asset.fileName} className="truncate text-15 font-semibold text-texto">
+            {nome}
+          </h4>
+        </div>
+        {/* RF-09: a ficha, antes de qualquer clique, sem ponto médio. */}
+        <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-13 tabular-nums text-texto-suave">
+          <span className="inline-flex items-center gap-1.5">
+            <GlifoDeProporcao largura={asset.width} altura={asset.height} />
+            {asset.width}×{asset.height}
           </span>
-        )}
-        <h4 title={asset.fileName} className="truncate text-13 font-semibold text-texto">
-          {nome}
-        </h4>
+          <span>{asset.format.toUpperCase()}</span>
+          <span>{formatBytes(asset.bytes)}</span>
+        </p>
       </div>
 
-      {/* RF-09: a ficha, antes de qualquer clique. No telefone, uma linha só
-          embaixo do nome; no computador, uma coluna por dado. */}
-      <p className="col-start-3 flex items-center gap-2 text-12 tabular-nums text-texto-suave md:col-start-auto">
-        <GlifoDeProporcao largura={asset.width} altura={asset.height} />
-        {asset.width}×{asset.height}
-        <span className="md:hidden">{asset.format.toUpperCase()}</span>
-        <span className="md:hidden">{formatBytes(asset.bytes)}</span>
-      </p>
-      <p className="hidden text-12 tabular-nums text-texto-suave md:block">{asset.format.toUpperCase()}</p>
-      <p className="hidden text-right text-12 tabular-nums text-texto-suave md:block">{formatBytes(asset.bytes)}</p>
-
       {/* No telefone as ações moram na barra do pé (T-87); aqui, só no computador. */}
-      <div className="hidden items-center justify-end gap-1.5 md:flex">
+      <div className="hidden flex-none items-center gap-1.5 md:flex">
         <ParDeDownload
+          tonal
           podeConverter={canConvertToPng(asset)}
           ocupado={estado === "baixando"}
           baixando={andamento}
@@ -245,7 +244,7 @@ const Linha = memo(function Linha({
       </div>
 
       {estado === "erro" && (
-        <p role="alert" className="col-span-full text-12 text-texto">
+        <p role="alert" className="absolute inset-x-2 -bottom-1 text-13 text-texto">
           Não deu para baixar: a fonte não respondeu. Tente de novo.
         </p>
       )}

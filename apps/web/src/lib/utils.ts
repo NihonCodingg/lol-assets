@@ -51,7 +51,7 @@ const twMerge = extendTailwindMerge({
       ],
     },
     classGroups: {
-      "font-size": [{ text: ["11", "12", "13", "14", "16", "20", "26"] }],
+      "font-size": [{ text: ["11", "12", "13", "14", "15", "16", "20", "26"] }],
     },
   },
 });

@@ -32,7 +32,7 @@ export function AvisoSemConexao() {
     // anunciada por todo leitor de tela.
     <div role="status" data-conexao={offline ? "fora" : "ok"} className="contents">
       {offline && (
-        <p className="fixed inset-x-3 top-16 z-40 flex items-start gap-2.5 rounded-painel border border-linha-forte bg-superficie-alta p-3 text-12 leading-cartao text-texto md:inset-x-auto md:right-4 md:w-[360px]">
+        <p className="fixed inset-x-3 top-16 z-40 flex items-start gap-2.5 rounded-painel border border-linha-forte bg-superficie-alta p-3 text-13 leading-cartao text-texto md:inset-x-auto md:right-4 md:w-[360px]">
           <WifiOff aria-hidden="true" strokeWidth={1.75} className="mt-0.5 size-4 flex-none text-acento" />
           <span>
             <strong className="font-semibold">Sem conexão.</strong> O que já carregou continua aqui;

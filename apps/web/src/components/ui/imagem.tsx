@@ -77,7 +77,7 @@ export function Imagem({
           className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-1.5 text-center text-texto-suave"
         >
           <ImageOff aria-hidden="true" className="size-4 flex-none" />
-          {!erroCompacto && <span className="text-11 leading-cartao">A fonte não respondeu</span>}
+          {!erroCompacto && <span className="text-12 leading-cartao">A fonte não respondeu</span>}
         </div>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- a URL é de terceiro e não há proxy (ADR 0012)

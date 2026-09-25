@@ -85,7 +85,10 @@ test.describe("só com teclado", () => {
     // Percorre a ordem de foco e coleta o que ela alcança. 120 tabulações é
     // muito mais que o painel tem: o teste falharia por armadilha de foco antes.
     const alcancados = new Set<string>();
-    await page.locator("body").click({ position: { x: 1, y: 1 } });
+    // O painel abre com o foco nele mesmo. Desde o T-89 ele fica no centro, e o
+    // clique no véu em volta fecha — o clique no canto da página, que zerava o
+    // foco aqui, fecharia o painel.
+    await page.getByRole("dialog").focus();
     for (let i = 0; i < 120; i += 1) {
       await page.keyboard.press("Tab");
       const marca = await page.evaluate(() => {
