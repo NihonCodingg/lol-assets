@@ -66,7 +66,7 @@ export function AvisoDePatchNovo({ manifest }: AvisoDePatchNovoProps) {
         strokeWidth={1.75}
         className="mt-0.5 size-4 flex-none text-acento"
       />
-      <p className="flex-1 text-12 leading-cartao">
+      <p className="flex-1 text-13 leading-cartao">
         <strong className="font-semibold text-texto">Já saiu o patch {novo}.</strong> As artes
         aqui ainda são do {atual}; a atualização automática traz o patch novo em algumas horas.
       </p>

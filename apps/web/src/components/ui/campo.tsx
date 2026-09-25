@@ -16,7 +16,7 @@ export function Campo({ className, ...resto }: CampoProps) {
     <input
       className={cn(
         "h-controle-lg w-full rounded-controle border border-linha-forte bg-superficie-alta",
-        "font-interface text-13 text-texto caret-acento",
+        "font-interface text-14 text-texto caret-acento",
         "placeholder:text-texto-suave focus:border-acento",
         className,
       )}
@@ -31,7 +31,7 @@ export function Tecla({ children, className }: { children: React.ReactNode; clas
     <kbd
       className={cn(
         "rounded-controle border border-linha-forte px-1.5 py-px",
-        "text-11 text-texto-suave",
+        "text-12 text-texto-suave",
         className,
       )}
     >

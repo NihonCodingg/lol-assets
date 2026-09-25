@@ -39,8 +39,8 @@ export function BarraDeAcao({ asset, assetsBaseUrl }: { readonly asset: Asset; r
       className="flex flex-none items-center gap-2 border-t border-linha-forte bg-superficie-alta px-4 py-2 md:hidden"
     >
       <div className="min-w-0 flex-1">
-        <p className="truncate text-13 font-semibold text-texto">{nome}</p>
-        <p className="flex items-center gap-1.5 text-12 tabular-nums text-texto-suave">
+        <p className="truncate text-14 font-semibold text-texto">{nome}</p>
+        <p className="flex items-center gap-1.5 text-13 tabular-nums text-texto-suave">
           <GlifoDeProporcao largura={asset.width} altura={asset.height} />
           {asset.width}×{asset.height}
         </p>

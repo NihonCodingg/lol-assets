@@ -178,9 +178,15 @@ describe("contraste", () => {
     }
   });
 
-  it("sobre o `campo` só o texto principal passa — e o documento diz isso", () => {
+  it("sobre o `campo` os dois textos passam (T-89)", () => {
     expect(contraste(cor("texto"), cor("campo"))).toBeGreaterThanOrEqual(4.5);
-    expect(contraste(cor("texto-suave"), cor("campo"))).toBeLessThan(4.5);
+    expect(contraste(cor("texto-suave"), cor("campo"))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("o texto secundário lê com folga: ao menos 6:1 em todo fundo de texto (T-89)", () => {
+    for (const fundo of ["fundo", "superficie", "superficie-alta"]) {
+      expect(contraste(cor("texto-suave"), cor(fundo)), fundo).toBeGreaterThanOrEqual(6);
+    }
   });
 
   it("o botão primário passa: o fundo escrito sobre o destaque", () => {
@@ -237,12 +243,4 @@ describe("o que o ADR 0024 tirou não volta", () => {
     expect(culpados(/\bshadow-(?:sm|md|lg|xl|2xl|\[)/)).toEqual([]);
   });
 
-  it("texto secundário não vai sobre o `campo`", () => {
-    const naMesmaLinha = COMPONENTES.filter((c) =>
-      c.texto
-        .split("\n")
-        .some((linha) => /(?<![:\w-])bg-campo\b/.test(linha) && /(?<![:\w-])text-texto-suave\b/.test(linha)),
-    ).map((c) => c.arquivo);
-    expect(naMesmaLinha).toEqual([]);
-  });
 });

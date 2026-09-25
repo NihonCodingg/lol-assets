@@ -82,7 +82,7 @@ export function RegiaoDeConfirmacoes() {
         <p
           key={c.id}
           className={cn(
-            "flex max-w-full items-center gap-2 rounded-controle border border-linha-forte bg-superficie-alta px-3 py-2 text-13 text-texto",
+            "flex max-w-full items-center gap-2 rounded-controle border border-linha-forte bg-superficie-alta px-3 py-2 text-14 text-texto",
             "animate-[surgir_160ms_var(--ease-saida)]",
           )}
         >

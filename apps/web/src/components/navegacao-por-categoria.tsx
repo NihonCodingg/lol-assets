@@ -288,7 +288,7 @@ export function NavegacaoPorCategoria({
                   value={consulta}
                   placeholder="Nome ou arquivo"
                   onChange={(evento) => setConsulta(evento.target.value)}
-                  className="h-controle-md w-52 pr-2 pl-8 text-12 max-md:h-controle-xl max-md:w-full max-md:text-13"
+                  className="h-controle-md w-52 pr-2 pl-8 text-13 max-md:h-controle-xl max-md:w-full max-md:text-14"
                 />
               </label>
 
@@ -322,7 +322,7 @@ export function NavegacaoPorCategoria({
                       <SlidersHorizontal aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
                       Mais filtros
                       {escondidas > 0 && (
-                        <span className="rounded-quadro bg-acento-suave px-1 tabular-nums text-11 text-acento">
+                        <span className="rounded-quadro bg-acento-suave px-1 tabular-nums text-12 text-acento">
                           {escondidas}
                         </span>
                       )}
@@ -343,12 +343,12 @@ export function NavegacaoPorCategoria({
                 </div>
               )}
 
-              <p className="ml-auto hidden text-11 tabular-nums text-texto-suave md:block">
+              <p className="ml-auto hidden text-12 tabular-nums text-texto-suave md:block">
                 {filtrados.length} de {assets.length}
               </p>
 
               {noPadrao && assets.length > filtrados.length && (
-                <p className="w-full text-11 leading-cartao text-texto-suave">
+                <p className="w-full text-12 leading-cartao text-texto-suave">
                   Esta categoria abre filtrada por {descreverFiltro(marcadas, "", grupos).join(" e ")}
                   . {assets.length - filtrados.length} ficam de fora até você mostrar tudo.
                 </p>
@@ -469,12 +469,12 @@ function GrupoDeChips({
 }) {
   return (
     <fieldset className="flex min-w-0 flex-none flex-wrap items-center gap-1.5 max-md:flex-nowrap">
-      <legend className="float-left mr-1 text-11 text-texto-suave">
+      <legend className="float-left mr-1 text-12 text-texto-suave">
         {grupo.rotulo}
       </legend>
       {grupo.opcoes.map((opcao) => (
         <Chip key={opcao.tag} marcado={marcadas.has(opcao.tag)} onAlternar={() => onAlternar(opcao.tag)}>
-          {opcao.rotulo} <span className="ml-1 tabular-nums text-11">({opcao.total})</span>
+          {opcao.rotulo} <span className="ml-1 tabular-nums text-12">({opcao.total})</span>
         </Chip>
       ))}
     </fieldset>
@@ -485,7 +485,7 @@ function GrupoDeChips({
 function Carregando({ rotulo }: { rotulo: string }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden baixa:min-h-dvh">
-      <p className="px-3.5 py-2 text-12 text-texto-suave">Carregando {rotulo}…</p>
+      <p className="px-3.5 py-2 text-13 text-texto-suave">Carregando {rotulo}…</p>
       {/* A forma do que vem: a arte, e a linha do nome embaixo dela (T-56). Um
           bloco liso não dizia que ali vinha uma galeria. */}
       <div
@@ -525,7 +525,7 @@ function Vazio({ descricao, onLimpar }: { descricao: readonly string[]; onLimpar
       {descricao.length > 0 && (
         <ul
           aria-label="Filtro aplicado"
-          className="mt-2.5 flex flex-wrap justify-center gap-1.5 text-11 text-texto-suave"
+          className="mt-2.5 flex flex-wrap justify-center gap-1.5 text-12 text-texto-suave"
         >
           {descricao.map((parte) => (
             <li key={parte} className="rounded-controle border border-linha-forte px-2 py-0.75">

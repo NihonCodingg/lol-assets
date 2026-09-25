@@ -42,7 +42,7 @@ export function Dica({ texto, children, lado = "top", aberta = false }: DicaProp
           <Tooltip.Content
             side={lado}
             sideOffset={6}
-            className="z-50 rounded-controle border border-linha-forte bg-campo px-2 py-1 text-12 text-texto"
+            className="z-50 rounded-controle border border-linha-forte bg-campo px-2 py-1 text-13 text-texto"
           >
             {texto}
           </Tooltip.Content>

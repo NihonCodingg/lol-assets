@@ -48,7 +48,7 @@ export function VitrineDaSkin({ titulo, splash, arquivo, tile }: VitrineDaSkinPr
     <div className="flex flex-col gap-2 px-4 pt-4 md:px-6">
       {/* Até 42% da altura da tela, para sobrar ao menos uma fileira de variantes
           à vista (T-58); a largura acompanha, sempre em 16:9. */}
-      <div className="relative mx-auto aspect-video w-full max-w-[calc(42vh*16/9)]">
+      <div className="relative mx-auto aspect-video w-full max-w-[calc(42vh*16/9)] md:max-w-none">
         <MarcasDeCorte lado="fora" />
         <div className="relative size-full overflow-hidden rounded-quadro bg-superficie">
           {tile && (
@@ -70,6 +70,8 @@ export function VitrineDaSkin({ titulo, splash, arquivo, tile }: VitrineDaSkinPr
               // A splash é o conteúdo, não enfeite: é a arte que o editor veio buscar.
               alt={`Splash de ${titulo}`}
               data-vitrine="splash"
+              // A prévia é o que a pessoa veio ver: primeiro da fila (T-89).
+              fetchPriority="high"
               onLoad={() => setPronta(true)}
               onDragStart={(evento) => {
                 if (arquivo) arrastarArquivo(evento, splash, arquivo.nome, arquivo.formato);
@@ -92,13 +94,13 @@ export function VitrineDaSkin({ titulo, splash, arquivo, tile }: VitrineDaSkinPr
           )}
         </div>
       </div>
-      <div className="mx-auto flex w-full max-w-[calc(42vh*16/9)] justify-end">
+      <div className="mx-auto flex w-full max-w-[calc(42vh*16/9)] justify-end md:max-w-none">
         <button
           type="button"
           aria-pressed={guia}
           onClick={() => setGuia((ligada) => !ligada)}
           className={cn(
-            "inline-flex h-controle-sm cursor-pointer items-center gap-1.5 rounded-controle border px-2 text-12",
+            "inline-flex h-controle-sm cursor-pointer items-center gap-1.5 rounded-controle border px-2 text-13",
             guia
               ? "border-acento bg-acento-suave text-texto"
               : "border-linha-forte text-texto-suave hover:text-texto",

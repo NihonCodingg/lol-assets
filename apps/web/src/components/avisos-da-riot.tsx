@@ -18,10 +18,10 @@ import { cn } from "@/lib/utils";
 export function AvisosDaRiot({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <p data-aviso="riot" lang="en" className="text-11 leading-solta text-texto-suave">
+      <p data-aviso="riot" lang="en" className="text-12 leading-solta text-texto-suave">
         {siteConfig.riotLegalNotice}
       </p>
-      <p data-aviso="jibber-jabber" lang="en" className="text-11 leading-solta text-texto-suave">
+      <p data-aviso="jibber-jabber" lang="en" className="text-12 leading-solta text-texto-suave">
         {siteConfig.riotJibberJabberNotice}
       </p>
     </div>

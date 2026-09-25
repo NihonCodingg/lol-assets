@@ -257,7 +257,7 @@ function Grade({
         {/* No telefone, a contagem sai e o controle fica na mesma linha das
             funções: era uma linha inteira de 44 px antes do primeiro cartão. */}
         <div className="ml-auto flex flex-none items-center gap-2.5">
-          <span className="hidden text-12 tabular-nums text-texto-suave md:inline">
+          <span className="hidden text-13 tabular-nums text-texto-suave md:inline">
             {visiveis.length} de {champions.length} campeões
           </span>
           <div
@@ -475,11 +475,11 @@ const Cartao = memo(function Cartao({
             className="aspect-square rounded-quadro border border-linha bg-superficie-alta"
           />
         )}
-        <div className="truncate pt-2 text-13 leading-cartao font-semibold text-texto">
+        <div className="truncate pt-2 text-14 leading-cartao font-semibold text-texto">
           {champion.names.pt_BR}
         </div>
         {/* RF-04: o tile conta skins, nunca chromas. */}
-        <div className="truncate text-12 leading-cartao tabular-nums text-texto-suave">
+        <div className="truncate text-13 leading-cartao tabular-nums text-texto-suave">
           {champion.skinCount} {champion.skinCount === 1 ? "skin" : "skins"}
         </div>
       </button>

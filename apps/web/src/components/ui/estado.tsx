@@ -52,9 +52,9 @@ export function Estado({
         <Icone aria-hidden="true" strokeWidth={1.75} className="size-5" />
       </div>
       <p className="text-14 font-semibold text-texto">{titulo}</p>
-      {children && <div className="max-w-md text-13 leading-cartao text-texto-suave">{children}</div>}
+      {children && <div className="max-w-md text-14 leading-cartao text-texto-suave">{children}</div>}
       {detalhe && (
-        <details className="text-11 text-texto-suave">
+        <details className="text-12 text-texto-suave">
           <summary className="cursor-pointer select-none hover:text-texto">Detalhe técnico</summary>
           <p className="mt-1 tabular-nums">{detalhe}</p>
         </details>

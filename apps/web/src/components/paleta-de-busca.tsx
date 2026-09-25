@@ -304,14 +304,14 @@ function Paleta({
                   leitor de tela não ouvia o "nada encontrado". */}
               {vazia && (
                 <div role="status" className="px-3 py-6 text-center">
-                  <p className="text-13 text-texto">Nada encontrado para “{consulta.trim()}”.</p>
-                  <p className="mt-1 text-12 text-texto-suave">
+                  <p className="text-14 text-texto">Nada encontrado para “{consulta.trim()}”.</p>
+                  <p className="mt-1 text-13 text-texto-suave">
                     Tente o nome em inglês, um apelido como mf ou j4, ou o nome da skin.
                   </p>
                 </div>
               )}
               {soParecidos && (
-                <p role="status" className="px-2 pt-1 pb-1.5 text-12 text-texto-suave">
+                <p role="status" className="px-2 pt-1 pb-1.5 text-13 text-texto-suave">
                   Nada encontrado para “{consulta.trim()}”. Parecidos:
                 </p>
               )}
@@ -325,7 +325,7 @@ function Paleta({
                     key={grupo.chave}
                     heading={
                       soParecidos ? undefined : (
-                        <span className="flex items-center gap-2 px-2 pt-2 pb-1 text-12 font-semibold text-texto-suave">
+                        <span className="flex items-center gap-2 px-2 pt-2 pb-1 text-13 font-semibold text-texto-suave">
                           <MarcadorDeCategoria categoria={grupo.etiqueta} />
                           {grupo.rotulo}
                           <span className="font-normal tabular-nums">{grupo.total}</span>
@@ -349,7 +349,7 @@ function Paleta({
                         value={`ver-todos:${grupo.chave}`}
                         // Abre o grupo e deixa a lista aberta, com o foco no campo.
                         onSelect={() => setGrupoAberto(grupo.chave)}
-                        className="flex h-9 cursor-pointer items-center rounded-controle px-2 pl-[60px] text-12 text-texto-suave data-[selected=true]:bg-acento-suave data-[selected=true]:text-texto"
+                        className="flex h-9 cursor-pointer items-center rounded-controle px-2 pl-[60px] text-13 text-texto-suave data-[selected=true]:bg-acento-suave data-[selected=true]:text-texto"
                       >
                         {VER_TODOS[grupo.chave](grupo.total)}
                       </Command.Item>
@@ -362,7 +362,7 @@ function Paleta({
             <PreviaDoResultado resultado={destacado} arte={destacado && arteDe(destacado)} />
           </div>
 
-          <div className="flex h-paleta-rodape items-center gap-3 border-t border-linha px-3 text-11 text-texto-suave">
+          <div className="flex h-paleta-rodape items-center gap-3 border-t border-linha px-3 text-12 text-texto-suave">
             <span>
               {cortado
                 ? `Mostrando ${TETO_DO_GRUPO} de ${cortado.total.toLocaleString("pt-BR")}. Continue digitando para achar o que procura.`
@@ -450,7 +450,7 @@ function PreviaDoResultado({
       <Miniatura resultado={resultado} arte={arte} lado="aspect-square w-full" />
       <div className="min-w-0">
         <p className="truncate text-14 font-semibold text-texto">{nomeDe(resultado)}</p>
-        <p className="truncate text-12 tabular-nums text-texto-suave">{detalheDe(resultado)}</p>
+        <p className="truncate text-13 tabular-nums text-texto-suave">{detalheDe(resultado)}</p>
       </div>
     </div>
   );
@@ -463,7 +463,7 @@ function Linha({ resultado, arte }: { resultado: ResultadoDaBusca; arte: string 
       <Miniatura resultado={resultado} arte={arte} lado="size-10" erroCompacto />
       <div className="min-w-0 flex-1">
         <div className="truncate text-14 font-semibold text-texto">{nomeDe(resultado)}</div>
-        <div className="truncate text-12 tabular-nums text-texto-suave">{detalheDe(resultado)}</div>
+        <div className="truncate text-13 tabular-nums text-texto-suave">{detalheDe(resultado)}</div>
       </div>
     </>
   );

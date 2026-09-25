@@ -15,6 +15,10 @@
  * Quem pediu para economizar dados não recebe nada adiantado.
  */
 
+import type { Asset } from "@lol-assets/schema";
+
+import { assetUrl } from "@/lib/asset-file";
+
 export interface InformacaoDeConexao {
   readonly saveData?: boolean;
   readonly effectiveType?: string;
@@ -40,3 +44,34 @@ export function conexaoDoNavegador(): InformacaoDeConexao | undefined {
  * vinte fatias baixadas à toa.
  */
 export const ESPERA_DA_INTENCAO_MS = 150;
+
+/** As splashes já pedidas nesta visita: pedir de novo não custa, mas polui. */
+const adiantadas = new Set<string>();
+
+/**
+ * A splash da skin que o painel vai abrir, pedida no sinal de intenção (T-89).
+ *
+ * O dono achou o painel lento para mostrar as artes. A prévia 16:9 é a primeira
+ * coisa que a pessoa procura, e o endereço dela só existe na fatia do campeão:
+ * com a fatia adiantada pela intenção, dá para pedir a splash no mesmo embalo,
+ * e o clique encontra a imagem já chegando. É uma imagem só (~155 KB); as
+ * miniaturas das skins, que somam quase 1 MB, continuam esperando o clique.
+ *
+ * Sem `crossOrigin`, como o `<img>` da vitrine: a mesma requisição, o mesmo
+ * cache. Devolve o endereço pedido, ou nada quando a fatia não tem a splash.
+ */
+export function adiantarSplash(
+  assets: readonly Asset[],
+  skinNum: number,
+  assetsBaseUrl?: string,
+): string | undefined {
+  const splash = assets.find((a) => a.type === "splash_centered" && a.skinNum === skinNum);
+  if (!splash || typeof Image === "undefined") return undefined;
+  const url = assetUrl(splash, assetsBaseUrl);
+  if (adiantadas.has(url)) return url;
+  adiantadas.add(url);
+  const imagem = new Image();
+  imagem.decoding = "async";
+  imagem.src = url;
+  return url;
+}

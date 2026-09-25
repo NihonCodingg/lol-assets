@@ -66,13 +66,29 @@ test("a prévia amplia a arte, e o Escape fecha só a ampliação (T-47b)", asyn
 /**
  * O T-58. Medido na produção em 1440×900: a vitrine ocupava 455 px dos 900 do
  * painel, e sobravam **três** cartões à vista para dez artes — uma fileira.
+ *
+ * Desde o T-89 o painel fica no centro, em duas colunas: a vitrine à esquerda e
+ * os arquivos ao lado dela, não embaixo. O que o T-58 protegia — as artes à
+ * vista sem rolar — agora se mede na coluna dos arquivos.
  */
 test("no computador, a vitrine divide o painel com as artes", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const painel = await abrirJax(page);
 
-  const vitrine = await painel.locator("div.aspect-video").first().boundingBox();
-  expect(vitrine!.height).toBeLessThanOrEqual(0.42 * 900);
+  const vitrine = (await painel.locator("div.aspect-video").first().boundingBox())!;
+  const arquivos = painel.locator("article[data-tipo]");
+  await expect(arquivos.first()).toBeVisible();
+  const primeira = (await arquivos.first().boundingBox())!;
+  // Lado a lado: a primeira linha de arquivo começa à direita da vitrine, e
+  // antes do pé dela.
+  expect(primeira.x).toBeGreaterThanOrEqual(vitrine.x + vitrine.width);
+  expect(primeira.y).toBeLessThan(vitrine.y + vitrine.height);
+  // E os arquivos inteiros à vista sem rolar: todos os do Jax da fixture, ou
+  // pelo menos oito num campeão de verdade.
+  const inteiras = await arquivos.evaluateAll(
+    (todas) => todas.filter((l) => l.getBoundingClientRect().bottom <= innerHeight).length,
+  );
+  expect(inteiras).toBeGreaterThanOrEqual(Math.min(await arquivos.count(), 8));
 
   // E o nome de cada skin na faixa cabe numa linha só, com o inteiro no title.
   const nome = painel.getByRole("radio", { name: "Jax Deus da Guerra" });

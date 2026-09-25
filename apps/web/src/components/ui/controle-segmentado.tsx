@@ -50,7 +50,7 @@ export function ControleSegmentado<T extends string>({
             key={opcao.valor}
             className={cn(
               ALVO_DE_TOQUE,
-              "inline-flex h-controle-sm cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-[4px] border px-2.5 text-12",
+              "inline-flex h-controle-sm cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-[4px] border px-2.5 text-13",
               "transition-colors duration-150 ease-saida",
               "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-acento",
               marcada

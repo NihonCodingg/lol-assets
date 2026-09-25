@@ -44,7 +44,7 @@ export function AvisoDeIndiceVelho({ manifest, agora }: AvisoDeIndiceVelhoProps)
         strokeWidth={1.75}
         className="mt-px size-3.5 flex-none text-acento md:mt-0 md:size-4"
       />
-      <p className="text-11 leading-cartao md:text-12">
+      <p className="text-12 leading-cartao md:text-13">
         <strong className="font-semibold text-texto">O índice pode estar desatualizado.</strong>{" "}
         Ele foi gerado há {idadeEmPalavras(frescor.horas)}, em{" "}
         <time dateTime={manifest.generatedAt}>{dataLegivel(frescor.geradoEm)}</time>, e a

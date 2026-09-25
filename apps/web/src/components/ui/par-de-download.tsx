@@ -42,6 +42,8 @@ export interface ParDeDownloadProps {
   readonly compacto?: boolean;
   /** Só os ícones, com dica: o par dentro de um tile estreito. */
   readonly icone?: boolean;
+  /** A primária em tom calmo, para listas em que ela se repete (T-89). */
+  readonly tonal?: boolean;
   readonly onOriginal: () => void;
   readonly onPng: () => void;
   readonly className?: string;
@@ -73,6 +75,7 @@ export function ParDeDownload({
   baixado = null,
   compacto = false,
   icone = false,
+  tonal = false,
   onOriginal,
   onPng,
   className,
@@ -125,7 +128,7 @@ export function ParDeDownload({
   return (
     <div className={cn("inline-flex items-center", compacto ? "gap-1" : "gap-1.5", className)}>
       <Botao
-        variante="primario"
+        variante={tonal ? "tonal" : "primario"}
         tamanho="md"
         disabled={ocupado}
         aria-busy={baixando === qualDoPng || undefined}

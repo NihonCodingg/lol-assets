@@ -1,7 +1,8 @@
 "use client";
 
 /**
- * O painel que entra pela direita, sobre Radix Dialog ([ADR 0011]).
+ * O painel sobre Radix Dialog ([ADR 0011]): na borda direita ou, com
+ * `centralizado`, no centro da tela (T-89).
  *
  * Este é o único primitivo que justifica a dependência do Radix, e justifica
  * bem: o painel do design é um diálogo modal com véu, e um diálogo modal escrito
@@ -35,13 +36,19 @@ export interface PainelLateralProps {
    * Se `Escape` e o clique fora fecham o painel.
    *
    * O padrão é o do Radix, que é o certo para um diálogo novo. O painel do
-   * campeão desliga os dois: ele trata `Escape` com ordem própria (ampliação e
-   * chroma primeiro) e nunca fechou por clique fora.
+   * campeão desliga o `Escape`, que ele trata com ordem própria (ampliação e
+   * chroma primeiro); desde o T-89, no centro da tela, fecha por clique fora.
    */
   readonly fecharPorEsc?: boolean;
   readonly fecharPorFora?: boolean;
   /** A caixa do tile de onde o painel nasce. Sem ela, o painel só aparece. */
   readonly origem?: DOMRect | null;
+  /**
+   * No centro da tela, e não na borda direita (T-89). Centrado por `inset-0` e
+   * margem automática, e não por `translate`: o crescimento do tile anima o
+   * `transform`, e um `translate` de centralização seria apagado por ele.
+   */
+  readonly centralizado?: boolean;
 }
 
 /** Faz o painel crescer da caixa do tile até a dele. Devolve se animou. */
@@ -72,6 +79,7 @@ export function PainelLateral({
   fecharPorEsc = true,
   fecharPorFora = true,
   origem = null,
+  centralizado = false,
 }: PainelLateralProps) {
   const conteudo = useRef<HTMLDivElement>(null);
   const foco = useFocoDeVolta();
@@ -107,8 +115,10 @@ export function PainelLateral({
           onPointerDownOutside={(evento) => !fecharPorFora && evento.preventDefault()}
           onInteractOutside={(evento) => !fecharPorFora && evento.preventDefault()}
           className={cn(
-            "fixed inset-y-0 right-0 z-25 flex w-[min(540px,74%)] flex-col",
-            "border-l border-linha-forte bg-superficie-alta",
+            "fixed z-25 flex flex-col bg-superficie-alta",
+            centralizado
+              ? "inset-0 md:m-auto md:h-[min(900px,94vh)] md:w-[min(1320px,95vw)] md:rounded-painel md:border md:border-linha-forte"
+              : "inset-y-0 right-0 w-[min(540px,74%)] border-l border-linha-forte",
             className,
           )}
         >
