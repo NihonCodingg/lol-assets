@@ -115,13 +115,14 @@ export function SeletorDeSkin({
                 </span>
               )}
             </div>
-            {/* Numa linha, com o nome inteiro no `title` (T-58), e sem o nome do
-                campeão na frente (T-65). */}
+            {/* Em até duas linhas, com o lugar das duas guardado (T-91): numa só,
+                "K/DA de Pr…" eram duas skins diferentes com o mesmo rótulo. O nome
+                inteiro no `title` (T-58), sem o do campeão na frente (T-65). */}
             <span
               aria-hidden="true"
               title={skin.names.pt_BR}
               className={cn(
-                "truncate text-12 leading-cartao",
+                "line-clamp-2 min-h-8 break-words text-12 leading-4",
                 marcada ? "font-semibold text-texto" : "text-texto-suave group-hover:text-texto",
               )}
             >

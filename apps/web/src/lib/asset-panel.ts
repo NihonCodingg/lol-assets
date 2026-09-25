@@ -123,7 +123,9 @@ export function orderAssets(assets: readonly Asset[]): Asset[] {
       posicaoDe(a.type) - posicaoDe(b.type) ||
       (a.skinNum ?? -1) - (b.skinNum ?? -1) ||
       ordemDaTecla(a.id) - ordemDaTecla(b.id) ||
-      a.id.localeCompare(b.id),
+      // Com os números como números (T-91): os ícones de perfil vinham na ordem
+      // do texto — 0, 1, 10, 1000, 10001 —, que não é ordem nenhuma.
+      a.id.localeCompare(b.id, "en", { numeric: true }),
   );
 }
 
@@ -220,6 +222,14 @@ export const VAO_DA_GALERIA = 8;
 const TEXTO_DO_TILE = 40;
 
 /**
+ * A segunda linha do nome (T-91). Com o texto um degrau maior (T-89), os nomes
+ * de item e de runa em português cortavam no meio da palavra — "Amuleto da F…",
+ * "Cinto do Gig…" —, e o dono pediu para ver tudo com clareza. Nas categorias
+ * de nome longo o tile cresce uma linha; a arte não perde nada.
+ */
+const LINHA_DO_NOME = 16;
+
+/**
  * A largura que as ações pedem quando têm rótulo: "Original", "PNG" e o copiar,
  * com o respiro. Tile mais estreito que isto quebraria os botões em duas linhas
  * — abaixo dele as ações viram ícones com dica (`acoesComRotulo`).
@@ -251,6 +261,8 @@ export interface MedidasDaGaleria {
   readonly alturaDaPrevia: number;
   /** A mesma na lista inteira: é o que deixa virtualizar por linha sem medir ([ADR 0011]). */
   readonly alturaDoTile: number;
+  /** Quantas linhas o nome tem no tile: uma, ou duas nas categorias de nome longo (T-91). */
+  readonly linhasDoNome: 1 | 2;
 }
 
 /**
@@ -272,6 +284,7 @@ function alturaDaPrevia(lado: number): number {
  */
 export function medidasDaGaleria(
   assets: readonly Pick<Asset, "width" | "height">[],
+  linhasDoNome: 1 | 2 = 1,
 ): MedidasDaGaleria {
   const meio = Math.floor(assets.length / 2);
   const lados = assets.map((a) => Math.max(a.width, a.height)).sort((x, y) => x - y);
@@ -285,8 +298,13 @@ export function medidasDaGaleria(
     acoesComRotulo: larguraMinima >= LARGURA_DAS_ACOES_COM_ROTULO,
     proporcao,
     alturaDaPrevia: altura,
-    alturaDoTile: altura + TEXTO_DO_TILE,
+    alturaDoTile: altura + alturaDoTexto(linhasDoNome),
+    linhasDoNome,
   };
+}
+
+function alturaDoTexto(linhas: 1 | 2): number {
+  return TEXTO_DO_TILE + (linhas - 1) * LINHA_DO_NOME;
 }
 
 /** Abaixo desta largura de lista — um telefone —, o tile encolhe para caberem mais colunas. */
@@ -319,7 +337,7 @@ export function medidasNaColuna(
 ): { readonly alturaDaPrevia: number; readonly alturaDoTile: number } {
   const cabeNaColuna = Math.round(larguraDaColuna / (medidas.proporcao || 1));
   const altura = Math.max(64, Math.min(medidas.alturaDaPrevia, cabeNaColuna));
-  return { alturaDaPrevia: altura, alturaDoTile: altura + TEXTO_DO_TILE };
+  return { alturaDaPrevia: altura, alturaDoTile: altura + alturaDoTexto(medidas.linhasDoNome) };
 }
 
 /** A largura de cada coluna, já descontados os vãos. */

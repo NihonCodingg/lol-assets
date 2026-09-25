@@ -317,7 +317,7 @@ describe("filtros", () => {
     montar();
     await abrir("Itens");
     fireEvent.click(screen.getByRole("button", { name: "Mostrar tudo" }));
-    expect(screen.getByText("4 de 4")).toBeTruthy();
+    expect(screen.getByText("4 assets")).toBeTruthy(); // sem filtro, o título conta (T-91)
     expect(screen.queryByRole("button", { name: "Mostrar tudo" })).toBeNull();
   });
 
@@ -328,7 +328,7 @@ describe("filtros", () => {
     fireEvent.click(screen.getByLabelText(/Summoner's Rift/));
     expect(screen.getByText("3 de 4")).toBeTruthy();
     fireEvent.click(screen.getByLabelText(/ARAM/));
-    expect(screen.getByText("4 de 4")).toBeTruthy();
+    expect(screen.getByText("4 assets")).toBeTruthy(); // sem filtro, o título conta (T-91)
   });
 
   it("marcar em grupos diferentes é E", async () => {
@@ -365,7 +365,7 @@ describe("filtros", () => {
     montar();
     await abrir("Ícones de perfil");
     expect(screen.queryAllByRole("group")).toHaveLength(0);
-    expect(screen.getByText("5042 de 5042")).toBeTruthy();
+    expect(screen.getByText("5.042 assets")).toBeTruthy(); // sem filtro, o título conta (T-91)
   });
 
   it("trocar de categoria limpa o texto digitado", async () => {
@@ -405,7 +405,7 @@ describe("erro e vazio que dizem o que fazer (T-50)", () => {
     fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "não existe" } });
 
     fireEvent.click(within(screen.getByRole("status")).getByRole("button", { name: "Limpar filtro" }));
-    expect(screen.getByText("4 de 4")).toBeTruthy();
+    expect(screen.getByText("4 assets")).toBeTruthy(); // sem filtro, o título conta (T-91)
     expect((screen.getByLabelText("Filtrar por texto") as HTMLInputElement).value).toBe("");
   });
 });
@@ -480,7 +480,7 @@ describe("5.042 ícones de perfil", () => {
   it("a contagem diz a verdade mesmo com o DOM pequeno", async () => {
     montar();
     await abrir("Ícones de perfil");
-    expect(screen.getByText("5042 assets")).toBeTruthy();
+    expect(screen.getByText("5.042 assets")).toBeTruthy();
   });
 
   it("filtrar por texto reduz o total sem sair da lista virtual", async () => {
@@ -488,7 +488,7 @@ describe("5.042 ícones de perfil", () => {
     await abrir("Ícones de perfil");
     fireEvent.change(screen.getByLabelText("Filtrar por texto"), { target: { value: "icone-1" } });
     // icone-1, icone-1x, icone-1xx, icone-1xxx: 1 + 10 + 100 + 1000 = 1.111.
-    expect(screen.getByText("1111 de 5042")).toBeTruthy();
+    expect(screen.getByText("1.111 de 5.042")).toBeTruthy();
     expect(container.querySelector("[data-virtual='sim']")).not.toBeNull();
   });
 });

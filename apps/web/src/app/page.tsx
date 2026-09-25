@@ -381,7 +381,7 @@ export default function HomePage() {
 
       {/* A barra de estado, como a de um editor: de que patch são as artes. As
           contagens já estão na barra lateral; sem o ponto médio entre elas. */}
-      <p className="flex-none border-t border-linha px-3.5 py-1.5 text-12 tabular-nums text-texto-suave">
+      <p className="flex-none border-t border-linha px-3.5 py-1.5 text-12 text-texto-suave">
         Patch {manifest.currentVersion}
       </p>
 

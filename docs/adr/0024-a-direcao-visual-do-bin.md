@@ -186,3 +186,8 @@ contraste. O que muda, sem trocar o mundo desta página:
 - **O botão tonal.** Quando a ação primária se repete numa lista — dez "Baixar PNG" empilhados —,
   ela usa a variante `tonal`: o fundo magenta escuro com a borda no destaque, cheia no hover.
   Continua a primária da linha; a arte volta a ser o que mais chama o olho.
+- **O acabamento (T-91).** O magenta fica para as ações e o foco: o chip de filtro marcado passa a
+  ser grafite elevado, com contorno e peso, como o controle segmentado. Nas galerias de nome longo
+  (itens, runas, wards, emotes) e no seletor de skins, o nome ocupa até duas linhas em vez de ser
+  cortado. Números com o ponto do milhar em toda parte; algarismos tabulares só onde há coluna
+  para alinhar — na Schibsted, o ponto tabular tem a largura de um algarismo.

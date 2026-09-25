@@ -28,9 +28,12 @@ export function Chip({ marcado, onAlternar, children }: ChipProps) {
         "inline-flex h-controle-md cursor-pointer items-center whitespace-nowrap rounded-controle border px-2.5 text-13",
         "transition-colors duration-150 ease-saida",
         "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-acento",
+        // Marcado em grafite elevado, com peso (T-91), como o controle segmentado:
+        // o magenta fica para as ações e o foco. Nunca só a cor: superfície,
+        // contorno e peso mudam juntos.
         marcado
-          ? "border-acento bg-acento-suave text-texto"
-          : "border-linha-forte text-texto-suave hover:bg-superficie-alta hover:text-texto",
+          ? "border-linha-forte bg-campo font-semibold text-texto"
+          : "border-linha text-texto-suave hover:bg-superficie-alta hover:text-texto",
       )}
     >
       <input type="checkbox" className="sr-only" checked={marcado} onChange={onAlternar} />

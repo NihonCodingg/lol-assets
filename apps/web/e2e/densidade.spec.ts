@@ -79,6 +79,9 @@ test("a galeria de ícones dá pelo menos nove colunas numa tela de 1440", async
 
   expect(porLinha).toBeGreaterThanOrEqual(9);
   expect(medidas.largura).toBeLessThanOrEqual(130);
-  // A arte deixou de ser um selo no meio da caixa: era 13% do tile.
-  expect(medidas.arte / medidas.area).toBeGreaterThan(0.25);
+  // A arte deixou de ser um selo no meio da caixa: era 13% do tile. Desde o T-91
+  // o nome do item tem duas linhas — cortado numa, "Amuleto da F…" não dizia
+  // qual item era —, e a linha a mais custa 16 px de altura: a arte fica em
+  // torno de 24%, ainda o dobro do selo.
+  expect(medidas.arte / medidas.area).toBeGreaterThan(0.22);
 });

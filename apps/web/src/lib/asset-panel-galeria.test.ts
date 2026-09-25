@@ -127,3 +127,20 @@ describe("a altura depois que as colunas estão decididas", () => {
     expect(larguraDaColuna(362, 3)).toBe(115);
   });
 });
+
+describe("o nome em duas linhas (T-91)", () => {
+  it("a segunda linha cresce o tile, e a arte não perde nada", () => {
+    const itens = [{ width: 64, height: 64 }];
+    const uma = medidasDaGaleria(itens);
+    const duas = medidasDaGaleria(itens, 2);
+    expect(duas.alturaDaPrevia).toBe(uma.alturaDaPrevia);
+    expect(duas.alturaDoTile - uma.alturaDoTile).toBe(16);
+    expect(duas.linhasDoNome).toBe(2);
+  });
+
+  it("vale também depois de caber na coluna", () => {
+    const duas = medidasDaGaleria([{ width: 256, height: 256 }], 2);
+    const naColuna = medidasNaColuna(duas, 100);
+    expect(naColuna.alturaDoTile - naColuna.alturaDaPrevia).toBe(duas.alturaDoTile - duas.alturaDaPrevia);
+  });
+});

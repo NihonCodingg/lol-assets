@@ -22,7 +22,7 @@ import { Marca } from "@/components/ui/marca";
 import { ALVO_DE_TOQUE, cn } from "@/lib/utils";
 
 export function Topo() {
-  const { registrarLugarDaBusca } = useNavegacao();
+  const { registrarLugarDaBusca, aberta } = useNavegacao();
   // Na home, até a busca chegar, o esqueleto dela segura o lugar — no HTML do
   // servidor inclusive. Em outra página o miolo fica vazio.
   const caminho = usePathname();
@@ -36,8 +36,10 @@ export function Topo() {
           "flex h-full flex-none items-center rounded-controle pl-3 md:w-barra-lateral md:pl-3.5",
         )}
       >
-        {/* No telefone o nome sai da vista e fica para o leitor de tela. */}
-        <Marca className="[&>span:last-child]:max-md:sr-only" />
+        {/* No telefone, com a busca no topo, o nome sai da vista e fica para o
+            leitor de tela. Sem ela — dentro de uma categoria, ou no Sobre —, o
+            nome volta (T-91): a faixa era só o símbolo e um vazio. */}
+        <Marca className={cn(naHome && aberta === null && "[&>span:last-child]:max-md:sr-only")} />
       </Link>
       <div className="flex min-w-0 flex-1 justify-center md:pr-barra-lateral md:pl-3.5">
         <div className="w-full max-w-busca-max">

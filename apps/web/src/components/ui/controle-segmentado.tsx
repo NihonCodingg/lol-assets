@@ -68,7 +68,7 @@ export function ControleSegmentado<T extends string>({
             />
             {opcao.rotulo}
             {opcao.contagem !== undefined && (
-              <span aria-hidden="true" className="font-normal tabular-nums text-texto-suave">
+              <span aria-hidden="true" className="font-normal text-texto-suave">
                 {opcao.contagem.toLocaleString("pt-BR")}
               </span>
             )}

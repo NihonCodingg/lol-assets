@@ -103,3 +103,10 @@ describe("ordenação sintética, sem depender da fixture", () => {
     ]);
   });
 });
+
+describe("números como números (T-91)", () => {
+  it("os ícones de perfil vêm 0, 1, 2, 10, 1000 — e não na ordem do texto", () => {
+    const ids = ["1000", "10", "2", "0", "1", "10001"].map((n) => asset("profile_icon", undefined, `profile_icon:${n}`));
+    expect(orderAssets(ids).map((a) => a.id.split(":")[1])).toEqual(["0", "1", "2", "10", "1000", "10001"]);
+  });
+});
