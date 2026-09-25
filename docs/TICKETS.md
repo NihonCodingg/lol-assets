@@ -3843,7 +3843,7 @@ relatório fica em `docs/sessoes/`, e as capturas em `docs/design/redesenho/`.
 | Ticket | Entrega |
 |---|---|
 | ✅ T-89 | Legibilidade (texto secundário de 5,36 para 7,09:1, a escala de texto um degrau acima, o xadrez mais discreto); o painel no centro em duas colunas, com todas as skins à vista; a linha de arquivo flexível, sem o botão sobre o peso; "Baixar PNG" tonal na lista; a splash pedida no sinal de intenção e as miniaturas depois dela |
-| T-90 | Os emotes por emoção — felizes e engraçados, fofos e amor, bravos e provocação, tristes e surpresos, e símbolos, times e eventos — e a ordem "Mais recentes / Mais antigos" |
+| ✅ T-90 | Os emotes por emoção — felizes e engraçados, fofos e amor, bravos e provocação, tristes e surpresos, e símbolos, times e eventos — e a ordem "Mais recentes / Mais antigos". Os 2.369 emotes do 16.19 revistos à mão pela arte (`lib/emotes-classificacao.ts`); o de patch novo ganha palpite pelo nome até ser revisto |
 | T-91 | O acabamento do resto do site no mesmo padrão de clareza, revisado contra a skill de design |
 
 ---

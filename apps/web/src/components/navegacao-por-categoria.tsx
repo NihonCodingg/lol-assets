@@ -47,6 +47,7 @@ import { PainelDeAsset } from "@/components/painel-de-asset";
 import { Botao } from "@/components/ui/botao";
 import { Campo } from "@/components/ui/campo";
 import { Chip } from "@/components/ui/chip";
+import { ControleSegmentado } from "@/components/ui/controle-segmentado";
 import { Estado } from "@/components/ui/estado";
 import { assetUrl } from "@/lib/asset-file";
 import {
@@ -60,6 +61,7 @@ import {
   separarGrupos,
   type GrupoDeFiltro,
 } from "@/lib/categorias";
+import { comEmocao, EMOCOES, GRUPO_DA_EMOCAO, ordenarPorLancamento, type Sentido } from "@/lib/emotes";
 import { alternar, selecionados, tudoDo } from "@/lib/selecao";
 import { tratamentoDe, wardsEmPares } from "@/lib/tratamento";
 import { focarConteudo } from "@/lib/foco";
@@ -100,6 +102,21 @@ const SEM_ASSETS: readonly Asset[] = [];
 
 const ID_DE_MAIS_FILTROS = "mais-filtros";
 
+/** O valor do "Todas" no controle de emoção: nenhuma etiqueta marcada. */
+const TODAS = "todas";
+
+/**
+ * As emoções na ordem em que o dono as nomeou — felizes, fofos, bravos, tristes
+ * —, e os símbolos no fim. O grupo de filtro vem por contagem; aqui não.
+ */
+function ordemDasEmocoes(grupo: GrupoDeFiltro): GrupoDeFiltro["opcoes"] {
+  const posicao = (tag: string) => {
+    const i = EMOCOES.indexOf(tag.slice(GRUPO_DA_EMOCAO.length + 1) as (typeof EMOCOES)[number]);
+    return i === -1 ? EMOCOES.length : i;
+  };
+  return [...grupo.opcoes].sort((a, b) => posicao(a.tag) - posicao(b.tag));
+}
+
 type Carga =
   | { fase: "vazia" }
   | { fase: "carregando" }
@@ -119,6 +136,8 @@ export function NavegacaoPorCategoria({
   const [selecao, setSelecao] = useState<ReadonlySet<string>>(new Set());
   const [maisFiltrosAbertos, setMaisFiltrosAbertos] = useState(false);
   const [ampliado, setAmpliado] = useState<Asset | null>(null);
+  // Os emotes, do mais recente ao mais antigo ou o contrário (T-90).
+  const [sentido, setSentido] = useState<Sentido>("recentes");
   // Voltar sai da categoria e volta aos campeões, não sai do site (T-70). Trocar
   // de uma categoria para outra não empilha: é a mesma camada.
   useFecharComVoltar(aberta !== null, onFechar);
@@ -153,8 +172,9 @@ export function NavegacaoPorCategoria({
         const shard = await carregar(aberta);
         if (cancelado) return;
         // O arquivo de marcação (`_fpo`) saía aqui desde o T-48; desde o T-76 o
-        // indexador não o põe mais no índice.
-        const assets = shard.assets;
+        // indexador não o põe mais no índice. Os emotes ganham a emoção como
+        // etiqueta (T-90): daí em diante ela filtra como qualquer outra.
+        const assets = aberta === "emote" ? comEmocao(shard.assets) : shard.assets;
         // O filtro padrão depende das etiquetas que a fatia traz (§B.1.6 do
         // KICKOFF), então só dá para calculá-lo depois de ela chegar.
         setMarcadas(filtrosPadrao(aberta, gruposDeFiltro(assets)));
@@ -207,8 +227,20 @@ export function NavegacaoPorCategoria({
   const assets = pares?.lista ?? daFatia;
   const tratamento = useMemo(() => (aberta ? tratamentoDe(aberta) : undefined), [aberta]);
   const grupos = useMemo(() => gruposDeFiltro(assets), [assets]);
-  const { naBarra, maisFiltros } = useMemo(() => separarGrupos(grupos), [grupos]);
-  const lista = useMemo(() => prepararLista(assets), [assets]);
+  // A emoção dos emotes não é um grupo de chips: é uma escolha só, em destaque,
+  // num controle próprio (T-90). O resto dos grupos segue na barra.
+  const emocao = useMemo(() => grupos.find((grupo) => grupo.chave === GRUPO_DA_EMOCAO), [grupos]);
+  const { naBarra, maisFiltros } = useMemo(
+    () => separarGrupos(grupos.filter((grupo) => grupo.chave !== GRUPO_DA_EMOCAO)),
+    [grupos],
+  );
+  const ehEmote = aberta === "emote";
+  // O filtro não reordena: a lista já entra na ordem de lançamento.
+  const naOrdem = useMemo(
+    () => (ehEmote ? ordenarPorLancamento(assets, sentido) : assets),
+    [ehEmote, assets, sentido],
+  );
+  const lista = useMemo(() => prepararLista(naOrdem), [naOrdem]);
   const filtrados = useMemo(() => filtrar(lista, marcadas, consulta), [lista, marcadas, consulta]);
   // O lote alcança o que o filtro deixou na tela — nunca a fatia inteira por
   // baixo dele. "Selecionar todos" com 5.042 escondidos seria uma armadilha.
@@ -236,6 +268,17 @@ export function NavegacaoPorCategoria({
     padrao.size === marcadas.size &&
     [...padrao].every((tag) => marcadas.has(tag)) &&
     !consulta.trim();
+
+  const emocaoMarcada = [...marcadas].find((tag) => grupoDaTag(tag) === GRUPO_DA_EMOCAO) ?? TODAS;
+  // "Mostrar tudo" desfaz os filtros da barra; a emoção tem o "Todas" dela.
+  const marcadasNaBarra = [...marcadas].filter((tag) => grupoDaTag(tag) !== GRUPO_DA_EMOCAO).length;
+  const escolherEmocao = useCallback((tag: string) => {
+    setMarcadas((antes) => {
+      const proximo = new Set([...antes].filter((t) => grupoDaTag(t) !== GRUPO_DA_EMOCAO));
+      if (tag !== TODAS) proximo.add(tag);
+      return proximo;
+    });
+  }, []);
 
   // Estável, porque vai para cada tile da galeria, que é memorizado.
   const alternarNoLote = useCallback((id: string) => setSelecao((antes) => alternar(antes, id)), []);
@@ -294,7 +337,7 @@ export function NavegacaoPorCategoria({
 
               {/* No telefone, uma linha que rola de lado; no computador este
                   `div` some (`contents`) e os filtros quebram na barra. */}
-              {(naBarra.length > 0 || maisFiltros.length > 0 || marcadas.size > 0) && (
+              {(naBarra.length > 0 || maisFiltros.length > 0 || marcadasNaBarra > 0) && (
                 <div
                   className={cn(
                     "flex items-center gap-x-3 max-md:-mx-3.5 max-md:w-[calc(100%+1.75rem)] max-md:overflow-x-auto max-md:px-3.5 max-md:[scrollbar-width:none] md:contents",
@@ -330,12 +373,16 @@ export function NavegacaoPorCategoria({
                   )}
 
                   {/* §B.1.6: a categoria `item` abre filtrada, e isto é a saída. */}
-                  {marcadas.size > 0 && (
+                  {marcadasNaBarra > 0 && (
                     <Botao
                       variante="fantasma"
                       tamanho="md"
                       className={ALVO_DE_TOQUE}
-                      onClick={() => setMarcadas(new Set())}
+                      onClick={() =>
+                        setMarcadas(
+                          (antes) => new Set([...antes].filter((t) => grupoDaTag(t) === GRUPO_DA_EMOCAO)),
+                        )
+                      }
                     >
                       Mostrar tudo
                     </Botao>
@@ -356,6 +403,27 @@ export function NavegacaoPorCategoria({
             </>
           )}
         </div>
+
+        {pronta && emocao && (
+          // Os emotes por emoção (T-90): o jeito de procurar de quem edita — "um
+          // emote bravo", "um fofo". No telefone, a linha rola de lado; o respiro
+          // de cima e de baixo guarda o alvo de 44 px de cada opção.
+          <div className="overflow-x-auto px-3.5 pt-1.5 pb-2.5 [scrollbar-width:none]">
+            <ControleSegmentado
+              rotulo="Emoção"
+              valor={emocaoMarcada}
+              onMudar={escolherEmocao}
+              opcoes={[
+                { valor: TODAS, rotulo: "Todas", contagem: assets.length },
+                ...ordemDasEmocoes(emocao).map((opcao) => ({
+                  valor: opcao.tag,
+                  rotulo: opcao.rotulo,
+                  contagem: opcao.total,
+                })),
+              ]}
+            />
+          </div>
+        )}
 
         {pronta && maisFiltrosAbertos && maisFiltros.length > 0 && (
           <div
@@ -423,15 +491,30 @@ export function NavegacaoPorCategoria({
             fim={<AvisosNoFim />}
             tratamento={tratamento}
             sombraDe={pares?.sombraDe}
+            ordenar={!ehEmote}
+            reinicio={ehEmote ? `${emocaoMarcada}|${sentido}` : undefined}
             acoes={
-              <Botao
-                variante="fantasma"
-                tamanho="md"
-                className={ALVO_DE_TOQUE}
-                onClick={() => setSelecao(tudoDo(filtrados, true))}
-              >
-                Selecionar os {filtrados.length} filtrados
-              </Botao>
+              <>
+                {ehEmote && (
+                  <ControleSegmentado
+                    rotulo="Ordem"
+                    valor={sentido}
+                    onMudar={setSentido}
+                    opcoes={[
+                      { valor: "recentes", rotulo: "Mais recentes" },
+                      { valor: "antigos", rotulo: "Mais antigos" },
+                    ]}
+                  />
+                )}
+                <Botao
+                  variante="fantasma"
+                  tamanho="md"
+                  className={ALVO_DE_TOQUE}
+                  onClick={() => setSelecao(tudoDo(filtrados, true))}
+                >
+                  Selecionar os {filtrados.length} filtrados
+                </Botao>
+              </>
             }
           />
 

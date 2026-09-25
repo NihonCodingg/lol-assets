@@ -131,6 +131,16 @@ export interface PainelDeAssetProps {
   readonly tratamento?: Tratamento;
   /** Nas wards, a sombra de cada arte: o tile vira um card com alternância (T-84). */
   readonly sombraDe?: ReadonlyMap<string, Asset>;
+  /**
+   * Ordena por tipo (`orderAssets`). `false` quando quem chama já deu a ordem:
+   * os emotes, do mais recente ao mais antigo ou o contrário (T-90).
+   */
+  readonly ordenar?: boolean;
+  /**
+   * Muda quando a lista troca de natureza — outra emoção, outra ordem (T-90): a
+   * galeria volta ao topo, em vez de abrir a lista nova no meio.
+   */
+  readonly reinicio?: string;
 }
 
 export async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: string): Promise<void> {
@@ -160,8 +170,10 @@ export function PainelDeAsset({
   fim,
   tratamento,
   sombraDe,
+  ordenar = true,
+  reinicio,
 }: PainelDeAssetProps) {
-  const ordenados = useMemo(() => orderAssets(assets), [assets]);
+  const ordenados = useMemo(() => (ordenar ? orderAssets(assets) : [...assets]), [assets, ordenar]);
   const rotulos = useMemo(() => rotulosDaLista(ordenados), [ordenados]);
   const [estados, setEstados] = useState<Record<string, EstadoDoCartao>>({});
 
@@ -213,7 +225,11 @@ export function PainelDeAsset({
         <span className="tabular-nums text-12 text-texto-suave">
           {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
         </span>
-        {acoes && <div className="ml-auto flex items-center gap-1.5">{acoes}</div>}
+        {/* Quebra por dentro (T-90): a ordem dos emotes e o "Selecionar" não
+            cabem lado a lado num telefone. */}
+        {acoes && (
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1">{acoes}</div>
+        )}
       </div>
 
       {secoes ? (
@@ -240,6 +256,7 @@ export function PainelDeAsset({
         </div>
       ) : (
         <Galeria
+          key={reinicio}
           assets={ordenados}
           virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
           larguraMinima={tratamento?.larguraMinima}

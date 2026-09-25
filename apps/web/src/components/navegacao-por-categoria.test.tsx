@@ -91,10 +91,35 @@ function fatia(category: AssetCategory, assets: Asset[]): IndexShard {
   };
 }
 
+/**
+ * Emotes de verdade, com os `refId` do índice: a emoção deles vem da revisão
+ * (`lib/emotes-classificacao.ts`). O 20000 não existe ainda — é o emote de um
+ * patch novo, que ganha a emoção por palpite.
+ */
+function emote(refId: string, nome: string): Asset {
+  return asset(`emote_icon:${refId}`, {
+    type: "emote_icon",
+    category: "emote",
+    refId,
+    names: { pt_BR: nome },
+    fileName: `Emote_${refId}.png`,
+  });
+}
+const EMOTES: Asset[] = [
+  emote("3457", "How Dare You!"),
+  emote("997", "Cup-Yay!"),
+  emote("10145", "Friend-shaped Boi"),
+  emote("3757", "Teary Teadore"),
+  emote("3359", "Worlds 2019 Emote"),
+  emote("3427", "All Love"),
+  emote("20000", "Crying Again"),
+];
+
 const FATIAS: Partial<Record<AssetCategory, IndexShard>> = {
   item: fatia("item", ITENS),
   rune: fatia("rune", RUNAS),
   profile_icon: fatia("profile_icon", ICONES),
+  emote: fatia("emote", EMOTES),
 };
 
 const SHARDS = [
@@ -572,6 +597,84 @@ describe("a galeria das categorias (T-48)", () => {
     fireEvent.change(campo, { target: { value: "botas" } });
     fireEvent.keyDown(campo, { key: "Escape" });
     expect(screen.getByLabelText("Filtrar por texto")).toBeTruthy();
+  });
+});
+
+/**
+ * T-90. O dono procura emote por emoção — "um bravo", "um fofo" — para um
+ * momento do vídeo, e quer ver os mais recentes e os mais antigos.
+ */
+describe("os emotes por emoção e por data", () => {
+  const comEmotes = [...SHARDS, { category: "emote" }];
+  const nomes = () => screen.getAllByRole("article").map((tile) => tile.getAttribute("aria-label"));
+
+  it("as emoções vêm na ordem em que o dono as nomeou, com Todas na frente", async () => {
+    montar(comEmotes);
+    await abrir("Emotes");
+    const grupo = screen.getByRole("group", { name: "Emoção" });
+    expect(within(grupo).getAllByRole("radio").map((r) => r.closest("label")?.textContent)).toEqual([
+      "Todas7",
+      "Felizes e engraçados1",
+      "Fofos e amor2",
+      "Bravos e provocação1",
+      "Tristes e surpresos2",
+      "Símbolos, times e eventos1",
+    ]);
+    expect(within(grupo).getByRole("radio", { name: "Todas" })).toHaveProperty("checked", true);
+  });
+
+  it("escolher uma emoção mostra só ela, e Todas volta a galeria inteira", async () => {
+    montar(comEmotes);
+    await abrir("Emotes");
+    fireEvent.click(screen.getByRole("radio", { name: "Bravos e provocação" }));
+    expect(nomes()).toEqual(["Emote_3457.png"]);
+    // Uma emoção por vez: escolher outra troca, não soma.
+    fireEvent.click(screen.getByRole("radio", { name: "Fofos e amor" }));
+    expect(nomes()).toEqual(["Emote_10145.png", "Emote_3427.png"]);
+    fireEvent.click(screen.getByRole("radio", { name: "Todas" }));
+    expect(nomes()).toHaveLength(7);
+  });
+
+  it("o emote de um patch novo ganha a emoção pelo nome", async () => {
+    montar(comEmotes);
+    await abrir("Emotes");
+    fireEvent.click(screen.getByRole("radio", { name: "Tristes e surpresos" }));
+    expect(nomes()).toContain("Emote_20000.png");
+  });
+
+  it("abre dos mais recentes; 'Mais antigos' inverte, e a emoção continua escolhida", async () => {
+    montar(comEmotes);
+    await abrir("Emotes");
+    // O 10145 é da série nova de ids, que corre em paralelo: sai depois do 3757,
+    // antes do 20000 (lib/emotes.ts, `ordemDeLancamento`).
+    expect(nomes()).toEqual([
+      "Emote_20000.png",
+      "Emote_10145.png",
+      "Emote_3757.png",
+      "Emote_3457.png",
+      "Emote_3427.png",
+      "Emote_3359.png",
+      "Emote_997.png",
+    ]);
+    fireEvent.click(screen.getByRole("radio", { name: "Fofos e amor" }));
+    fireEvent.click(screen.getByRole("radio", { name: "Mais antigos" }));
+    expect(nomes()).toEqual(["Emote_3427.png", "Emote_10145.png"]);
+  });
+
+  it("a emoção entra no vazio: o filtro se descreve", async () => {
+    montar(comEmotes);
+    await abrir("Emotes");
+    fireEvent.click(screen.getByRole("radio", { name: "Símbolos, times e eventos" }));
+    fireEvent.change(screen.getByPlaceholderText("Nome ou arquivo"), { target: { value: "poro" } });
+    const filtro = await screen.findByRole("list", { name: "Filtro aplicado" });
+    expect(filtro.textContent).toContain("Emoção: Símbolos, times e eventos");
+  });
+
+  it("outra categoria não tem emoção nem ordem por data", async () => {
+    montar(comEmotes);
+    await abrir("Itens");
+    expect(screen.queryByRole("group", { name: "Emoção" })).toBeNull();
+    expect(screen.queryByRole("radio", { name: "Mais recentes" })).toBeNull();
   });
 });
 

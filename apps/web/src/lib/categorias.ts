@@ -110,7 +110,19 @@ const DO_INDEXADOR: Record<string, string> = {
   "slot:1": "Slot 1",
   "slot:2": "Slot 2",
   "slot:3": "Slot 3",
-  // Derivadas no front, não do indexador: ver `etiquetasDe` (T-75).
+};
+
+/**
+ * A emoção dos emotes (T-90): derivada no front, pela revisão em
+ * `lib/emotes-classificacao.ts`, e não pelo indexador. Os nomes são os que o
+ * dono deu aos grupos.
+ */
+const EMOCOES_DOS_EMOTES: Record<string, string> = {
+  "emocao:felizes": "Felizes e engraçados",
+  "emocao:fofos": "Fofos e amor",
+  "emocao:bravos": "Bravos e provocação",
+  "emocao:tristes": "Tristes e surpresos",
+  "emocao:simbolos": "Símbolos, times e eventos",
 };
 
 /** As classes de item com as palavras da loja do jogo em pt-BR (T-48). */
@@ -149,7 +161,9 @@ const CLASSES_DE_ITEM: Record<string, string> = {
 };
 
 /** `Map`, e não objeto: uma etiqueta chamada `constructor` não pode achar rótulo. */
-const ROTULO_FIXO = new Map(Object.entries({ ...DO_INDEXADOR, ...CLASSES_DE_ITEM }));
+const ROTULO_FIXO = new Map(
+  Object.entries({ ...DO_INDEXADOR, ...CLASSES_DE_ITEM, ...EMOCOES_DOS_EMOTES }),
+);
 
 const ROTULO_DO_GRUPO: Record<string, string> = {
   compravel: "Comprável",
@@ -157,6 +171,7 @@ const ROTULO_DO_GRUPO: Record<string, string> = {
   mapa: "Mapa",
   arvore: "Árvore de runa",
   slot: "Slot da runa",
+  emocao: "Emoção",
 };
 
 /** Etiquetas diferentes da Riot para a mesma coisa: contam e filtram como uma só. */
