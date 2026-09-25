@@ -49,6 +49,16 @@ describe("o tratamento de cada categoria", () => {
     expect(tratamentoDe("summoner_spell").larguraMinima).toBeGreaterThan(0);
     expect(tratamentoDe("map").larguraMinima).toBeGreaterThan(tratamentoDe("summoner_spell").larguraMinima!);
     expect(tratamentoDe("rune").agrupar).toBe(porArvore);
-    expect(tratamentoDe("item")).toEqual({});
+    expect(tratamentoDe("profile_icon")).toEqual({});
+  });
+
+  it("as categorias de nome longo mostram o nome em duas linhas (T-91)", () => {
+    for (const categoria of ["item", "rune", "ward", "emote"] as const) {
+      expect(tratamentoDe(categoria).linhasDoNome, categoria).toBe(2);
+    }
+    // Ícone de perfil tem número por nome; feitiço e mapa já têm tile largo.
+    for (const categoria of ["profile_icon", "summoner_spell", "map"] as const) {
+      expect(tratamentoDe(categoria).linhasDoNome, categoria).toBeUndefined();
+    }
   });
 });

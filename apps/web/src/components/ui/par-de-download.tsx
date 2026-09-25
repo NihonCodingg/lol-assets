@@ -44,6 +44,12 @@ export interface ParDeDownloadProps {
   readonly icone?: boolean;
   /** A primária em tom calmo, para listas em que ela se repete (T-89). */
   readonly tonal?: boolean;
+  /**
+   * Guarda o lugar do "Original" quando o arquivo já é PNG (T-91). Numa lista,
+   * sem isto o "Baixar PNG" pulava 70 px de uma linha para a outra — e é o
+   * botão que a pessoa aperta em sequência.
+   */
+  readonly alinhado?: boolean;
   readonly onOriginal: () => void;
   readonly onPng: () => void;
   readonly className?: string;
@@ -76,6 +82,7 @@ export function ParDeDownload({
   compacto = false,
   icone = false,
   tonal = false,
+  alinhado = false,
   onOriginal,
   onPng,
   className,
@@ -155,6 +162,12 @@ export function ParDeDownload({
           onClick={onOriginal}
         >
           <IconeDoBotao qual="original" baixando={baixando} baixado={baixado} />
+          Original
+        </Botao>
+      )}
+      {!podeConverter && alinhado && (
+        // Invisível e desabilitado: ocupa o lugar, não recebe foco nem é lido.
+        <Botao tamanho="md" disabled tabIndex={-1} aria-hidden="true" className="invisible">
           Original
         </Botao>
       )}

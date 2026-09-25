@@ -230,6 +230,7 @@ const Linha = memo(function Linha({
       <div className="hidden flex-none items-center gap-1.5 md:flex">
         <ParDeDownload
           tonal
+          alinhado
           podeConverter={canConvertToPng(asset)}
           ocupado={estado === "baixando"}
           baixando={andamento}

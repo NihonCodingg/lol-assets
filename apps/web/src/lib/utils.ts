@@ -76,3 +76,11 @@ export const ALVO_DE_TOQUE =
 
 /** Oito pixels de respiro por dentro, devolvidos por fora: o layout não muda. */
 export const ROLA_SEM_CORTAR_O_TOQUE = "max-md:-my-2 max-md:py-2";
+
+/**
+ * Um número como se escreve em português: 2.369, e não 2369 (T-91). O mesmo
+ * número aparecia em dois formatos na mesma tela.
+ */
+export function numero(valor: number): string {
+  return valor.toLocaleString("pt-BR");
+}

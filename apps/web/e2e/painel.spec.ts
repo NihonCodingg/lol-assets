@@ -90,14 +90,14 @@ test("no computador, a vitrine divide o painel com as artes", async ({ page }) =
   );
   expect(inteiras).toBeGreaterThanOrEqual(Math.min(await arquivos.count(), 8));
 
-  // E o nome de cada skin na faixa cabe numa linha só, com o inteiro no title.
+  // E o nome de cada skin cabe em até duas linhas (T-91), com o inteiro no title.
   const nome = painel.getByRole("radio", { name: "Jax Deus da Guerra" });
   await expect(nome).toBeAttached();
   const linhas = await painel
     .locator("[data-skin] span")
     .first()
     .evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
-  expect(linhas).toBe(1);
+  expect(linhas).toBeLessThanOrEqual(2);
 });
 
 /**

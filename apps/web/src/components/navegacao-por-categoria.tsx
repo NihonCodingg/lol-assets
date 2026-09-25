@@ -66,7 +66,7 @@ import { alternar, selecionados, tudoDo } from "@/lib/selecao";
 import { tratamentoDe, wardsEmPares } from "@/lib/tratamento";
 import { focarConteudo } from "@/lib/foco";
 import { useFecharComVoltar } from "@/lib/voltar";
-import { ALVO_DE_TOQUE, cn, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
+import { ALVO_DE_TOQUE, cn, numero, ROLA_SEM_CORTAR_O_TOQUE } from "@/lib/utils";
 
 /**
  * Um asset escolhido na busca do topo (T-82): a categoria abre com o nome dele
@@ -390,14 +390,17 @@ export function NavegacaoPorCategoria({
                 </div>
               )}
 
-              <p className="ml-auto hidden text-12 tabular-nums text-texto-suave md:block">
-                {filtrados.length} de {assets.length}
-              </p>
+              {/* Só com filtro (T-91): sem ele, o título da galeria já diz quantos. */}
+              {filtrados.length !== assets.length && (
+                <p className="ml-auto hidden text-12 text-texto-suave md:block">
+                  {numero(filtrados.length)} de {numero(assets.length)}
+                </p>
+              )}
 
               {noPadrao && assets.length > filtrados.length && (
                 <p className="w-full text-12 leading-cartao text-texto-suave">
                   Esta categoria abre filtrada por {descreverFiltro(marcadas, "", grupos).join(" e ")}
-                  . {assets.length - filtrados.length} ficam de fora até você mostrar tudo.
+                  . {numero(assets.length - filtrados.length)} ficam de fora até você mostrar tudo.
                 </p>
               )}
             </>
@@ -512,7 +515,7 @@ export function NavegacaoPorCategoria({
                   className={ALVO_DE_TOQUE}
                   onClick={() => setSelecao(tudoDo(filtrados, true))}
                 >
-                  Selecionar os {filtrados.length} filtrados
+                  Selecionar os {numero(filtrados.length)} filtrados
                 </Botao>
               </>
             }
@@ -557,7 +560,8 @@ function GrupoDeChips({
       </legend>
       {grupo.opcoes.map((opcao) => (
         <Chip key={opcao.tag} marcado={marcadas.has(opcao.tag)} onAlternar={() => onAlternar(opcao.tag)}>
-          {opcao.rotulo} <span className="ml-1 tabular-nums text-12">({opcao.total})</span>
+          {opcao.rotulo}
+          <span className="ml-1.5 font-normal text-texto-suave">{numero(opcao.total)}</span>
         </Chip>
       ))}
     </fieldset>

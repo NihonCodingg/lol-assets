@@ -79,7 +79,7 @@ import { Imagem } from "@/components/ui/imagem";
 import { ParDeDownload, type QualDownload } from "@/components/ui/par-de-download";
 import { confirmar } from "@/components/ui/confirmacoes";
 import type { Tratamento } from "@/lib/tratamento";
-import { cn } from "@/lib/utils";
+import { cn, numero } from "@/lib/utils";
 import {
   assetUrl,
   canConvertToPng,
@@ -223,7 +223,7 @@ export function PainelDeAsset({
       <div className="relative z-10 flex flex-none flex-wrap items-center gap-x-2 gap-y-1 px-3.5 py-2">
         <h2 className="truncate text-13 font-semibold text-texto">{titulo}</h2>
         <span className="tabular-nums text-12 text-texto-suave">
-          {ordenados.length} {ordenados.length === 1 ? "asset" : "assets"}
+          {contagemDaLista(ordenados, sombraDe)}
         </span>
         {/* Quebra por dentro (T-90): a ordem dos emotes e o "Selecionar" não
             cabem lado a lado num telefone. */}
@@ -247,6 +247,7 @@ export function PainelDeAsset({
                 virtual={false}
                 embutida
                 larguraMinima={tratamento?.larguraMinima}
+                linhasDoNome={tratamento?.linhasDoNome}
                 modoSelecao={(selecao?.size ?? 0) > 0}
                 tile={desenharTile}
               />
@@ -260,6 +261,7 @@ export function PainelDeAsset({
           assets={ordenados}
           virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
           larguraMinima={tratamento?.larguraMinima}
+          linhasDoNome={tratamento?.linhasDoNome}
           modoSelecao={(selecao?.size ?? 0) > 0}
           fim={fim}
           tile={desenharTile}
@@ -267,6 +269,17 @@ export function PainelDeAsset({
       )}
     </section>
   );
+}
+
+/**
+ * Quantos a galeria mostra, com o ponto do milhar (T-91). Nas wards cada card é
+ * uma ward com a sombra dela: a barra lateral conta 532 arquivos, e a galeria
+ * dizia "266 assets" sem explicar a metade que faltava.
+ */
+function contagemDaLista(assets: readonly Asset[], sombraDe?: ReadonlyMap<string, Asset>): string {
+  if (!sombraDe) return `${numero(assets.length)} ${assets.length === 1 ? "asset" : "assets"}`;
+  const arquivos = assets.length + assets.filter((asset) => sombraDe.has(asset.id)).length;
+  return `${numero(assets.length)} ${assets.length === 1 ? "ward" : "wards"}, ${numero(arquivos)} arquivos`;
 }
 
 // --- a galeria (categorias, T-48) ---------------------------------------------------------
@@ -308,19 +321,30 @@ interface GaleriaProps {
   readonly fim?: ReactNode;
   /** A largura mínima que a categoria pede, acima da que a arte pediria. */
   readonly larguraMinima?: number;
+  /** O nome em uma ou duas linhas (T-91). */
+  readonly linhasDoNome?: 1 | 2;
   /** Dentro de uma seção: sem área de rolagem própria — quem rola é a lista de seções. */
   readonly embutida?: boolean;
 }
 
-function Galeria({ assets, virtual, modoSelecao, tile, fim, larguraMinima, embutida = false }: GaleriaProps) {
+function Galeria({
+  assets,
+  virtual,
+  modoSelecao,
+  tile,
+  fim,
+  larguraMinima,
+  linhasDoNome = 1,
+  embutida = false,
+}: GaleriaProps) {
   const scroller = useRef<HTMLDivElement>(null);
   const lista = useRef<HTMLUListElement>(null);
   const largura = useLargura(lista);
   const daLista = useMemo(() => {
-    const medidas = medidasDaGaleria(assets);
+    const medidas = medidasDaGaleria(assets, linhasDoNome);
     if (!larguraMinima || larguraMinima <= medidas.larguraMinima) return medidas;
     return { ...medidas, larguraMinima, acoesComRotulo: larguraMinima >= LARGURA_COM_ROTULO };
-  }, [assets, larguraMinima]);
+  }, [assets, larguraMinima, linhasDoNome]);
   const colunas = colunasDaGaleria(largura, daLista);
   // A coluna é que decide a altura da linha (T-53): o teto da categoria diz o
   // quanto a arte pode ocupar, a coluna diz o quanto ela ocupa.
@@ -961,8 +985,21 @@ const TileDaGaleria = memo(function TileDaGaleria({
         )}
       </div>
 
-      <div className="flex min-w-0 items-center gap-1.5 px-2 py-1.5">
-        <h3 title={rotulo} className="min-w-0 flex-1 truncate text-13 leading-4 font-semibold text-texto">
+      <div
+        className={cn(
+          "flex min-w-0 gap-1.5 px-2 py-1.5",
+          medidas.linhasDoNome === 2 ? "items-start" : "items-center",
+        )}
+      >
+        <h3
+          title={rotulo}
+          className={cn(
+            "min-w-0 flex-1 text-13 leading-4 font-semibold text-texto",
+            medidas.linhasDoNome === 2 ? "line-clamp-2 break-words" : "truncate",
+            // Ao lado da alternância de 24 px, a primeira linha desce ao meio dela.
+            par && medidas.linhasDoNome === 2 && "pt-1",
+          )}
+        >
           {rotulo}
         </h3>
         {par && (

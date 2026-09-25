@@ -30,6 +30,8 @@ export interface Tratamento {
   readonly larguraMinima?: number;
   /** Divide a galeria em seções. */
   readonly agrupar?: (assets: readonly Asset[]) => GrupoDaGaleria[];
+  /** O nome em duas linhas, para as categorias de nome longo (T-91). */
+  readonly linhasDoNome?: 1 | 2;
 }
 
 /** Árvores de runa na ordem do cliente: Precisão, Dominação, Feitiçaria, Determinação, Inspiração. */
@@ -65,8 +67,13 @@ export function porArvore(assets: readonly Asset[]): GrupoDaGaleria[] {
 
 export function tratamentoDe(categoria: AssetCategory): Tratamento {
   switch (categoria) {
+    // Nome longo, em português ou em inglês: duas linhas (T-91).
+    case "item":
+    case "emote":
+    case "ward":
+      return { linhasDoNome: 2 };
     case "rune":
-      return { agrupar: porArvore };
+      return { agrupar: porArvore, linhasDoNome: 2 };
     case "summoner_spell":
       return { larguraMinima: 160 };
     case "map":
