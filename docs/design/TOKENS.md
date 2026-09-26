@@ -63,7 +63,7 @@ O xadrez é a utilidade `xadrez` (quadrados de 8 px) e vai em **todo** asset cuj
 
 ### Etiquetas de categoria
 
-Oito tons com a mesma luminosidade (OKLCH L 0,74) e croma contido (0,10). Só a matiz muda, e
+Nove tons (a de Ranks entrou com o T-92, na matiz 207°, entre runas e feitiços) com a mesma luminosidade (OKLCH L 0,74) e croma contido (0,10). Só a matiz muda, e
 nenhuma fica a menos de 40° do destaque (350°). Aparecem só como marcador pequeno ao lado do nome
 da categoria, **nunca sozinhas**.
 
@@ -77,6 +77,7 @@ da categoria, **nunca sozinhas**.
 | `etiqueta-emotes` | `#b9ac5f` | 100° | 6,27 |
 | `etiqueta-wards` | `#82bc83` | 145° | 6,50 |
 | `etiqueta-mapas` | `#b99bde` | 305° | 6,04 |
+| `etiqueta-ranks` | `#50bdcb` | 207° | 6,51 |
 
 ### Fora do tema
 

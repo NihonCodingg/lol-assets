@@ -263,6 +263,8 @@ export interface MedidasDaGaleria {
   readonly alturaDoTile: number;
   /** Quantas linhas o nome tem no tile: uma, ou duas nas categorias de nome longo (T-91). */
   readonly linhasDoNome: 1 | 2;
+  /** Quanto a prévia aproxima a arte, só na tela (T-92). */
+  readonly zoomDaPrevia?: number;
 }
 
 /**

@@ -455,3 +455,57 @@ async def test_nenhuma_das_duas_categorias_produz_rank() -> None:
         assets, _ = await fetch_emotes(http)
 
     assert all(a.category != "rank" for a in assets)
+
+
+# --- emblemas de elo (T-92, ADR 0025) ---------------------------------------------------
+
+
+@respx.mock
+async def test_os_dez_emblemas_de_elo_viram_registros_validos() -> None:
+    from lol_assets_indexer.adapters.ranked import ELOS, fetch_rank_emblems, rank_emblem_url
+
+    for elo, _, _ in ELOS:
+        respx.get(rank_emblem_url(CDRAGON, elo)).mock(
+            return_value=httpx.Response(200, content=imagem(1280, 720, "PNG", alfa=True))
+        )
+
+    async with cliente() as http:
+        assets, nao_mapeaveis = await fetch_rank_emblems(http)
+
+    assert len(assets) == 10
+    assert not nao_mapeaveis
+    assert [a.ref_id for a in assets][:2] == ["iron", "bronze"]
+    ouro = next(a for a in assets if a.ref_id == "gold")
+    assert ouro.names.pt_BR == "Ouro" and ouro.names.en_US == "Gold"
+    assert ouro.file_name == "Rank_Gold.png"
+    assert ouro.source_url.endswith("/ranked-emblem/emblem-gold.png")
+    assert all(a.category == "rank" and a.type == "rank_emblem" and a.has_alpha for a in assets)
+
+    validate_shard(
+        {
+            "schemaVersion": "1.1.0",
+            "gameVersion": "16.19.1",
+            "category": "rank",
+            "generatedAt": "2026-09-26T00:00:00Z",
+            "assets": [a.model_dump(by_alias=True, exclude_none=True, mode="json") for a in assets],
+        }
+    )
+
+
+@respx.mock
+async def test_elo_que_sumiu_da_fonte_fica_de_fora_sem_derrubar_os_outros() -> None:
+    from lol_assets_indexer.adapters.ranked import ELOS, fetch_rank_emblems, rank_emblem_url
+
+    for elo, _, _ in ELOS:
+        resposta = (
+            httpx.Response(404)
+            if elo == "emerald"
+            else httpx.Response(200, content=imagem(1280, 720, "PNG", alfa=True))
+        )
+        respx.get(rank_emblem_url(CDRAGON, elo)).mock(return_value=resposta)
+
+    async with cliente() as http:
+        assets, _ = await fetch_rank_emblems(http)
+
+    assert len(assets) == 9
+    assert "emerald" not in {a.ref_id for a in assets}

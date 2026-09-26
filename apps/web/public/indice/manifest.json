@@ -1,7 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "generatedAt": "2026-09-23T23:43:02Z",
-  "checkedAt": "2026-09-25T23:57:41Z",
+  "generatedAt": "2026-09-26T23:11:24Z",
   "currentVersion": "16.19.1",
   "generation": {
     "indexer": 5,
@@ -11,6 +10,7 @@
       "item",
       "map",
       "profile_icon",
+      "rank",
       "rune",
       "summoner_spell",
       "ward"
@@ -19,66 +19,73 @@
   "versions": [
     {
       "gameVersion": "16.19.1",
-      "indexedAt": "2026-09-23T23:43:02Z",
+      "indexedAt": "2026-09-26T23:11:24Z",
       "assetsCopied": false,
       "catalog": {
-        "url": "catalog-e54806ae71b8.json",
+        "url": "catalog-01353483516b.json",
         "champions": 173,
         "skins": 2125,
         "bytes": 803648,
-        "sha256": "e54806ae71b84a81d979dd3a6562bd4da44c7b3a6df3f91df6006eeef5c7052d"
+        "sha256": "01353483516b701b293d6fff025b2126f552a484cf08a959d8c59aa90ff31e90"
       },
-      "totalAssets": 27388,
-      "totalBytes": 2242443555,
+      "totalAssets": 27398,
+      "totalBytes": 2269994851,
       "shards": [
         {
           "category": "item",
-          "url": "index-item-fc74dc0ae800.json",
+          "url": "index-item-9039fd7d8a92.json",
           "assets": 870,
           "bytes": 627039,
-          "sha256": "fc74dc0ae800e2aa68f718dd32ce557cf30753412733479f12a136713ee93ee1"
+          "sha256": "9039fd7d8a9207932f418b7a0e98308d28e261af3024e37e8bb3d12b26e64887"
         },
         {
           "category": "summoner_spell",
-          "url": "index-summoner_spell-14ddd9533a9a.json",
+          "url": "index-summoner_spell-bdcc61518792.json",
           "assets": 34,
           "bytes": 21724,
-          "sha256": "14ddd9533a9acd9d4055ed3ae04a85dbb3c81f2018c0cb724a2ff312b9e5732b"
+          "sha256": "bdcc615187928ddad79d25846271ab837961474d08cc6672e4fc667d6660200e"
         },
         {
           "category": "profile_icon",
-          "url": "index-profile_icon-6f1d0637cc8f.json",
+          "url": "index-profile_icon-3b858b960d26.json",
           "assets": 5050,
           "bytes": 2732892,
-          "sha256": "6f1d0637cc8f5b118ba7d4592c38cf576b87deebe42daa209129edc7e8fd97c7"
+          "sha256": "3b858b960d26aaf4289025c5c8c5f2bc87eda00f68c2e407556c96f620e9740b"
         },
         {
           "category": "rune",
-          "url": "index-rune-29dc690422ed.json",
+          "url": "index-rune-2e934f934dcf.json",
           "assets": 77,
           "bytes": 50795,
-          "sha256": "29dc690422eda4db7e753f2fa50cd9f15395d9b2de815ab286625b982c90fe8f"
+          "sha256": "2e934f934dcf383b5f212b441144ed9c31f9a10bed622ac992d232e3c9606e37"
         },
         {
           "category": "map",
-          "url": "index-map-7c89aba493e1.json",
+          "url": "index-map-9c0fa4ce0a51.json",
           "assets": 5,
           "bytes": 2941,
-          "sha256": "7c89aba493e1a884dbaf5e054ff1d0722c1a5e9f853aa561485c74526562f57e"
+          "sha256": "9c0fa4ce0a519d97cdbff70a80bc45daf648d117090beed092cf0514fab4944f"
         },
         {
           "category": "emote",
-          "url": "index-emote-5fa61814542a.json",
+          "url": "index-emote-126427c377bc.json",
           "assets": 2369,
-          "bytes": 1502755,
-          "sha256": "5fa61814542ae0efc867694bebfe11378840db55e563fa47d0b168c4b8cea0ee"
+          "bytes": 1502896,
+          "sha256": "126427c377bc5d0612800bb09a07293db16c7df9e727b4625edf6387e1ab950f"
         },
         {
           "category": "ward",
-          "url": "index-ward-80317f13ad07.json",
+          "url": "index-ward-84f6e2d3f6bc.json",
           "assets": 532,
           "bytes": 323629,
-          "sha256": "80317f13ad07a6aa90e2e9e0755e90c6f1631c46bb6aacfe77790c6af11f9997"
+          "sha256": "84f6e2d3f6bcebba6cfcf6d25cefc0f3f5d08ba4e32806958816cce736e256b8"
+        },
+        {
+          "category": "rank",
+          "url": "index-rank-131d93f3cbff.json",
+          "assets": 10,
+          "bytes": 6322,
+          "sha256": "131d93f3cbff58c98172a0a6fa9bd8b026b4d8f0cf7beea4619ea9cee5edab6b"
         }
       ]
     }

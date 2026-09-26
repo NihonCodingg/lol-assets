@@ -3845,6 +3845,7 @@ relatório fica em `docs/sessoes/`, e as capturas em `docs/design/redesenho/`.
 | ✅ T-89 | Legibilidade (texto secundário de 5,36 para 7,09:1, a escala de texto um degrau acima, o xadrez mais discreto); o painel no centro em duas colunas, com todas as skins à vista; a linha de arquivo flexível, sem o botão sobre o peso; "Baixar PNG" tonal na lista; a splash pedida no sinal de intenção e as miniaturas depois dela |
 | ✅ T-90 | Os emotes por emoção — felizes e engraçados, fofos e amor, bravos e provocação, tristes e surpresos, e símbolos, times e eventos — e a ordem "Mais recentes / Mais antigos". Os 2.369 emotes do 16.19 revistos à mão pela arte (`lib/emotes-classificacao.ts`); o de patch novo ganha palpite pelo nome até ser revisto |
 | ✅ T-91 | O acabamento no mesmo padrão de clareza, revisado pela skill de design e por uma revisão independente: nomes em duas linhas nas galerias de nome longo e no seletor de skins, "Baixar PNG" na mesma coluna em toda linha, ícones de perfil em ordem numérica, números com o ponto do milhar, o chip marcado em grafite, a marca inteira no topo do telefone sem a busca, e os títulos do Sobre |
+| ✅ T-92 | Pedido de 26/09: os emblemas de elo para baixar. A categoria "Ranks" volta ([ADR 0025](adr/0025-a-categoria-rank-volta.md)): dez emblemas do cdragon, na ordem do jogo, com a prévia aproximada |
 
 ---
 

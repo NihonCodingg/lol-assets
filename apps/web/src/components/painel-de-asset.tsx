@@ -173,7 +173,10 @@ export function PainelDeAsset({
   ordenar = true,
   reinicio,
 }: PainelDeAssetProps) {
-  const ordenados = useMemo(() => (ordenar ? orderAssets(assets) : [...assets]), [assets, ordenar]);
+  const ordenados = useMemo(
+    () => (!ordenar ? [...assets] : tratamento?.ordenar ? tratamento.ordenar(assets) : orderAssets(assets)),
+    [assets, ordenar, tratamento],
+  );
   const rotulos = useMemo(() => rotulosDaLista(ordenados), [ordenados]);
   const [estados, setEstados] = useState<Record<string, EstadoDoCartao>>({});
 
@@ -262,6 +265,8 @@ export function PainelDeAsset({
           virtual={ordenados.length > LIMITE_DE_VIRTUALIZACAO}
           larguraMinima={tratamento?.larguraMinima}
           linhasDoNome={tratamento?.linhasDoNome}
+          larguraDoTile={tratamento?.larguraDoTile}
+          zoomDaPrevia={tratamento?.zoomDaPrevia}
           modoSelecao={(selecao?.size ?? 0) > 0}
           fim={fim}
           tile={desenharTile}
@@ -323,6 +328,10 @@ interface GaleriaProps {
   readonly larguraMinima?: number;
   /** O nome em uma ou duas linhas (T-91). */
   readonly linhasDoNome?: 1 | 2;
+  /** A largura do tile imposta pela categoria (T-92). */
+  readonly larguraDoTile?: number;
+  /** A prévia aproximada, só na tela (T-92). */
+  readonly zoomDaPrevia?: number;
   /** Dentro de uma seção: sem área de rolagem própria — quem rola é a lista de seções. */
   readonly embutida?: boolean;
 }
@@ -335,16 +344,19 @@ function Galeria({
   fim,
   larguraMinima,
   linhasDoNome = 1,
+  larguraDoTile,
+  zoomDaPrevia,
   embutida = false,
 }: GaleriaProps) {
   const scroller = useRef<HTMLDivElement>(null);
   const lista = useRef<HTMLUListElement>(null);
   const largura = useLargura(lista);
   const daLista = useMemo(() => {
-    const medidas = medidasDaGaleria(assets, linhasDoNome);
-    if (!larguraMinima || larguraMinima <= medidas.larguraMinima) return medidas;
-    return { ...medidas, larguraMinima, acoesComRotulo: larguraMinima >= LARGURA_COM_ROTULO };
-  }, [assets, larguraMinima, linhasDoNome]);
+    const medidas = { ...medidasDaGaleria(assets, linhasDoNome), zoomDaPrevia };
+    const largura = larguraDoTile ?? (larguraMinima && larguraMinima > medidas.larguraMinima ? larguraMinima : 0);
+    if (!largura) return medidas;
+    return { ...medidas, larguraMinima: largura, acoesComRotulo: largura >= LARGURA_COM_ROTULO };
+  }, [assets, larguraMinima, linhasDoNome, larguraDoTile, zoomDaPrevia]);
   const colunas = colunasDaGaleria(largura, daLista);
   // A coluna é que decide a altura da linha (T-53): o teto da categoria diz o
   // quanto a arte pode ocupar, a coluna diz o quanto ela ocupa.
@@ -757,6 +769,7 @@ function Previa({
   url,
   caixa,
   folga,
+  zoom,
   onAmpliar,
   tabIndex,
 }: {
@@ -765,12 +778,14 @@ function Previa({
   caixa: { className?: string; style?: CSSProperties };
   /** O respiro entre a imagem e a borda da caixa. */
   folga?: string;
+  /** Aproxima a arte dentro da caixa, que corta o resto (T-92). */
+  zoom?: number;
   onAmpliar?: (asset: Asset) => void;
   tabIndex?: number;
 }) {
   const limite = folga ? `100% - ${folga}` : "100%";
   const imagem = (
-    <div className={cn("w-full", caixa.className)} style={caixa.style}>
+    <div className={cn("w-full", zoom && "overflow-hidden", caixa.className)} style={caixa.style}>
       <Imagem
         src={url}
         alt={`Prévia de ${asset.names.pt_BR}`}
@@ -782,6 +797,7 @@ function Previa({
         style={{
           maxWidth: `min(${limite}, ${asset.width}px)`,
           maxHeight: `min(${limite}, ${asset.height}px)`,
+          transform: zoom ? `scale(${zoom})` : undefined,
         }}
       />
     </div>
@@ -921,6 +937,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
           // O respiro em volta da arte encolhe com o tile (T-53): 16 px num
           // tile de 112 px eram 29% da largura gastos em borda.
           folga={medidas.acoesComRotulo ? "12px" : "6px"}
+          zoom={medidas.zoomDaPrevia}
           onAmpliar={onAmpliar}
           tabIndex={tabIndex}
         />
