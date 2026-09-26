@@ -454,3 +454,5 @@ derivado das fontes.
 
 Aceito. As emendas nos ADRs 0005 e 0007, os ajustes na Spec e nos tickets saem no mesmo PR
 desta promoção, antes da Onda 2.
+
+> **26/09/2026:** a categoria `rank` voltou com o [ADR 0025](0025-a-categoria-rank-volta.md). O cdragon passou a servir o emblema montado de cada elo, e o ponto 2 do impacto deixou de valer.

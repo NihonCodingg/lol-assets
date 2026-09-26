@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Asset } from "@lol-assets/schema";
 
-import { porArvore, tratamentoDe, wardsEmPares } from "./tratamento";
+import { porArvore, porElo, tratamentoDe, wardsEmPares } from "./tratamento";
 
 /** O tratamento próprio de cada categoria (T-84). */
 
@@ -60,5 +60,21 @@ describe("o tratamento de cada categoria", () => {
     for (const categoria of ["profile_icon", "summoner_spell", "map"] as const) {
       expect(tratamentoDe(categoria).linhasDoNome, categoria).toBeUndefined();
     }
+  });
+});
+
+describe("os emblemas de elo (T-92)", () => {
+  const elo = (refId: string) => ({ id: `rank_emblem:${refId}`, refId }) as unknown as Asset;
+
+  it("vêm na ordem do jogo, de Ferro a Desafiante, e elo desconhecido vai para o fim", () => {
+    const ordem = ["challenger", "iron", "novo", "gold", "emerald", "bronze"].map(elo);
+    expect(porElo(ordem).map((a) => a.refId)).toEqual(["iron", "bronze", "gold", "emerald", "challenger", "novo"]);
+  });
+
+  it("a categoria pede tile de 220 px, prévia aproximada e a ordem do jogo", () => {
+    const tratamento = tratamentoDe("rank");
+    expect(tratamento.larguraDoTile).toBe(220);
+    expect(tratamento.zoomDaPrevia).toBeGreaterThan(1);
+    expect(tratamento.ordenar).toBe(porElo);
   });
 });

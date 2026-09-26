@@ -32,6 +32,42 @@ export interface Tratamento {
   readonly agrupar?: (assets: readonly Asset[]) => GrupoDaGaleria[];
   /** O nome em duas linhas, para as categorias de nome longo (T-91). */
   readonly linhasDoNome?: 1 | 2;
+  /**
+   * A largura do tile, para cima **ou para baixo** da que a arte pediria (T-92).
+   * O emblema de elo vem num quadro de 1280×720; pela arte, o tile teria 430 px
+   * e caberiam dois por linha.
+   */
+  readonly larguraDoTile?: number;
+  /**
+   * Quanto a prévia aproxima a arte, só na tela (T-92). O emblema ocupa o meio
+   * de um quadro transparente de 1280×720: sem isto, ele virava um selo. O
+   * arquivo baixado é o original, com o quadro inteiro.
+   */
+  readonly zoomDaPrevia?: number;
+  /** A ordem da galeria, quando a categoria tem uma própria (T-92). */
+  readonly ordenar?: (assets: readonly Asset[]) => Asset[];
+}
+
+/** Os elos na ordem do jogo, de Ferro a Desafiante; elo novo vai para o fim. */
+const ORDEM_DOS_ELOS = [
+  "iron",
+  "bronze",
+  "silver",
+  "gold",
+  "platinum",
+  "emerald",
+  "diamond",
+  "master",
+  "grandmaster",
+  "challenger",
+];
+
+export function porElo(assets: readonly Asset[]): Asset[] {
+  const posicao = (asset: Asset) => {
+    const i = ORDEM_DOS_ELOS.indexOf(asset.refId ?? "");
+    return i === -1 ? ORDEM_DOS_ELOS.length : i;
+  };
+  return [...assets].sort((a, b) => posicao(a) - posicao(b));
 }
 
 /** Árvores de runa na ordem do cliente: Precisão, Dominação, Feitiçaria, Determinação, Inspiração. */
@@ -78,6 +114,8 @@ export function tratamentoDe(categoria: AssetCategory): Tratamento {
       return { larguraMinima: 160 };
     case "map":
       return { larguraMinima: 300 };
+    case "rank":
+      return { larguraDoTile: 220, zoomDaPrevia: 2.4, ordenar: porElo };
     default:
       return {};
   }

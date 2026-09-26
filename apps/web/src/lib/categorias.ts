@@ -48,7 +48,7 @@ export interface Categoria {
  *
  * `champion` **não** está aqui: a home inteira já é a navegação por campeão
  * ([ADR 0010]), e repeti-la como categoria daria dois caminhos para o mesmo
- * lugar. `rank` também não — saiu da v1 com o [ADR 0012].
+ * lugar. `rank` saiu da v1 com o [ADR 0012] e voltou com o ADR 0025 (T-92).
  *
  * A lista é de rótulos, não de existência: o que aparece na tela é a interseção
  * disto com as fatias que o manifesto declara. Índice sem emote, botão sem
@@ -61,6 +61,8 @@ export const CATEGORIAS: readonly Categoria[] = [
   { category: "profile_icon", rotulo: "Ícones de perfil" },
   { category: "emote", rotulo: "Emotes" },
   { category: "ward", rotulo: "Wards" },
+  // Desde o T-92 (ADR 0025): o cdragon passou a servir o emblema montado.
+  { category: "rank", rotulo: "Ranks" },
   { category: "map", rotulo: "Mapas" },
   { category: "misc", rotulo: "Diversos" },
 ];
