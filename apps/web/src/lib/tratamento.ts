@@ -115,7 +115,7 @@ export function tratamentoDe(categoria: AssetCategory): Tratamento {
     case "map":
       return { larguraMinima: 300 };
     case "rank":
-      return { larguraDoTile: 220, zoomDaPrevia: 2.4, ordenar: porElo };
+      return { larguraDoTile: 220, zoomDaPrevia: 2.8, ordenar: porElo };
     default:
       return {};
   }

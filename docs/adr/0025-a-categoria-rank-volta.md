@@ -37,7 +37,7 @@ demais para vídeo e fica de fora.
    fica de fora, com o 404 no log. Divisão nova entra na lista.
 3. **Na tela**, a categoria se chama "Ranks" e ganha a nona cor de etiqueta, `#50BDCB`: matiz
    207°, com a mesma luminosidade das outras oito. Os emblemas aparecem na ordem do jogo. A
-   prévia aproxima a arte 2,4×, só na tela, porque o emblema ocupa o meio de um quadro
+   prévia aproxima a arte 2,8×, só na tela, porque o emblema ocupa o meio de um quadro
    transparente de 1280 × 720. O arquivo baixado é o original, com o quadro inteiro.
 
 ## Consequências
