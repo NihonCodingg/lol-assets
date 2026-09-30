@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Asset } from "@lol-assets/schema";
 
-import { porArvore, porElo, tratamentoDe, wardsEmPares } from "./tratamento";
+import { porArvore, porElo, porRota, tratamentoDe, wardsEmPares } from "./tratamento";
 
 /** O tratamento próprio de cada categoria (T-84). */
 
@@ -76,5 +76,14 @@ describe("os emblemas de elo (T-92)", () => {
     expect(tratamento.larguraDoTile).toBe(220);
     expect(tratamento.zoomDaPrevia).toBeGreaterThan(1);
     expect(tratamento.ordenar).toBe(porElo);
+  });
+});
+
+describe("as rotas (T-93)", () => {
+  it("vêm de cima para baixo no mapa", () => {
+    const rota = (refId: string) => ({ id: `position_icon:${refId}`, refId }) as unknown as Asset;
+    const ordem = ["utility", "bottom", "top", "middle", "jungle"].map(rota);
+    expect(porRota(ordem).map((a) => a.refId)).toEqual(["top", "jungle", "middle", "bottom", "utility"]);
+    expect(tratamentoDe("position").ordenar).toBe(porRota);
   });
 });

@@ -62,6 +62,17 @@ const ORDEM_DOS_ELOS = [
   "challenger",
 ];
 
+/** As rotas de cima para baixo no mapa, como o cliente as mostra (T-93). */
+const ORDEM_DAS_ROTAS = ["top", "jungle", "middle", "bottom", "utility"];
+
+export function porRota(assets: readonly Asset[]): Asset[] {
+  const posicao = (asset: Asset) => {
+    const i = ORDEM_DAS_ROTAS.indexOf(asset.refId ?? "");
+    return i === -1 ? ORDEM_DAS_ROTAS.length : i;
+  };
+  return [...assets].sort((a, b) => posicao(a) - posicao(b));
+}
+
 export function porElo(assets: readonly Asset[]): Asset[] {
   const posicao = (asset: Asset) => {
     const i = ORDEM_DOS_ELOS.indexOf(asset.refId ?? "");
@@ -116,6 +127,8 @@ export function tratamentoDe(categoria: AssetCategory): Tratamento {
       return { larguraMinima: 300 };
     case "rank":
       return { larguraDoTile: 220, zoomDaPrevia: 2.8, ordenar: porElo };
+    case "position":
+      return { larguraDoTile: 160, ordenar: porRota };
     default:
       return {};
   }
