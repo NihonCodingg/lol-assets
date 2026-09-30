@@ -73,9 +73,23 @@ export function formatBytes(total: number): string {
   return `${(total / 1024 / 1024).toFixed(1)} MB`;
 }
 
+/** O lado maior do PNG que sai de um vetor (T-93): o bastante para um vídeo em 4K. */
+export const LADO_DO_PNG_DE_VETOR = 1024;
+
+/**
+ * A medida que a ficha mostra. Vetor não tem resolução — os 34×34 que o SVG
+ * declara enganariam quem procura arte para vídeo —, então a ficha diz o que a
+ * pessoa recebe: o PNG no tamanho de `LADO_DO_PNG_DE_VETOR`.
+ */
+export function medidaLegivel(asset: Pick<Asset, "width" | "height" | "format">): string {
+  if (asset.format !== "svg") return `${asset.width}×${asset.height}`;
+  const escala = LADO_DO_PNG_DE_VETOR / Math.max(asset.width, asset.height);
+  return `Vetor, PNG ${Math.round(asset.width * escala)}×${Math.round(asset.height * escala)}`;
+}
+
 /** A ficha que o RF-09 exige aparecer **antes** de qualquer download. */
 export function assetSummary(asset: Asset): string {
-  return `${asset.width}×${asset.height} · ${asset.format} · ${formatBytes(asset.bytes)} · ${asset.source}`;
+  return `${medidaLegivel(asset)} · ${asset.format} · ${formatBytes(asset.bytes)} · ${asset.source}`;
 }
 
 function defaultDeps(): PngDeps {
@@ -111,6 +125,43 @@ export async function convertToPng(blob: Blob, deps: PngDeps = defaultDeps()): P
     });
   } finally {
     bitmap.close();
+  }
+}
+
+/**
+ * O PNG de um vetor, no tamanho que a gente escolhe (T-93, ADR 0026).
+ *
+ * O `createImageBitmap` não abre SVG em todo navegador, e abriria no tamanho que
+ * o desenho declara (34 px). Uma `<img>` abre em qualquer um, e desenhar ela num
+ * canvas grande rasteriza o vetor de novo, nítido, no tamanho do canvas.
+ */
+export async function svgParaPng(
+  blob: Blob,
+  largura: number,
+  altura: number,
+  lado = LADO_DO_PNG_DE_VETOR,
+): Promise<Blob> {
+  const escala = lado / Math.max(largura, altura);
+  const comTipo = blob.type === "image/svg+xml" ? blob : new Blob([blob], { type: "image/svg+xml" });
+  const endereco = URL.createObjectURL(comTipo);
+  try {
+    const imagem = new Image();
+    imagem.src = endereco;
+    await imagem.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(largura * escala);
+    canvas.height = Math.round(altura * escala);
+    const contexto = canvas.getContext("2d");
+    if (!contexto) throw new Error("canvas sem contexto 2d");
+    contexto.drawImage(imagem, 0, 0, canvas.width, canvas.height);
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((resultado) => {
+        if (resultado) resolve(resultado);
+        else reject(new Error("o canvas não devolveu um PNG"));
+      }, "image/png");
+    });
+  } finally {
+    URL.revokeObjectURL(endereco);
   }
 }
 

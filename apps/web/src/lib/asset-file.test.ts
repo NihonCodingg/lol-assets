@@ -9,6 +9,7 @@ import {
   canConvertToPng,
   convertToPng,
   formatBytes,
+  medidaLegivel,
   pngFileName,
   sha256Hex,
   thumbnailSrc,
@@ -135,5 +136,19 @@ describe("miniatura do catálogo", () => {
 
   it("devolve undefined quando o campeão não tem miniatura", () => {
     expect(thumbnailSrc({}, BASE)).toBeUndefined();
+  });
+});
+
+describe("o vetor (T-93)", () => {
+  const rota = { width: 34, height: 34, format: "svg" as const };
+
+  it("a ficha diz o PNG que a pessoa recebe, e não os 34 px que o desenho declara", () => {
+    expect(medidaLegivel(rota)).toBe("Vetor, PNG 1024×1024");
+    expect(medidaLegivel({ width: 120, height: 60, format: "svg" })).toBe("Vetor, PNG 1024×512");
+    expect(medidaLegivel({ width: 1280, height: 720, format: "png" })).toBe("1280×720");
+  });
+
+  it("vetor tem 'Baixar PNG'", () => {
+    expect(canConvertToPng({ ...assets[0], ...rota } as Asset)).toBe(true);
   });
 });

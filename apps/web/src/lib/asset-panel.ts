@@ -41,6 +41,7 @@ export const TYPE_ORDER: readonly AssetType[] = [
   "ward_icon",
   "map_image",
   "rank_emblem",
+  "position_icon",
 ];
 
 /**
@@ -81,6 +82,7 @@ export const ROTULO_DO_TIPO: Partial<Record<AssetType, string>> = {
   ward_icon: "Ward",
   map_image: "Imagem do mapa",
   rank_emblem: "Emblema de elo",
+  position_icon: "Ícone de rota",
 };
 
 export function rotuloDoTipo(tipo: AssetType): string {
@@ -285,11 +287,15 @@ function alturaDaPrevia(lado: number): number {
  * inteira na proporção dela, com 8 px de cada lado — e nunca menos que as ações.
  */
 export function medidasDaGaleria(
-  assets: readonly Pick<Asset, "width" | "height">[],
+  assets: readonly (Pick<Asset, "width" | "height"> & { readonly format?: Asset["format"] })[],
   linhasDoNome: 1 | 2 = 1,
 ): MedidasDaGaleria {
   const meio = Math.floor(assets.length / 2);
-  const lados = assets.map((a) => Math.max(a.width, a.height)).sort((x, y) => x - y);
+  // Vetor não tem resolução (T-93): a caixa é a de um ícone grande, e não a dos
+  // 34 px que o desenho declara.
+  const lados = assets
+    .map((a) => (a.format === "svg" ? 256 : Math.max(a.width, a.height)))
+    .sort((x, y) => x - y);
   const proporcoes = assets.map((a) => a.width / a.height).sort((x, y) => x - y);
   const altura = alturaDaPrevia(lados[meio] ?? 0);
   const proporcao = proporcoes[meio] ?? 1;

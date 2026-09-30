@@ -261,7 +261,7 @@ def main() -> None:
         (INDICE / nome).write_text(
             json.dumps(
                 {
-                    "schemaVersion": "2.0.0",
+                    "schemaVersion": "2.1.0",
                     "gameVersion": VERSAO,
                     "category": "champion",
                     "championKey": c.key,
@@ -276,7 +276,7 @@ def main() -> None:
         fatias[c.key] = {"url": nome, "assets": len(dele), "bytes": (INDICE / nome).stat().st_size}
 
     catalogo = {
-        "schemaVersion": "2.0.0",
+        "schemaVersion": "2.1.0",
         "gameVersion": VERSAO,
         "generatedAt": "2026-09-09T00:00:00Z",
         "champions": [
@@ -312,7 +312,7 @@ def main() -> None:
     (INDICE / "index-item-e2e.json").write_text(
         json.dumps(
             {
-                "schemaVersion": "2.0.0",
+                "schemaVersion": "2.1.0",
                 "gameVersion": VERSAO,
                 "category": "item",
                 "generatedAt": "2026-09-09T00:00:00Z",
@@ -325,7 +325,7 @@ def main() -> None:
     )
 
     manifesto = {
-        "schemaVersion": "2.0.0",
+        "schemaVersion": "2.1.0",
         # Recente de propósito: o aviso do T-31 não pode aparecer e atrapalhar.
         "generatedAt": "2026-09-09T00:00:00Z",
         "currentVersion": VERSAO,

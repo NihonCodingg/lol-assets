@@ -2,7 +2,7 @@
  * A cor de etiqueta de cada categoria, como as *label colors* de um editor de
  * vídeo ([ADR 0024]).
  *
- * As nove têm a mesma luminosidade e só mudam de matiz. Aparecem **só** como
+ * As dez têm a mesma luminosidade e só mudam de matiz. Aparecem **só** como
  * marcador pequeno e **sempre** ao lado do nome da categoria: a cor nunca diz
  * nada sozinha, e o marcador é decorativo para o leitor de tela.
  */
@@ -22,6 +22,7 @@ export const COR_DA_ETIQUETA: Readonly<Record<string, string>> = {
   ward: "bg-etiqueta-wards",
   map: "bg-etiqueta-mapas",
   rank: "bg-etiqueta-ranks",
+  position: "bg-etiqueta-rotas",
 };
 
 export function MarcadorDeCategoria({

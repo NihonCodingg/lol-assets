@@ -24,6 +24,7 @@ AssetCategory = Literal[
     "ward",
     "map",
     "rank",
+    "position",
     "misc",
 ]
 
@@ -49,6 +50,7 @@ AssetType = Literal[
     "ward_icon",
     "map_image",
     "rank_emblem",
+    "position_icon",
 ]
 
 AssetSource = Literal["ddragon", "cdragon", "riot_static", "wiki"]
@@ -106,11 +108,13 @@ class Asset(_Base):
     source_url: str
     #: Ausente em versões sem assets copiados: aí o front usa `source_url` (ADR 0007).
     storage_key: str | None = None
-    file_name: Annotated[str, Field(pattern=r"^[A-Za-z0-9_.-]+\.(png|jpg)$")]
+    file_name: Annotated[str, Field(pattern=r"^[A-Za-z0-9_.-]+\.(png|jpg|svg)$")]
 
     width: int = Field(ge=1)
     height: int = Field(ge=1)
-    format: Literal["png", "jpeg"]
+    #: `svg` desde o contrato 2.1.0 (T-93, ADR 0026): vetor, sem resolução própria;
+    #: `width`/`height` são as do desenho declaradas no arquivo.
+    format: Literal["png", "jpeg", "svg"]
     has_alpha: bool
     #: `bytes` e `sha256` são do arquivo que o indexador recebeu. Só conferem o download
     #: nas fontes que entregam bytes estáveis — hoje, só o ddragon (ADR 0019).
@@ -119,7 +123,7 @@ class Asset(_Base):
 
     @model_validator(mode="after")
     def _regras_dos_adrs(self) -> Self:
-        if self.has_alpha and self.format != "png":
+        if self.has_alpha and self.format == "jpeg":
             raise ValueError(
                 "ADR 0001 regra 4: asset com canal alfa nunca pode ser JPEG "
                 f"(id={self.id}, format={self.format})"

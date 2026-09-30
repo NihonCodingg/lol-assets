@@ -61,6 +61,7 @@
         "ward",
         "map",
         "rank",
+        "position",
         "misc"
       ]
     },
@@ -86,7 +87,8 @@
         "emote_icon",
         "ward_icon",
         "map_image",
-        "rank_emblem"
+        "rank_emblem",
+        "position_icon"
       ]
     },
     "source": {
@@ -212,7 +214,7 @@
         "fileName": {
           "description": "Nome previsível entregue no download, com extensão do formato de origem (§A.4 item 4). Ex.: Jax_004_splash_centered.jpg.",
           "type": "string",
-          "pattern": "^[A-Za-z0-9_.-]+\\.(png|jpg)$"
+          "pattern": "^[A-Za-z0-9_.-]+\\.(png|jpg|svg)$"
         },
         "width": {
           "type": "integer",
@@ -227,7 +229,8 @@
           "type": "string",
           "enum": [
             "png",
-            "jpeg"
+            "jpeg",
+            "svg"
           ]
         },
         "hasAlpha": {
@@ -247,7 +250,7 @@
       },
       "allOf": [
         {
-          "$comment": "Todo asset com hasAlpha precisa ser PNG — JPEG não carrega canal alfa.",
+          "$comment": "Asset com hasAlpha nunca é JPEG, que não carrega canal alfa: é PNG ou, desde o 2.1.0, SVG.",
           "if": {
             "properties": {
               "hasAlpha": {
@@ -261,7 +264,10 @@
           "then": {
             "properties": {
               "format": {
-                "const": "png"
+                "enum": [
+                  "png",
+                  "svg"
+                ]
               }
             }
           }

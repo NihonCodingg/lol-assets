@@ -509,3 +509,58 @@ async def test_elo_que_sumiu_da_fonte_fica_de_fora_sem_derrubar_os_outros() -> N
 
     assert len(assets) == 9
     assert "emerald" not in {a.ref_id for a in assets}
+
+
+# --- ícones de rota, em SVG (T-93, ADR 0026) --------------------------------------------
+
+SVG_DA_SELVA = (Path(__file__).parent / "fixtures" / "position-jungle.svg").read_bytes()
+
+
+def test_svg_e_medido_pela_raiz_sem_renderizar() -> None:
+    from lol_assets_indexer.imaging import measure
+
+    medida = measure(SVG_DA_SELVA)
+    assert (medida.width, medida.height, medida.format, medida.has_alpha) == (34, 34, "svg", True)
+
+
+def test_svg_sem_width_usa_o_viewbox() -> None:
+    from lol_assets_indexer.imaging import measure
+
+    medida = measure(
+        b'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60"><path d="M0 0"/></svg>'
+    )
+    assert (medida.width, medida.height) == (120, 60)
+
+
+def test_svg_sem_medida_nenhuma_e_recusado() -> None:
+    from lol_assets_indexer.imaging import UnsupportedImageFormatError, measure
+
+    with pytest.raises(UnsupportedImageFormatError):
+        measure(b'<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>')
+
+
+@respx.mock
+async def test_as_cinco_rotas_viram_registros_validos() -> None:
+    from lol_assets_indexer.adapters.rotas import ROTAS, fetch_position_icons, position_icon_url
+
+    for rota, _, _ in ROTAS:
+        respx.get(position_icon_url(CDRAGON, rota)).mock(
+            return_value=httpx.Response(200, content=SVG_DA_SELVA)
+        )
+
+    async with cliente() as http:
+        assets, _ = await fetch_position_icons(http)
+
+    assert [a.ref_id for a in assets] == ["top", "jungle", "middle", "bottom", "utility"]
+    selva = assets[1]
+    assert selva.names.pt_BR == "Selva" and selva.file_name == "Rota_Jungle.svg"
+    assert selva.format == "svg" and selva.category == "position" and selva.type == "position_icon"
+    validate_shard(
+        {
+            "schemaVersion": "2.1.0",
+            "gameVersion": "16.19.1",
+            "category": "position",
+            "generatedAt": "2026-09-30T00:00:00Z",
+            "assets": [a.model_dump(by_alias=True, exclude_none=True, mode="json") for a in assets],
+        }
+    )

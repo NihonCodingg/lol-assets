@@ -144,3 +144,11 @@ describe("o nome em duas linhas (T-91)", () => {
     expect(naColuna.alturaDoTile - naColuna.alturaDaPrevia).toBe(duas.alturaDoTile - duas.alturaDaPrevia);
   });
 });
+
+describe("vetor na galeria (T-93)", () => {
+  it("a caixa é a de um ícone grande, e não a dos 34 px que o SVG declara", () => {
+    const vetor = medidasDaGaleria([{ width: 34, height: 34, format: "svg" }]);
+    const raster = medidasDaGaleria([{ width: 34, height: 34, format: "png" }]);
+    expect(vetor.alturaDaPrevia).toBeGreaterThan(raster.alturaDaPrevia);
+  });
+});

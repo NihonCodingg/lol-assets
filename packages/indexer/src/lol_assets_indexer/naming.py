@@ -14,7 +14,7 @@ SKIN_SCOPED_TYPES = frozenset(
     {"splash_centered", "splash_wide", "loading", "loading_vintage", "tile", "chroma"}
 )
 
-_EXTENSION = {"png": "png", "jpeg": "jpg"}
+_EXTENSION = {"png": "png", "jpeg": "jpg", "svg": "svg"}
 
 
 def file_extension(image_format: str) -> str:

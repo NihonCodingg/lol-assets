@@ -30,9 +30,10 @@ import type { Asset } from "@lol-assets/schema";
 import { AcoesDoAsset } from "@/components/painel-de-asset";
 import { BotaoIcone } from "@/components/ui/botao-icone";
 import { GlifoDeProporcao } from "@/components/ui/quadro";
-import { formatBytes } from "@/lib/asset-file";
+import { formatBytes, medidaLegivel } from "@/lib/asset-file";
 import { rotuloDoTipo } from "@/lib/asset-panel";
 import { useFocoDeVolta } from "@/lib/foco";
+import { cn } from "@/lib/utils";
 import { useFecharComVoltar } from "@/lib/voltar";
 
 export interface AmpliacaoProps {
@@ -89,14 +90,18 @@ export function Ampliacao({ asset, url, onFechar, baixar, copiar }: AmpliacaoPro
             src={url}
             alt={nome}
             data-ampliacao=""
-            className="max-h-[78vh] max-w-full rounded-quadro object-contain"
+            // Vetor declara 34 px e ficaria miúdo: ganha um tamanho de verdade (T-93).
+            className={cn(
+              "max-h-[78vh] max-w-full rounded-quadro object-contain",
+              asset.format === "svg" && "size-[min(60vh,80vw)]",
+            )}
           />
           <p className="mt-2 text-14 font-semibold text-texto">{nome}</p>
           {/* RF-09: a ficha, em colunas de texto, sem o ponto médio (ADR 0024). */}
           <p className="flex items-center gap-3 text-13 tabular-nums text-texto-suave">
             <span className="inline-flex items-center gap-1.5">
               <GlifoDeProporcao largura={asset.width} altura={asset.height} />
-              {asset.width}×{asset.height}
+              {medidaLegivel(asset)}
             </span>
             <span>{asset.format.toUpperCase()}</span>
             <span>{formatBytes(asset.bytes)}</span>

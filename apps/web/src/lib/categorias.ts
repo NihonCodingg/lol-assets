@@ -63,6 +63,8 @@ export const CATEGORIAS: readonly Categoria[] = [
   { category: "ward", rotulo: "Wards" },
   // Desde o T-92 (ADR 0025): o cdragon passou a servir o emblema montado.
   { category: "rank", rotulo: "Ranks" },
+  // T-93 (ADR 0026): os ícones de rota, em vetor.
+  { category: "position", rotulo: "Rotas" },
   { category: "map", rotulo: "Mapas" },
   { category: "misc", rotulo: "Diversos" },
 ];
