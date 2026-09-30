@@ -53,6 +53,7 @@
   --color-etiqueta-wards: #82bc83;
   --color-etiqueta-mapas: #b99bde;
   --color-etiqueta-ranks: #50bdcb;
+  --color-etiqueta-rotas: #68bf9b;
 
   /* --- tipografia: uma família, três pesos (400, 600, 800) ---------------- */
   --font-interface: var(--fonte-interface), system-ui, sans-serif;

@@ -85,8 +85,10 @@ import {
   canConvertToPng,
   convertToPng,
   formatBytes,
+  medidaLegivel,
   pngFileName,
   saveBlob,
+  svgParaPng,
 } from "@/lib/asset-file";
 
 export type EstadoDoCartao = "pronto" | "baixando" | "erro";
@@ -147,7 +149,14 @@ export async function baixarDeVerdade(asset: Asset, comoPng: boolean, url: strin
   const resposta = await fetch(url);
   if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
   const blob = await resposta.blob();
-  if (comoPng) saveBlob(await convertToPng(blob), pngFileName(asset.fileName));
+  if (comoPng) {
+    // Vetor vira PNG grande (T-93); o resto, PNG do mesmo tamanho da fonte.
+    const png =
+      asset.format === "svg"
+        ? await svgParaPng(blob, asset.width, asset.height)
+        : await convertToPng(blob);
+    saveBlob(png, pngFileName(asset.fileName));
+  }
   else saveBlob(blob, asset.fileName);
 }
 
@@ -794,9 +803,12 @@ function Previa({
         // O xadrez é o fundo da própria imagem: aparece nos pixels transparentes,
         // do tamanho do arquivo, e nunca em volta dele.
         className={cn("absolute inset-0 m-auto size-auto", asset.hasAlpha && "xadrez")}
+        // Vetor cresce até a caixa (T-93); raster, nunca além do próprio tamanho.
         style={{
-          maxWidth: `min(${limite}, ${asset.width}px)`,
-          maxHeight: `min(${limite}, ${asset.height}px)`,
+          maxWidth: asset.format === "svg" ? `calc(${limite})` : `min(${limite}, ${asset.width}px)`,
+          maxHeight: asset.format === "svg" ? `calc(${limite})` : `min(${limite}, ${asset.height}px)`,
+          width: asset.format === "svg" ? "100%" : undefined,
+          height: asset.format === "svg" ? "100%" : undefined,
           transform: zoom ? `scale(${zoom})` : undefined,
         }}
       />
@@ -964,7 +976,7 @@ const TileDaGaleria = memo(function TileDaGaleria({
               aparece junto das ações, no mesmo gesto que as revela. Em duas
               linhas, porque inteira ela não cabe num tile estreito. */}
           <p className="overflow-hidden text-12 leading-3.5 tabular-nums text-ellipsis whitespace-pre text-texto-suave">
-            {`${asset.width}×${asset.height}  ${asset.format.toUpperCase()}\n${formatBytes(asset.bytes)}  ${asset.source}`}
+            {`${medidaLegivel(asset)}  ${asset.format.toUpperCase()}\n${formatBytes(asset.bytes)}  ${asset.source}`}
           </p>
           <div className="flex min-h-controle-md items-center gap-1">
             {mostrarAcoes && (

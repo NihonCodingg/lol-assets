@@ -49,6 +49,7 @@ from lol_assets_indexer.adapters.cdragon import (
 from lol_assets_indexer.adapters.ddragon import latest_version, tarball_url
 from lol_assets_indexer.adapters.ranked import fetch_rank_emblems
 from lol_assets_indexer.adapters.records import BUILDERS, build_all, build_champion_snapshots
+from lol_assets_indexer.adapters.rotas import fetch_position_icons
 from lol_assets_indexer.adapters.tarball import TarballScan, scan_tarball
 from lol_assets_indexer.catalog import project_catalog, verify_catalog
 from lol_assets_indexer.github import reporter_from_env
@@ -78,7 +79,7 @@ logger = logging.getLogger("lol_assets_indexer.cli")
 app = typer.Typer(help="Indexador de assets de League of Legends.", no_args_is_help=True)
 
 #: As categorias que só o cdragon tem. Ver `_categorias_so_do_cdragon`.
-CATEGORIAS_DO_CDRAGON: tuple[AssetCategory, ...] = ("emote", "ward", "rank")
+CATEGORIAS_DO_CDRAGON: tuple[AssetCategory, ...] = ("emote", "ward", "rank", "position")
 
 #: Tudo o que uma execução completa emite — a lista que entra na assinatura de
 #: geração do T-38. Mora aqui, e não repetida em dois lugares, porque "a lista de
@@ -504,7 +505,11 @@ async def _categorias_so_do_cdragon(
 ) -> dict[AssetCategory, list[Asset]]:
     """Emotes, wards e emblemas de elo (T-92). Falhar custa a categoria, não a indexação."""
     buscadores: tuple[tuple[AssetCategory, Any], ...] = tuple(
-        zip(CATEGORIAS_DO_CDRAGON, (fetch_emotes, fetch_wards, fetch_rank_emblems), strict=True)
+        zip(
+            CATEGORIAS_DO_CDRAGON,
+            (fetch_emotes, fetch_wards, fetch_rank_emblems, fetch_position_icons),
+            strict=True,
+        )
     )
     resultado: dict[AssetCategory, list[Asset]] = {}
     async with SourceClient(settings) as client:

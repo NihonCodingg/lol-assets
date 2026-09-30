@@ -87,3 +87,9 @@ vista **antes** do download, lado a lado, nunca num menu. Muda o peso visual de 
 Asset cuja origem já é PNG (regra 4) passa a ter um botão só, "Baixar PNG", que entrega o arquivo
 original, sem conversão. O botão desabilitado "já é PNG" ao lado do primário baixava o mesmo
 arquivo que o outro, e deixava uma pergunta sem resposta. A Spec (RF-12) foi emendada junto.
+
+## Emenda de 30/09/2026 — SVG (T-93)
+
+O [ADR 0026](0026-as-rotas-em-vetor.md) põe `svg` no contrato para os ícones de rota. A regra 4
+passa a ser: asset com canal alfa **nunca é JPEG** — é PNG ou SVG. O vetor é servido como a fonte o
+publica; o "Baixar PNG" dele é gerado no navegador, em 1024 px, como a conversão de sempre.

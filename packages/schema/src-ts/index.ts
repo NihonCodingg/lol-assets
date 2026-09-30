@@ -4,7 +4,7 @@
  * O JSON Schema em `schemas/` é a fonte de verdade; os tipos abaixo são
  * escritos à mão por enquanto e passam a ser gerados no ticket da etapa 6.
  */
-export const SCHEMA_VERSION = "2.0.0";
+export const SCHEMA_VERSION = "2.1.0";
 
 export type AssetCategory =
   | "champion"
@@ -16,6 +16,7 @@ export type AssetCategory =
   | "ward"
   | "map"
   | "rank"
+  | "position"
   | "misc";
 
 /** Nomes canônicos do ADR 0002 — nunca os nomes das fontes. */
@@ -38,7 +39,8 @@ export type AssetType =
   | "emote_icon"
   | "ward_icon"
   | "map_image"
-  | "rank_emblem";
+  | "rank_emblem"
+  | "position_icon";
 
 export type AssetSource = "ddragon" | "cdragon" | "riot_static" | "wiki";
 
@@ -85,7 +87,7 @@ export interface Asset {
   fileName: string;
   width: number;
   height: number;
-  format: "png" | "jpeg";
+  format: "png" | "jpeg" | "svg";
   /** Quando true, o asset nunca pode ser convertido para JPEG (ADR 0001). */
   hasAlpha: boolean;
   /** O arquivo que o indexador recebeu. No cdragon, o entregue pode ser menor (ADR 0019). */

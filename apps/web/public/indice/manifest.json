@@ -1,7 +1,6 @@
 {
-  "schemaVersion": "2.0.0",
-  "generatedAt": "2026-09-26T23:11:24Z",
-  "checkedAt": "2026-09-30T09:43:47Z",
+  "schemaVersion": "2.1.0",
+  "generatedAt": "2026-09-30T17:18:52Z",
   "currentVersion": "16.19.1",
   "generation": {
     "indexer": 5,
@@ -10,6 +9,7 @@
       "emote",
       "item",
       "map",
+      "position",
       "profile_icon",
       "rank",
       "rune",
@@ -20,73 +20,80 @@
   "versions": [
     {
       "gameVersion": "16.19.1",
-      "indexedAt": "2026-09-26T23:11:24Z",
+      "indexedAt": "2026-09-30T17:18:52Z",
       "assetsCopied": false,
       "catalog": {
-        "url": "catalog-01353483516b.json",
+        "url": "catalog-943725fa6d4c.json",
         "champions": 173,
         "skins": 2125,
         "bytes": 803648,
-        "sha256": "01353483516b701b293d6fff025b2126f552a484cf08a959d8c59aa90ff31e90"
+        "sha256": "943725fa6d4c455e76040c4f9b66619afc82412fbba1d210c3c81f6e8952aac3"
       },
-      "totalAssets": 27398,
-      "totalBytes": 2269994851,
+      "totalAssets": 27403,
+      "totalBytes": 2273192455,
       "shards": [
         {
           "category": "item",
-          "url": "index-item-9039fd7d8a92.json",
+          "url": "index-item-7b0084977da5.json",
           "assets": 870,
           "bytes": 627039,
-          "sha256": "9039fd7d8a9207932f418b7a0e98308d28e261af3024e37e8bb3d12b26e64887"
+          "sha256": "7b0084977da5938bcacd47836951232cc2525d81ed4e9ecbbbbfaed675f41b8b"
         },
         {
           "category": "summoner_spell",
-          "url": "index-summoner_spell-bdcc61518792.json",
+          "url": "index-summoner_spell-425f9364a01d.json",
           "assets": 34,
           "bytes": 21724,
-          "sha256": "bdcc615187928ddad79d25846271ab837961474d08cc6672e4fc667d6660200e"
+          "sha256": "425f9364a01d7ca0630d5891c9aad09ce55f798338d6fa1fdf04469f04b6b62f"
         },
         {
           "category": "profile_icon",
-          "url": "index-profile_icon-3b858b960d26.json",
+          "url": "index-profile_icon-6bcd7dd9831e.json",
           "assets": 5050,
           "bytes": 2732892,
-          "sha256": "3b858b960d26aaf4289025c5c8c5f2bc87eda00f68c2e407556c96f620e9740b"
+          "sha256": "6bcd7dd9831e3116eddc3ceca9e9c08572dc234cf659b2d3b29090eee8a501fd"
         },
         {
           "category": "rune",
-          "url": "index-rune-2e934f934dcf.json",
+          "url": "index-rune-613283b0dc6e.json",
           "assets": 77,
           "bytes": 50795,
-          "sha256": "2e934f934dcf383b5f212b441144ed9c31f9a10bed622ac992d232e3c9606e37"
+          "sha256": "613283b0dc6eb7466c45ad4eea7a504164b25b7bf07e6cccf92bf9c6f591f572"
         },
         {
           "category": "map",
-          "url": "index-map-9c0fa4ce0a51.json",
+          "url": "index-map-0cf3430a1421.json",
           "assets": 5,
           "bytes": 2941,
-          "sha256": "9c0fa4ce0a519d97cdbff70a80bc45daf648d117090beed092cf0514fab4944f"
+          "sha256": "0cf3430a14213aa94c4735e6aea1524c37386ca563f3a697de834b7e30e528ab"
         },
         {
           "category": "emote",
-          "url": "index-emote-126427c377bc.json",
+          "url": "index-emote-1057c23993c9.json",
           "assets": 2369,
-          "bytes": 1502896,
-          "sha256": "126427c377bc5d0612800bb09a07293db16c7df9e727b4625edf6387e1ab950f"
+          "bytes": 1502944,
+          "sha256": "1057c23993c9a48186c48062a19ab375377cda4a591c778c310a8ccf3baf4f24"
         },
         {
           "category": "ward",
-          "url": "index-ward-84f6e2d3f6bc.json",
+          "url": "index-ward-b56d94d70401.json",
           "assets": 532,
-          "bytes": 323629,
-          "sha256": "84f6e2d3f6bcebba6cfcf6d25cefc0f3f5d08ba4e32806958816cce736e256b8"
+          "bytes": 323599,
+          "sha256": "b56d94d70401374feeb81f9b798aad7cecb62bb816ef18caa24380c76655b93c"
         },
         {
           "category": "rank",
-          "url": "index-rank-131d93f3cbff.json",
+          "url": "index-rank-20d95bf50452.json",
           "assets": 10,
           "bytes": 6322,
-          "sha256": "131d93f3cbff58c98172a0a6fa9bd8b026b4d8f0cf7beea4619ea9cee5edab6b"
+          "sha256": "20d95bf50452c01b9796a1fb0ab2b97141f546291e29cb48ab3b3b0aebcd9390"
+        },
+        {
+          "category": "position",
+          "url": "index-position-7f5cd578fb19.json",
+          "assets": 5,
+          "bytes": 3132,
+          "sha256": "7f5cd578fb19b90ce786168a48ef296cda770fac8d0460b3a9c4a181a7617064"
         }
       ]
     }

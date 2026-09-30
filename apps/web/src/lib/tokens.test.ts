@@ -58,8 +58,8 @@ describe("tokens de cor", () => {
     }
   });
 
-  it("são 22 cores: 4 superfícies, 2 linhas, 2 textos, 3 destaques, 2 do xadrez e 9 etiquetas", () => {
-    expect(TEMA.size).toBe(22);
+  it("são 23 cores: 4 superfícies, 2 linhas, 2 textos, 3 destaques, 2 do xadrez e 10 etiquetas", () => {
+    expect(TEMA.size).toBe(23);
   });
 });
 
@@ -141,8 +141,8 @@ describe("destaque", () => {
     }
   });
 
-  it("são nove etiquetas (a de Ranks desde o T-92), e nenhuma está a menos de 40° do destaque", () => {
-    expect(etiquetas).toHaveLength(9);
+  it("são dez etiquetas (Ranks desde o T-92, Rotas desde o T-93), e nenhuma está a menos de 40° do destaque", () => {
+    expect(etiquetas).toHaveLength(10);
     for (const [nome, valor] of etiquetas) {
       expect(distancia(matiz(valor), matiz(cor("acento"))), nome).toBeGreaterThanOrEqual(40);
     }

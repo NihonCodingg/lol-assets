@@ -9,18 +9,19 @@ from __future__ import annotations
 
 import hashlib
 import io
+import re
 from dataclasses import dataclass
 from typing import Literal
 
 from PIL import Image
 
-ImageFormat = Literal["png", "jpeg"]
+ImageFormat = Literal["png", "jpeg", "svg"]
 
 _FORMAT_ALIASES = {"jpg": "jpeg", "jpeg": "jpeg", "png": "png"}
 
 
 class UnsupportedImageFormatError(ValueError):
-    """Formato fora do contrato: o índice só declara `png` e `jpeg`."""
+    """Formato fora do contrato: o índice declara `png`, `jpeg` e `svg`."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +38,8 @@ class MeasuredImage:
 
 def measure(data: bytes) -> MeasuredImage:
     """Mede os bytes recebidos. Não os transforma."""
+    if _eh_svg(data):
+        return _medir_svg(data)
     with Image.open(io.BytesIO(data)) as image:
         raw_format = (image.format or "").lower()
         image_format = _FORMAT_ALIASES.get(raw_format)
@@ -72,3 +75,52 @@ def _has_real_alpha(image: Image.Image) -> bool:
     if isinstance(minimum, tuple):
         minimum = minimum[0]
     return bool(minimum < 255)
+
+
+# --- SVG (T-93, ADR 0026) ------------------------------------------------------------------
+#
+# Vetor não tem resolução: `width` e `height` são as do desenho, lidas dos atributos
+# da raiz (ou do `viewBox`), e o PNG de qualquer tamanho sai no navegador. O arquivo
+# não é aberto por renderizador nenhum — só o texto da raiz é lido, e nada é escrito.
+
+_RAIZ_SVG = re.compile(rb"<svg\b[^>]*>", re.IGNORECASE | re.DOTALL)
+
+
+def _eh_svg(data: bytes) -> bool:
+    return _RAIZ_SVG.search(data[:4096]) is not None and not data.startswith(b"\x89PNG")
+
+
+def _atributo(raiz: bytes, nome: bytes) -> str | None:
+    achado = re.search(rb"\s" + nome + rb'\s*=\s*["\']([^"\']*)["\']', raiz)
+    return achado.group(1).decode("ascii", "replace") if achado else None
+
+
+def _numero(valor: str | None) -> float | None:
+    if not valor:
+        return None
+    achado = re.match(r"\s*([0-9]*\.?[0-9]+)\s*(px)?\s*$", valor)
+    return float(achado.group(1)) if achado else None
+
+
+def _medir_svg(data: bytes) -> MeasuredImage:
+    raiz_encontrada = _RAIZ_SVG.search(data[:4096])
+    assert raiz_encontrada is not None
+    raiz = raiz_encontrada.group(0)
+    largura = _numero(_atributo(raiz, b"width"))
+    altura = _numero(_atributo(raiz, b"height"))
+    if largura is None or altura is None:
+        caixa = (_atributo(raiz, b"viewBox") or "").replace(",", " ").split()
+        if len(caixa) != 4:
+            raise UnsupportedImageFormatError("svg sem width/height nem viewBox")
+        largura, altura = float(caixa[2]), float(caixa[3])
+    if largura <= 0 or altura <= 0:
+        raise UnsupportedImageFormatError("svg com medida não positiva")
+    return MeasuredImage(
+        width=max(1, round(largura)),
+        height=max(1, round(altura)),
+        format="svg",
+        # Vetor não tem fundo: o que não é desenho é transparente.
+        has_alpha=True,
+        bytes=len(data),
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
