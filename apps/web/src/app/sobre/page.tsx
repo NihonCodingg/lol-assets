@@ -62,7 +62,7 @@ export default function SobrePage() {
             servidor nenhum. <strong>Original</strong> entrega o arquivo como a fonte o publica.
           </li>
           <li>
-            <strong>Nas categorias</strong> — itens, runas, ícones, emotes — há filtros; marque
+            <strong>Nas categorias</strong> — itens, runas, ícones, emotes, ranks, rotas — há filtros; marque
             vários arquivos e baixe tudo num zip só.
           </li>
         </ul>

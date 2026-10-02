@@ -74,3 +74,66 @@ describe("as categorias da barra", () => {
     expect(nav.querySelector("[data-ativa]")).toBeNull();
   });
 });
+
+/**
+ * T-94: quem abre a página Sobre direto via a barra com "Campeões" e mais nada —
+ * a lista vinha do manifesto que só a home carregava. Fora da home, a barra
+ * busca o manifesto sozinha.
+ */
+describe("a Sobre aberta direto", () => {
+  const MANIFESTO = {
+    currentVersion: "16.19.1",
+    versions: [
+      {
+        gameVersion: "16.19.1",
+        catalog: { champions: 173 },
+        shards: [{ category: "item", assets: 870 }, { category: "rank", assets: 10 }, { category: "position", assets: 5 }],
+      },
+    ],
+  };
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("busca o manifesto e mostra cada categoria como link para a home", async () => {
+    caminho.atual = "/sobre";
+    const pedidos: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        pedidos.push(url);
+        return { ok: true, json: async () => MANIFESTO };
+      }),
+    );
+    render(
+      <ProvedorDeNavegacao>
+        <Rodape />
+      </ProvedorDeNavegacao>,
+    );
+    const categorias = screen.getByRole("navigation", { name: "Categorias" });
+    const rotas = await within(categorias).findByRole("link", { name: /Rotas/ });
+    expect(rotas.getAttribute("href")).toBe("/");
+    expect(within(categorias).getByRole("link", { name: /Ranks/ })).toBeTruthy();
+    expect(within(categorias).getByRole("link", { name: /Itens/ })).toBeTruthy();
+    expect(pedidos).toEqual(["/indice/manifest.json"]);
+  });
+
+  it("na home, não busca nada: quem registra é a página", () => {
+    const busca = vi.fn();
+    vi.stubGlobal("fetch", busca);
+    montar();
+    expect(busca).not.toHaveBeenCalled();
+  });
+
+  it("sem rede, fica como antes: só Campeões", async () => {
+    caminho.atual = "/sobre";
+    vi.stubGlobal("fetch", vi.fn(async () => Promise.reject(new Error("offline"))));
+    render(
+      <ProvedorDeNavegacao>
+        <Rodape />
+      </ProvedorDeNavegacao>,
+    );
+    await Promise.resolve();
+    const categorias = screen.getByRole("navigation", { name: "Categorias" });
+    expect(within(categorias).getAllByRole("link").map((l) => l.textContent)).toEqual(["Campeões"]);
+  });
+});
