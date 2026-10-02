@@ -3847,6 +3847,7 @@ relatório fica em `docs/sessoes/`, e as capturas em `docs/design/redesenho/`.
 | ✅ T-91 | O acabamento no mesmo padrão de clareza, revisado pela skill de design e por uma revisão independente: nomes em duas linhas nas galerias de nome longo e no seletor de skins, "Baixar PNG" na mesma coluna em toda linha, ícones de perfil em ordem numérica, números com o ponto do milhar, o chip marcado em grafite, a marca inteira no topo do telefone sem a busca, e os títulos do Sobre |
 | ✅ T-92 | Pedido de 26/09: os emblemas de elo para baixar. A categoria "Ranks" volta ([ADR 0025](adr/0025-a-categoria-rank-volta.md)): dez emblemas do cdragon, na ordem do jogo, com a prévia aproximada |
 | ✅ T-93 | Pedido de 30/09: os ícones das rotas, na maior qualidade. Contrato 2.1.0 com `svg` ([ADR 0026](adr/0026-as-rotas-em-vetor.md)); categoria "Rotas" com os cinco vetores e "Baixar PNG" em 1024 px |
+| ✅ T-94 | A barra lateral da Sobre aberta direto mostra as dez categorias: fora da home, ela busca o manifesto sozinha (3 KB) |
 
 ---
 

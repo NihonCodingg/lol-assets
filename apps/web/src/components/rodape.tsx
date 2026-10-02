@@ -30,6 +30,7 @@ import { useEffect, useRef } from "react";
 import { AvisosDaRiot } from "@/components/avisos-da-riot";
 import { useNavegacao } from "@/components/navegacao-context";
 import { MarcadorDeCategoria } from "@/components/ui/etiqueta-de-categoria";
+import { categoriasDisponiveis } from "@/lib/categorias";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -40,13 +41,52 @@ const ITEM_DE_SECAO = cn(
   "max-md:min-h-controle-xl max-md:px-2.5",
 );
 
+/** O índice é servido pelo próprio app (ADR 0012); o mesmo endereço que a home usa. */
+const BASE_INDICE = process.env.NEXT_PUBLIC_INDEX_BASE_URL ?? "/indice";
+
+/** O pedaço do manifesto que a barra lê: as fatias da versão atual e quantos campeões. */
+interface ManifestoDaBarra {
+  readonly currentVersion: string;
+  readonly versions: readonly {
+    readonly gameVersion: string;
+    readonly catalog?: { readonly champions?: number };
+    readonly shards: readonly { readonly category: string; readonly assets?: number }[];
+  }[];
+}
+
 export function Rodape() {
-  const { categorias, campeoes, aberta, abrir } = useNavegacao();
+  const { categorias, campeoes, aberta, abrir, registrar, comTopo } = useNavegacao();
   const linha = useRef<HTMLDivElement>(null);
   // `null` fora do roteador do Next — nos testes que montam a barra sozinha.
   // Lá, como na home, as categorias são botões.
   const caminho = usePathname();
   const naHome = caminho === null || caminho === "/";
+
+  /**
+   * Fora da home (T-94). A lista de categorias vinha só do manifesto que a home
+   * carrega: quem abria a página Sobre direto via uma barra com "Campeões" e
+   * mais nada. Aqui a barra busca o manifesto sozinha — 3 KB, do mesmo endereço,
+   * e o navegador já o tem em cache se a home veio antes. Cada item continua
+   * sendo um link que volta à home com a categoria aberta.
+   */
+  useEffect(() => {
+    if (naHome || !comTopo || categorias.length > 0) return;
+    let vivo = true;
+    fetch(`${BASE_INDICE.replace(/\/+$/, "")}/manifest.json`)
+      .then((resposta) => (resposta.ok ? (resposta.json() as Promise<ManifestoDaBarra>) : null))
+      .then((manifesto) => {
+        if (!vivo || !manifesto) return;
+        const versao =
+          manifesto.versions.find((v) => v.gameVersion === manifesto.currentVersion) ??
+          manifesto.versions[0];
+        if (versao) registrar(categoriasDisponiveis(versao.shards), versao.catalog?.champions);
+      })
+      // Sem rede, a barra fica como antes: "Campeões" leva de volta à home.
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [naHome, comTopo, categorias.length, registrar]);
 
   // Na linha que rola de lado, a categoria aberta vem para a tela: quem abre
   // "Mapas" pela home não pode ficar com a aba marcada fora da vista.
