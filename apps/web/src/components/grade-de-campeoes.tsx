@@ -222,6 +222,68 @@ function Grade({
     gravarDensidade(proxima);
   }
 
+  /**
+   * O controle de densidade (T-40, T-55). No telefone ele dividia a linha com as
+   * funções e, com os três alvos de 44 px, cortava as funções depois de
+   * "Atirador" (T-95). Lá ele vai para o fim da linha que rola de lado: as funções
+   * ganham a largura toda, e os alvos continuam com 44 px. No computador, fica à
+   * direita, como sempre.
+   */
+  const controleDeDensidade = (
+    <div
+      role="group"
+      aria-label="Densidade da grade"
+      className="flex items-center gap-0.5 rounded-controle border border-linha bg-superficie p-0.5"
+    >
+      <BotaoIcone
+        rotulo="Grade compacta"
+        dica="Máximo de cartões"
+        aria-pressed={densidade === "compacta"}
+        icone={
+          <LayoutGrid
+            aria-hidden="true"
+            strokeWidth={1.75}
+            className="size-4"
+          />
+        }
+        onClick={() => escolherDensidade("compacta")}
+        className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
+      />
+      <BotaoIcone
+        rotulo="Grade densa"
+        dica="Mais cartões por linha"
+        aria-pressed={densidade === "densa"}
+        icone={
+          <Grid3x3
+            aria-hidden="true"
+            strokeWidth={1.75}
+            className="size-4"
+          />
+        }
+        onClick={() => escolherDensidade("densa")}
+        className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
+      />
+      <BotaoIcone
+        rotulo="Grade confortável"
+        dica="Cartões maiores"
+        aria-pressed={densidade === "confortavel"}
+        icone={
+          <Grid2x2
+            aria-hidden="true"
+            strokeWidth={1.75}
+            className="size-4"
+          />
+        }
+        onClick={() => escolherDensidade("confortavel")}
+        className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
+      />
+    </div>
+  );
+  const comFuncoes = funcoes.length > 0;
+  const densidadeFora = (
+    <div className={cn(comFuncoes && "max-md:hidden")}>{controleDeDensidade}</div>
+  );
+
   return (
     <>
       {/* Uma barra só: filtro à esquerda, contagem e densidade à direita. A
@@ -251,63 +313,17 @@ function Grade({
                 })),
               ]}
             />
+            <div className="ml-3 flex-none md:hidden">{controleDeDensidade}</div>
           </div>
         )}
 
-        {/* No telefone, a contagem sai e o controle fica na mesma linha das
-            funções: era uma linha inteira de 44 px antes do primeiro cartão. */}
+        {/* No telefone, a contagem sai, e o controle de densidade vai para o fim
+            da linha das funções (T-95). */}
         <div className="ml-auto flex flex-none items-center gap-2.5">
           <span className="hidden text-13 tabular-nums text-texto-suave md:inline">
             {visiveis.length} de {champions.length} campeões
           </span>
-          <div
-            role="group"
-            aria-label="Densidade da grade"
-            className="flex items-center gap-0.5 rounded-controle border border-linha bg-superficie p-0.5"
-          >
-            <BotaoIcone
-              rotulo="Grade compacta"
-              dica="Máximo de cartões"
-              aria-pressed={densidade === "compacta"}
-              icone={
-                <LayoutGrid
-                  aria-hidden="true"
-                  strokeWidth={1.75}
-                  className="size-4"
-                />
-              }
-              onClick={() => escolherDensidade("compacta")}
-              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
-            />
-            <BotaoIcone
-              rotulo="Grade densa"
-              dica="Mais cartões por linha"
-              aria-pressed={densidade === "densa"}
-              icone={
-                <Grid3x3
-                  aria-hidden="true"
-                  strokeWidth={1.75}
-                  className="size-4"
-                />
-              }
-              onClick={() => escolherDensidade("densa")}
-              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
-            />
-            <BotaoIcone
-              rotulo="Grade confortável"
-              dica="Cartões maiores"
-              aria-pressed={densidade === "confortavel"}
-              icone={
-                <Grid2x2
-                  aria-hidden="true"
-                  strokeWidth={1.75}
-                  className="size-4"
-                />
-              }
-              onClick={() => escolherDensidade("confortavel")}
-              className="h-controle-sm w-controle-sm pointer-coarse:h-controle-xl pointer-coarse:w-controle-xl aria-pressed:bg-superficie-alta aria-pressed:text-texto"
-            />
-          </div>
+          {densidadeFora}
         </div>
       </div>
 

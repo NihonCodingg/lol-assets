@@ -3848,6 +3848,7 @@ relatório fica em `docs/sessoes/`, e as capturas em `docs/design/redesenho/`.
 | ✅ T-92 | Pedido de 26/09: os emblemas de elo para baixar. A categoria "Ranks" volta ([ADR 0025](adr/0025-a-categoria-rank-volta.md)): dez emblemas do cdragon, na ordem do jogo, com a prévia aproximada |
 | ✅ T-93 | Pedido de 30/09: os ícones das rotas, na maior qualidade. Contrato 2.1.0 com `svg` ([ADR 0026](adr/0026-as-rotas-em-vetor.md)); categoria "Rotas" com os cinco vetores e "Baixar PNG" em 1024 px |
 | ✅ T-94 | A barra lateral da Sobre aberta direto mostra as dez categorias: fora da home, ela busca o manifesto sozinha (3 KB) |
+| ✅ T-95 | No telefone, o controle de densidade vai para o fim da linha das funções: as funções ganham a largura toda, e os alvos continuam com 44 px |
 
 ---
 
