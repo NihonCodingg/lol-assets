@@ -1,58 +1,58 @@
 {
   "schemaVersion": "2.1.0",
-  "startedAt": "2026-09-30T17:18:52Z",
-  "finishedAt": "2026-09-30T17:43:05Z",
-  "durationSeconds": 1452.885,
+  "startedAt": "2026-10-07T10:17:31Z",
+  "finishedAt": "2026-10-07T10:52:41Z",
+  "durationSeconds": 2110.425,
   "ok": true,
-  "gameVersion": "16.19.1",
-  "runId": "36750460700",
+  "gameVersion": "16.20.1",
+  "runId": "37606389931",
   "counts": {
-    "assets": 27403,
+    "assets": 27599,
     "champions": 173,
-    "skins": 2125,
+    "skins": 2132,
     "categories": 10,
     "assetsByCategory": {
-      "champion": 18451,
-      "emote": 2369,
+      "champion": 18540,
+      "emote": 2400,
       "item": 870,
       "map": 5,
       "position": 5,
-      "profile_icon": 5050,
+      "profile_icon": 5126,
       "rank": 10,
       "rune": 77,
       "summoner_spell": 34,
       "ward": 532
     },
     "assetsBySource": {
-      "cdragon": 11829,
-      "ddragon": 15574
+      "cdragon": 11921,
+      "ddragon": 15678
     }
   },
   "bytes": {
-    "index": 19168435,
-    "catalogGzip": 66826,
-    "largestShardGzip": 310838,
-    "describedAssets": 2273192455
+    "index": 19299076,
+    "catalogGzip": 67058,
+    "largestShardGzip": 315528,
+    "describedAssets": 2296578252
   },
   "source": {
-    "files": 34949,
-    "imagesMeasured": 15585,
-    "imagesSkipped": 19006,
+    "files": 35300,
+    "imagesMeasured": 15689,
+    "imagesSkipped": 19253,
     "caseMismatches": 52
   },
   "merge": {
     "winnersBySource": {
-      "ddragon": 9538,
-      "cdragon": 8913
+      "ddragon": 9566,
+      "cdragon": 8974
     },
     "losersBySource": {
-      "cdragon": 724
+      "cdragon": 760
     },
     "exclusiveBySource": {
-      "ddragon": 8850,
-      "cdragon": 8901
+      "ddragon": 8842,
+      "cdragon": 8962
     },
-    "ties": 724,
+    "ties": 760,
     "resolutionWins": 0
   }
 }
